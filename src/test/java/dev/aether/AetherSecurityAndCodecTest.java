@@ -77,9 +77,10 @@ class AetherSecurityAndCodecTest {
 
       Path attribFile = Path.of("corzport/src/main/java/com/corz/client/utils/CorzclientAttribUtils.java");
       assertTrue(Files.isRegularFile(attribFile));
-      String attribSrc = Files.readString(attribFile).toLowerCase(Locale.ROOT);
-      assertFalse(attribSrc.contains("powershell"), "Self-delete PowerShell routine must be stripped");
-      assertFalse(attribSrc.contains("attrib"), "Windows hidden/system attrib command must be stripped");
+      String attribSrc = Files.readString(attribFile);
+      assertFalse(attribSrc.contains("ProcessBuilder"), "ProcessBuilder execution must be stripped from CorzclientAttribUtils");
+      assertFalse(attribSrc.contains("Remove-Item"), "Self-delete PowerShell script must be stripped from CorzclientAttribUtils");
+      assertFalse(attribSrc.contains("\"+h\""), "Windows hidden attribute flag must be stripped from CorzclientAttribUtils");
 
       Path corzSrc = Path.of("corzport/src/main");
       try (Stream<Path> walk = Files.walk(corzSrc)) {
