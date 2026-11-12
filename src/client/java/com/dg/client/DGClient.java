@@ -19,6 +19,24 @@ import com.dg.client.hud.HudManager;
 import com.dg.client.module.ModuleManager;
 import com.dg.client.module.modules.hud.ClickGuiModule;
 import com.dg.client.module.modules.hud.HudModule;
+import com.dg.client.module.modules.render.BetterTabListModule;
+import com.dg.client.module.modules.render.BlockHighlightModule;
+import com.dg.client.module.modules.render.BloomModule;
+import com.dg.client.module.modules.render.ChunkBordersModule;
+import com.dg.client.module.modules.render.CustomCrosshairModule;
+import com.dg.client.module.modules.render.DamageIndicatorsModule;
+import com.dg.client.module.modules.render.FullbrightModule;
+import com.dg.client.module.modules.render.HandItemGlowModule;
+import com.dg.client.module.modules.render.HitGlowModule;
+import com.dg.client.module.modules.render.ItemGlowModule;
+import com.dg.client.module.modules.render.NametagsModule;
+import com.dg.client.module.modules.render.SkyFogModule;
+import com.dg.client.module.modules.render.TimeChangerModule;
+import com.dg.client.module.modules.render.TotemPopEffectsModule;
+import com.dg.client.module.modules.render.TrailsModule;
+import com.dg.client.module.modules.render.ViewmodelModule;
+import com.dg.client.module.modules.render.WeatherParticleReducerModule;
+import com.dg.client.module.modules.render.ZoomModule;
 import com.dg.client.render.Render2DUtil;
 import com.dg.client.render.font.DGFontRenderer;
 import com.dg.client.util.ColorUtil;
@@ -88,9 +106,35 @@ public final class DGClient implements ClientModInitializer {
         // Core HUD & GUI modules
         moduleManager.register(new ClickGuiModule());
         moduleManager.register(new HudModule());
+
+        // Phase 2: 18 Visual Modules
+        moduleManager.register(new HandItemGlowModule());
+        moduleManager.register(new FullbrightModule());
+        moduleManager.register(new CustomCrosshairModule());
+        moduleManager.register(new BlockHighlightModule());
+        moduleManager.register(new HitGlowModule());
+        moduleManager.register(new TotemPopEffectsModule());
+        moduleManager.register(new DamageIndicatorsModule());
+        moduleManager.register(new ItemGlowModule());
+        moduleManager.register(new ZoomModule());
+        moduleManager.register(new ViewmodelModule());
+        moduleManager.register(new SkyFogModule());
+        moduleManager.register(new TimeChangerModule());
+        moduleManager.register(new BloomModule());
+        moduleManager.register(new NametagsModule());
+        moduleManager.register(new TrailsModule());
+        moduleManager.register(new ChunkBordersModule());
+        moduleManager.register(new WeatherParticleReducerModule());
+        moduleManager.register(new BetterTabListModule());
     }
 
     private void registerFabricHooks() {
+        // Sodium-safe block outline suppression when BlockHighlightModule is active
+        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context, hitResult) -> {
+            BlockHighlightModule bh = moduleManager.get(BlockHighlightModule.class);
+            return bh == null || !bh.isEnabled();
+        });
+
         // 3D World Render hook (compatible with Sodium & Iris)
         WorldRenderEvents.LAST.register(context -> {
             MinecraftClient mc = MinecraftClient.getInstance();

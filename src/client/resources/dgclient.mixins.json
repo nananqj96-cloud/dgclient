@@ -3,12 +3,25 @@
 	"package": "com.dg.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"BackgroundRendererMixin",
 		"ClientConnectionMixin",
+		"ClientPlayerInteractionManagerMixin",
 		"ClientWorldMixin",
+		"EntityRendererMixin",
+		"GameRendererMixin",
+		"HeldItemRendererMixin",
+		"InGameHudMixin",
+		"ItemRendererMixin",
 		"KeyboardMixin",
+		"LightmapTextureManagerMixin",
+		"LivingEntityMixin",
 		"MinecraftClientAccessor",
 		"MinecraftClientMixin",
-		"MouseMixin"
+		"MouseMixin",
+		"ParticleManagerMixin",
+		"PlayerListHudMixin",
+		"WorldMixin",
+		"WorldRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
