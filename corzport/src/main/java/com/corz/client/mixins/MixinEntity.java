@@ -28,7 +28,7 @@ import ai.auth.ModuleRegistry;
 @Mixin({Entity.class})
 public class MixinEntity {
    @Shadow
-   protected static Vec3d movementInputToVelocity(Vec3d vec, float movementInputValue, float serverYaw) {
+   protected static Vec3d method_18795(Vec3d vec, float movementInputValue, float serverYaw) {
       throw new AssertionError("shadow");
    }
 
@@ -151,9 +151,9 @@ public class MixinEntity {
    private Vec3d corzMoveFix(Vec3d vec, float corzMoveValue, float corzMoveValue2) {
       if (MathClampUtils.isClampSettled() && ((Object) this) == MinecraftClient.getInstance().player) {
          float serverYaw = MathClampUtils.getYaw();
-         return movementInputToVelocity(vec, corzMoveValue, serverYaw);
+         return method_18795(vec, corzMoveValue, serverYaw);
       } else {
-         return movementInputToVelocity(vec, corzMoveValue, corzMoveValue2);
+         return method_18795(vec, corzMoveValue, corzMoveValue2);
       }
    }
 }

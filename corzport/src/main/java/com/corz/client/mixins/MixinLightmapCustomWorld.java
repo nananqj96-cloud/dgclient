@@ -13,7 +13,7 @@ import com.corz.client.categories.visuals.CustomWorld;
 @Mixin({LightmapTextureManager.class})
 public class MixinLightmapCustomWorld {
    @Shadow
-   private boolean dirty;
+   private boolean field_4135;
 
    @Inject(
       method = {"method_3314()V"},
@@ -23,7 +23,7 @@ public class MixinLightmapCustomWorld {
    private void corz$keepDirty(CallbackInfo callbackInfo) {
       CustomWorld cw = CustomWorld.getCustomWorld();
       if (cw != null && cw.isCustomLightColor()) {
-         this.dirty = true;
+         this.field_4135 = true;
       }
    }
 

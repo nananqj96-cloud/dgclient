@@ -19,7 +19,7 @@ import com.corz.client.utils.MatrixSubmitUtils;
 @Mixin({CapeFeatureRenderer.class})
 public abstract class MixinCapeFeatureRenderer {
    @Shadow
-   private boolean hasCustomModelForLayer(ItemStack itemStack, LayerType layerType) {
+   private boolean method_64257(ItemStack itemStack, LayerType layerType) {
       throw new AssertionError();
    }
 
@@ -46,7 +46,7 @@ public abstract class MixinCapeFeatureRenderer {
          obj instanceof PlayerEntityRenderState s
             && MatrixSubmitUtils.canFlag(s)
             && MatrixSubmitUtils.canSubmitCustom(
-               orderedRenderCommandQueue, model, s, matrixStack, renderLayer, corzsubmitCape3dValue, corzsubmitCape3dValue2, corzsubmitCape3dValue3, this.hasCustomModelForLayer(s.equippedChestStack, LayerType.HUMANOID)
+               orderedRenderCommandQueue, model, s, matrixStack, renderLayer, corzsubmitCape3dValue, corzsubmitCape3dValue2, corzsubmitCape3dValue3, this.method_64257(s.equippedChestStack, LayerType.HUMANOID)
             )
       )) {
          operation.call(new Object[]{orderedRenderCommandQueue, model, obj, matrixStack, renderLayer, corzsubmitCape3dValue, corzsubmitCape3dValue2, corzsubmitCape3dValue3, crumblingOverlayCommand});

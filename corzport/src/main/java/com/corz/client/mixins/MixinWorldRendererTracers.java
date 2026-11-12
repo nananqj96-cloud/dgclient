@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinWorldRendererTracers {
    @Shadow
    @Final
-   private DefaultFramebufferSet framebufferSet;
+   private DefaultFramebufferSet field_53081;
 
    @Inject(
       method = {"method_62199(Lnet/minecraft/class_9909;Lnet/minecraft/class_12075;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4f;)V"},
@@ -29,7 +29,7 @@ public abstract class MixinWorldRendererTracers {
    )
    private void corz$tracerPass(FrameGraphBuilder frameGraphBuilder, CameraRenderState cameraRenderState, GpuBufferSlice shaderFog, Matrix4f matrix4f, CallbackInfo callbackInfo) {
       FramePass pass = frameGraphBuilder.createPass("corz_tracers");
-      this.framebufferSet.mainFramebuffer = pass.transfer(this.framebufferSet.mainFramebuffer);
+      this.field_53081.mainFramebuffer = pass.transfer(this.field_53081.mainFramebuffer);
       pass.setRenderer(() -> {
          RenderSystem.setShaderFog(shaderFog);
          VectorDotUtils.updateDrawImmediate();

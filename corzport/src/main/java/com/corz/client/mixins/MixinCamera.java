@@ -21,31 +21,31 @@ import com.corz.client.utils.DeltaAngle;
 @Mixin({Camera.class})
 public abstract class MixinCamera {
    @Shadow
-   private boolean thirdPerson;
+   private boolean field_18719;
    @Shadow
-   private Vec3d pos;
+   private Vec3d field_18712;
    @Shadow
-   private float yaw;
+   private float field_18718;
    @Shadow
-   private float pitch;
+   private float field_18717;
    private DeltaAngle cachedEvent;
    private float capturedTickDelta;
    private boolean dispatchedThisUpdate;
 
    @Shadow
-   protected abstract void setPos(Vec3d vec);
+   protected abstract void method_19322(Vec3d vec);
 
    @Shadow
-   protected abstract void setPos(double posValue, double posValue2, double posValue3);
+   protected abstract void method_19327(double posValue, double posValue2, double posValue3);
 
    @Shadow
-   protected abstract void setRotation(float rotationValue, float rotationValue2);
+   protected abstract void method_19325(float rotationValue, float rotationValue2);
 
    @Shadow
-   protected abstract void moveBy(float mixinCameraValue, float mixinCameraValue2, float side);
+   protected abstract void method_19324(float mixinCameraValue, float mixinCameraValue2, float side);
 
    @Shadow
-   private float clipToSpace(float clipToValue) {
+   private float method_19318(float clipToValue) {
       throw new AssertionError();
    }
 
@@ -113,26 +113,26 @@ public abstract class MixinCamera {
    private void corzFreecamView(World world, Entity entity, boolean corzFreecamFlag, boolean corzFreecamFlag2, float corzFreecamValue, CallbackInfo callbackInfo) {
       if (Freecam.isInstanceFlag()) {
          Freecam freecam = Freecam.getInstance();
-         this.setRotation(freecam.getLerpForFloat(corzFreecamValue), freecam.getLerp(corzFreecamValue));
-         this.setPos(freecam.getLerpAmount(corzFreecamValue));
-      } else if (ClampMatrixUtils.isFrameCamera() && entity != null && this.pos != null) {
+         this.method_19325(freecam.getLerpForFloat(corzFreecamValue), freecam.getLerp(corzFreecamValue));
+         this.method_19322(freecam.getLerpAmount(corzFreecamValue));
+      } else if (ClampMatrixUtils.isFrameCamera() && entity != null && this.field_18712 != null) {
          try {
-            Rig rig = ClampMatrixUtils.getAmountDegrees(entity, corzFreecamValue, this.pos.x, this.pos.y, this.pos.z, this.yaw, this.pitch);
+            Rig rig = ClampMatrixUtils.getAmountDegrees(entity, corzFreecamValue, this.field_18712.x, this.field_18712.y, this.field_18712.z, this.field_18718, this.field_18717);
             if (rig.degreesActive) {
-               this.thirdPerson = true;
+               this.field_18719 = true;
             }
 
-            this.setRotation(rig.degreesAmount, rig.rigAmount);
-            this.setPos(rig.clampAmount, rig.posY, rig.posZ);
+            this.method_19325(rig.degreesAmount, rig.rigAmount);
+            this.method_19327(rig.clampAmount, rig.posY, rig.posZ);
             if (rig.rigDistance > 0.001F) {
-               float back = ClampMatrixUtils.getClampAmount(this.clipToSpace(rig.rigDistance), rig.rigDistance);
+               float back = ClampMatrixUtils.getClampAmount(this.method_19318(rig.rigDistance), rig.rigDistance);
                float side = ClampMatrixUtils.getAmountClamp(rig, back * rig.corzFreecamAmount);
                if (side > 0.001F) {
-                  this.moveBy(0.0F, 0.0F, side);
-                  back = Math.min(back, this.clipToSpace(back));
+                  this.method_19324(0.0F, 0.0F, side);
+                  back = Math.min(back, this.method_19318(back));
                }
 
-               this.moveBy(-back, 0.0F, 0.0F);
+               this.method_19324(-back, 0.0F, 0.0F);
             }
          } catch (Throwable e) {
             ClampMatrixUtils.handleFrameClamp("camera", e);

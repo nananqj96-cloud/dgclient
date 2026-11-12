@@ -32,11 +32,11 @@ import com.corz.client.utils.ScaffoldTrade;
 public class MixinMinecraftClient {
    @Shadow
    @Nullable
-   public ClientWorld world;
+   public ClientWorld field_1687;
    @Shadow
-   private int itemUseCooldown;
+   private int field_1752;
    @Shadow
-   protected int attackCooldown;
+   protected int field_1771;
 
    @Inject(
       method = {"method_1583()V"},
@@ -62,9 +62,9 @@ public class MixinMinecraftClient {
       at = {@At("RETURN")}
    )
    private void onItemUseReturn(CallbackInfo callbackInfo) {
-      Cooldown event = new Cooldown(this.itemUseCooldown);
+      Cooldown event = new Cooldown(this.field_1752);
       ModuleRegistry.dispatchPostItemUse(event);
-      this.itemUseCooldown = event.useCooldown;
+      this.field_1752 = event.useCooldown;
       ClientThreadUtils.update();
    }
 
@@ -82,7 +82,7 @@ public class MixinMinecraftClient {
    )
    private void onTick(CallbackInfo callbackInfo) {
       LightPacketCache.INSTANCE.processPendingLight();
-      if (this.world != null) {
+      if (this.field_1687 != null) {
          ModuleRegistry.onGameTick();
       }
    }
@@ -138,7 +138,7 @@ public class MixinMinecraftClient {
             }
          }
 
-         this.attackCooldown = 0;
+         this.field_1771 = 0;
          return true;
       }
    }

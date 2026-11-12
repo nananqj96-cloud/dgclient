@@ -18,7 +18,7 @@ import com.corz.client.utils.C2PackAudio;
 public class MixinSoundLoaderKnifePack {
    @Shadow
    @Final
-   private Map<Identifier, CompletableFuture<StaticSound>> loadedSounds;
+   private Map<Identifier, CompletableFuture<StaticSound>> field_18944;
 
    @Inject(
       method = {"method_19743(Lnet/minecraft/class_2960;)Ljava/util/concurrent/CompletableFuture;"},
@@ -27,7 +27,7 @@ public class MixinSoundLoaderKnifePack {
    )
    private void corz$knifePackSound(Identifier id2, CallbackInfoReturnable<CompletableFuture<StaticSound>> callbackInfoReturnable) {
       if (C2PackAudio.canSoundsPack(id2)) {
-         callbackInfoReturnable.setReturnValue(this.loadedSounds.computeIfAbsent(id2, C2PackAudio::getSupplyAsync));
+         callbackInfoReturnable.setReturnValue(this.field_18944.computeIfAbsent(id2, C2PackAudio::getSupplyAsync));
       }
    }
 

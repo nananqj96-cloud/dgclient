@@ -26,7 +26,7 @@ import com.corz.client.utils.ExtUtils;
 @Mixin({ClientPlayerEntity.class})
 public class MixinClientPlayerEntity {
    @Shadow
-   protected int ticksLeftToDoubleTapSprint;
+   protected int field_3935;
    @Unique
    private float corzRealYaw;
    @Unique
@@ -45,7 +45,7 @@ public class MixinClientPlayerEntity {
          AutoBuilder builder = (AutoBuilder)ModuleRegistry.getModule(AutoBuilder.class);
          if (builder != null && builder.isEnabled()) {
             ClientPlayerEntity self = (ClientPlayerEntity)((net.minecraft.client.network.ClientPlayerEntity) (Object) (this));
-            this.ticksLeftToDoubleTapSprint = 0;
+            this.field_3935 = 0;
             GameOptions options = MinecraftClient.getInstance().options;
             if (options != null) {
                ElytraAutoUtils.handleRawPressed(options.sprintKey, false);

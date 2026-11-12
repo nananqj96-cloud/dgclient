@@ -46,10 +46,10 @@ import com.corz.client.utils.KnifeHold;
 @Mixin({HeldItemRenderer.class})
 public abstract class MixinHeldItemRenderer {
    @Shadow
-   private ItemStack offHand;
+   private ItemStack field_4048;
    @Shadow
    @Final
-   private EntityRenderManager entityRenderDispatcher;
+   private EntityRenderManager field_4046;
    @Unique
    private Matrix4f corz$knifeCorrection;
    @Unique
@@ -62,28 +62,28 @@ public abstract class MixinHeldItemRenderer {
    private static boolean corz$lancingResolved;
 
    @Shadow
-   public abstract void renderItem(LivingEntity entity, ItemStack stack, ItemDisplayContext itemDisplayContext, MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int mixinHeldValue);
+   public abstract void method_3233(LivingEntity entity, ItemStack stack, ItemDisplayContext itemDisplayContext, MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int mixinHeldValue);
 
    @Shadow
-   protected abstract void swingArm(float swingArmValue, MatrixStack matrices, int i, Arm arm);
+   protected abstract void method_65816(float swingArmValue, MatrixStack matrices, int i, Arm arm);
 
    @Shadow
-   protected abstract void applyEquipOffset(MatrixStack matrices, Arm arm, float equipOffsetValue);
+   protected abstract void method_3224(MatrixStack matrices, Arm arm, float equipOffsetValue);
 
    @Shadow
-   protected abstract void applyEatOrDrinkTransformation(MatrixStack matrices, float eatOrValue, Arm arm, ItemStack stack, PlayerEntity player);
+   protected abstract void method_3218(MatrixStack matrices, float eatOrValue, Arm arm, ItemStack stack, PlayerEntity player);
 
    @Shadow
-   protected abstract void applyBrushTransformation(MatrixStack matrices, float brushTransformationValue, Arm arm, PlayerEntity player);
+   protected abstract void method_49340(MatrixStack matrices, float brushTransformationValue, Arm arm, PlayerEntity player);
 
    @Shadow
-   protected abstract void renderMapInBothHands(MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int inBothValue, float inBothValue2, float equipOffsetValue, float swingArmValue);
+   protected abstract void method_3231(MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int inBothValue, float inBothValue2, float equipOffsetValue, float swingArmValue);
 
    @Shadow
-   protected abstract void renderMapInOneHand(MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int inOneValue, float equipOffsetValue, Arm arm, float swingArmValue, ItemStack stack);
+   protected abstract void method_3222(MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int inOneValue, float equipOffsetValue, Arm arm, float swingArmValue, ItemStack stack);
 
    @Shadow
-   protected abstract void renderArmHoldingItem(MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int armHoldingValue, float equipOffsetValue, float swingArmValue, Arm arm);
+   protected abstract void method_3219(MatrixStack matrices, OrderedRenderCommandQueue orderedRenderCommandQueue, int armHoldingValue, float equipOffsetValue, float swingArmValue, Arm arm);
 
    @Inject(
       method = {"method_22976(FLnet/minecraft/class_4587;Lnet/minecraft/class_11659;Lnet/minecraft/class_746;I)V"},
@@ -165,7 +165,7 @@ public abstract class MixinHeldItemRenderer {
          matrices.push();
 
          try {
-            this.renderArmHoldingItem(matrices, orderedRenderCommandQueue, armHoldingValue, equipOffsetValue, 0.0F, arm);
+            this.method_3219(matrices, orderedRenderCommandQueue, armHoldingValue, equipOffsetValue, 0.0F, arm);
          } finally {
             matrices.pop();
             this.corz$knifeCorrection = null;
@@ -180,7 +180,7 @@ public abstract class MixinHeldItemRenderer {
 
             try {
                matrices.peek().copy(armEntry);
-               this.entityRenderDispatcher.getPlayerRenderer(abstractClientPlayerEntity).getModel().getArm(arm).applyTransform(matrices);
+               this.field_4046.getPlayerRenderer(abstractClientPlayerEntity).getModel().getArm(arm).applyTransform(matrices);
                matrices.multiplyPositionMatrix(corz$matrix(KnifeHold.getAmounts(side, 0.48, ch, abstractClientPlayerEntity.getSkin().model() == PlayerSkinType.SLIM)));
                float[] pose = new float[3];
                ItemDisplayContext ctx = arm == Arm.RIGHT ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
@@ -220,7 +220,7 @@ public abstract class MixinHeldItemRenderer {
                      } else {
                         matrices.translate(8.0F, 8.0F, 8.0F);
                         matrices.scale(16.0F, 16.0F, 16.0F);
-                        this.renderItem(abstractClientPlayerEntity, swordInspect.getModelProbe(stack, knifeRig, i), ctx, matrices, orderedRenderCommandQueue, armHoldingValue);
+                        this.method_3233(abstractClientPlayerEntity, swordInspect.getModelProbe(stack, knifeRig, i), ctx, matrices, orderedRenderCommandQueue, armHoldingValue);
                      }
                   } finally {
                      matrices.pop();
@@ -305,14 +305,14 @@ public abstract class MixinHeldItemRenderer {
             if (!abstractClientPlayerEntity.isInvisible()) {
                matrices.push();
                si.handleMultiplyTranslate(matrices, iSide, iArm);
-               this.renderArmHoldingItem(matrices, orderedRenderCommandQueue, glintEnumValue, equipOffsetValue, 0.0F, iArm);
+               this.method_3219(matrices, orderedRenderCommandQueue, glintEnumValue, equipOffsetValue, 0.0F, iArm);
                matrices.pop();
             }
 
-            this.applyEquipOffset(matrices, iArm, equipOffsetValue);
+            this.method_3224(matrices, iArm, equipOffsetValue);
             si.handleAnimTranslate(matrices, iSide, iArm);
             si.handleAnimInspect(matrices, iSide, iArm);
-            this.renderItem(
+            this.method_3233(
                abstractClientPlayerEntity,
                stack,
                iArm == Arm.RIGHT ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
@@ -358,24 +358,24 @@ public abstract class MixinHeldItemRenderer {
          }
 
          if (isMainHand && !abstractClientPlayerEntity.isInvisible()) {
-            this.renderArmHoldingItem(matrices, orderedRenderCommandQueue, armHoldingValue, equipOffsetValue, swingArmValue, arm);
+            this.method_3219(matrices, orderedRenderCommandQueue, armHoldingValue, equipOffsetValue, swingArmValue, arm);
          }
       } else if (stack.contains(DataComponentTypes.MAP_ID)) {
          if (handCustomer.isBase()) {
             handCustomer.handleTranslateRight(matrices, arm);
          }
 
-         if (isMainHand && this.offHand.isEmpty()) {
-            this.renderMapInBothHands(matrices, orderedRenderCommandQueue, armHoldingValue, corzrenderFirstValue2, equipOffsetValue, swingArmValue);
+         if (isMainHand && this.field_4048.isEmpty()) {
+            this.method_3231(matrices, orderedRenderCommandQueue, armHoldingValue, corzrenderFirstValue2, equipOffsetValue, swingArmValue);
          } else {
-            this.renderMapInOneHand(matrices, orderedRenderCommandQueue, armHoldingValue, equipOffsetValue, arm, swingArmValue, stack);
+            this.method_3222(matrices, orderedRenderCommandQueue, armHoldingValue, equipOffsetValue, arm, swingArmValue, stack);
          }
       } else if (stack.isOf(Items.CROSSBOW)) {
          if (handCustomer.isBase()) {
             handCustomer.handleTranslateRight(matrices, arm);
          }
 
-         this.applyEquipOffset(matrices, arm, equipOffsetValue);
+         this.method_3224(matrices, arm, equipOffsetValue);
          boolean isCharged = CrossbowItem.isCharged(stack);
          boolean isRightArm = arm == Arm.RIGHT;
          int i = isRightArm ? 1 : -1;
@@ -397,14 +397,14 @@ public abstract class MixinHeldItemRenderer {
             matrices.scale(1.0F, 1.0F, 1.0F + clamp * 0.2F);
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(i * 45.0F));
          } else {
-            this.swingArm(swingArmValue, matrices, i, arm);
+            this.method_65816(swingArmValue, matrices, i, arm);
             if (isCharged && swingArmValue < 0.001F && isMainHand) {
                matrices.translate(i * -0.641864F, 0.0F, 0.0F);
                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(i * 10.0F));
             }
          }
 
-         this.renderItem(
+         this.method_3233(
             abstractClientPlayerEntity,
             stack,
             isRightArm ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,
@@ -422,7 +422,7 @@ public abstract class MixinHeldItemRenderer {
 
             UseAction useAction = stack.getUseAction();
             if (!useAction.hasNoOffset()) {
-               this.applyEquipOffset(matrices, arm, equipOffsetValue);
+               this.method_3224(matrices, arm, equipOffsetValue);
             }
 
             switch (useAction) {
@@ -431,8 +431,8 @@ public abstract class MixinHeldItemRenderer {
                   break;
                case EAT:
                case DRINK:
-                  this.applyEatOrDrinkTransformation(matrices, corzrenderFirstValue, arm, stack, abstractClientPlayerEntity);
-                  this.applyEquipOffset(matrices, arm, equipOffsetValue);
+                  this.method_3218(matrices, corzrenderFirstValue, arm, stack, abstractClientPlayerEntity);
+                  this.method_3224(matrices, arm, equipOffsetValue);
                   break;
                case BLOCK:
                   if (!(stack.getItem() instanceof ShieldItem)) {
@@ -488,10 +488,10 @@ public abstract class MixinHeldItemRenderer {
                   break;
                }
                case BRUSH:
-                  this.applyBrushTransformation(matrices, corzrenderFirstValue, arm, abstractClientPlayerEntity);
+                  this.method_49340(matrices, corzrenderFirstValue, arm, abstractClientPlayerEntity);
                   break;
                case BUNDLE:
-                  this.swingArm(swingArmValue, matrices, side, arm);
+                  this.method_65816(swingArmValue, matrices, side, arm);
                   break;
                case SPEAR: {
                   matrices.translate(side * 0.56F, -0.52F, -0.72F);
@@ -504,7 +504,7 @@ public abstract class MixinHeldItemRenderer {
                handCustomer.handleTranslateRight(matrices, arm);
             }
 
-            this.applyEquipOffset(matrices, arm, equipOffsetValue);
+            this.method_3224(matrices, arm, equipOffsetValue);
             matrices.translate(side * -0.4F, 0.8F, 0.3F);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(side * 65.0F));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(side * -85.0F));
@@ -519,13 +519,13 @@ public abstract class MixinHeldItemRenderer {
                   handCustomer.handleTranslateRight(matrices, arm);
                }
 
-               this.applyEquipOffset(matrices, arm, equipOffsetValue);
+               this.method_3224(matrices, arm, equipOffsetValue);
                switch (stack.getSwingAnimation().type()) {
                   case NONE:
                   default:
                      break;
                   case WHACK:
-                     this.swingArm(swingArmValue, matrices, side, arm);
+                     this.method_65816(swingArmValue, matrices, side, arm);
                      break;
                   case STAB:
                      corz$invokeLancingSwing(swingArmValue, matrices, side, arm);
@@ -533,7 +533,7 @@ public abstract class MixinHeldItemRenderer {
             }
          }
 
-         this.renderItem(
+         this.method_3233(
             abstractClientPlayerEntity,
             stack,
             isRightArm ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : ItemDisplayContext.FIRST_PERSON_LEFT_HAND,

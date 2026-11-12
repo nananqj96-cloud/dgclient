@@ -37,13 +37,13 @@ import com.corz.client.utils.FovOptionsUtils;
 public abstract class MixinGameRenderer {
    @Shadow
    @Final
-   private Camera camera;
+   private Camera field_18765;
    @Shadow
    @Final
-   private GuiRenderer guiRenderer;
+   private GuiRenderer field_59965;
    @Shadow
    @Final
-   private FogRenderer fogRenderer;
+   private FogRenderer field_60793;
 
    @ModifyExpressionValue(
       method = {"method_3172(FZLorg/joml/Matrix4f;)V"},
@@ -79,7 +79,7 @@ public abstract class MixinGameRenderer {
    private void corz$gui3dBegin(RenderTickCounter renderTickCounter, boolean corzgui3dBeginFlag, CallbackInfo callbackInfo) {
       if (ClampMatrixUtils.isFlagFrame()) {
          try {
-            this.guiRenderer.render(this.fogRenderer.getFogBuffer(FogType.NONE));
+            this.field_59965.render(this.field_60793.getFogBuffer(FogType.NONE));
          } catch (Throwable e) {
             ClampMatrixUtils.handleFlag(e);
          }

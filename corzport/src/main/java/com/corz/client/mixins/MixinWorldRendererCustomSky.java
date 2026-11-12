@@ -22,7 +22,7 @@ import com.corz.client.categories.visuals.CustomSky;
 public abstract class MixinWorldRendererCustomSky {
    @Shadow
    @Final
-   private DefaultFramebufferSet framebufferSet;
+   private DefaultFramebufferSet field_53081;
 
    @Inject(
       method = {"method_62200(Lnet/minecraft/class_9909;Lnet/minecraft/class_4184;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"},
@@ -57,7 +57,7 @@ public abstract class MixinWorldRendererCustomSky {
    @Unique
    private void corz$addSkyPass(FrameGraphBuilder frameGraphBuilder, GpuBufferSlice shaderFog, CustomSky customSky, float corzaddSkyValue) {
       FramePass framePass = frameGraphBuilder.createPass("corz_custom_sky");
-      this.framebufferSet.mainFramebuffer = framePass.transfer(this.framebufferSet.mainFramebuffer);
+      this.field_53081.mainFramebuffer = framePass.transfer(this.field_53081.mainFramebuffer);
       framePass.setRenderer(() -> {
          RenderSystem.setShaderFog(shaderFog);
          customSky.handleFramebufferWindow(corzaddSkyValue);

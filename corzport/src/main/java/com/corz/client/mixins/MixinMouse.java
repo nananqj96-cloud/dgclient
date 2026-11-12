@@ -19,13 +19,13 @@ import com.corz.client.utils.PlayerScaffold;
 @Mixin({Mouse.class})
 public class MixinMouse {
    @Shadow
-   private double x;
+   private double field_1795;
    @Shadow
-   private double y;
+   private double field_1794;
    @Shadow
-   private double cursorDeltaX;
+   private double field_1789;
    @Shadow
-   private double cursorDeltaY;
+   private double field_1787;
    @Unique
    private double corz$cursorDeltaXBefore;
    @Unique
@@ -36,8 +36,8 @@ public class MixinMouse {
       at = {@At("HEAD")}
    )
    private void onCursorPos(long cursorPosValue, double cursorPosValue2, double cursorPosValue3, CallbackInfo callbackInfo) {
-      this.corz$cursorDeltaXBefore = this.cursorDeltaX;
-      this.corz$cursorDeltaYBefore = this.cursorDeltaY;
+      this.corz$cursorDeltaXBefore = this.field_1789;
+      this.corz$cursorDeltaYBefore = this.field_1787;
    }
 
    @Inject(
@@ -45,8 +45,8 @@ public class MixinMouse {
       at = {@At("RETURN")}
    )
    private void corzAfterCursorPos(long corzAfterValue, double corzAfterValue2, double corzAfterValue3, CallbackInfo callbackInfo) {
-      double deltaX = this.cursorDeltaX - this.corz$cursorDeltaXBefore;
-      double deltaY = this.cursorDeltaY - this.corz$cursorDeltaYBefore;
+      double deltaX = this.field_1789 - this.corz$cursorDeltaXBefore;
+      double deltaY = this.field_1787 - this.corz$cursorDeltaYBefore;
       if (deltaX != 0.0 || deltaY != 0.0) {
          PlayerScaffold event = new PlayerScaffold(deltaX, deltaY);
          ModuleRegistry.dispatchPlayerScaffold(event);
@@ -80,7 +80,7 @@ public class MixinMouse {
       at = {@At("RETURN")}
    )
    private double corz$gui3dScaledX(double corzgui3dScaledValue, Window window) {
-      return ClampMatrixUtils.getAmountFlag(corzgui3dScaledValue, this.y, window);
+      return ClampMatrixUtils.getAmountFlag(corzgui3dScaledValue, this.field_1794, window);
    }
 
    @ModifyReturnValue(
@@ -88,6 +88,6 @@ public class MixinMouse {
       at = {@At("RETURN")}
    )
    private double corz$gui3dScaledY(double corzgui3dScaledValue, Window window) {
-      return ClampMatrixUtils.getAmountFlagForDoubleWindow(this.x, corzgui3dScaledValue, window);
+      return ClampMatrixUtils.getAmountFlagForDoubleWindow(this.field_1795, corzgui3dScaledValue, window);
    }
 }
