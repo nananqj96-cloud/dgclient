@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>SpotifyMediaBridge</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net40</TargetFramework>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.WindowsRuntime" />
+    <Reference Include="Windows.Foundation">
+      <HintPath>$(SystemRoot)\System32\WinMetadata\Windows.Foundation.winmd</HintPath>
+    </Reference>
+    <Reference Include="Windows.Media">
+      <HintPath>$(SystemRoot)\System32\WinMetadata\Windows.Media.winmd</HintPath>
+    </Reference>
+    <Reference Include="Windows.Storage">
+      <HintPath>$(SystemRoot)\System32\WinMetadata\Windows.Storage.winmd</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

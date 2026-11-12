@@ -1,35 +1,30 @@
 {
-	"schemaVersion": 1,
-	"id": "dgclient",
-	"version": "${version}",
-	"name": "DGClient",
-	"description": "Standalone neon-green & white anarchy utility mod for Minecraft 1.21.11 featuring ClickGUI, HUD Editor, ESP/Tracers, Y-0 Diagnostics & Underground Bypass, and async BaseFinder.",
-	"authors": [
-		"DGClient Team"
-	],
-	"contact": {
-		"homepage": "https://github.com/nananqj96-cloud/dgclient",
-		"sources": "https://github.com/nananqj96-cloud/dgclient",
-		"issues": "https://github.com/nananqj96-cloud/dgclient/issues"
-	},
-	"license": "MIT",
-	"icon": "assets/dgclient/icon.png",
-	"environment": "client",
-	"entrypoints": {
-		"client": [
-			"com.dg.client.DGClient"
-		]
-	},
-	"mixins": [
-		{
-			"config": "dgclient.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.18.0",
-		"minecraft": ">=1.21.11 <1.22.0",
-		"java": ">=21",
-		"fabric-api": ">=0.141.0"
-	}
+  "schemaVersion": 1,
+  "id": "aetherclient",
+  "version": "${version}",
+  "name": "Aether Client",
+  "description": "High-performance Minecraft 1.21.11 utility client featuring a zero-lag dual-mode NanoVG interface, customizable HUD, and modular tools.",
+  "authors": ["Aether Team"],
+  "license": "MIT",
+  "icon": "assets/aetherclient/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.aether.AetherClient"]
+  },
+  "mixins": ["aetherclient.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.19.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "jars": [
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-linux-arm64.jar"},
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-linux.jar"},
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-macos-arm64.jar"},
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-macos.jar"},
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-windows-arm64.jar"},
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3-natives-windows.jar"},
+    {"file": "META-INF/jars/lwjgl-nanovg-3.3.3.jar"}
+  ]
 }

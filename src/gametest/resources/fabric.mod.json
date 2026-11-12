@@ -1,15 +1,20 @@
 {
-	"schemaVersion": 1,
-	"id": "dgclient-gametest",
-	"version": "1.0.2",
-	"name": "DGClient Client GameTests",
-	"environment": "client",
-	"entrypoints": {
-		"fabric-client-gametest": [
-			"com.dg.client.gametest.DGClientGameTest"
-		]
-	},
-	"depends": {
-		"dgclient": "*"
-	}
+  "schemaVersion": 1,
+  "id": "aetherclient-gametest",
+  "version": "2.0.0",
+  "name": "Aether Client GameTests",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-client-gametest": [
+      "dev.aether.gametest.AetherUiAndSecurityGameTest",
+      "dev.aether.gametest.ConfigSystemGameTest",
+      "dev.aether.gametest.PortedModulesGameTest",
+      "dev.aether.gametest.AutoCrystalGameTest",
+      "dev.aether.gametest.CustomGlintGameTest",
+      "dev.aether.gametest.StringInputGameTest"
+    ]
+  },
+  "depends": {
+    "aetherclient": "*"
+  }
 }

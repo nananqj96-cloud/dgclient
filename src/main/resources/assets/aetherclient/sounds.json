@@ -1,0 +1,16 @@
+{
+	"ui.gui_open": {"sounds": ["aetherclient:ui/gui_open"]},
+	"ui.gui_close": {"sounds": ["aetherclient:ui/gui_close"]},
+	"ui.hover": {"sounds": ["aetherclient:ui/hover"]},
+	"ui.toggle_on": {"sounds": ["aetherclient:ui/toggle_on"]},
+	"ui.toggle_off": {"sounds": ["aetherclient:ui/toggle_off"]},
+	"ui.slider": {"sounds": ["aetherclient:ui/slider"]},
+	"ui.select": {"sounds": ["aetherclient:ui/select"]},
+	"ui.keybind": {"sounds": ["aetherclient:ui/keybind"]},
+	"ui.notify_on": {"sounds": ["aetherclient:ui/notify_on"]},
+	"ui.notify_off": {"sounds": ["aetherclient:ui/notify_off"]},
+	"startup.sad": {"sounds": [{"name": "aetherclient:startup/startup_sad", "stream": true}]},
+	"startup.song": {"sounds": [{"name": "aetherclient:startup/startup_song", "stream": true}]},
+	"startup.tiki": {"sounds": [{"name": "aetherclient:startup/startup_tiki", "stream": true}]},
+	"startup.aether": {"sounds": [{"name": "aetherclient:startup/startup_aether", "stream": true}]}
+}

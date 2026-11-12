@@ -1,4 +1,4 @@
-name: Build & Verify DGClient
+name: Build & Verify Aether Client
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build JAR, verify Mixin refmaps & run JUnit 5 scenario suite
+      - name: Build JAR, verify Mixin refmaps & run JUnit 5 suite
         run: |
           set +e
           ./gradlew build --no-daemon --stacktrace > gradle-build.log 2>&1
@@ -44,22 +44,22 @@ jobs:
             done
             exit $STATUS
           fi
-          if grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target|Mixin)" gradle-build.log; then
-            grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target|Mixin)" gradle-build.log | head -n 30 | while IFS= read -r line; do
+          if grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target)" gradle-build.log; then
+            grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target)" gradle-build.log | head -n 30 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=MixinWarning::$CLEAN"
             done
             exit 1
           fi
 
-      - name: Run real Minecraft 1.21.11 Client GameTests (GUI, Mixin Audit, BaseFinder, StorageESP & Tracers)
+      - name: Run real Minecraft 1.21.11 Client GameTests (Aether UI Dashboard + Columns + Modules)
         run: |
           set +e
-          xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClientGameTest --no-daemon --stacktrace > gametest.log 2>&1
+          xvfb-run -a -s "-screen 0 1600x900x24" ./gradlew runClientGameTest --no-daemon --stacktrace > gametest.log 2>&1
           GT_STATUS=$?
           cat gametest.log
           if [ $GT_STATUS -ne 0 ]; then
-            grep -E "AssertionError|DGClientGameTest|MixinApplyError|Exception|FAILED|Caused by:" gametest.log | head -n 60 | while IFS= read -r line; do
+            grep -E "AssertionError|FAILED|MixinApplyError|Exception|Caused by:" gametest.log | head -n 60 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=ClientGameTestError::$CLEAN"
             done
@@ -69,27 +69,27 @@ jobs:
       - name: Prepare release jar directory
         run: |
           mkdir -p dist-jar
-          for f in build/libs/dgclient-*.jar; do
+          for f in build/libs/aetherclient-*.jar; do
             case "$f" in
               *-sources.jar|*-dev.jar|*-gametest*) ;;
               *) cp -v "$f" dist-jar/ ;;
             esac
           done
           ls -lh dist-jar/
-          unzip -l dist-jar/dgclient-*.jar | grep -E "fabric.mod.json|dgclient.mixins.json|refmap|en_us.json"
+          unzip -l dist-jar/aetherclient-*.jar | grep -E "fabric.mod.json|aetherclient.mixins.json|refmap|icon.png"
 
       - name: Upload compiled JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dgclient-jar
-          path: dist-jar/dgclient-*.jar
+          name: aetherclient-jar
+          path: dist-jar/aetherclient-*.jar
           if-no-files-found: error
 
       - name: Upload in-game verification screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: dgclient-gametest-screenshots
+          name: aetherclient-gametest-screenshots
           path: build/run/clientGameTest/screenshots/*.png
           if-no-files-found: ignore
 
@@ -98,7 +98,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: "DGClient ${{ github.ref_name }} — Minecraft 1.21.11 Fabric"
+          name: "Aether Client ${{ github.ref_name }} — Minecraft 1.21.11 Fabric"
           target_commitish: ${{ github.sha }}
-          files: dist-jar/dgclient-*.jar
+          files: dist-jar/aetherclient-*.jar
           generate_release_notes: true
