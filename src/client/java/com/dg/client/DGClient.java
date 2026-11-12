@@ -22,8 +22,25 @@ import com.dg.client.module.modules.esp.PlayerEspModule;
 import com.dg.client.module.modules.esp.SpawnerEspModule;
 import com.dg.client.module.modules.esp.StorageEspModule;
 import com.dg.client.module.modules.esp.TracersModule;
+import com.dg.client.module.modules.fun.HeadAnimationsModule;
+import com.dg.client.module.modules.fun.QueueNotifierModule;
+import com.dg.client.module.modules.fun.ScreenshotToolModule;
+import com.dg.client.module.modules.fun.VisualRangeNotifierModule;
 import com.dg.client.module.modules.hud.ClickGuiModule;
 import com.dg.client.module.modules.hud.HudModule;
+import com.dg.client.module.modules.misc.AutoArmorModule;
+import com.dg.client.module.modules.misc.AutoEatModule;
+import com.dg.client.module.modules.misc.AutoLogModule;
+import com.dg.client.module.modules.misc.AutoReconnectModule;
+import com.dg.client.module.modules.misc.AutoTotemModule;
+import com.dg.client.module.modules.misc.ChatUtilsModule;
+import com.dg.client.module.modules.misc.InventoryHelpersModule;
+import com.dg.client.module.modules.misc.SessionStatsModule;
+import com.dg.client.module.modules.movement.AutoWalkModule;
+import com.dg.client.module.modules.movement.ElytraHelperModule;
+import com.dg.client.module.modules.movement.FreecamModule;
+import com.dg.client.module.modules.movement.HighwayHelperModule;
+import com.dg.client.module.modules.movement.NoFallModule;
 import com.dg.client.module.modules.render.BetterTabListModule;
 import com.dg.client.module.modules.render.BlockHighlightModule;
 import com.dg.client.module.modules.render.BloomModule;
@@ -43,6 +60,9 @@ import com.dg.client.module.modules.render.ViewmodelModule;
 import com.dg.client.module.modules.render.WeatherParticleReducerModule;
 import com.dg.client.module.modules.render.ZoomModule;
 import com.dg.client.module.modules.world.BaseFinderModule;
+import com.dg.client.module.modules.world.CoordLoggerModule;
+import com.dg.client.module.modules.world.FastUseBreakModule;
+import com.dg.client.module.modules.world.WaypointsModule;
 import com.dg.client.module.modules.world.YZeroBypassModule;
 import com.dg.client.module.modules.world.YZeroDiagnosticsModule;
 import com.dg.client.render.Render2DUtil;
@@ -148,6 +168,31 @@ public final class DGClient implements ClientModInitializer {
 
         // Phase 5: Suspicious Chunk Detector ("BaseFinder")
         moduleManager.register(new BaseFinderModule());
+
+        // Phase 6: Movement, World, Fun & Anarchy Utility Modules (20 modules)
+        moduleManager.register(new AutoWalkModule());
+        moduleManager.register(new ElytraHelperModule());
+        moduleManager.register(new NoFallModule());
+        moduleManager.register(new HighwayHelperModule());
+        moduleManager.register(new FreecamModule());
+
+        moduleManager.register(new FastUseBreakModule());
+        moduleManager.register(new WaypointsModule());
+        moduleManager.register(new CoordLoggerModule());
+
+        moduleManager.register(new HeadAnimationsModule());
+        moduleManager.register(new ScreenshotToolModule());
+        moduleManager.register(new VisualRangeNotifierModule());
+        moduleManager.register(new QueueNotifierModule());
+
+        moduleManager.register(new AutoTotemModule());
+        moduleManager.register(new AutoArmorModule());
+        moduleManager.register(new AutoEatModule());
+        moduleManager.register(new InventoryHelpersModule());
+        moduleManager.register(new ChatUtilsModule());
+        moduleManager.register(new AutoReconnectModule());
+        moduleManager.register(new AutoLogModule());
+        moduleManager.register(new SessionStatsModule());
     }
 
     private void registerFabricHooks() {
