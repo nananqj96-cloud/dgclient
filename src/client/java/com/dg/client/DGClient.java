@@ -42,6 +42,8 @@ import com.dg.client.module.modules.render.TrailsModule;
 import com.dg.client.module.modules.render.ViewmodelModule;
 import com.dg.client.module.modules.render.WeatherParticleReducerModule;
 import com.dg.client.module.modules.render.ZoomModule;
+import com.dg.client.module.modules.world.YZeroBypassModule;
+import com.dg.client.module.modules.world.YZeroDiagnosticsModule;
 import com.dg.client.render.Render2DUtil;
 import com.dg.client.render.font.DGFontRenderer;
 import com.dg.client.util.ColorUtil;
@@ -138,6 +140,10 @@ public final class DGClient implements ClientModInitializer {
         moduleManager.register(new StorageEspModule());
         moduleManager.register(new SpawnerEspModule());
         moduleManager.register(new TracersModule());
+
+        // Phase 4: Y-0 Diagnostics & Underground Bypass
+        moduleManager.register(new YZeroDiagnosticsModule());
+        moduleManager.register(new YZeroBypassModule());
     }
 
     private void registerFabricHooks() {

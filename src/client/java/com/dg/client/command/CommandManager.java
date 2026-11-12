@@ -6,6 +6,8 @@ import com.dg.client.core.FriendManager;
 import com.dg.client.core.WaypointManager;
 import com.dg.client.core.detection.DetectionEntry;
 import com.dg.client.module.Module;
+import com.dg.client.module.modules.world.YZeroBypassModule;
+import com.dg.client.module.modules.world.YZeroDiagnosticsModule;
 import com.dg.client.util.ChatUtil;
 import com.dg.client.util.KeyUtil;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
@@ -304,6 +306,46 @@ public final class CommandManager {
                 default -> ChatUtil.warn("Usage: .basefinder <list|export|import|clear>");
             }
         }, "bf");
+
+        register("y0", ".y0 <test [chunks]|save|reset|clear>", "Controls Y-0 Diagnostics and Underground Store", args -> {
+            YZeroDiagnosticsModule diag = DGClient.getInstance().getModuleManager().get(YZeroDiagnosticsModule.class);
+            YZeroBypassModule bypass = DGClient.getInstance().getModuleManager().get(YZeroBypassModule.class);
+            if (diag == null || bypass == null) {
+                return;
+            }
+            if (args.length == 0) {
+                for (String line : diag.buildSummaryLines()) {
+                    ChatUtil.info(line);
+                }
+                return;
+            }
+            switch (args[0].toLowerCase(Locale.ROOT)) {
+                case "test" -> {
+                    int count = 16;
+                    if (args.length >= 2) {
+                        try {
+                            count = Math.max(4, Math.min(64, Integer.parseInt(args[1])));
+                        } catch (NumberFormatException ignored) {
+                        }
+                    }
+                    diag.beginSampleTest(count);
+                }
+                case "save", "report" -> {
+                    Path p = diag.saveDiagnosticReport();
+                    bypass.getStore().saveForCurrentServer();
+                    ChatUtil.accent("Saved:", p != null ? p.getFileName().toString() : "error");
+                }
+                case "reset" -> {
+                    diag.resetStats();
+                    ChatUtil.info("Reset Y-0 diagnostic packet counters.");
+                }
+                case "clear" -> {
+                    bypass.getStore().clear();
+                    ChatUtil.info("Cleared cached Y<0 store.");
+                }
+                default -> ChatUtil.warn("Usage: .y0 <test [chunks]|save|reset|clear>");
+            }
+        }, "underground");
 
         register("say", ".say <message>", "Sends a raw chat message bypassing command/coordinate checks", args -> {
             if (args.length == 0) {
