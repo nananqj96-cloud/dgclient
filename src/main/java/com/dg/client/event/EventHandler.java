@@ -1,0 +1,17 @@
+package com.dg.client.event;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Marks a single-argument event listener method on a module or manager.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface EventHandler {
+    EventPriority priority() default EventPriority.NORMAL;
+
+    boolean receiveCancelled() default false;
+}
