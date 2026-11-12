@@ -17,6 +17,11 @@ import com.dg.client.event.events.Render3DEvent;
 import com.dg.client.gui.ClickGuiScreen;
 import com.dg.client.hud.HudManager;
 import com.dg.client.module.ModuleManager;
+import com.dg.client.module.modules.esp.EntityEspModule;
+import com.dg.client.module.modules.esp.PlayerEspModule;
+import com.dg.client.module.modules.esp.SpawnerEspModule;
+import com.dg.client.module.modules.esp.StorageEspModule;
+import com.dg.client.module.modules.esp.TracersModule;
 import com.dg.client.module.modules.hud.ClickGuiModule;
 import com.dg.client.module.modules.hud.HudModule;
 import com.dg.client.module.modules.render.BetterTabListModule;
@@ -126,6 +131,13 @@ public final class DGClient implements ClientModInitializer {
         moduleManager.register(new ChunkBordersModule());
         moduleManager.register(new WeatherParticleReducerModule());
         moduleManager.register(new BetterTabListModule());
+
+        // Phase 3: ESP & Tracers
+        moduleManager.register(new PlayerEspModule());
+        moduleManager.register(new EntityEspModule());
+        moduleManager.register(new StorageEspModule());
+        moduleManager.register(new SpawnerEspModule());
+        moduleManager.register(new TracersModule());
     }
 
     private void registerFabricHooks() {
