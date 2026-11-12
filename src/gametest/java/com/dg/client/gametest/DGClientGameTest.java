@@ -296,9 +296,9 @@ public final class DGClientGameTest implements FabricClientGameTest {
                         .with(ChestBlock.CHEST_TYPE, ChestType.RIGHT);
                 sw.setBlockState(nearOrigin, leftChest);
                 sw.setBlockState(nearOrigin.east(), rightChest);
-                sw.setBlockState(shulkerPos, Blocks.MAGENTA_SHULKER_BOX.getDefaultState());
-                sw.setBlockState(nearOrigin.add(4, 0, 0), Blocks.ENDER_CHEST.getDefaultState());
-                sw.setBlockState(nearOrigin.add(5, 0, 0), Blocks.OAK_SHELF.getDefaultState());
+                sw.setBlockState(shulkerPos, block("magenta_shulker_box").getDefaultState());
+                sw.setBlockState(nearOrigin.add(4, 0, 0), block("ender_chest").getDefaultState());
+                sw.setBlockState(nearOrigin.add(5, 0, 0), block("oak_shelf").getDefaultState());
             });
 
             context.waitTicks(6);

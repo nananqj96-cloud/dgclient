@@ -89,7 +89,7 @@ public final class StorageTracersModule extends Module {
     private int lastRenderedCount = 0;
 
     public StorageTracersModule() {
-        super("StorageTracers", "Draws batched 3D tracer lines toward loaded storage containers", ModuleCategory.ESP);
+        super("StorageTracers", "Draws batched 3D tracer lines toward loaded storage containers", ModuleCategory.RENDER);
     }
 
     @Override
@@ -144,7 +144,7 @@ public final class StorageTracersModule extends Module {
                 anchor.getValue().getNdcY()
         );
 
-        float width = lineWidth.getFloatValue();
+        float width = lineWidth.getValue().floatValue();
         int maxA = baseAlpha.getValue();
         boolean fade = distanceFade.getValue();
         ColorMode mode = colorMode.getValue();

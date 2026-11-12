@@ -148,7 +148,7 @@ public final class StorageBlockTracker {
 
     @EventHandler
     public void onChunkUnload(ChunkDataEvent.Unload event) {
-        long key = event.getPos().toLong();
+        long key = event.getChunk().getPos().toLong();
         chunkStorage.remove(key);
         dirtyChunks.remove(key);
     }
