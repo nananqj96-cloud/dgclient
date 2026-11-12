@@ -64,8 +64,8 @@ public final class Render2DUtil {
                 int sx1 = x1 + Math.round((x2 - x1) * (i / (float) steps));
                 int sx2 = x1 + Math.round((x2 - x1) * ((i + 1) / (float) steps));
                 if (sx2 <= sx1) continue;
-                int topCol = ColorUtil.lerpColor(topLeft, topRight, t);
-                int botCol = ColorUtil.lerpColor(bottomLeft, bottomRight, t);
+                int topCol = ColorUtil.lerp(topLeft, topRight, t);
+                int botCol = ColorUtil.lerp(bottomLeft, bottomRight, t);
                 ctx.fillGradient(sx1, y1, sx2, y2, topCol, botCol);
             }
         } else {
@@ -252,7 +252,7 @@ public final class Render2DUtil {
                 int sx1 = Math.round(ilen * (i / (float) segs));
                 int sx2 = Math.round(ilen * ((i + 1) / (float) segs));
                 if (sx2 > sx1) {
-                    int col = ColorUtil.lerpColor(startColor, endColor, i / (float) Math.max(1, segs - 1));
+                    int col = ColorUtil.lerp(startColor, endColor, i / (float) Math.max(1, segs - 1));
                     ctx.fill(sx1, -halfT, sx2, halfT, col);
                 }
             }

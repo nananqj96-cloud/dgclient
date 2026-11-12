@@ -104,15 +104,15 @@ public final class VisualRangeNotifierModule extends Module {
         if (joinLeave.getValue() && mc.getNetworkHandler() != null && mc.player != null && mc.player.age > 40) {
             if (event.getPacket() instanceof PlayerListS2CPacket pl) {
                 for (PlayerListS2CPacket.Entry entry : pl.getPlayerAdditionEntries()) {
-                    if (entry.profile() != null && entry.profile().getName() != null) {
-                        ChatUtil.info("[+] " + entry.profile().getName() + " joined.");
+                    if (entry.profile() != null && entry.profile().name() != null) {
+                        ChatUtil.info("[+] " + entry.profile().name() + " joined.");
                     }
                 }
             } else if (event.getPacket() instanceof PlayerRemoveS2CPacket rem) {
                 for (UUID id : rem.profileIds()) {
                     PlayerListEntry ple = mc.getNetworkHandler().getPlayerListEntry(id);
                     if (ple != null && ple.getProfile() != null) {
-                        ChatUtil.info("[-] " + ple.getProfile().getName() + " left.");
+                        ChatUtil.info("[-] " + ple.getProfile().name() + " left.");
                     }
                     popCounts.remove(id);
                 }

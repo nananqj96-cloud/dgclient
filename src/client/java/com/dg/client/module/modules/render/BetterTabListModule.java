@@ -31,7 +31,7 @@ public final class BetterTabListModule extends Module {
     }
 
     public Text decorateName(PlayerListEntry entry, Text original) {
-        String rawName = entry.getProfile().getName();
+        String rawName = entry.getProfile().name();
         boolean isFriend = highlightFriends.getValue() && DGClient.getInstance().getFriendManager().isFriend(rawName);
         MutableText out = Text.empty();
         if (isFriend) {
@@ -44,7 +44,7 @@ public final class BetterTabListModule extends Module {
         if (showHealth.getValue()) {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.world != null) {
-                PlayerEntity pe = client.world.getPlayerByUuid(entry.getProfile().getId());
+                PlayerEntity pe = client.world.getPlayerByUuid(entry.getProfile().id());
                 if (pe != null) {
                     float hp = pe.getHealth() + pe.getAbsorptionAmount();
                     int col = hp >= 14.0f ? 0x39FF14 : 0xFFFFFF;

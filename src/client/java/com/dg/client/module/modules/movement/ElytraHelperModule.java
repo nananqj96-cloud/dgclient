@@ -75,7 +75,7 @@ public final class ElytraHelperModule extends Module {
                 && !mc.player.isTouchingWater()
                 && mc.player.fallDistance > 1.35f
                 && mc.getNetworkHandler() != null) {
-            mc.player.startFallFlying();
+            mc.player.startGliding();
             mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
 

@@ -58,7 +58,7 @@ public final class NoFallModule extends Module {
                 }
             }
             case MLG_BUCKET -> {
-                if (mc.world.getDimension().ultrawarm() || mc.interactionManager == null) {
+                if (mc.world.getRegistryKey() == net.minecraft.world.World.NETHER || mc.interactionManager == null) {
                     return;
                 }
                 HitResult hit = mc.player.raycast(4.2, 1.0f, false);

@@ -63,7 +63,7 @@ public final class AutoWalkModule extends Module {
 
         if (autoSprint.getValue()
                 && mc.player.input != null
-                && mc.player.input.movementForward > 0.05f
+                && mc.player.input.hasForwardMovement()
                 && !mc.player.isSneaking()
                 && !mc.player.horizontalCollision
                 && mc.player.getHungerManager().getFoodLevel() > 6) {

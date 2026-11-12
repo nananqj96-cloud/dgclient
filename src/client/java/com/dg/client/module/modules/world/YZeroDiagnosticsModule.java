@@ -171,7 +171,7 @@ public final class YZeroDiagnosticsModule extends Module {
                 entityBelowZeroLeaks.incrementAndGet();
             }
         } else if (pkt instanceof EntityPositionS2CPacket epos && mc.world != null) {
-            if (epos.getY() < 0.0) {
+            if (epos.change().position().y < 0.0) {
                 entityBelowZeroLeaks.incrementAndGet();
             }
         } else if (pkt instanceof PlaySoundS2CPacket snd) {
