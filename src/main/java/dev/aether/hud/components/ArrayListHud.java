@@ -37,7 +37,7 @@ public class ArrayListHud extends HudComponent {
 
    private List<Module> collectVisible(NVGRenderer vg) {
       this.activeScratch.clear();
-      for (Module m : this.modules.getModules()) {
+      for (Module m : this.modules.all()) {
          if (m.getCategory() == Category.CLIENT) {
             continue;
          }

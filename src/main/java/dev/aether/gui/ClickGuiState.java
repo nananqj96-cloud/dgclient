@@ -80,17 +80,12 @@ public class ClickGuiState {
          this.laidOut = true;
          this.lastLayoutWidth = uiW;
          this.lastLayoutHeight = uiH;
-         String[] keys = new String[]{
-            Category.COMBAT.name(),
-            Category.MOVEMENT.name(),
-            Category.RENDER.name(),
-            Category.VISUALS.name(),
-            Category.PLAYER.name(),
-            Category.WORLD.name(),
-            Category.MISC.name(),
-            Category.CLIENT.name(),
-            THEMES_PANEL
-         };
+         Category[] cats = Category.values();
+         String[] keys = new String[cats.length + 1];
+         for (int i = 0; i < cats.length; i++) {
+            keys[i] = cats[i].name();
+         }
+         keys[cats.length] = THEMES_PANEL;
          float colW = 224.0F;
          int cols = Math.max(1, (int)((uiW - 24.0F) / colW));
          float totalRowW = Math.min(keys.length, cols) * colW - 10.0F;
