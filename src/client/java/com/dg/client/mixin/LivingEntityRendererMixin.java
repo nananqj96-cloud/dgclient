@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin {
     @Inject(method = "shouldFlipUpsideDown(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
-    private static void dgclient$onShouldFlipUpsideDown(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
+    private void dgclient$onShouldFlipUpsideDown(LivingEntity entity, CallbackInfoReturnable<Boolean> cir) {
         DGClient inst = DGClient.getInstance();
         if (inst != null && inst.isReady() && entity == MinecraftClient.getInstance().player) {
             HeadAnimationsModule anim = inst.getModuleManager().get(HeadAnimationsModule.class);

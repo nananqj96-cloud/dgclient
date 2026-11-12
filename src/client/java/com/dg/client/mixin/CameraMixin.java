@@ -5,7 +5,7 @@ import com.dg.client.module.modules.movement.FreecamModule;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,11 +25,11 @@ public abstract class CameraMixin {
 
     @Inject(method = "update", at = @At("RETURN"))
     private void dgclient$onCameraUpdate(
-            BlockView area,
+            World area,
             Entity focusedEntity,
             boolean thirdPersonArg,
             boolean inverseView,
-            float tickDelta,
+            float tickProgress,
             CallbackInfo ci
     ) {
         DGClient inst = DGClient.getInstance();
@@ -39,7 +39,7 @@ public abstract class CameraMixin {
         FreecamModule freecam = inst.getModuleManager().get(FreecamModule.class);
         if (freecam != null && freecam.isEnabled()) {
             this.thirdPerson = true;
-            Vec3d pos = freecam.getInterpolatedPos(tickDelta);
+            Vec3d pos = freecam.getInterpolatedPos(tickProgress);
             this.setPos(pos.x, pos.y, pos.z);
             this.setRotation(freecam.getCamYaw(), freecam.getCamPitch());
         }

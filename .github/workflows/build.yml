@@ -39,6 +39,13 @@ jobs:
             done
             exit $STATUS
           fi
+          if grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target|Mixin)" gradle-build.log; then
+            grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target|Mixin)" gradle-build.log | head -n 30 | while IFS= read -r line; do
+              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
+              echo "::error title=MixinWarning::$CLEAN"
+            done
+            exit 1
+          fi
 
       - name: Prepare release jar directory
         run: |

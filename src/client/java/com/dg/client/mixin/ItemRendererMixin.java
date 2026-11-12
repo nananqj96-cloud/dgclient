@@ -12,7 +12,6 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,20 +21,6 @@ import java.util.List;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-    @Shadow
-    public static void renderItem(
-            ItemDisplayContext displayContext,
-            MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
-            int light,
-            int overlay,
-            int[] tints,
-            List<BakedQuad> quads,
-            RenderLayer layer,
-            ItemRenderState.Glint glint
-    ) {
-    }
-
     @Unique
     private static boolean dgclient$renderingHandGlow = false;
 
@@ -80,7 +65,7 @@ public abstract class ItemRendererMixin {
             matrices.push();
             float s1 = 1.0f + 0.038f * Math.min(2.0f, mult);
             matrices.scale(s1, s1, s1);
-            renderItem(displayContext, matrices, new TintingVertexConsumerProvider(vertexConsumers, col),
+            ItemRenderer.renderItem(displayContext, matrices, new TintingVertexConsumerProvider(vertexConsumers, col),
                     0xF000F0, overlay, tints, quads, layer, ItemRenderState.Glint.NONE);
             matrices.pop();
 
@@ -89,7 +74,7 @@ public abstract class ItemRendererMixin {
             float s2 = 1.0f + 0.078f * Math.min(2.0f, mult);
             matrices.scale(s2, s2, s2);
             int outerCol = ColorUtil.scaleAlpha(col, 0.48f);
-            renderItem(displayContext, matrices, new TintingVertexConsumerProvider(vertexConsumers, outerCol),
+            ItemRenderer.renderItem(displayContext, matrices, new TintingVertexConsumerProvider(vertexConsumers, outerCol),
                     0xF000F0, overlay, tints, quads, layer, ItemRenderState.Glint.NONE);
             matrices.pop();
         } finally {
