@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: '21'
           distribution: 'temurin'
@@ -27,7 +27,18 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon --stacktrace
+        run: |
+          set +e
+          ./gradlew build --no-daemon --stacktrace > gradle-build.log 2>&1
+          STATUS=$?
+          cat gradle-build.log
+          if [ $STATUS -ne 0 ]; then
+            grep -E "error:|FAILED|Caused by:|What went wrong:|> " gradle-build.log | tail -n 20 | while IFS= read -r line; do
+              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
+              echo "::error title=GradleError::$CLEAN"
+            done
+            exit $STATUS
+          fi
 
       - name: Prepare release jar directory
         run: |

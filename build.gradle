@@ -1,10 +1,10 @@
 plugins {
-	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	id 'fabric-loom' version "${loom_version}"
 	id 'maven-publish'
 }
 
-version = project.version
-group = project.group
+version = project.mod_version
+group = project.maven_group
 
 base {
 	archivesName = project.archives_base_name
@@ -33,18 +33,15 @@ dependencies {
 }
 
 processResources {
-	def modVersion = project.version
-	def loaderVersion = project.loader_version
-	def mcVersion = project.minecraft_version
-	inputs.property "version", modVersion
-	inputs.property "loader_version", loaderVersion
-	inputs.property "minecraft_version", mcVersion
+	inputs.property "version", project.version
+	inputs.property "loader_version", project.loader_version
+	inputs.property "minecraft_version", project.minecraft_version
 
 	filesMatching("fabric.mod.json") {
 		expand(
-			"version": modVersion,
-			"loader_version": loaderVersion,
-			"minecraft_version": mcVersion
+			"version": project.version,
+			"loader_version": project.loader_version,
+			"minecraft_version": project.minecraft_version
 		)
 	}
 }
@@ -61,10 +58,7 @@ java {
 }
 
 jar {
-	def projectName = project.base.archivesName.get()
-	inputs.property "projectName", projectName
-
 	from("LICENSE") {
-		rename { "${it}_${projectName}" }
+		rename { "${it}_${project.base.archivesName.get()}" }
 	}
 }
