@@ -10,3 +10,4 @@ pluginManagement {
 }
 
 rootProject.name = 'aetherclient'
+include 'corz-api', 'corzport'

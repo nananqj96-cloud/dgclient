@@ -31,12 +31,25 @@ fabricApi {
 }
 
 def nanovgJars = fileTree(dir: 'src/main/resources/META-INF/jars', include: ['*.jar'])
+def corzRemappedJar = file('corzport/build/libs/corzport-2.1.0.jar')
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // Shared pure-Java Corz bridge API + bundled remapped CorzPort mod (Jar-in-Jar)
+    implementation project(':corz-api')
+    gametestImplementation project(':corz-api')
+    gametestRuntimeOnly project(':corz-api')
+    testImplementation project(':corz-api')
+    include project(':corzport')
+
+    // Load remapped CorzPort mod in dev / headless Client GameTests when built
+    if (corzRemappedJar.exists()) {
+        modRuntimeOnly files(corzRemappedJar)
+    }
 
     implementation nanovgJars
     gametestImplementation nanovgJars
@@ -75,10 +88,14 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.named("sourcesJar", Jar) {
+    dependsOn(":corz-api:classes")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 jar {
+    dependsOn(":corz-api:classes")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(project(":corz-api").sourceSets.main.output)
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
     }

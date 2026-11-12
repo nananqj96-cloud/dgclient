@@ -1,36 +1,56 @@
 package dev.aether.gui;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import dev.aether.module.Category;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-public class ClickGuiState {
+public final class ClickGuiState {
    public static final String THEMES_PANEL = "__themes__";
-   private final Map<String, PanelState> panels = new LinkedHashMap<>();
-   private final Set<String> expandedModules = new HashSet<>();
-   private final Set<String> favourites = new HashSet<>();
-   private int favouritesRevision;
-   private Category selectedCategory = Category.COMBAT;
-   private boolean themesTabSelected;
+   private final Map<String, ClickGuiState.PanelState> panels = new LinkedHashMap<>();
+   private final Set<String> expanded = new LinkedHashSet<>();
+   private final Set<String> favourites = new LinkedHashSet<>();
+   private long favouritesRevision = 1L;
    private boolean laidOut;
    private boolean customized;
-   private float lastLayoutWidth = -1.0F;
-   private float lastLayoutHeight = -1.0F;
-   private static final int LAYOUT_VERSION = 3;
+   private float lastLayoutWidth;
+   private float lastLayoutHeight;
+   private Category selectedCategory = Category.COMBAT;
+   private boolean themesTabSelected;
+   private boolean corzPortOpen;
+   private String corzSelectedCategory = "All";
 
-   public ClickGuiState() {
-      float x = 16.0F;
-      for (Category cat : Category.values()) {
-         this.panels.put(cat.name(), new PanelState(x, 16.0F));
-         x += 224.0F;
+   public ClickGuiState.PanelState panel(String key) {
+      return this.panels.computeIfAbsent(key, k -> new ClickGuiState.PanelState());
+   }
+
+   public Map<String, ClickGuiState.PanelState> panels() {
+      return Collections.unmodifiableMap(this.panels);
+   }
+
+   public boolean isExpanded(String key) {
+      return this.expanded.contains(key);
+   }
+
+   public void setExpanded(String key, boolean value) {
+      if (value) {
+         this.expanded.add(key);
+      } else {
+         this.expanded.remove(key);
       }
-      this.panels.put(THEMES_PANEL, new PanelState(x, 320.0F));
+   }
+
+   public Set<String> expandedKeys() {
+      return Collections.unmodifiableSet(this.expanded);
+   }
+
+   public void replaceExpanded(Iterable<String> keys) {
+      this.expanded.clear();
+      for (String k : keys) {
+         this.expanded.add(k);
+      }
    }
 
    public boolean isFavourite(String key) {
@@ -44,17 +64,29 @@ public class ClickGuiState {
       this.favouritesRevision++;
    }
 
-   public int favouritesRevision() {
+   public Set<String> favouriteKeys() {
+      return Collections.unmodifiableSet(this.favourites);
+   }
+
+   public long favouritesRevision() {
       return this.favouritesRevision;
+   }
+
+   public void replaceFavourites(Iterable<String> keys) {
+      this.favourites.clear();
+      for (String k : keys) {
+         this.favourites.add(k);
+      }
+      this.favouritesRevision++;
    }
 
    public Category selectedCategory() {
       return this.selectedCategory;
    }
 
-   public void selectCategory(Category category) {
-      if (category != null) {
-         this.selectedCategory = category;
+   public void selectCategory(Category cat) {
+      if (cat != null) {
+         this.selectedCategory = cat;
          this.themesTabSelected = false;
       }
    }
@@ -67,8 +99,37 @@ public class ClickGuiState {
       this.themesTabSelected = true;
    }
 
-   public Set<String> expandedKeys() {
-      return this.expandedModules;
+   public boolean isCorzPortOpen() {
+      return this.corzPortOpen;
+   }
+
+   public void setCorzPortOpen(boolean open) {
+      this.corzPortOpen = open;
+   }
+
+   public void toggleCorzPort() {
+      this.corzPortOpen = !this.corzPortOpen;
+   }
+
+   public String corzSelectedCategory() {
+      return this.corzSelectedCategory;
+   }
+
+   public void setCorzSelectedCategory(String category) {
+      if (category != null && !category.isBlank()) {
+         this.corzSelectedCategory = category;
+      }
+   }
+
+   public boolean isCustomized() {
+      return this.customized;
+   }
+
+   public void setCustomized(boolean customized) {
+      this.customized = customized;
+      if (customized) {
+         this.laidOut = true;
+      }
    }
 
    public void markCustomized() {
@@ -99,90 +160,10 @@ public class ClickGuiState {
       }
    }
 
-   public PanelState panel(String key) {
-      return this.panels.computeIfAbsent(key, k -> new PanelState(16.0F, 16.0F));
-   }
-
-   public boolean isExpanded(String key) {
-      return this.expandedModules.contains(key);
-   }
-
-   public void setExpanded(String key, boolean expanded) {
-      if (expanded) {
-         this.expandedModules.add(key);
-      } else {
-         this.expandedModules.remove(key);
-      }
-   }
-
-   public JsonObject toJson() {
-      JsonObject root = new JsonObject();
-      JsonArray favArr = new JsonArray();
-      this.favourites.stream().sorted().forEach(favArr::add);
-      root.add("favourites", favArr);
-      root.addProperty("selectedCategory", this.selectedCategory.name());
-      root.addProperty("v", LAYOUT_VERSION);
-      root.addProperty("custom", this.customized);
-
-      for (Entry<String, PanelState> entry : this.panels.entrySet()) {
-         JsonObject ps = new JsonObject();
-         ps.addProperty("x", entry.getValue().x);
-         ps.addProperty("y", entry.getValue().y);
-         ps.addProperty("collapsed", entry.getValue().collapsed);
-         root.add(entry.getKey(), ps);
-      }
-      return root;
-   }
-
-   public void fromJson(JsonObject root) {
-      this.favourites.clear();
-      if (root.has("favourites") && root.get("favourites").isJsonArray()) {
-         for (JsonElement el : root.getAsJsonArray("favourites")) {
-            if (el.isJsonPrimitive() && el.getAsJsonPrimitive().isString()) {
-               this.favourites.add(el.getAsString().replace("AetherJumpCircles@", "JumpCircles@"));
-            }
-         }
-      }
-      this.favouritesRevision++;
-      if (root.has("selectedCategory") && root.get("selectedCategory").isJsonPrimitive()) {
-         try {
-            this.selectedCategory = Category.valueOf(root.get("selectedCategory").getAsString());
-         } catch (IllegalArgumentException ignored) {
-         }
-      }
-
-      if (root.has("v")
-         && root.get("v").getAsInt() >= LAYOUT_VERSION
-         && root.has("custom")
-         && root.get("custom").getAsBoolean()) {
-         this.laidOut = true;
-         this.customized = true;
-
-         for (Entry<String, PanelState> entry : this.panels.entrySet()) {
-            JsonObject ps = root.getAsJsonObject(entry.getKey());
-            if (ps != null) {
-               if (ps.has("x")) {
-                  entry.getValue().x = ps.get("x").getAsFloat();
-               }
-               if (ps.has("y")) {
-                  entry.getValue().y = ps.get("y").getAsFloat();
-               }
-               if (ps.has("collapsed")) {
-                  entry.getValue().collapsed = ps.get("collapsed").getAsBoolean();
-               }
-            }
-         }
-      }
-   }
-
-   public static class PanelState {
+   public static final class PanelState {
       public float x;
       public float y;
       public boolean collapsed;
-
-      PanelState(float x, float y) {
-         this.x = x;
-         this.y = y;
-      }
+      public float scrollTarget;
    }
 }

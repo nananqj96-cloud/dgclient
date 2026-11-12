@@ -3,7 +3,6 @@ package dev.aether.mixin;
 import dev.aether.AetherClient;
 import dev.aether.module.ModuleManager;
 import dev.aether.module.impl.FakeStatsModule;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({Gui.class})
@@ -29,24 +27,24 @@ public class GuiSidebarMixin {
       }
    }
 
-   @Redirect(
+   @ModifyArg(
       method = {"displayScoreboardSidebar"},
       at = @At(
          value = "INVOKE",
          target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I",
          ordinal = 1
-      )
+      ),
+      index = 0
    )
-   private int aetherclient$lineWidth(Font font, FormattedText text) {
+   private FormattedText aetherclient$lineWidthArg(FormattedText text) {
       FakeStatsModule fs = fakeStats();
       if (fs != null && text instanceof Component component) {
          try {
-            return font.width(fs.rewriteForWidth(component));
-         } catch (Exception var6) {
+            return fs.rewriteForWidth(component);
+         } catch (Exception ignored) {
          }
       }
-
-      return font.width(text);
+      return text;
    }
 
    @ModifyArg(
@@ -63,10 +61,9 @@ public class GuiSidebarMixin {
       if (fs != null) {
          try {
             return fs.rewriteForDraw(text);
-         } catch (Exception var4) {
+         } catch (Exception ignored) {
          }
       }
-
       return text;
    }
 

@@ -31,7 +31,22 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build JAR, verify Mixin refmaps & run JUnit 5 suite
+      - name: Build CorzPort Bridge & Subproject (:corz-api + :corzport)
+        run: |
+          set +e
+          ./gradlew :corz-api:jar :corzport:remapJar --no-daemon --stacktrace > gradle-corzport.log 2>&1
+          STATUS=$?
+          cat gradle-corzport.log
+          if [ $STATUS -ne 0 ]; then
+            grep -E "error:|FAILED|Caused by:|What went wrong:" gradle-corzport.log | head -n 60 | while IFS= read -r line; do
+              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
+              echo "::error title=CorzPortBuildError::$CLEAN"
+            done
+            exit $STATUS
+          fi
+          ls -lh corzport/build/libs/
+
+      - name: Build Aether Client 2.1.0 (Jar-in-Jar) & run JUnit 5 suite
         run: |
           set +e
           ./gradlew build --no-daemon --stacktrace > gradle-build.log 2>&1
@@ -52,21 +67,21 @@ jobs:
             exit 1
           fi
 
-      - name: Run real Minecraft 1.21.11 Client GameTests (Aether UI Dashboard + Columns + Modules)
+      - name: Run real Minecraft 1.21.11 Client GameTests (PinkBloom + Synced Corz Port UI)
         run: |
           set +e
           xvfb-run -a -s "-screen 0 1600x900x24" ./gradlew runClientGameTest --no-daemon --stacktrace > gametest.log 2>&1
           GT_STATUS=$?
           cat gametest.log
           if [ $GT_STATUS -ne 0 ]; then
-            grep -E "AssertionError|FAILED|MixinApplyError|Exception|Caused by:" gametest.log | head -n 60 | while IFS= read -r line; do
+            grep -E "AssertionError|FAILED|MixinApplyError|MixinTransformerError|Exception|Caused by:" gametest.log | head -n 80 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=ClientGameTestError::$CLEAN"
             done
             exit $GT_STATUS
           fi
 
-      - name: Prepare release jar directory
+      - name: Prepare release jar & screenshots directory
         run: |
           mkdir -p dist-jar
           for f in build/libs/aetherclient-*.jar; do
@@ -76,7 +91,7 @@ jobs:
             esac
           done
           ls -lh dist-jar/
-          unzip -l dist-jar/aetherclient-*.jar | grep -E "fabric.mod.json|aetherclient.mixins.json|refmap|icon.png"
+          unzip -l dist-jar/aetherclient-*.jar | grep -E "fabric.mod.json|aetherclient.mixins.json|corzport|CorzPortBus|icon.png"
 
       - name: Upload compiled JAR artifact
         uses: actions/upload-artifact@v4
@@ -93,12 +108,20 @@ jobs:
           path: build/run/clientGameTest/screenshots/*.png
           if-no-files-found: ignore
 
-      - name: Publish GitHub Release on version tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: "Aether Client ${{ github.ref_name }} — Minecraft 1.21.11 Fabric"
-          target_commitish: ${{ github.sha }}
-          files: dist-jar/aetherclient-*.jar
-          generate_release_notes: true
+      - name: Publish Direct-Download GitHub Release (v2.1.0-pinkbloom)
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v2.1.0-pinkbloom"
+          NOTES="Aether Client 2.1.0 (PinkBloom Edition) for Minecraft 1.21.11 Fabric — includes the PinkBloom default theme, Dual-Mode NanoVG ClickGUI, and all 145 ported CorzClient modules inside the synced Corz Port secondary UI."
+          if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist-jar/aetherclient-*.jar build/run/clientGameTest/screenshots/*.png --clobber --repo "${{ github.repository }}"
+            gh release edit "$TAG" --title "Aether Client 2.1.0 (PinkBloom + Corz Port) — Minecraft 1.21.11 Fabric" --notes "$NOTES" --repo "${{ github.repository }}"
+          else
+            gh release create "$TAG" dist-jar/aetherclient-*.jar build/run/clientGameTest/screenshots/*.png \
+              --target "${{ github.sha }}" \
+              --title "Aether Client 2.1.0 (PinkBloom + Corz Port) — Minecraft 1.21.11 Fabric" \
+              --notes "$NOTES" \
+              --repo "${{ github.repository }}"
+          fi

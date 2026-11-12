@@ -3,7 +3,7 @@
   "id": "aetherclient",
   "version": "${version}",
   "name": "Aether Client",
-  "description": "High-performance Minecraft 1.21.11 utility client featuring a zero-lag dual-mode NanoVG interface, customizable HUD, and modular tools.",
+  "description": "High-performance Minecraft 1.21.11 utility client featuring the PinkBloom aesthetic, zero-lag dual-mode NanoVG interface, synced Corz Port secondary UI, customizable HUD, and modular tools.",
   "authors": ["Aether Team"],
   "license": "MIT",
   "icon": "assets/aetherclient/icon.png",

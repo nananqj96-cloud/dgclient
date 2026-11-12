@@ -1,7 +1,10 @@
 package dev.aether.gui;
 
 import dev.aether.AetherClient;
+import dev.aether.corz.CorzPortBus;
+import dev.aether.corz.CorzPortProvider;
 import dev.aether.gui.config.ConfigPanel;
+import dev.aether.gui.corz.CorzPortWindow;
 import dev.aether.gui.panel.CategoryPanel;
 import dev.aether.gui.panel.ModuleEntry;
 import dev.aether.gui.panel.Panel;
@@ -13,7 +16,6 @@ import dev.aether.gui.widget.ColorWidget;
 import dev.aether.gui.widget.SettingWidget;
 import dev.aether.gui.widget.SliderWidget;
 import dev.aether.module.Category;
-import dev.aether.module.Module;
 import dev.aether.module.ModuleManager;
 import dev.aether.module.Modules;
 import dev.aether.module.impl.BlockEspModule;
@@ -48,7 +50,7 @@ import net.minecraft.network.chat.Component;
 
 public class ClickGuiScreen extends Screen implements NvgDrawable {
    private static final ClickGuiState STATE = new ClickGuiState();
-   private static final float SIDEBAR_W = 192.0F;
+   private static final float SIDEBAR_W = 186.0F;
    private static final float TOPBAR_H = 54.0F;
    private static final float WIN_RADIUS = 13.0F;
 
@@ -60,6 +62,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float dashMaxScroll;
    private boolean closing;
    private final ConfigPanel configPanel = new ConfigPanel();
+   private final CorzPortWindow corzPortWindow;
 
    // Themes & Audio studio widgets for Dashboard mode
    private final ColorSetting dashAccentProxy;
@@ -92,6 +95,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float cfgBtnY;
    private float cfgBtnW;
    private float cfgBtnH;
+   private float corzTabX;
+   private float corzTabY;
+   private float corzTabW;
+   private float corzTabH;
 
    // Window drag (Dashboard header) & Column panel drag
    private boolean draggingWindow;
@@ -109,6 +116,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private Panel pressedContentPanel;
    private ModuleEntry pressedDashEntry;
    private boolean pressedInThemesStudio;
+   private boolean pressedInCorzPort;
    private final Screen parent;
 
    public ClickGuiScreen() {
@@ -121,6 +129,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       STATE.ensureDefaultLayout(OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
       ModuleManager modules = AetherClient.modules();
       ThemeManager themes = AetherClient.themes();
+      this.corzPortWindow = new CorzPortWindow(themes, STATE);
 
       for (Category cat : Category.values()) {
          CategoryPanel cp = new CategoryPanel(cat, modules, themes, STATE);
@@ -129,7 +138,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       this.panels.add(new ThemesPanel(themes, STATE));
 
-      // If any module was programmatically expanded (e.g. "CustomGlint@MISC"), focus its category
       for (String expKey : STATE.expandedKeys()) {
          int at = expKey.lastIndexOf('@');
          if (at > 0 && at + 1 < expKey.length()) {
@@ -176,6 +184,19 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return STATE;
    }
 
+   public CorzPortWindow corzPortWindow() {
+      return this.corzPortWindow;
+   }
+
+   public void toggleCorzPort() {
+      STATE.toggleCorzPort();
+      if (STATE.isCorzPortOpen()) {
+         UiSounds.guiOpen();
+      } else {
+         UiSounds.guiClose();
+      }
+   }
+
    private Modules.ClickGuiModule guiModule() {
       return AetherClient.modules().clickGui;
    }
@@ -208,12 +229,18 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public void removed() {
       BlurHook.clear();
       AetherClient.config().save();
+      CorzPortProvider corz = CorzPortBus.provider();
+      if (corz != null) {
+         corz.saveConfig();
+      }
    }
 
    @Override
    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-      int alpha = (int)(96.0F * this.openAnim.value());
-      graphics.fill(0, 0, this.width, this.height, (alpha << 24) | 0x050811);
+      Theme t = AetherClient.themes().current();
+      int alpha = (int)(92.0F * this.openAnim.value());
+      int tint = t.isBloom() ? 0x120718 : 0x050811;
+      graphics.fill(0, 0, this.width, this.height, (alpha << 24) | tint);
       this.finishCloseIfDone();
    }
 
@@ -247,15 +274,16 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (!vg.hasFont()) {
          return;
       }
+      this.corzPortWindow.syncThemeToCorz();
       float anim = this.openAnim.value();
       if (anim <= 0.002F && this.closing) {
          return;
       }
 
+      Theme theme = AetherClient.themes().current();
       vg.save();
       vg.alpha(anim);
-      // Subtle screen vignette
-      vg.rect(0.0F, 0.0F, uiW, uiH, 0.0F, Colors.withAlpha(0xFF060912, 0.48F * anim));
+      vg.rect(0.0F, 0.0F, uiW, uiH, 0.0F, Colors.withAlpha(theme.isBloom() ? 0xFF100616 : 0xFF060912, 0.48F * anim));
 
       if (this.isDashboardMode()) {
          this.renderDashboardMode(vg, mx, my, uiW, uiH, anim);
@@ -268,19 +296,29 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    }
 
    // =========================================================================
-   // MODE 1: UNIFIED SIDEBAR DASHBOARD WINDOW
+   // MODE 1: UNIFIED SIDEBAR DASHBOARD WINDOW (+ SYNCED CORZ PORT WINDOW)
    // =========================================================================
 
    private void renderDashboardMode(NVGRenderer vg, float mx, float my, float uiW, float uiH, float anim) {
       Theme theme = AetherClient.themes().current();
-      this.winW = Math.clamp(uiW - 72.0F, 620.0F, 920.0F);
+      float corzProg = this.corzPortWindow.openProgress();
+      float corzW = this.corzPortWindow.preferredWidth(uiW);
+      float gap = 14.0F * corzProg;
+
+      float maxDashW = uiW - 40.0F - (corzW + 14.0F) * corzProg;
+      this.winW = Math.clamp(maxDashW, 560.0F, 880.0F);
       this.winH = Math.clamp(uiH - 64.0F, 400.0F, 580.0F);
+
+      float combinedW = this.winW + gap + corzW * corzProg;
+      float defaultDashX = Math.max(12.0F, (uiW - combinedW) * 0.5F);
+      float defaultDashY = (uiH - this.winH) * 0.5F;
+
       if (this.windowMoved) {
          this.winX = Math.clamp(this.customWinX, 12.0F, Math.max(12.0F, uiW - this.winW - 12.0F));
          this.winY = Math.clamp(this.customWinY, 12.0F, Math.max(12.0F, uiH - this.winH - 12.0F));
       } else {
-         this.winX = (uiW - this.winW) * 0.5F;
-         this.winY = (uiH - this.winH) * 0.5F;
+         this.winX = defaultDashX;
+         this.winY = defaultDashY;
       }
 
       vg.save();
@@ -289,44 +327,52 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.scale(scale);
       vg.translate(-(this.winX + this.winW * 0.5F), -(this.winY + this.winH * 0.5F));
 
-      // Ambient shadow + window shell
+      // PinkBloom optical glow layers + dark velvet glass shell
+      float bloom = theme.bloomStrength();
       vg.glow(this.winX, this.winY + 4.0F, this.winW, this.winH, WIN_RADIUS, 20.0F, Colors.withAlpha(0xFF000000, 0.52F));
-      vg.glow(this.winX, this.winY, this.winW, this.winH, WIN_RADIUS, 12.0F, Colors.withAlpha(theme.accent(), 0.10F));
+      vg.glow(this.winX - 1.0F, this.winY - 1.0F, this.winW + 2.0F, this.winH + 2.0F, WIN_RADIUS, 20.0F * bloom + 6.0F, Colors.withAlpha(theme.accent(), 0.25F * bloom + 0.08F));
       vg.rectGradient(this.winX, this.winY, this.winW, this.winH, WIN_RADIUS, theme.background(), theme.backgroundTo(), true);
 
       // Left Sidebar surface
       vg.rectVaryingGradient(this.winX, this.winY, SIDEBAR_W, this.winH, WIN_RADIUS, 0.0F, 0.0F, WIN_RADIUS, theme.headerTop(), theme.headerBottom());
       vg.line(this.winX + SIDEBAR_W, this.winY + 1.0F, this.winX + SIDEBAR_W, this.winY + this.winH - 1.0F, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.9F));
 
-      // Top bar divider
       float mainX = this.winX + SIDEBAR_W;
       float mainW = this.winW - SIDEBAR_W;
       vg.line(mainX, this.winY + TOPBAR_H, this.winX + this.winW - 1.0F, this.winY + TOPBAR_H, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.9F));
 
-      // Outer crisp border + top accent highlight
-      vg.rectOutline(this.winX, this.winY, this.winW, this.winH, WIN_RADIUS, 1.1F, Colors.withAlpha(theme.accent(), 0.34F));
-      vg.rect(this.winX + 20.0F, this.winY, 54.0F, 2.0F, 1.0F, theme.accentBright());
+      // Outer crisp border + top bloom highlight
+      vg.rectOutline(this.winX, this.winY, this.winW, this.winH, WIN_RADIUS, 1.15F, Colors.withAlpha(theme.accentBright(), 0.42F));
+      vg.rect(this.winX + 20.0F, this.winY, 58.0F, 2.2F, 1.1F, theme.accentBright());
 
       this.renderSidebar(vg, theme, mx, my);
       this.renderDashboardTopBar(vg, theme, mx, my, mainX, mainW);
       this.renderDashboardBody(vg, theme, mx, my, mainX, this.winY + TOPBAR_H, mainW, this.winH - TOPBAR_H);
 
       vg.restore();
+
+      // Render Synced Second UI ("Corz Port") alongside the main window
+      if (this.corzPortWindow.isVisible()) {
+         float corzDefaultX = this.winX + this.winW + 14.0F;
+         this.corzPortWindow.render(vg, mx, my, uiW, uiH, corzDefaultX, this.winY, this.winH);
+      }
    }
 
    private void renderSidebar(NVGRenderer vg, Theme theme, float mx, float my) {
-      // Brand crest
-      float bx = this.winX + 18.0F;
+      float bx = this.winX + 16.0F;
       float by = this.winY + 27.0F;
-      vg.aetherMark(bx + 10.0F, by, 10.5F, theme.accent(), theme.accentBright());
-      vg.textGradient("AETHER", bx + 29.0F, by - 5.0F, 15.5F, theme.accentBright(), theme.accent());
-      vg.text("CLIENT  v" + AetherClient.VERSION, bx + 29.0F, by + 9.5F, 9.5F, theme.textDisabled());
+      if (theme.isBloom()) {
+         vg.circleGlow(bx + 10.0F, by, 10.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.30F));
+      }
+      vg.aetherMark(bx + 10.0F, by, 10.2F, theme.accent(), theme.accentBright());
+      vg.textGradient("AETHER", bx + 28.0F, by - 5.0F, 15.5F, theme.accentBright(), theme.accent());
+      vg.text("PINKBLOOM  v" + AetherClient.VERSION, bx + 28.0F, by + 9.5F, 9.0F, theme.textDisabled());
 
       vg.line(this.winX + 14.0F, this.winY + TOPBAR_H, this.winX + SIDEBAR_W - 14.0F, this.winY + TOPBAR_H, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.7F));
 
-      float navY = this.winY + TOPBAR_H + 12.0F;
+      float navY = this.winY + TOPBAR_H + 10.0F;
       vg.text("CATEGORIES", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
-      navY += 16.0F;
+      navY += 15.0F;
 
       boolean globalFilterActive = !this.search.isEmpty() || this.favouritesOnly;
       Category activeCat = STATE.selectedCategory();
@@ -336,13 +382,16 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          boolean selected = !themesActive && !globalFilterActive && cat == activeCat;
          float rx = this.winX + 10.0F;
          float rw = SIDEBAR_W - 20.0F;
-         float rh = 31.0F;
+         float rh = 30.0F;
          boolean hov = mx >= rx && mx <= rx + rw && my >= navY && my <= navY + rh;
 
          if (selected) {
-            vg.rect(rx, navY, rw, rh, 7.0F, Colors.withAlpha(theme.accent(), 0.18F));
-            vg.rectOutline(rx, navY, rw, rh, 7.0F, 1.0F, Colors.withAlpha(theme.accent(), 0.42F));
-            vg.rect(rx + 2.0F, navY + 7.0F, 3.0F, rh - 14.0F, 1.5F, theme.accentBright());
+            if (theme.isBloom()) {
+               vg.glow(rx, navY, rw, rh, 7.0F, 7.0F, Colors.withAlpha(theme.accent(), 0.22F));
+            }
+            vg.rect(rx, navY, rw, rh, 7.0F, Colors.withAlpha(theme.accent(), 0.20F));
+            vg.rectOutline(rx, navY, rw, rh, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.52F));
+            vg.rect(rx + 2.0F, navY + 6.5F, 3.0F, rh - 13.0F, 1.5F, theme.accentBright());
          } else if (hov) {
             vg.rect(rx, navY, rw, rh, 7.0F, Colors.withAlpha(0xFFFFFFFF, 0.05F));
          }
@@ -352,9 +401,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          if (icon > 0) {
             vg.image(icon, rx + 11.0F, cy - 7.0F, 14.0F, 14.0F, selected ? theme.accentBright() : (hov ? theme.textPrimary() : theme.textMuted()));
          }
-         vg.text(cat.getDisplayName(), rx + 33.0F, cy, 12.5F, selected ? theme.textPrimary() : (hov ? theme.textPrimary() : theme.textMuted()));
+         vg.text(cat.getDisplayName(), rx + 32.0F, cy, 12.2F, selected ? theme.textPrimary() : (hov ? theme.textPrimary() : theme.textMuted()));
 
-         // Active modules count pill
          CategoryPanel cp = this.categoryPanels.get(cat);
          int activeCount = 0;
          for (ModuleEntry me : cp.allEntries()) {
@@ -365,43 +413,71 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          if (activeCount > 0) {
             String cnt = Integer.toString(activeCount);
             float cw = vg.textWidth(cnt, 9.5F) + 10.0F;
-            float cx = rx + rw - cw - 7.0F;
-            vg.rect(cx, cy - 6.5F, cw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), selected ? 0.30F : 0.16F));
+            float cx = rx + rw - cw - 6.0F;
+            vg.rect(cx, cy - 6.5F, cw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), selected ? 0.32F : 0.16F));
             vg.text(cnt, cx + 5.0F, cy, 9.5F, theme.accentBright());
          }
          navY += rh + 3.0F;
       }
 
-      // Themes & Audio tab
+      // SUBTABS section -> "Corz Port" synced secondary UI launcher!
       navY += 6.0F;
+      vg.text("SUBTABS", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
+      navY += 15.0F;
+      this.corzTabX = this.winX + 10.0F;
+      this.corzTabY = navY;
+      this.corzTabW = SIDEBAR_W - 20.0F;
+      this.corzTabH = 31.0F;
+      boolean corzOpen = STATE.isCorzPortOpen();
+      boolean corzHov = this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH);
+      if (corzOpen) {
+         vg.glow(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.5F, 8.0F, Colors.withAlpha(theme.accent(), 0.28F));
+         vg.rect(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.5F, Colors.withAlpha(theme.accent(), 0.24F));
+         vg.rectOutline(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.5F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.72F));
+         vg.rect(this.corzTabX + 2.0F, this.corzTabY + 6.5F, 3.0F, this.corzTabH - 13.0F, 1.5F, theme.accentBright());
+      } else {
+         vg.rect(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.5F, Colors.withAlpha(theme.accent(), corzHov ? 0.15F : 0.08F));
+         vg.rectOutline(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.5F, 1.0F, Colors.withAlpha(theme.accentBright(), corzHov ? 0.45F : 0.24F));
+      }
+      float ccy = this.corzTabY + this.corzTabH * 0.5F;
+      vg.aetherMark(this.corzTabX + 18.0F, ccy, 6.2F, theme.accent(), theme.accentBright());
+      vg.text("Corz Port", this.corzTabX + 32.0F, ccy, 12.2F, corzOpen || corzHov ? theme.textPrimary() : theme.textMuted());
+      String stateBadge = corzOpen ? "OPEN" : "2ND UI";
+      float sbw = vg.textWidth(stateBadge, 8.5F) + 9.0F;
+      float sbx = this.corzTabX + this.corzTabW - sbw - 6.0F;
+      vg.rect(sbx, ccy - 6.5F, sbw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), corzOpen ? 0.38F : 0.18F));
+      vg.text(stateBadge, sbx + 4.5F, ccy, 8.5F, theme.accentBright());
+      navY += this.corzTabH + 6.0F;
+
+      // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
-      navY += 16.0F;
+      navY += 15.0F;
       float tx = this.winX + 10.0F;
       float tw = SIDEBAR_W - 20.0F;
-      float th = 31.0F;
+      float th = 30.0F;
       boolean tHov = mx >= tx && mx <= tx + tw && my >= navY && my <= navY + th;
       if (themesActive) {
-         vg.rect(tx, navY, tw, th, 7.0F, Colors.withAlpha(theme.accent(), 0.18F));
-         vg.rectOutline(tx, navY, tw, th, 7.0F, 1.0F, Colors.withAlpha(theme.accent(), 0.42F));
-         vg.rect(tx + 2.0F, navY + 7.0F, 3.0F, th - 14.0F, 1.5F, theme.accentBright());
+         vg.rect(tx, navY, tw, th, 7.0F, Colors.withAlpha(theme.accent(), 0.20F));
+         vg.rectOutline(tx, navY, tw, th, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.52F));
+         vg.rect(tx + 2.0F, navY + 6.5F, 3.0F, th - 13.0F, 1.5F, theme.accentBright());
       } else if (tHov) {
          vg.rect(tx, navY, tw, th, 7.0F, Colors.withAlpha(0xFFFFFFFF, 0.05F));
       }
       vg.circle(tx + 18.0F, navY + th * 0.5F, 5.2F, theme.accent());
       vg.circleOutline(tx + 18.0F, navY + th * 0.5F, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
-      vg.text("Themes & Audio", tx + 33.0F, navY + th * 0.5F, 12.5F, themesActive ? theme.textPrimary() : (tHov ? theme.textPrimary() : theme.textMuted()));
+      vg.text("Themes & Audio", tx + 32.0F, navY + th * 0.5F, 12.2F, themesActive ? theme.textPrimary() : (tHov ? theme.textPrimary() : theme.textMuted()));
 
       // Bottom Config Profiles button
       this.cfgBtnW = SIDEBAR_W - 24.0F;
-      this.cfgBtnH = 34.0F;
+      this.cfgBtnH = 33.0F;
       this.cfgBtnX = this.winX + 12.0F;
       this.cfgBtnY = this.winY + this.winH - this.cfgBtnH - 12.0F;
       boolean cHov = this.hit(mx, my, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH);
-      vg.rect(this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, 8.0F, Colors.withAlpha(theme.accent(), cHov ? 0.22F : 0.12F));
-      vg.rectOutline(this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, 8.0F, 1.0F, Colors.withAlpha(theme.accentBright(), cHov ? 0.65F : 0.30F));
+      vg.rect(this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, 8.0F, Colors.withAlpha(theme.accent(), cHov ? 0.24F : 0.14F));
+      vg.rectOutline(this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, 8.0F, 1.0F, Colors.withAlpha(theme.accentBright(), cHov ? 0.70F : 0.34F));
       String cfgLabel = "Config Profiles";
-      float clw = vg.textWidth(cfgLabel, 12.0F);
-      vg.text(cfgLabel, this.cfgBtnX + (this.cfgBtnW - clw) * 0.5F, this.cfgBtnY + this.cfgBtnH * 0.5F, 12.0F, cHov ? theme.accentBright() : theme.textPrimary());
+      float clw = vg.textWidth(cfgLabel, 11.8F);
+      vg.text(cfgLabel, this.cfgBtnX + (this.cfgBtnW - clw) * 0.5F, this.cfgBtnY + this.cfgBtnH * 0.5F, 11.8F, cHov ? theme.accentBright() : theme.textPrimary());
    }
 
    private void renderDashboardTopBar(NVGRenderer vg, Theme theme, float mx, float my, float mainX, float mainW) {
@@ -411,23 +487,22 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (!this.search.isEmpty()) {
          heading = "Search Results";
       } else if (this.favouritesOnly) {
-         heading = "Favourite Modules";
+         heading = "Favourites";
       } else if (STATE.isThemesTabSelected()) {
          heading = "Themes & Audio";
       } else {
          heading = STATE.selectedCategory().getDisplayName();
       }
-      float hw = vg.text(heading, mainX + 20.0F, cy, 15.5F, theme.textPrimary());
+      float hw = vg.text(heading, mainX + 18.0F, cy, 15.0F, theme.textPrimary());
 
       if (!STATE.isThemesTabSelected() || !this.search.isEmpty() || this.favouritesOnly) {
-         String countPill = vis.size() + (vis.size() == 1 ? " module" : " modules");
-         float cpw = vg.textWidth(countPill, 10.5F) + 14.0F;
-         vg.rect(mainX + 28.0F + hw, cy - 8.5F, cpw, 17.0F, 8.5F, Colors.withAlpha(theme.accent(), 0.14F));
-         vg.text(countPill, mainX + 35.0F + hw, cy, 10.5F, theme.accentBright());
+         String countPill = Integer.toString(vis.size());
+         float cpw = vg.textWidth(countPill, 10.5F) + 12.0F;
+         vg.rect(mainX + 24.0F + hw, cy - 8.0F, cpw, 16.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.16F));
+         vg.text(countPill, mainX + 30.0F + hw, cy, 10.5F, theme.accentBright());
       }
 
-      // Right-side controls: [Search Pill] [★ Favs] [Columns]
-      float rightEdge = mainX + mainW - 18.0F;
+      float rightEdge = mainX + mainW - 16.0F;
 
       this.modeBtnH = 28.0F;
       String modeLabel = "Columns";
@@ -438,18 +513,18 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
       this.favBtnH = 28.0F;
       String favLabel = "Favs";
-      this.favBtnW = vg.textWidth(favLabel, 11.5F) + 30.0F;
-      this.favBtnX = this.modeBtnX - 8.0F - this.favBtnW;
+      this.favBtnW = vg.textWidth(favLabel, 11.5F) + 28.0F;
+      this.favBtnX = this.modeBtnX - 7.0F - this.favBtnW;
       this.favBtnY = cy - this.favBtnH * 0.5F;
       boolean favHov = this.hit(mx, my, this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH);
-      vg.rect(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, Colors.withAlpha(this.favouritesOnly ? theme.accent() : 0xFFFFFFFF, this.favouritesOnly ? 0.22F : (favHov ? 0.09F : 0.04F)));
-      vg.rectOutline(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, 1.0F, Colors.withAlpha(this.favouritesOnly ? theme.accentBright() : theme.borderSubtle(), this.favouritesOnly ? 0.65F : 0.9F));
-      vg.star(this.favBtnX + 12.0F, cy, 4.6F, 2.1F, this.favouritesOnly ? 0xFFFBBF24 : theme.textMuted(), this.favouritesOnly);
-      vg.text(favLabel, this.favBtnX + 21.0F, cy, 11.5F, this.favouritesOnly ? theme.textPrimary() : (favHov ? theme.textPrimary() : theme.textMuted()));
+      vg.rect(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, Colors.withAlpha(this.favouritesOnly ? theme.accent() : 0xFFFFFFFF, this.favouritesOnly ? 0.24F : (favHov ? 0.09F : 0.04F)));
+      vg.rectOutline(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, 1.0F, Colors.withAlpha(this.favouritesOnly ? theme.accentBright() : theme.borderSubtle(), this.favouritesOnly ? 0.68F : 0.9F));
+      vg.star(this.favBtnX + 11.5F, cy, 4.5F, 2.0F, this.favouritesOnly ? 0xFFFBBF24 : theme.textMuted(), this.favouritesOnly);
+      vg.text(favLabel, this.favBtnX + 20.5F, cy, 11.5F, this.favouritesOnly ? theme.textPrimary() : (favHov ? theme.textPrimary() : theme.textMuted()));
 
       this.searchBoxH = 28.0F;
-      this.searchBoxW = Math.min(220.0F, Math.max(130.0F, this.favBtnX - (mainX + 185.0F)));
-      this.searchBoxX = this.favBtnX - 8.0F - this.searchBoxW;
+      this.searchBoxW = Math.min(200.0F, Math.max(105.0F, this.favBtnX - (mainX + 145.0F)));
+      this.searchBoxX = this.favBtnX - 7.0F - this.searchBoxW;
       this.searchBoxY = cy - this.searchBoxH * 0.5F;
       this.renderSearchPill(vg, theme, this.searchBoxX, this.searchBoxY, this.searchBoxW, this.searchBoxH);
    }
@@ -481,7 +556,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.save();
       vg.scissor(bx, by, bw, bh);
 
-      float pad = 16.0F;
+      float pad = 14.0F;
       float contentTop = by + pad - this.dashScroll.value();
       float totalContentH;
 
@@ -524,13 +599,12 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.dashMaxScroll = Math.max(0.0F, totalContentH - bh);
       this.dashScroll.setTarget(Math.clamp(this.dashScroll.getTarget(), 0.0F, this.dashMaxScroll));
 
-      // Minimal scrollbar
       if (this.dashMaxScroll > 1.0F) {
          float trackH = bh - 16.0F;
          float thumbH = Math.max(28.0F, trackH * (bh / totalContentH));
          float thumbY = by + 8.0F + (trackH - thumbH) * (this.dashScroll.value() / this.dashMaxScroll);
          vg.rect(bx + bw - 6.0F, by + 8.0F, 3.0F, trackH, 1.5F, Colors.withAlpha(theme.borderSubtle(), 0.5F));
-         vg.rect(bx + bw - 6.0F, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(theme.accentBright(), 0.72F));
+         vg.rect(bx + bw - 6.0F, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(theme.accentBright(), 0.75F));
       }
 
       vg.restore();
@@ -539,7 +613,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float renderThemesStudio(NVGRenderer vg, Theme active, float mx, float my, float x, float startY, float w) {
       ThemeManager tm = AetherClient.themes();
       float y = startY;
-      vg.text("ACCENT PALETTES", x, y + 6.0F, 10.5F, active.textDisabled());
+      vg.text("ACCENT & BLOOM PALETTES", x, y + 6.0F, 10.5F, active.textDisabled());
       y += 20.0F;
 
       List<Theme> all = tm.getThemes();
@@ -547,7 +621,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       float gap = 10.0F;
       float cardW = (w - gap * (cols - 1)) / (float)cols;
       float cardH = 44.0F;
-      int totalItems = all.size() + 1; // +1 for "+ Custom Theme"
+      int totalItems = all.size() + 1;
 
       for (int i = 0; i < totalItems; i++) {
          int col = i % cols;
@@ -559,18 +633,21 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          if (i < all.size()) {
             Theme t = all.get(i);
             boolean sel = t == active;
+            if (sel && t.isBloom()) {
+               vg.glow(cx, cy, cardW, cardH, 8.0F, 8.0F, Colors.withAlpha(t.accent(), 0.25F));
+            }
             vg.rect(cx, cy, cardW, cardH, 8.0F, sel ? active.moduleActiveFill() : (hov ? active.surfaceElevated() : active.surface()));
-            vg.rectOutline(cx, cy, cardW, cardH, 8.0F, 1.0F, Colors.withAlpha(sel ? t.accentBright() : active.borderSubtle(), sel ? 0.75F : 0.85F));
+            vg.rectOutline(cx, cy, cardW, cardH, 8.0F, 1.0F, Colors.withAlpha(sel ? t.accentBright() : active.borderSubtle(), sel ? 0.78F : 0.85F));
             vg.circle(cx + 18.0F, cy + cardH * 0.5F, 7.5F, t.accent());
             if (sel) {
                vg.circleOutline(cx + 18.0F, cy + cardH * 0.5F, 10.5F, 1.3F, t.accentBright());
             }
-            vg.textTruncated(t.getName(), cx + 34.0F, cy + cardH * 0.5F, 12.5F, sel ? active.textPrimary() : active.textMuted(), cardW - 56.0F);
+            vg.textTruncated(t.getName(), cx + 34.0F, cy + cardH * 0.5F, 12.2F, sel ? active.textPrimary() : active.textMuted(), cardW - 56.0F);
             if (t.isCustom()) {
                vg.cross(cx + cardW - 20.0F, cy + cardH * 0.5F - 5.0F, 10.0F, 1.5F, active.textDisabled());
             }
          } else {
-            vg.rect(cx, cy, cardW, cardH, 8.0F, Colors.withAlpha(active.accent(), hov ? 0.20F : 0.10F));
+            vg.rect(cx, cy, cardW, cardH, 8.0F, Colors.withAlpha(active.accent(), hov ? 0.22F : 0.12F));
             vg.rectOutline(cx, cy, cardW, cardH, 8.0F, 1.0F, Colors.withAlpha(active.accentBright(), hov ? 0.65F : 0.32F));
             String addLbl = "+ Custom Theme";
             float aw = vg.textWidth(addLbl, 12.0F);
@@ -609,7 +686,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    }
 
    // =========================================================================
-   // MODE 2: REDESIGNED DRAGGABLE CATEGORY COLUMNS
+   // MODE 2: REDESIGNED DRAGGABLE CATEGORY COLUMNS (+ SYNCED CORZ PORT)
    // =========================================================================
 
    private void renderColumnsMode(NVGRenderer vg, float mx, float my, float uiW, float uiH, float anim) {
@@ -626,14 +703,15 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
 
       // Floating Top Glass Dock
-      float dockW = Math.min(uiW - 32.0F, 720.0F);
+      float dockW = Math.min(uiW - 32.0F, 790.0F);
       float dockH = 44.0F;
       float dockX = (uiW - dockW) * 0.5F;
       float dockY = 12.0F;
 
-      vg.glow(dockX, dockY + 2.0F, dockW, dockH, 11.0F, 12.0F, Colors.withAlpha(0xFF000000, 0.45F));
+      vg.glow(dockX, dockY + 2.0F, dockW, dockH, 11.0F, 14.0F, Colors.withAlpha(0xFF000000, 0.45F));
+      vg.glow(dockX, dockY, dockW, dockH, 11.0F, 12.0F * theme.bloomStrength() + 4.0F, Colors.withAlpha(theme.accent(), 0.22F * theme.bloomStrength() + 0.06F));
       vg.rectGradient(dockX, dockY, dockW, dockH, 11.0F, theme.headerTop(), theme.headerBottom(), true);
-      vg.rectOutline(dockX, dockY, dockW, dockH, 11.0F, 1.0F, Colors.withAlpha(theme.accent(), 0.38F));
+      vg.rectOutline(dockX, dockY, dockW, dockH, 11.0F, 1.05F, Colors.withAlpha(theme.accentBright(), 0.44F));
 
       float cy = dockY + dockH * 0.5F;
       vg.aetherMark(dockX + 20.0F, cy, 8.5F, theme.accent(), theme.accentBright());
@@ -643,38 +721,51 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
       this.modeBtnH = 28.0F;
       String modeLbl = "Dashboard";
-      this.modeBtnW = vg.textWidth(modeLbl, 11.5F) + 26.0F;
+      this.modeBtnW = vg.textWidth(modeLbl, 11.5F) + 24.0F;
       this.modeBtnX = rightEdge - this.modeBtnW;
       this.modeBtnY = cy - this.modeBtnH * 0.5F;
       this.drawPillButton(vg, theme, this.modeBtnX, this.modeBtnY, this.modeBtnW, this.modeBtnH, modeLbl, true, this.hit(mx, my, this.modeBtnX, this.modeBtnY, this.modeBtnW, this.modeBtnH), false);
 
+      this.corzTabH = 28.0F;
+      String corzLbl = "Corz Port";
+      this.corzTabW = vg.textWidth(corzLbl, 11.5F) + 24.0F;
+      this.corzTabX = this.modeBtnX - 6.0F - this.corzTabW;
+      this.corzTabY = cy - this.corzTabH * 0.5F;
+      this.drawPillButton(vg, theme, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, corzLbl, STATE.isCorzPortOpen(), this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH), false);
+
       this.cfgBtnH = 28.0F;
       String cfgLbl = "Configs";
-      this.cfgBtnW = vg.textWidth(cfgLbl, 11.5F) + 22.0F;
-      this.cfgBtnX = this.modeBtnX - 6.0F - this.cfgBtnW;
+      this.cfgBtnW = vg.textWidth(cfgLbl, 11.5F) + 20.0F;
+      this.cfgBtnX = this.corzTabX - 6.0F - this.cfgBtnW;
       this.cfgBtnY = cy - this.cfgBtnH * 0.5F;
       this.drawPillButton(vg, theme, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, cfgLbl, false, this.hit(mx, my, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH), false);
 
       this.favBtnH = 28.0F;
       String favLbl = "Favs";
-      this.favBtnW = vg.textWidth(favLbl, 11.5F) + 28.0F;
+      this.favBtnW = vg.textWidth(favLbl, 11.5F) + 26.0F;
       this.favBtnX = this.cfgBtnX - 6.0F - this.favBtnW;
       this.favBtnY = cy - this.favBtnH * 0.5F;
       boolean favHov = this.hit(mx, my, this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH);
-      vg.rect(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, Colors.withAlpha(this.favouritesOnly ? theme.accent() : 0xFFFFFFFF, this.favouritesOnly ? 0.22F : (favHov ? 0.09F : 0.04F)));
+      vg.rect(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, Colors.withAlpha(this.favouritesOnly ? theme.accent() : 0xFFFFFFFF, this.favouritesOnly ? 0.24F : (favHov ? 0.09F : 0.04F)));
       vg.rectOutline(this.favBtnX, this.favBtnY, this.favBtnW, this.favBtnH, 7.0F, 1.0F, Colors.withAlpha(this.favouritesOnly ? theme.accentBright() : theme.borderSubtle(), this.favouritesOnly ? 0.65F : 0.9F));
       vg.star(this.favBtnX + 11.0F, cy, 4.5F, 2.0F, this.favouritesOnly ? 0xFFFBBF24 : theme.textMuted(), this.favouritesOnly);
       vg.text(favLbl, this.favBtnX + 20.0F, cy, 11.5F, this.favouritesOnly ? theme.textPrimary() : theme.textMuted());
 
       this.searchBoxH = 28.0F;
-      this.searchBoxX = dockX + 108.0F;
-      this.searchBoxW = Math.max(120.0F, this.favBtnX - 8.0F - this.searchBoxX);
+      this.searchBoxX = dockX + 106.0F;
+      this.searchBoxW = Math.max(110.0F, this.favBtnX - 8.0F - this.searchBoxX);
       this.searchBoxY = cy - this.searchBoxH * 0.5F;
       this.renderSearchPill(vg, theme, this.searchBoxX, this.searchBoxY, this.searchBoxW, this.searchBoxH);
+
+      if (this.corzPortWindow.isVisible()) {
+         float cw = this.corzPortWindow.preferredWidth(uiW);
+         float ch = Math.clamp(uiH - 96.0F, 380.0F, 540.0F);
+         this.corzPortWindow.render(vg, mx, my, uiW, uiH, uiW - cw - 18.0F, 68.0F, ch);
+      }
    }
 
    private void renderSearchPill(NVGRenderer vg, Theme theme, float x, float y, float w, float h) {
-      vg.rect(x, y, w, h, 7.0F, Colors.withAlpha(0xFF070A12, 0.72F));
+      vg.rect(x, y, w, h, 7.0F, Colors.withAlpha(0xFF07060D, 0.72F));
       vg.rectOutline(x, y, w, h, 7.0F, 1.0F, Colors.withAlpha(this.searchFocused ? theme.accentBright() : theme.borderSubtle(), this.searchFocused ? 0.85F : 0.9F));
       float cy = y + h * 0.5F;
       float ix = x + 13.0F;
@@ -697,10 +788,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    private void drawPillButton(NVGRenderer vg, Theme theme, float x, float y, float w, float h, String label, boolean accentTint, boolean hovered, boolean gridIcon) {
       int fill = accentTint
-         ? Colors.withAlpha(theme.accent(), hovered ? 0.28F : 0.18F)
+         ? Colors.withAlpha(theme.accent(), hovered ? 0.30F : 0.20F)
          : Colors.withAlpha(0xFFFFFFFF, hovered ? 0.10F : 0.05F);
       vg.rect(x, y, w, h, 7.0F, fill);
-      vg.rectOutline(x, y, w, h, 7.0F, 1.0F, Colors.withAlpha(accentTint || hovered ? theme.accentBright() : theme.borderSubtle(), accentTint ? 0.58F : (hovered ? 0.5F : 0.9F)));
+      vg.rectOutline(x, y, w, h, 7.0F, 1.0F, Colors.withAlpha(accentTint || hovered ? theme.accentBright() : theme.borderSubtle(), accentTint ? 0.65F : (hovered ? 0.5F : 0.9F)));
       float cy = y + h * 0.5F;
       if (gridIcon) {
          float gx = x + 9.0F;
@@ -756,7 +847,19 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
-      // Shared top controls: Search, Favs, Mode Toggle, Configs
+      // Route clicks inside synced Corz Port secondary UI first when open
+      if (this.corzPortWindow.mouseClicked(vg, mx, my, btn)) {
+         this.pressedInCorzPort = true;
+         this.searchFocused = false;
+         return true;
+      }
+
+      // Corz Port subtab toggle button (works in both Dashboard sidebar and Columns top dock)
+      if (btn == 0 && this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH)) {
+         this.toggleCorzPort();
+         return true;
+      }
+
       if (btn == 0 && this.hit(mx, my, this.modeBtnX, this.modeBtnY, this.modeBtnW, this.modeBtnH)) {
          this.toggleLayoutMode();
          return true;
@@ -787,7 +890,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return this.mouseClickedDashboard(mx, my, btn);
       }
 
-      // Columns mode panel interactions
       for (Panel p : this.panels) {
          if (p.headerHit(mx, my)) {
             this.bringToFront(p);
@@ -815,11 +917,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    }
 
    private boolean mouseClickedDashboard(float mx, float my, int btn) {
-      // Sidebar category & Themes clicks
       if (btn == 0 && mx >= this.winX && mx <= this.winX + SIDEBAR_W && my >= this.winY + TOPBAR_H && my < this.cfgBtnY) {
-         float navY = this.winY + TOPBAR_H + 28.0F;
+         float navY = this.winY + TOPBAR_H + 25.0F;
          for (Category cat : Category.values()) {
-            if (my >= navY && my <= navY + 31.0F) {
+            if (my >= navY && my <= navY + 30.0F) {
                STATE.selectCategory(cat);
                this.favouritesOnly = false;
                this.search.setLength(0);
@@ -827,10 +928,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
                UiSounds.select();
                return true;
             }
-            navY += 34.0F;
+            navY += 33.0F;
          }
-         navY += 22.0F;
-         if (my >= navY && my <= navY + 31.0F) {
+         // Advance past SUBTABS header (21) + Corz Port row (37) + CUSTOMIZE header (15)
+         navY += 21.0F + 37.0F + 15.0F;
+         if (my >= navY && my <= navY + 30.0F) {
             STATE.selectThemesTab();
             this.favouritesOnly = false;
             this.search.setLength(0);
@@ -841,7 +943,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
-      // Dragging the Dashboard window by its top header bar
       if (btn == 0 && this.hit(mx, my, this.winX, this.winY, this.winW, TOPBAR_H)) {
          this.draggingWindow = true;
          this.winOffsetX = mx - this.winX;
@@ -849,7 +950,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
-      // Dashboard body clicks
       float bodyX = this.winX + SIDEBAR_W;
       float bodyY = this.winY + TOPBAR_H;
       float bodyW = this.winW - SIDEBAR_W;
@@ -858,7 +958,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          boolean showThemes = STATE.isThemesTabSelected() && this.search.isEmpty() && !this.favouritesOnly;
          if (showThemes) {
             this.pressedInThemesStudio = true;
-            this.clickThemesStudio(mx, my, btn, bodyX + 16.0F, bodyY + 16.0F - this.dashScroll.value(), bodyW - 32.0F);
+            this.clickThemesStudio(mx, my, btn, bodyX + 14.0F, bodyY + 14.0F - this.dashScroll.value(), bodyW - 28.0F);
             return true;
          }
          for (ModuleEntry entry : this.collectDashboardEntries()) {
@@ -925,6 +1025,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float mx = this.uiX(event.x());
       float my = this.uiY(event.y());
+      if (this.pressedInCorzPort) {
+         this.corzPortWindow.mouseDragged(mx, my);
+         return true;
+      }
       if (this.draggingWindow) {
          this.windowMoved = true;
          this.customWinX = mx - this.winOffsetX;
@@ -962,6 +1066,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (this.configPanel.isOpen()) {
          return true;
       }
+      if (this.pressedInCorzPort) {
+         this.pressedInCorzPort = false;
+         this.corzPortWindow.mouseReleased();
+      }
       this.draggingWindow = false;
       if (this.pressedInThemesStudio) {
          this.pressedInThemesStudio = false;
@@ -998,6 +1106,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float mx = this.uiX(mouseX);
       float my = this.uiY(mouseY);
+      if (this.corzPortWindow.mouseScrolled(mx, my, scrollY)) {
+         return true;
+      }
       if (this.isDashboardMode()) {
          if (this.dashMaxScroll > 0.0F && this.hit(mx, my, this.winX + SIDEBAR_W, this.winY + TOPBAR_H, this.winW - SIDEBAR_W, this.winH - TOPBAR_H)) {
             this.dashScroll.setTarget(Math.clamp(this.dashScroll.getTarget() - (float)scrollY * 44.0F, 0.0F, this.dashMaxScroll));
@@ -1019,6 +1130,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public boolean keyPressed(KeyEvent event) {
       if (this.configPanel.isOpen()) {
          this.configPanel.keyPressed(event.key());
+         return true;
+      }
+      if (this.corzPortWindow.isListening() && this.corzPortWindow.keyPressed(event.key())) {
          return true;
       }
       if (this.dashAccentWidget.isListening()) {
@@ -1059,6 +1173,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.configPanel.charTyped(event.codepoint());
          return true;
       }
+      if (this.corzPortWindow.isListening() && this.corzPortWindow.charTyped(event.codepoint())) {
+         return true;
+      }
       if (this.dashAccentWidget.isListening()) {
          this.dashAccentWidget.charTyped(event.codepoint());
          return true;
@@ -1088,7 +1205,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public void openBlockPicker(BlockListSetting setting) {
       BlockGridModel model = new BlockGridModel(setting, () -> {
          BlockEspModule mod = AetherClient.modules().blockEsp;
-         return mod != null ? mod.lineColor.get() : 0xFF38BDF8;
+         return mod != null ? mod.lineColor.get() : 0xFFFF66C4;
       }, "Aether Client");
       this.minecraft.setScreen(new IconPickerScreen(this, model, AetherClient.themes()));
    }

@@ -2,6 +2,8 @@ package dev.aether;
 
 import dev.aether.config.ConfigManager;
 import dev.aether.config.ConfigStore;
+import dev.aether.corz.CorzPortBus;
+import dev.aether.corz.CorzPortProvider;
 import dev.aether.gui.ClickGuiScreen;
 import dev.aether.hud.HudManager;
 import dev.aether.module.Category;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class AetherClient implements ClientModInitializer {
    public static final String MOD_ID = "aetherclient";
    public static final String NAME = "Aether Client";
-   public static final String VERSION = "2.0.0";
+   public static final String VERSION = "2.1.0";
    public static final Logger LOGGER = LoggerFactory.getLogger("AetherClient");
    private static ModuleManager modules;
    private static ThemeManager themes;
@@ -122,6 +124,10 @@ public class AetherClient implements ClientModInitializer {
       });
       ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
          config.save();
+         CorzPortProvider corz = CorzPortBus.provider();
+         if (corz != null) {
+            corz.saveConfig();
+         }
          spotify.stop();
       });
    }

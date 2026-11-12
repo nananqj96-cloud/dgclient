@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "corzclient",
+  "version": "2.1.0",
+  "name": "Aether Corz Port",
+  "description": "Corz Port feature suite integrated into Aether Client.",
+  "authors": [
+    "Aether"
+  ],
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.corz.client.CorzClient"
+    ]
+  },
+  "mixins": [
+    "corz-client.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

@@ -1,0 +1,45 @@
+plugins {
+    id 'fabric-loom'
+}
+
+version = '2.1.0'
+group = 'com.corz'
+
+base {
+    archivesName = 'corzport'
+}
+
+repositories {
+    mavenCentral()
+}
+
+loom {
+    mixin {
+        useLegacyMixinAp = true
+        defaultRefmapName = 'corz-client-refmap.json'
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:1.21.11+build.4:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation project(':corz-api')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    // Preserve our complete enriched corz-client-refmap.json without Mixin AP overwriting it
+    options.compilerArgs.addAll(['-proc:none', '-nowarn'])
+}
+
+tasks.named('jar') {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
