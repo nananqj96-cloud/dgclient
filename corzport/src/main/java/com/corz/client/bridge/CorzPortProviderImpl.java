@@ -7,6 +7,7 @@ import com.corz.client.categories.settings.SelfDestruct;
 import com.corz.client.categories.theme.ThemeCustomizer;
 import com.corz.client.config.BooleanSetting;
 import com.corz.client.config.ColorSetting;
+import com.corz.client.config.ConfigListSetting;
 import com.corz.client.config.ConfigSetting;
 import com.corz.client.config.DoubleSetting;
 import com.corz.client.config.EnumSetting;
@@ -19,10 +20,11 @@ import com.corz.client.config.RangeSetting;
 import com.corz.client.config.StringBase;
 import com.corz.client.gui.ButtonBase;
 import com.corz.client.gui.MatrixMatricesScreen;
-import com.corz.client.gui.SideNudgeSchematic;
 import com.corz.client.inventory.ItemList;
+import com.corz.client.utils.DelegatingAutoEspBase;
 import com.corz.client.utils.FriendListBase;
 import com.corz.client.utils.IconsPngType;
+import com.corz.client.utils.PaletteBase;
 import dev.aether.corz.CorzModuleHandle;
 import dev.aether.corz.CorzPortProvider;
 import dev.aether.corz.CorzSettingHandle;
@@ -138,7 +140,11 @@ public final class CorzPortProviderImpl implements CorzPortProvider {
          if (s == null || s.isHiddenFromList()) {
             continue;
          }
-         if (s instanceof ItemList || s instanceof FriendListBase || s instanceof SideNudgeSchematic) {
+         if (s instanceof ItemList
+            || s instanceof FriendListBase
+            || s instanceof ConfigListSetting
+            || s instanceof DelegatingAutoEspBase
+            || s instanceof PaletteBase) {
             customStudio = true;
             String label = s.getSettingName();
             wrappedSettings.add(new CorzSettingHandle() {
