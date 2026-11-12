@@ -97,9 +97,10 @@ public final class ModuleManager {
     @EventHandler(priority = EventPriority.HIGH)
     public void onKey(KeyEvent event) {
         MinecraftClient mc = MinecraftClient.getInstance();
-        if (mc.currentScreen != null || event.getKey() <= 0) {
+        if (mc == null || mc.currentScreen != null || event.getKey() <= 0) {
             return;
         }
+        var screenBefore = mc.currentScreen;
         for (Module module : modules) {
             if (!module.getKeybind().isBound() || module.getKeybind().getValue() != event.getKey()) {
                 continue;
@@ -112,6 +113,12 @@ public final class ModuleManager {
                 }
             } else if (event.getAction() == GLFW.GLFW_PRESS) {
                 module.toggle();
+            }
+            // Prevent vanilla Keyboard#onKey from immediately forwarding the opening GLFW_PRESS
+            // into the newly opened Screen#keyPressed (which previously closed ClickGUI on the same frame).
+            if (mc.currentScreen != screenBefore && mc.currentScreen != null) {
+                event.cancel();
+                return;
             }
         }
     }

@@ -17,12 +17,18 @@ import org.lwjgl.glfw.GLFW;
  * Interactive drag-and-drop HUD Editor with center/edge snap guides and right-click visibility toggles.
  */
 public final class HudEditorScreen extends Screen {
+    private final boolean returnToClickGui;
     private HudElement dragging = null;
     private float dragOffsetX;
     private float dragOffsetY;
 
     public HudEditorScreen() {
+        this(true);
+    }
+
+    public HudEditorScreen(boolean returnToClickGui) {
         super(Text.literal("DGClient HUD Editor"));
+        this.returnToClickGui = returnToClickGui;
     }
 
     @Override
@@ -40,7 +46,11 @@ public final class HudEditorScreen extends Screen {
         Render2DUtil.setContext(context);
         ClickGuiModule guiMod = DGClient.getInstance().getModuleManager().get(ClickGuiModule.class);
         if (guiMod != null && guiMod.blurBackground.getValue()) {
-            this.applyBlur(context);
+            try {
+                this.applyBlur(context);
+            } catch (IllegalStateException ignored) {
+                // Another screen/overlay already blurred this frame on 1.21.11
+            }
         }
         Matrix3x2fStack ms = context.getMatrices();
         Render2DUtil.drawQuad(ms, 0, 0, this.width, this.height, 0x660A0F0C);
@@ -135,8 +145,9 @@ public final class HudEditorScreen extends Screen {
     @Override
     public void close() {
         DGClient.getInstance().getConfigManager().saveAll();
+        DGClient.getInstance().drainGuiKeyBindings();
         if (this.client != null) {
-            this.client.setScreen(DGClient.getInstance().getClickGuiScreen());
+            this.client.setScreen(returnToClickGui ? DGClient.getInstance().getClickGuiScreen() : null);
         }
     }
 }

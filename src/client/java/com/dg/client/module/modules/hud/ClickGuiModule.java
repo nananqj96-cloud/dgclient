@@ -43,8 +43,9 @@ public final class ClickGuiModule extends Module {
     @Override
     protected void onEnable() {
         DGFontRenderer.setUseCustomTtf(customFont.getValue());
-        if (mc != null) {
-            mc.setScreen(DGClient.getInstance().getClickGuiScreen());
+        DGClient inst = DGClient.getInstance();
+        if (inst != null) {
+            inst.openClickGui();
         }
         // ClickGuiModule acts as an instant screen opener; screen close persists config.
         setEnabled(false, false);

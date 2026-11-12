@@ -15,7 +15,8 @@ public abstract class ParticleManagerMixin {
     @Inject(
             method = "addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;",
             at = @At("HEAD"),
-            cancellable = true
+            cancellable = true,
+            require = 0
     )
     private void dgclient$onAddParticle(
             ParticleEffect parameters,

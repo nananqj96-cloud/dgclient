@@ -20,7 +20,7 @@ public abstract class LightmapTextureManagerMixin {
     @Unique
     private boolean dgclient$lastGammaState = false;
 
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tick", at = @At("TAIL"), require = 0)
     private void dgclient$onTick(CallbackInfo ci) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {
@@ -34,7 +34,7 @@ public abstract class LightmapTextureManagerMixin {
         }
     }
 
-    @Inject(method = "getBrightness(Lnet/minecraft/world/dimension/DimensionType;I)F", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getBrightness(Lnet/minecraft/world/dimension/DimensionType;I)F", at = @At("RETURN"), cancellable = true, require = 0)
     private static void dgclient$onGetBrightness(DimensionType type, int lightLevel, CallbackInfoReturnable<Float> cir) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {
@@ -46,7 +46,7 @@ public abstract class LightmapTextureManagerMixin {
         }
     }
 
-    @Inject(method = "getBrightness(FI)F", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getBrightness(FI)F", at = @At("RETURN"), cancellable = true, require = 0)
     private static void dgclient$onGetBrightnessAmbient(float ambientLight, int lightLevel, CallbackInfoReturnable<Float> cir) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class EntityRendererMixin<S extends EntityRenderState> {
-    @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderLabelIfPresent", at = @At("HEAD"), cancellable = true, require = 0)
     private void dgclient$onRenderLabel(
             S state,
             MatrixStack matrices,

@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "dgclient-gametest",
+	"version": "1.0.2",
+	"name": "DGClient Client GameTests",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"com.dg.client.gametest.DGClientGameTest"
+		]
+	},
+	"depends": {
+		"dgclient": "*"
+	}
+}

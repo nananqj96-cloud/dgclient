@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
-    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getPlayerName", at = @At("RETURN"), cancellable = true, require = 0)
     private void dgclient$onGetPlayerName(PlayerListEntry entry, CallbackInfoReturnable<Text> cir) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {
@@ -28,7 +28,7 @@ public abstract class PlayerListHudMixin {
         }
     }
 
-    @Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true, require = 0)
     private void dgclient$onRenderLatencyIcon(DrawContext context, int width, int x, int y, PlayerListEntry entry, CallbackInfo ci) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {

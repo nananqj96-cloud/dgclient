@@ -1,6 +1,6 @@
-# DGClient (`v1.0.1`)
+# DGClient (`v1.0.2`)
 
-**DGClient** is a standalone, client-only anarchy utility mod for **Minecraft 1.21.11 (Fabric)** built from scratch in **Java 21**. It features a custom neon-green & white ClickGUI (`Right Shift`), bundled FreeType TTF crisp typography, a drag-and-snap HUD editor, **48 standalone modules**, **ESP & Tracers**, an asynchronous 10-heuristic **Suspicious Chunk Detector (`BaseFinder`)**, and a diagnostic-driven **Y-0 Underground Bypass (`Y0Diagnostics` + `Y0Bypass`)**.
+**DGClient** is a standalone, client-only anarchy utility mod for **Minecraft 1.21.11 (Fabric)** built from scratch in **Java 21**. It features a custom neon-green & white ClickGUI (`Right Shift`, rebindable via Minecraft Controls, ClickGUI, or `.bind`), bundled FreeType TTF crisp typography, a drag-and-snap HUD editor, **49 standalone modules**, **ESP & Storage Tracers**, an asynchronous multi-indicator **Suspicious Chunk & Base Detector (`BaseFinder`)** with natural-structure suppression & spatial cluster deduplication, and a diagnostic-driven **Y-0 Underground Bypass (`Y0Diagnostics` + `Y0Bypass`)**.
 
 - **Zero external client dependencies** (completely original standalone codebase; no Meteor dependency).
 - **Strict Neon Green & White visual identity**: `#39FF14` / `#00FF88` neon emerald accents, `#FFFFFF` crisp white highlights, and `#0A0F0C`–`#121A15` translucent dark charcoal glass panels.
@@ -23,8 +23,8 @@
 
 1. Install **Minecraft 1.21.11** with **Fabric Loader `>= 0.19.5`** on **Java 21**.
 2. Download **[Fabric API `0.141.6+1.21.11`](https://modrinth.com/mod/fabric-api)** and place it in your instance's `mods/` folder.
-3. Download **`dgclient-1.0.1.jar`** from the **[GitHub Releases](https://github.com/nananqj96-cloud/dgclient/releases/tag/v1.0.1)** page and place it in `mods/`.
-4. Launch Minecraft and press **`Right Shift`** in-game (or click **`DGClient`** on the Title Screen) to open the ClickGUI.
+3. Download **`dgclient-1.0.2.jar`** from the **[GitHub Releases](https://github.com/nananqj96-cloud/dgclient/releases/tag/v1.0.2)** page and place it in `mods/`.
+4. Launch Minecraft and press **`Right Shift`** in-game (configurable in Minecraft *Options -> Controls -> Key Binds -> DGClient* or via `.bind ClickGUI <key>` / `.gui`) to open the ClickGUI.
 
 ---
 
@@ -38,7 +38,7 @@ cd dgclient
 
 The remapped production mod JAR is written to:
 ```text
-build/libs/dgclient-1.0.1.jar
+build/libs/dgclient-1.0.2.jar
 ```
 
 ---
@@ -58,7 +58,8 @@ All commands intercept client-side and **never** transmit to public server chat:
 | :--- | :--- |
 | `.help` | Lists all registered DGClient commands and syntax |
 | `.toggle <module>` (`.t`) | Toggles a module on or off |
-| `.bind <module> <key\|none>` | Binds a module to a keyboard key or clears it |
+| `.gui` (`.clickgui`) | Opens the DGClient ClickGUI directly from chat |
+| `.bind <module> <key\|none>` | Binds a module to a keyboard key (syncs with Minecraft Controls) |
 | `.friend <add\|remove\|list> [name]` | Manages green-highlighted friends across ESP, Tracers, AutoLog & Chat |
 | `.waypoint <add\|del\|list\|clear> ...` | Manages per-server & per-dimension waypoints (with 8:1 Nether sync) |
 | `.profile <list\|save\|load\|create\|delete\|reset>` | Switches, saves, or resets JSON config profiles in `config/dgclient/profiles/` |
@@ -92,23 +93,18 @@ All commands intercept client-side and **never** transmit to public server chat:
 - **BetterTabList** — Expanded player tab list with exact numeric `ms` ping badges & highlighted friends.
 - **PlayerESP** — `3D Box`, `Shader Glow Outline` (real GLSL `entity_outline` post-chain), `2D Box`, & `Corner Box` modes with friend awareness.
 - **EntityESP** — Independent toggles for Hostiles, Passives, Vehicles, Dropped Items, Projectiles, & End Crystals.
-- **StorageESP** — Highlights Chests, Trapped Chests, Ender Chests, Shulkers, Barrels, Hoppers, Furnaces, & Dispensers (integrates with `Y0Bypass` underground leaks).
+- **StorageESP** — Event-driven loaded-chunk container highlighter for Chests (with Double-Chest merging), Trapped Chests, Ender Chests, Shulkers, Barrels, Hoppers, Furnaces/Smokers/Blast Furnaces, Dispensers/Droppers, Brewing Stands, 1.21.11 Shelves/Chiseled Bookshelves, & Decorated Pots (integrates with `Y0Bypass` underground leaks).
+- **StorageTracers** — Independently configurable, bobbing-safe 360° 3D storage tracer lines rendered in a single batched GPU draw call with distance limits, per-container toggles, double-chest deduplication, and instant chunk/block unload updates.
 - **SpawnerESP** — Glowing spawner box + mob type label + `16m` activation sphere indicator.
-- **Tracers** — Smooth camera-bob-compensated lines from screen center/bottom with distance/friend/health green-white shading.
+- **Tracers** — Smooth camera-bob-compensated batched 3D lines from screen crosshair/bottom/top to entities.
 
 ### 2. Detect (`BaseFinder`, `Y0Diagnostics`, `Y0Bypass`)
-- **BaseFinder (`Suspicious Chunk Detector`)** — Asynchronous worker-pool scanner scoring chunks (`0–100%`) across **10 weighted, individually toggleable heuristics**:
-  1. *Player Activity Blocks* (chests, shulkers, barrels, ender chests, workstations, beds, signs, beacons)
-  2. *Redstone Activity* (dust, repeaters, comparators, observers, pistons, powered rails)
-  3. *Unnatural Cavities & Tunnels* (straight `1x2`/`2x2` corridors & shafts)
-  4. *Unnatural Manmade Blocks* (planks, cobble, bricks, glass, wool, terracotta, torches)
-  5. *Underground Light Anomalies* (non-lava artificial `BlockLight >= 9` below `Y=46`)
-  6. *Live Chunk Delta Tracking* (active block updates ticking inside the chunk)
-  7. *NewChunk / OldChunk Tells* (chunk-border flowing liquids & pre-1.18 `Y=1..4` bedrock signatures)
-  8. *Entity Clustering* (item frames, armor stands, boats, minecarts, villagers, named/tamed mobs)
-  9. *Portals & Highways* (obsidian frames & Nether/ice highways)
-  10. *Y-0 Leak Boost* (incorporates confirmed `Y0Bypass` underground storage/redstone/activity)
-  - Renders **passable glowing green/white 3D chunk boxes** (`Tight Bounds`, `Y-Range`, or `Full Column`) with floating `Score | Reasons | Distance` billboards, plus a dedicated **Detections Panel** inside the ClickGUI (`Sort`, `Create Waypoint`, `Ignore`, `Verify`, `Export JSON/CSV`).
+- **BaseFinder (`Suspicious Chunk & Base Detector`)** — Multi-indicator asynchronous chunk analyzer (`0–100%` score, `LOW`/`MEDIUM`/`HIGH` confidence tiers) requiring corroborated player activity while suppressing vanilla structure false positives (`1.21` Trial Chambers, Mineshafts, Dungeons, Villages, Ancient Cities, Ruined Portals, End Cities, Geodes) and ignoring isolated single blocks:
+  - *Storage & Workstation Clusters* (shulkers, ender chests, support-verified container clusters, hoppers, crafting/smithing/enchanting/anvil/bed base stations, written signs)
+  - *Automation & Farms* (observers, pistons, comparators, bubble-column elevators, player-modified spawner grinders, vertical kelp/bamboo columns)
+  - *Concealment & Excavation* (axis-rotated `X`/`Z` deepslate patches, sealed `1x1` dive shafts, straight tunnels)
+  - *Player Entities & Unnatural Builds* (non-elytra item frames, armor stands, traded/underground villagers, tamed pets, concrete/cherry/bamboo/sky builds, active portals & ice highways, `Y0Bypass` leaks)
+  - *Spatial Cluster Deduplication & Clean Visuals* — Merges adjacent flagged chunks of the same base into deduplicated clusters (`Cluster Merge Radius`), rate-limits alerts to once per cluster, and renders clutter-free `Flat Marker`, `Corner Brackets`, or `Compact Slice` chunk boundaries with distinct Low vs. High confidence styling.
 - **Y0Diagnostics** — Inspects incoming `ChunkData`, `LightUpdate`, `BlockUpdate`, `ChunkDeltaUpdate`, `BlockEntityUpdate`, `EntitySpawn`, `PlaySound`, `Particle`, and `WorldEvent` packets below `Y=0`, renders a live on-screen diagnostic verdict panel, runs N-chunk test sampling (`.y0 test 16`), writes timestamped logs to `config/dgclient/diagnostics/`, and auto-configures `Y0Bypass`.
 - **Y0Bypass** — Modular underground reconstruction engine combining 5 toggleable strategies into a confidence-scored `UndergroundStore` (`config/dgclient/y0_store/<server>.json`).
 

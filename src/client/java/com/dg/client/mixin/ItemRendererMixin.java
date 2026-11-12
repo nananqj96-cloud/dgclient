@@ -24,7 +24,7 @@ public abstract class ItemRendererMixin {
     @Unique
     private static boolean dgclient$renderingHandGlow = false;
 
-    @Inject(method = "renderItem", at = @At("TAIL"))
+    @Inject(method = "renderItem", at = @At("TAIL"), require = 0)
     private static void dgclient$afterRenderItem(
             ItemDisplayContext displayContext,
             MatrixStack matrices,

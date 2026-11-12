@@ -15,12 +15,15 @@ import com.dg.client.event.events.EntityEvent;
 import com.dg.client.event.events.Render2DEvent;
 import com.dg.client.event.events.Render3DEvent;
 import com.dg.client.gui.ClickGuiScreen;
+import com.dg.client.hud.HudEditorScreen;
 import com.dg.client.hud.HudManager;
 import com.dg.client.module.ModuleManager;
 import com.dg.client.module.modules.esp.EntityEspModule;
 import com.dg.client.module.modules.esp.PlayerEspModule;
 import com.dg.client.module.modules.esp.SpawnerEspModule;
+import com.dg.client.module.modules.esp.StorageBlockTracker;
 import com.dg.client.module.modules.esp.StorageEspModule;
+import com.dg.client.module.modules.esp.StorageTracersModule;
 import com.dg.client.module.modules.esp.TracersModule;
 import com.dg.client.module.modules.fun.HeadAnimationsModule;
 import com.dg.client.module.modules.fun.QueueNotifierModule;
@@ -69,10 +72,13 @@ import com.dg.client.render.Render2DUtil;
 import com.dg.client.render.Render3DUtil;
 import com.dg.client.render.font.DGFontRenderer;
 import com.dg.client.util.ColorUtil;
+import com.dg.client.util.KeyUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -80,12 +86,16 @@ import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Primary client-only entrypoint for DGClient (Minecraft 1.21.11, Fabric).
@@ -93,7 +103,7 @@ import org.joml.Matrix4f;
 public final class DGClient implements ClientModInitializer {
     public static final String MOD_ID = "dgclient";
     public static final String NAME = "DGClient";
-    public static final String VERSION = "1.0.1";
+    public static final String VERSION = "1.0.2";
 
     private static DGClient instance;
 
@@ -109,11 +119,17 @@ public final class DGClient implements ClientModInitializer {
     private final WaypointManager waypointManager = new WaypointManager();
     private final DetectionRegistry detectionRegistry = new DetectionRegistry();
     private final AsyncScannerPool scannerPool = new AsyncScannerPool();
+    private final StorageBlockTracker storageBlockTracker = new StorageBlockTracker();
     private final ModuleManager moduleManager = new ModuleManager();
     private final HudManager hudManager = new HudManager();
     private final CommandManager commandManager = new CommandManager();
     private final ServerRateTracker serverRateTracker = new ServerRateTracker();
     private final ConfigManager configManager = new ConfigManager();
+
+    private KeyBinding.Category keyCategory;
+    private KeyBinding openGuiKeyBinding;
+    private KeyBinding hudEditorKeyBinding;
+    private int lastSyncedGuiKey = GLFW.GLFW_KEY_RIGHT_SHIFT;
 
     private ClickGuiScreen clickGuiScreen;
     private volatile boolean ready = false;
@@ -128,6 +144,8 @@ public final class DGClient implements ClientModInitializer {
         DGLogger.info("Initializing {} v{} for Minecraft 1.21.11...", NAME, VERSION);
 
         Render3DUtil.initPipelines();
+        registerKeyBindings();
+        eventBus.subscribe(storageBlockTracker);
         moduleManager.init();
         registerModules();
 
@@ -135,11 +153,27 @@ public final class DGClient implements ClientModInitializer {
         commandManager.init();
         serverRateTracker.init();
         configManager.loadAll();
+        syncGuiKeybindFromModule();
 
         registerFabricHooks();
         this.ready = true;
-        DGLogger.info("{} v{} initialized ({} modules loaded, profile='{}').",
-                NAME, VERSION, moduleManager.getModules().size(), configManager.getActiveProfile());
+        DGLogger.info("{} v{} initialized ({} modules loaded, profile='{}', guiKey='{}').",
+                NAME, VERSION, moduleManager.getModules().size(),
+                configManager.getActiveProfile(), KeyUtil.getKeyName(getBoundGuiKeyCode()));
+    }
+
+    private void registerKeyBindings() {
+        keyCategory = KeyBinding.Category.create(Identifier.of(MOD_ID, "general"));
+        openGuiKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.dgclient.open_gui",
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                keyCategory
+        ));
+        hudEditorKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.dgclient.hud_editor",
+                GLFW.GLFW_KEY_UNKNOWN,
+                keyCategory
+        ));
     }
 
     private void registerModules() {
@@ -147,7 +181,7 @@ public final class DGClient implements ClientModInitializer {
         moduleManager.register(new ClickGuiModule());
         moduleManager.register(new HudModule());
 
-        // Phase 2: 18 Visual Modules
+        // Visual Modules
         moduleManager.register(new HandItemGlowModule());
         moduleManager.register(new FullbrightModule());
         moduleManager.register(new CustomCrosshairModule());
@@ -167,21 +201,22 @@ public final class DGClient implements ClientModInitializer {
         moduleManager.register(new WeatherParticleReducerModule());
         moduleManager.register(new BetterTabListModule());
 
-        // Phase 3: ESP & Tracers
+        // ESP & Tracers
         moduleManager.register(new PlayerEspModule());
         moduleManager.register(new EntityEspModule());
         moduleManager.register(new StorageEspModule());
+        moduleManager.register(new StorageTracersModule());
         moduleManager.register(new SpawnerEspModule());
         moduleManager.register(new TracersModule());
 
-        // Phase 4: Y-0 Diagnostics & Underground Bypass
+        // Y-0 Diagnostics & Underground Bypass
         moduleManager.register(new YZeroDiagnosticsModule());
         moduleManager.register(new YZeroBypassModule());
 
-        // Phase 5: Suspicious Chunk Detector ("BaseFinder")
+        // Suspicious Chunk Detector ("BaseFinder")
         moduleManager.register(new BaseFinderModule());
 
-        // Phase 6: Movement, World, Fun & Anarchy Utility Modules (20 modules)
+        // Movement, World, Fun & Utility Modules
         moduleManager.register(new AutoWalkModule());
         moduleManager.register(new ElytraHelperModule());
         moduleManager.register(new NoFallModule());
@@ -208,6 +243,9 @@ public final class DGClient implements ClientModInitializer {
     }
 
     private void registerFabricHooks() {
+        // Bi-directional sync and reliable tick polling for official 1.21.11 KeyBindings
+        ClientTickEvents.END_CLIENT_TICK.register(this::handleKeybindingTick);
+
         // Sodium-safe block outline suppression when BlockHighlightModule is active
         WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context, outlineRenderState) -> {
             BlockHighlightModule bh = moduleManager.get(BlockHighlightModule.class);
@@ -273,18 +311,20 @@ public final class DGClient implements ClientModInitializer {
             if (screen instanceof TitleScreen) {
                 ButtonWidget dgBtn = ButtonWidget.builder(
                         Text.literal("DGClient"),
-                        btn -> client.setScreen(getClickGuiScreen())
+                        btn -> openClickGui()
                 ).dimensions(scaledWidth - 88, 8, 80, 20).build();
                 Screens.getButtons(screen).add(dgBtn);
 
                 ScreenEvents.afterRender(screen).register((scr, drawContext, mouseX, mouseY, tickDelta) -> {
                     Render2DUtil.setContext(drawContext);
                     Matrix3x2fStack ms = drawContext.getMatrices();
-                    Render2DUtil.drawGaussianGlow(ms, 8.0f, 8.0f, 152.0f, 22.0f, 6.0f, 8.0f, ColorUtil.NEON_GREEN, 0.85f);
-                    Render2DUtil.drawRoundedRect(ms, 8.0f, 8.0f, 152.0f, 22.0f, 6.0f, ColorUtil.PANEL_DARK);
-                    Render2DUtil.drawRoundedOutline(ms, 8.0f, 8.0f, 152.0f, 22.0f, 6.0f, 1.0f, ColorUtil.NEON_GREEN);
+                    String keyBadge = KeyUtil.getKeyName(getBoundGuiKeyCode());
+                    float boxW = Math.max(156.0f, 126.0f + DGFontRenderer.getWidth(keyBadge, false, 0.78f));
+                    Render2DUtil.drawGaussianGlow(ms, 8.0f, 8.0f, boxW, 22.0f, 6.0f, 8.0f, ColorUtil.NEON_GREEN, 0.85f);
+                    Render2DUtil.drawRoundedRect(ms, 8.0f, 8.0f, boxW, 22.0f, 6.0f, ColorUtil.PANEL_DARK);
+                    Render2DUtil.drawRoundedOutline(ms, 8.0f, 8.0f, boxW, 22.0f, 6.0f, 1.0f, ColorUtil.NEON_GREEN);
                     DGFontRenderer.drawAnimatedGradientText(drawContext, "DGClient v" + VERSION, 15.0f, 15.0f, true, 0.96f, 1.2f, 0.8f);
-                    DGFontRenderer.drawScaledText(drawContext, "RSHIFT", 122.0f, 15.5f, ColorUtil.SOFT_WHITE, false, 0.78f, false);
+                    DGFontRenderer.drawScaledText(drawContext, keyBadge, 122.0f, 15.5f, ColorUtil.SOFT_WHITE, false, 0.78f, false);
                 });
             }
         });
@@ -297,8 +337,106 @@ public final class DGClient implements ClientModInitializer {
         });
     }
 
+    private void handleKeybindingTick(MinecraftClient client) {
+        if (openGuiKeyBinding == null) {
+            return;
+        }
+        // Keep Minecraft Controls screen & ClickGuiModule's KeybindSetting in sync
+        ClickGuiModule guiModule = moduleManager.get(ClickGuiModule.class);
+        int boundCode = getBoundGuiKeyCode();
+        if (guiModule != null) {
+            int moduleCode = guiModule.getKeybind().getValue();
+            if (boundCode != lastSyncedGuiKey) {
+                guiModule.getKeybind().setValue(boundCode);
+                lastSyncedGuiKey = boundCode;
+            } else if (moduleCode != lastSyncedGuiKey) {
+                syncGuiKeybindFromModule();
+            }
+        }
+
+        boolean wantOpenGui = false;
+        while (openGuiKeyBinding.wasPressed()) {
+            wantOpenGui = true;
+        }
+        if (wantOpenGui && client.currentScreen == null) {
+            openClickGui();
+        }
+
+        if (hudEditorKeyBinding != null) {
+            boolean wantHudEditor = false;
+            while (hudEditorKeyBinding.wasPressed()) {
+                wantHudEditor = true;
+            }
+            if (wantHudEditor && client.currentScreen == null) {
+                client.setScreen(new HudEditorScreen(false));
+            }
+        }
+    }
+
+    /**
+     * Synchronizes {@link ClickGuiModule#getKeybind()} into the registered Minecraft {@link KeyBinding}.
+     */
+    public void syncGuiKeybindFromModule() {
+        if (openGuiKeyBinding == null) {
+            return;
+        }
+        ClickGuiModule guiModule = moduleManager.get(ClickGuiModule.class);
+        int code = guiModule != null ? guiModule.getKeybind().getValue() : GLFW.GLFW_KEY_RIGHT_SHIFT;
+        InputUtil.Key key = code <= 0
+                ? InputUtil.UNKNOWN_KEY
+                : InputUtil.Type.KEYSYM.createFromCode(code);
+        openGuiKeyBinding.setBoundKey(key);
+        KeyBinding.updateKeysByCode();
+        lastSyncedGuiKey = code;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc != null && mc.options != null) {
+            mc.options.write();
+        }
+    }
+
+    public int getBoundGuiKeyCode() {
+        if (openGuiKeyBinding == null) {
+            return GLFW.GLFW_KEY_RIGHT_SHIFT;
+        }
+        InputUtil.Key k = KeyBindingHelper.getBoundKeyOf(openGuiKeyBinding);
+        return k == null || k == InputUtil.UNKNOWN_KEY ? GLFW.GLFW_KEY_UNKNOWN : k.getCode();
+    }
+
+    public void drainGuiKeyBindings() {
+        if (openGuiKeyBinding != null) {
+            openGuiKeyBinding.setPressed(false);
+            while (openGuiKeyBinding.wasPressed()) {
+                // drain queued presses so opening via KeyboardMixin never triggers a second toggle on tick
+            }
+        }
+    }
+
+    public void openClickGui() {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        if (mc == null) {
+            return;
+        }
+        drainGuiKeyBindings();
+        ClickGuiScreen screen = getClickGuiScreen();
+        if (mc.currentScreen != screen) {
+            mc.setScreen(screen);
+        }
+    }
+
+    public KeyBinding getOpenGuiKeyBinding() {
+        return openGuiKeyBinding;
+    }
+
     public boolean isReady() {
         return ready;
+    }
+
+    public Matrix4f getLastViewMatrix() {
+        return lastViewMatrix;
+    }
+
+    public Matrix4f getLastProjectionMatrix() {
+        return lastProjectionMatrix;
     }
 
     public EventBus getEventBus() {
@@ -323,6 +461,10 @@ public final class DGClient implements ClientModInitializer {
 
     public AsyncScannerPool getScannerPool() {
         return scannerPool;
+    }
+
+    public StorageBlockTracker getStorageBlockTracker() {
+        return storageBlockTracker;
     }
 
     public ModuleManager getModuleManager() {

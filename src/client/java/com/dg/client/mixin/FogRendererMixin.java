@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(FogRenderer.class)
 public abstract class FogRendererMixin {
-    @Inject(method = "getFogColor", at = @At("RETURN"))
+    @Inject(method = "getFogColor", at = @At("RETURN"), require = 0)
     private void dgclient$onGetFogColor(
             Camera camera,
             float tickProgress,
@@ -50,7 +50,8 @@ public abstract class FogRendererMixin {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/render/fog/FogRenderer;applyFog(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;FFFFFF)V"
-            )
+            ),
+            require = 0
     )
     private void dgclient$modifyFogRanges(Args args) {
         DGClient inst = DGClient.getInstance();

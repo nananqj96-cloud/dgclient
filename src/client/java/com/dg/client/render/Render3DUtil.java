@@ -25,13 +25,23 @@ import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
+import java.util.List;
+
 /**
  * 3D world rendering utilities built natively on Minecraft 1.21.11's Blaze3D RenderPipeline
  * & RenderLayer system: filled boxes, vertical gradient boxes, outlines, corner-bracket ESP boxes,
- * multi-pass glowing outlines, 3D lines with color gradients, camera-facing floating labels,
+ * clean flat chunk markers, batched single-draw-call 3D tracer lines, camera-facing floating labels,
  * and 3D-to-2D screen projection.
  */
 public final class Render3DUtil {
+    public record LineSegment(
+            Vec3d startWorld,
+            Vec3d endWorld,
+            int startColor,
+            int endColor,
+            float width
+    ) {
+    }
     private static final RenderPipeline ESP_QUADS_THROUGH_WALLS_PIPELINE = RenderPipelines.register(
             RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET)
                     .withLocation(Identifier.of("dgclient", "pipeline/esp_quads_xray"))
@@ -304,6 +314,165 @@ public final class Render3DUtil {
         buf.vertex(mat, x1, y1, z1).color(startColor).normal(entry, nx, ny, nz).lineWidth(lw);
         buf.vertex(mat, x2, y2, z2).color(endColor).normal(entry, nx, ny, nz).lineWidth(lw);
         flushLayer(buf, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
+    }
+
+    /**
+     * Renders an entire collection of 3D tracer/wireframe lines in ONE single GPU draw call
+     * so hundreds of loaded storage containers never cause draw-call bottlenecks or FPS drops.
+     */
+    public static void drawLinesBatch(
+            MatrixStack matrices,
+            Camera camera,
+            List<LineSegment> segments,
+            boolean throughWalls
+    ) {
+        if (segments == null || segments.isEmpty()) {
+            return;
+        }
+        Vec3d cam = camera.getCameraPos();
+        MatrixStack.Entry entry = matrices.peek();
+        Matrix4f mat = entry.getPositionMatrix();
+        BufferBuilder buf = Tessellator.getInstance().begin(
+                VertexFormat.DrawMode.LINES,
+                VertexFormats.POSITION_COLOR_NORMAL_LINE_WIDTH
+        );
+        int emitted = 0;
+        for (LineSegment seg : segments) {
+            float x1 = (float) (seg.startWorld.x - cam.x);
+            float y1 = (float) (seg.startWorld.y - cam.y);
+            float z1 = (float) (seg.startWorld.z - cam.z);
+            float x2 = (float) (seg.endWorld.x - cam.x);
+            float y2 = (float) (seg.endWorld.y - cam.y);
+            float z2 = (float) (seg.endWorld.z - cam.z);
+            float dx = x2 - x1;
+            float dy = y2 - y1;
+            float dz = z2 - z1;
+            float len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (len < 1e-4f) {
+                continue;
+            }
+            float lw = MathUtil.clamp(seg.width, 0.8f, 5.0f);
+            float nx = dx / len;
+            float ny = dy / len;
+            float nz = dz / len;
+            buf.vertex(mat, x1, y1, z1).color(seg.startColor).normal(entry, nx, ny, nz).lineWidth(lw);
+            buf.vertex(mat, x2, y2, z2).color(seg.endColor).normal(entry, nx, ny, nz).lineWidth(lw);
+            emitted++;
+        }
+        if (emitted > 0) {
+            flushLayer(buf, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
+        } else {
+            buf.endNullable();
+        }
+    }
+
+    /**
+     * Unprojects a normalized screen anchor (ndcY = 0 for crosshair, -0.90 for bottom, +0.90 for top)
+     * into a 3D world point ~0.10m in front of the camera lens, cancelling view-bobbing and FOV distortion
+     * while supporting full 360-degree 3D tracer lines (including targets behind the player).
+     */
+    public static Vec3d computeTracerOrigin(
+            Camera camera,
+            Matrix4f viewMatrix,
+            Matrix4f projectionMatrix,
+            float ndcX,
+            float ndcY
+    ) {
+        Vec3d camPos = camera.getCameraPos();
+        if (viewMatrix != null && projectionMatrix != null) {
+            float detP = projectionMatrix.determinant();
+            float detV = viewMatrix.determinant();
+            if (Math.abs(detP) > 1e-9f && Math.abs(detV) > 1e-9f) {
+                Matrix4f invProj = new Matrix4f(projectionMatrix).invert();
+                Matrix4f invView = new Matrix4f(viewMatrix).invert();
+                Vector4f p = new Vector4f(ndcX, ndcY, 0.0f, 1.0f).mul(invProj).mul(invView);
+                if (Math.abs(p.w) > 1e-6f) {
+                    p.div(p.w);
+                    return new Vec3d(camPos.x + p.x, camPos.y + p.y, camPos.z + p.z);
+                }
+            }
+        }
+        Vec3d forward = Vec3d.fromPolar(camera.getPitch(), camera.getYaw());
+        return camPos.add(forward.multiply(0.20));
+    }
+
+    /**
+     * Draws a clean, non-cluttered 16x16 horizontal chunk boundary marker with clear visual
+     * hierarchy between low-, medium-, and high-confidence suspicious chunk detections.
+     */
+    public static void drawFlatChunkMarker(
+            MatrixStack matrices,
+            Camera camera,
+            int chunkX,
+            int chunkZ,
+            double markerY,
+            int outlineColor,
+            int accentColor,
+            int fillAlpha,
+            float lineWidth,
+            float cornerPostHeight,
+            boolean highConfidence,
+            boolean throughWalls
+    ) {
+        Vec3d cam = camera.getCameraPos();
+        float inset = 0.08f;
+        float x1 = (float) ((chunkX << 4) + inset - cam.x);
+        float z1 = (float) ((chunkZ << 4) + inset - cam.z);
+        float x2 = (float) ((chunkX << 4) + 16.0 - inset - cam.x);
+        float z2 = (float) ((chunkZ << 4) + 16.0 - inset - cam.z);
+        float y = (float) (markerY - cam.y);
+
+        MatrixStack.Entry entry = matrices.peek();
+        Matrix4f mat = entry.getPositionMatrix();
+
+        if (fillAlpha > 0) {
+            int fillCol = ColorUtil.withAlpha(outlineColor, fillAlpha);
+            BufferBuilder quadBuf = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            quadBuf.vertex(mat, x1, y, z1).color(fillCol);
+            quadBuf.vertex(mat, x1, y, z2).color(fillCol);
+            quadBuf.vertex(mat, x2, y, z2).color(fillCol);
+            quadBuf.vertex(mat, x2, y, z1).color(fillCol);
+            flushLayer(quadBuf, throughWalls ? LAYER_QUADS_XRAY : LAYER_QUADS_DEPTH);
+        }
+
+        float lw = MathUtil.clamp(lineWidth, 1.0f, 4.0f);
+        BufferBuilder lineBuf = Tessellator.getInstance().begin(
+                VertexFormat.DrawMode.LINES,
+                VertexFormats.POSITION_COLOR_NORMAL_LINE_WIDTH
+        );
+
+        // Outer chunk boundary perimeter
+        edge(lineBuf, entry, x1, y, z1, x2, y, z1, outlineColor, lw);
+        edge(lineBuf, entry, x2, y, z1, x2, y, z2, outlineColor, lw);
+        edge(lineBuf, entry, x2, y, z2, x1, y, z2, outlineColor, lw);
+        edge(lineBuf, entry, x1, y, z2, x1, y, z1, outlineColor, lw);
+
+        // Subtle vertical corner ticks for medium/high confidence readability at shallow viewing angles
+        if (cornerPostHeight > 0.05f) {
+            float yTop = y + cornerPostHeight;
+            edge(lineBuf, entry, x1, y, z1, x1, yTop, z1, accentColor, lw);
+            edge(lineBuf, entry, x2, y, z1, x2, yTop, z1, accentColor, lw);
+            edge(lineBuf, entry, x2, y, z2, x2, yTop, z2, accentColor, lw);
+            edge(lineBuf, entry, x1, y, z2, x1, yTop, z2, accentColor, lw);
+        }
+
+        // High-confidence inner corner chevrons (crisp white/accent double-frame cue)
+        if (highConfidence) {
+            float in = 0.55f;
+            float br = 2.6f;
+            float yIn = y + 0.03f;
+            float ix1 = x1 + in, iz1 = z1 + in, ix2 = x2 - in, iz2 = z2 - in;
+            edge(lineBuf, entry, ix1, yIn, iz1, ix1 + br, yIn, iz1, accentColor, lw);
+            edge(lineBuf, entry, ix1, yIn, iz1, ix1, yIn, iz1 + br, accentColor, lw);
+            edge(lineBuf, entry, ix2, yIn, iz1, ix2 - br, yIn, iz1, accentColor, lw);
+            edge(lineBuf, entry, ix2, yIn, iz1, ix2, yIn, iz1 + br, accentColor, lw);
+            edge(lineBuf, entry, ix2, yIn, iz2, ix2 - br, yIn, iz2, accentColor, lw);
+            edge(lineBuf, entry, ix2, yIn, iz2, ix2, yIn, iz2 - br, accentColor, lw);
+            edge(lineBuf, entry, ix1, yIn, iz2, ix1 + br, yIn, iz2, accentColor, lw);
+            edge(lineBuf, entry, ix1, yIn, iz2, ix1, yIn, iz2 - br, accentColor, lw);
+        }
+
+        flushLayer(lineBuf, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
     }
 
     public static float[] projectToScreen(

@@ -74,6 +74,14 @@ public final class CommandManager {
         }
     }
 
+    public boolean tryExecute(String rawMessage) {
+        if (rawMessage == null || !rawMessage.startsWith(PREFIX) || rawMessage.length() <= PREFIX.length()) {
+            return false;
+        }
+        handleCommandLine(rawMessage.substring(PREFIX.length()).trim());
+        return true;
+    }
+
     public void handleCommandLine(String line) {
         if (line.isEmpty()) {
             return;
@@ -134,6 +142,7 @@ public final class CommandManager {
             }
             if (keyStr.equalsIgnoreCase("none") || keyStr.equalsIgnoreCase("clear")) {
                 mod.getKeybind().unbind();
+                DGClient.getInstance().syncGuiKeybindFromModule();
                 DGClient.getInstance().getConfigManager().saveAll();
                 ChatUtil.accent(mod.getName(), "Keybind cleared.");
                 return;
@@ -144,9 +153,17 @@ public final class CommandManager {
                 return;
             }
             mod.getKeybind().setValue(code);
+            DGClient.getInstance().syncGuiKeybindFromModule();
             DGClient.getInstance().getConfigManager().saveAll();
             ChatUtil.accent(mod.getName(), "Bound to " + KeyUtil.getKeyName(code));
         }, "b");
+
+        register("gui", ".gui", "Opens DGClient's ClickGUI screen", args -> {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            if (mc != null) {
+                mc.send(() -> DGClient.getInstance().openClickGui());
+            }
+        }, "clickgui");
 
         register("friend", ".friend <add|remove|list|clear> [player]", "Manages your friends list", args -> {
             FriendManager fm = DGClient.getInstance().getFriendManager();
@@ -278,11 +295,12 @@ public final class CommandManager {
         register("basefinder", ".basefinder <list|export|import|clear>", "Inspects or exports BaseFinder detections", args -> {
             var reg = DGClient.getInstance().getDetectionRegistry();
             if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
-                List<DetectionEntry> all = reg.getAll();
-                ChatUtil.accent("BaseFinder Detections:", all.size() + " chunks recorded.");
-                for (int i = 0; i < Math.min(6, all.size()); i++) {
-                    DetectionEntry d = all.get(i);
-                    ChatUtil.accent(String.format(Locale.ROOT, "  [%.0f%%]", d.getScore()),
+                List<DetectionEntry> clusters = reg.getDeduplicatedClusters();
+                ChatUtil.accent("BaseFinder Clusters:", clusters.size() + " bases (" + reg.getAll().size() + " chunks).");
+                for (int i = 0; i < Math.min(6, clusters.size()); i++) {
+                    DetectionEntry d = clusters.get(i);
+                    String sz = d.getClusterSize() > 1 ? " [" + d.getClusterSize() + "ch]" : "";
+                    ChatUtil.accent(String.format(Locale.ROOT, "  [%s %.0f%%%s]", d.getConfidence().name(), d.getScore(), sz),
                             String.format(Locale.ROOT, "X:%d Z:%d (%s)", d.getCenterX(), d.getCenterZ(), d.getFormattedReasons()));
                 }
                 return;

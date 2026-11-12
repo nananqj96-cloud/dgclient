@@ -114,6 +114,7 @@ public final class ClickGuiScreen extends Screen {
     private float openProgress = 0.0f;
     private String currentTooltip = null;
     private boolean layoutInitialized = false;
+    private long openedAtNano = 0L;
 
     public ClickGuiScreen() {
         super(Text.literal("DGClient"));
@@ -126,10 +127,15 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
+    public void markJustOpened() {
+        this.openedAtNano = System.nanoTime();
+    }
+
     @Override
     protected void init() {
         super.init();
         openProgress = 0.05f;
+        openedAtNano = System.nanoTime();
         ConfigManager cm = DGClient.getInstance().getConfigManager();
         if (!layoutInitialized) {
             layoutInitialized = true;
@@ -175,7 +181,11 @@ public final class ClickGuiScreen extends Screen {
         Render2DUtil.setContext(context);
         ClickGuiModule guiMod = DGClient.getInstance().getModuleManager().get(ClickGuiModule.class);
         if (guiMod == null || guiMod.blurBackground.getValue()) {
-            this.applyBlur(context);
+            try {
+                this.applyBlur(context);
+            } catch (IllegalStateException ignored) {
+                // Guard against GuiRenderState single-blur-per-frame constraint if another mod already blurred
+            }
         }
 
         float animSpeed = 0.18f * getAnimSpeed();
@@ -611,7 +621,7 @@ public final class ClickGuiScreen extends Screen {
     private void renderDetectionsWindow(DrawContext ctx, int mx, int my, float glow) {
         Matrix3x2fStack ms = ctx.getMatrices();
         var reg = DGClient.getInstance().getDetectionRegistry();
-        List<DetectionEntry> all = new ArrayList<>(reg.getAll());
+        List<DetectionEntry> all = new ArrayList<>(reg.getDeduplicatedClusters());
         MinecraftClient mc = MinecraftClient.getInstance();
         if (sortDetectionsByDistance && mc.player != null) {
             all.sort(Comparator.comparingDouble(d -> mc.player.squaredDistanceTo(d.getCenterX(), d.getCenterY(), d.getCenterZ())));
@@ -623,7 +633,7 @@ public final class ClickGuiScreen extends Screen {
         Render2DUtil.drawRoundedRect(ms, detX, detY, w, h, 7.0f, ColorUtil.PANEL_DARK);
         Render2DUtil.drawRoundedOutline(ms, detX, detY, w, h, 7.0f, 1.2f, ColorUtil.NEON_GREEN);
 
-        DGFontRenderer.drawScaledText(ctx, "BASEFINDER DETECTIONS (" + all.size() + ")", detX + 8.0f, detY + 6.5f, ColorUtil.NEON_GREEN, true, 0.86f, false);
+        DGFontRenderer.drawScaledText(ctx, "BASEFINDER CLUSTERS (" + all.size() + ")", detX + 8.0f, detY + 6.5f, ColorUtil.NEON_GREEN, true, 0.86f, false);
 
         float ctrlY = detY + 20.0f;
         drawTopButton(ctx, sortDetectionsByDistance ? "Sort: Dist" : "Sort: Score", detX + 6.0f, ctrlY, 68.0f, 14.0f, false, mx, my);
@@ -636,7 +646,7 @@ public final class ClickGuiScreen extends Screen {
         Render2DUtil.pushScissor(ctx, detX + 4.0f, listTop, w - 8.0f, listH);
 
         if (all.isEmpty()) {
-            DGFontRenderer.drawCenteredText(ctx, "No suspicious chunks recorded yet.", detX + w * 0.5f, listTop + 56.0f, ColorUtil.MUTED_WHITE, false, 0.84f);
+            DGFontRenderer.drawCenteredText(ctx, "No suspicious base clusters recorded yet.", detX + w * 0.5f, listTop + 56.0f, ColorUtil.MUTED_WHITE, false, 0.84f);
         } else {
             float maxScroll = Math.max(0.0f, all.size() * 24.0f - listH);
             detScroll = MathUtil.clamp(detScroll, 0.0f, maxScroll);
@@ -646,8 +656,11 @@ public final class ClickGuiScreen extends Screen {
                         : (d.getStatus() == DetectionEntry.Status.IGNORED ? 0x88101412 : ColorUtil.PANEL_ELEVATED);
                 Render2DUtil.drawRoundedRect(ms, detX + 6.0f, ry, w - 12.0f, 22.0f, 3.5f, rowCol);
                 double dist = mc.player != null ? Math.sqrt(mc.player.squaredDistanceTo(d.getCenterX(), mc.player.getY(), d.getCenterZ())) : 0.0;
-                String head = String.format(Locale.ROOT, "%.0f%%  X:%d Z:%d (%.0fm)", d.getScore(), d.getCenterX(), d.getCenterZ(), dist);
-                DGFontRenderer.drawScaledText(ctx, head, detX + 10.0f, ry + 3.0f, ColorUtil.PURE_WHITE, true, 0.78f, false);
+                String clusterBadge = d.getClusterSize() > 1 ? " [" + d.getClusterSize() + "ch]" : "";
+                String head = String.format(Locale.ROOT, "%s %.0f%%%s  X:%d Z:%d (%.0fm)",
+                        d.getConfidence().name(), d.getScore(), clusterBadge, d.getCenterX(), d.getCenterZ(), dist);
+                int headCol = d.getConfidence().ordinal() >= 2 ? ColorUtil.NEON_GREEN : ColorUtil.PURE_WHITE;
+                DGFontRenderer.drawScaledText(ctx, head, detX + 10.0f, ry + 3.0f, headCol, true, 0.76f, false);
                 DGFontRenderer.drawScaledText(ctx, d.getFormattedReasons(), detX + 10.0f, ry + 12.2f, ColorUtil.MINT_GREEN, false, 0.72f, false);
 
                 // Row buttons: [WP] [V] [X]
@@ -952,7 +965,7 @@ public final class ClickGuiScreen extends Screen {
             return true;
         }
 
-        List<DetectionEntry> all = new ArrayList<>(reg.getAll());
+        List<DetectionEntry> all = new ArrayList<>(reg.getDeduplicatedClusters());
         MinecraftClient mc = MinecraftClient.getInstance();
         if (sortDetectionsByDistance && mc.player != null) {
             all.sort(Comparator.comparingDouble(d -> mc.player.squaredDistanceTo(d.getCenterX(), d.getCenterY(), d.getCenterZ())));
@@ -1073,6 +1086,7 @@ public final class ClickGuiScreen extends Screen {
                 listeningBind.setValue(keyCode);
             }
             listeningBind = null;
+            DGClient.getInstance().syncGuiKeybindFromModule();
             return true;
         }
         if (searchFocused) {
@@ -1139,9 +1153,17 @@ public final class ClickGuiScreen extends Screen {
             searchFocused = true;
             return true;
         }
-        ClickGuiModule guiMod = DGClient.getInstance().getModuleManager().get(ClickGuiModule.class);
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE || (guiMod != null && keyCode == guiMod.getKeybind().getValue())) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             close();
+            return true;
+        }
+        ClickGuiModule guiMod = DGClient.getInstance().getModuleManager().get(ClickGuiModule.class);
+        int guiKey = guiMod != null ? guiMod.getKeybind().getValue() : GLFW.GLFW_KEY_RIGHT_SHIFT;
+        if (keyCode == guiKey || keyCode == DGClient.getInstance().getBoundGuiKeyCode()) {
+            // Debounce against same-keypress / same-frame bounce when opening ClickGUI
+            if (System.nanoTime() - openedAtNano >= 50_000_000L) {
+                close();
+            }
             return true;
         }
         return super.keyPressed(input);
@@ -1182,6 +1204,8 @@ public final class ClickGuiScreen extends Screen {
         for (CategoryPanel p : panels) {
             cm.setPanelPosition(p.category.name(), p.x, p.y, p.expanded);
         }
+        DGClient.getInstance().syncGuiKeybindFromModule();
+        DGClient.getInstance().drainGuiKeyBindings();
         cm.saveAll();
         super.close();
     }

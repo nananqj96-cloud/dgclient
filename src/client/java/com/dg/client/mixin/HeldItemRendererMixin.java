@@ -20,7 +20,7 @@ public abstract class HeldItemRendererMixin {
     @Unique
     private boolean dgclient$pushedViewmodel = false;
 
-    @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true, require = 0)
     private void dgclient$beforeRenderItem(
             AbstractClientPlayerEntity player,
             float tickProgress,
@@ -63,7 +63,7 @@ public abstract class HeldItemRendererMixin {
         }
     }
 
-    @Inject(method = "renderFirstPersonItem", at = @At("RETURN"))
+    @Inject(method = "renderFirstPersonItem", at = @At("RETURN"), require = 0)
     private void dgclient$afterRenderItem(
             AbstractClientPlayerEntity player,
             float tickProgress,
