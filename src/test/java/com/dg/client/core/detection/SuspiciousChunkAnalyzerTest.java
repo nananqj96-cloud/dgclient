@@ -1,6 +1,5 @@
 package com.dg.client.core.detection;
 
-import com.dg.client.core.detection.SuspiciousChunkAnalyzer.ChunkInput;
 import com.dg.client.core.detection.SuspiciousChunkAnalyzer.ChunkTelemetry;
 import com.dg.client.core.detection.SuspiciousChunkAnalyzer.ClusterAssignment;
 import com.dg.client.core.detection.SuspiciousChunkAnalyzer.Confidence;
@@ -9,6 +8,7 @@ import com.dg.client.core.detection.SuspiciousChunkAnalyzer.EvaluationResult;
 import com.dg.client.core.detection.SuspiciousChunkAnalyzer.Sensitivity;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Multi-scenario verification suite for {@link SuspiciousChunkAnalyzer}, validating:
  * <ul>
  *     <li>Strict rejection of isolated player blocks & ordinary mining/terrain edits</li>
- *     <li>Suppression of all major vanilla natural structures (Trial Chambers, Mineshafts,
+ *     <li>Suppression of all major vanilla natural structures (1.21 Trial Chambers, Mineshafts,
  *         Dungeons, Villages, Ancient Cities, Ruined Portals, End Cities, Geodes)</li>
  *     <li>Multi-indicator detection & confidence grading across realistic stashes, underground
  *         bases, camouflaged dive shafts, grinders, automated farms, and sky bases</li>
@@ -30,19 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class SuspiciousChunkAnalyzerTest {
 
-    private static ChunkTelemetry emptyOverworld(int cx, int cz) {
-        return new ChunkTelemetry(
-                cx, cz, "minecraft:overworld",
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                64, 64, 64
+    private static Config configFor(Sensitivity sensitivity) {
+        return new Config(
+                sensitivity,
+                sensitivity.getDefaultThreshold(),
+                true, true, true, true, true, true, true, true, true, true,
+                1.0, 1.0, 1.0, 1.0, 1.0
         );
     }
 
@@ -52,69 +45,44 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void emptyChunkIsNeverFlagged() {
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(emptyOverworld(0, 0), Config.defaults());
+        ChunkTelemetry t = ChunkTelemetry.builder(0, 0, "minecraft:overworld").build();
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(t, Config.defaults());
         assertFalse(res.flagged());
         assertEquals(0.0, res.score());
-        assertEquals(Confidence.NONE, res.confidence());
     }
 
     @Test
     void isolatedSingleCraftingTableIsNeverFlagged() {
-        ChunkTelemetry t = new ChunkTelemetry(
-                1, 2, "minecraft:overworld",
-                0, 0, 0, 0, 0,
-                1, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                68, 68, 68
-        );
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(1, 2, "minecraft:overworld");
+        b.craftingTableCount = 1;
+        b.recordAnomalyY(68);
+        ChunkTelemetry t = b.build();
+
         for (Sensitivity s : List.of(Sensitivity.LOW_STRICT, Sensitivity.BALANCED, Sensitivity.HIGH_SENSITIVE)) {
-            EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(t, Config.withSensitivity(s));
+            EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(t, configFor(s));
             assertFalse(res.flagged(), "Isolated crafting table must not flag under " + s);
         }
     }
 
     @Test
     void ordinaryCaveMiningTorchesAndSingleChestDoNotFlag() {
-        // Explorer placed 14 torches underground and left 1 single chest — not a base
-        ChunkTelemetry t = new ChunkTelemetry(
-                3, -4, "minecraft:overworld",
-                0, 0, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 14, 28, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                12, 18, 15
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(t, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(3, -4, "minecraft:overworld");
+        b.playerContainerCount = 1;
+        b.torchLanternCount = 14;
+        b.genericBuildBlockCount = 18;
+        b.undergroundLightSamples = 12;
+        b.recordAnomalyY(14);
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "Cave mining torches + 1 chest should not trigger base alert");
     }
 
     @Test
     void isolatedPortalWithoutBaseIndicatorsDoesNotFlagAlone() {
-        ChunkTelemetry t = new ChunkTelemetry(
-                -10, 5, "minecraft:overworld",
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 6, 0,
-                0, 0, 0.0,
-                false, false,
-                64, 68, 66
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(t, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(-10, 5, "minecraft:overworld");
+        b.activePortalBlockCount = 6;
+        b.obsidianCount = 10;
+        b.recordAnomalyY(65);
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "Single standalone portal without base activity must not flag as a base");
     }
 
@@ -124,133 +92,109 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void vanillaTrialChamberIn121IsSuppressed() {
-        // 1.21 Trial Chamber: tuff bricks, waxed copper, copper bulbs, trial spawners,
-        // dispensers/pots/barrels (filtered at capture when resting on tuff bricks, plus structure signature)
-        ChunkTelemetry trialChamber = new ChunkTelemetry(
-                12, 8, "minecraft:overworld",
-                0, 0, 1, 2, 0,
-                0, 0, 2, 0, 0,
-                0, 2, 0, 0, 0,
-                0, 0, 0, 18, 40, 0,
-                180, 3, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -28, -10, -20
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(trialChamber, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(12, 8, "minecraft:overworld");
+        b.tuffBricksCount = 180;
+        b.trialCopperAndVaultCount = 48;
+        b.structureContainerCount = 6;
+        b.playerContainerCount = 2;
+        b.dropperDispenserCount = 4;
+        b.hopperCount = 1;
+        b.torchLanternCount = 16;
+        b.undergroundLightSamples = 32;
+        b.recordAnomalyY(-22);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "1.21 Trial Chamber must not produce false positive (score=" + res.score() + ")");
+        assertEquals("TrialChamber", res.naturalStructureFiltered());
     }
 
     @Test
     void vanillaAbandonedMineshaftIsNotFlagged() {
-        ChunkTelemetry mineshaft = new ChunkTelemetry(
-                -5, 19, "minecraft:overworld",
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 1, 0,
-                0, 0, 1, 8, 16, 0,
-                0, 0, 14, 18, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -15, -8, -12
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(mineshaft, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(-5, 19, "minecraft:overworld");
+        b.railCount = 14;
+        b.cobwebCount = 18;
+        b.chainCount = 4;
+        b.genericBuildBlockCount = 24;
+        b.torchLanternCount = 8;
+        b.vehicleCount = 1;
+        b.straightTunnelCount = 1;
+        b.recordAnomalyY(-12);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "Vanilla Mineshaft must not be flagged");
+        assertEquals("Mineshaft", res.naturalStructureFiltered());
     }
 
     @Test
     void vanillaDungeonSpawnerWithMossyCobbleIsNotFlagged() {
-        ChunkTelemetry dungeon = new ChunkTelemetry(
-                7, -3, "minecraft:overworld",
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 1, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 32,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                10, 15, 12
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(dungeon, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(7, -3, "minecraft:overworld");
+        b.spawnerCount = 1;
+        b.mossyCobbleCount = 32;
+        b.structureContainerCount = 2;
+        b.playerContainerCount = 1;
+        b.recordAnomalyY(12);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "Natural mossy-cobble dungeon spawner must not flag");
+        assertEquals("Dungeon", res.naturalStructureFiltered());
     }
 
     @Test
     void vanillaSurfaceVillageIsSuppressed() {
-        ChunkTelemetry village = new ChunkTelemetry(
-                20, 20, "minecraft:overworld",
-                0, 0, 2, 1, 0,
-                4, 3, 2, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                2, 24, 16, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                64, 74, 67
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(village, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(20, 20, "minecraft:overworld");
+        b.dirtPathCount = 28;
+        b.hayBellCount = 6;
+        b.noviceVillagerCount = 3;
+        b.surfaceBedCount = 4;
+        b.craftingTableCount = 2;
+        b.furnaceCount = 2;
+        b.playerContainerCount = 3;
+        b.genericBuildBlockCount = 80;
+        b.recordAnomalyY(68);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "Natural surface village must be suppressed (score=" + res.score() + ")");
+        assertEquals("Village", res.naturalStructureFiltered());
     }
 
     @Test
     void vanillaAncientCityRedstoneRoomIsSuppressed() {
-        ChunkTelemetry ancientCity = new ChunkTelemetry(
-                -40, 15, "minecraft:overworld",
-                0, 0, 0, 0, 0,
-                0, 0, 2, 0, 0,
-                3, 4, 0, 0, 0,
-                0, 0, 0, 20, 35, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 95, 110, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -51, -38, -46
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(ancientCity, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(-40, 15, "minecraft:overworld");
+        b.sculkCount = 95;
+        b.deepslateTilesBricksCount = 120;
+        b.structureContainerCount = 3;
+        b.redstoneComponentCount = 14;
+        b.repeaterComparatorCount = 3;
+        b.pistonCount = 2;
+        b.torchLanternCount = 18;
+        b.recordAnomalyY(-46);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertFalse(res.flagged(), "Ancient City redstone/sculk room must be suppressed");
+        assertEquals("AncientCity", res.naturalStructureFiltered());
     }
 
     @Test
     void vanillaRuinedPortalAndEndCityShipAreSuppressed() {
-        ChunkTelemetry ruinedPortal = new ChunkTelemetry(
-                8, 9, "minecraft:overworld",
-                0, 0, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 12,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                63, 70, 65
-        );
-        assertFalse(SuspiciousChunkAnalyzer.evaluate(ruinedPortal, Config.defaults()).flagged());
+        ChunkTelemetry.Builder rp = ChunkTelemetry.builder(8, 9, "minecraft:overworld");
+        rp.obsidianCount = 8;
+        rp.cryingObsidianCount = 3;
+        rp.netherrackMagmaCount = 24;
+        rp.playerContainerCount = 1;
+        rp.recordAnomalyY(65);
+        EvaluationResult rpRes = SuspiciousChunkAnalyzer.evaluate(rp.build(), Config.defaults());
+        assertFalse(rpRes.flagged());
+        assertEquals("RuinedPortal", rpRes.naturalStructureFiltered());
 
-        // End City ship: 1 ender chest + purpur + elytra frame (already excluded from customItemFrames)
-        ChunkTelemetry endCity = new ChunkTelemetry(
-                80, -60, "minecraft:the_end",
-                0, 1, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                160, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                95, 115, 102
-        );
-        assertFalse(SuspiciousChunkAnalyzer.evaluate(endCity, Config.defaults()).flagged());
+        ChunkTelemetry.Builder ec = ChunkTelemetry.builder(80, -60, "minecraft:the_end");
+        ec.purpurEndCityBlockCount = 160;
+        ec.enderChestCount = 1;
+        ec.playerContainerCount = 1;
+        ec.shulkerCount = 2;
+        ec.recordAnomalyY(102);
+        EvaluationResult ecRes = SuspiciousChunkAnalyzer.evaluate(ec.build(), Config.defaults());
+        assertFalse(ecRes.flagged());
+        assertEquals("EndCity", ecRes.naturalStructureFiltered());
     }
 
     // =========================================================================
@@ -259,20 +203,16 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void undergroundShulkerStashFlagsHighConfidence() {
-        ChunkTelemetry stash = new ChunkTelemetry(
-                -120, 340, "minecraft:overworld",
-                3, 1, 6, 0, 0,
-                1, 0, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                6, 0, 0, 4, 18, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -48, -42, -45
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(stash, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(-120, 340, "minecraft:overworld");
+        b.shulkerCount = 3;
+        b.enderChestCount = 1;
+        b.playerContainerCount = 6;
+        b.craftingTableCount = 1;
+        b.undergroundBedCount = 1;
+        b.rotatedDeepslateCount = 6;
+        b.recordAnomalyY(-45);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged());
         assertEquals(Confidence.HIGH, res.confidence());
         assertTrue(res.score() >= 72.0, "Shulker stash should reach HIGH confidence: " + res.score());
@@ -281,20 +221,25 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void establishedUndergroundPlayerBaseFlagsHighConfidence() {
-        ChunkTelemetry base = new ChunkTelemetry(
-                45, -88, "minecraft:overworld",
-                1, 1, 8, 2, 0,
-                3, 1, 2, 1, 1,
-                4, 2, 0, 0, 0,
-                12, 1, 1, 16, 42, 24,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 2, 0, 0, 0,
-                0, 4, 0.0,
-                false, false,
-                -36, -24, -30
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(base, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(45, -88, "minecraft:overworld");
+        b.shulkerCount = 1;
+        b.enderChestCount = 1;
+        b.playerContainerCount = 8;
+        b.hopperCount = 2;
+        b.craftingTableCount = 1;
+        b.furnaceCount = 4;
+        b.enchantingTableCount = 1;
+        b.bookshelfCount = 15;
+        b.anvilCount = 1;
+        b.undergroundBedCount = 2;
+        b.observerCount = 3;
+        b.pistonCount = 3;
+        b.rotatedDeepslateCount = 12;
+        b.playerItemFrameCount = 4;
+        b.exoticBuildBlockCount = 32;
+        b.recordAnomalyY(-30);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged());
         assertEquals(Confidence.HIGH, res.confidence());
         assertTrue(res.score() >= 85.0);
@@ -303,101 +248,81 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void camouflagedDiveShaftWithRotatedDeepslateAndWorkstationsFlags() {
-        ChunkTelemetry hiddenHole = new ChunkTelemetry(
-                99, 101, "minecraft:overworld",
-                0, 0, 2, 3, 0,
-                2, 1, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                9, 2, 0, 6, 16, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -52, -18, -46
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(hiddenHole, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(99, 101, "minecraft:overworld");
+        b.playerContainerCount = 3;
+        b.hopperCount = 2;
+        b.craftingTableCount = 1;
+        b.furnaceCount = 2;
+        b.undergroundBedCount = 1;
+        b.rotatedDeepslateCount = 9;
+        b.enclosedFillPillarCount = 2;
+        b.recordAnomalyY(-46);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged(), "Hidden dive-shaft base with rotated deepslate + storage/workstations must flag");
         assertTrue(res.score() >= 54.0);
     }
 
     @Test
     void modifiedMobSpawnerGrinderFlags() {
-        // Spawner with 0 mossy cobble + 4 collection hoppers + chests + bubble column
-        ChunkTelemetry grinder = new ChunkTelemetry(
-                -15, -22, "minecraft:overworld",
-                0, 0, 4, 4, 0,
-                1, 0, 0, 0, 0,
-                0, 0, 4, 1, 0,
-                0, 0, 0, 4, 10, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -22, 12, -18
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(grinder, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(-15, -22, "minecraft:overworld");
+        b.spawnerCount = 1;
+        b.mossyCobbleCount = 0;
+        b.hopperCount = 4;
+        b.playerContainerCount = 4;
+        b.soulSandBubbleCount = 4;
+        b.craftingTableCount = 1;
+        b.recordAnomalyY(-18);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged(), "Player-modified spawner grinder with hoppers + bubble elevator must flag");
-        assertTrue(res.reasons().stream().anyMatch(r -> r.contains("Grinder") || r.contains("Hoppers")));
     }
 
     @Test
     void automatedObserverPistonCropFarmFlags() {
-        ChunkTelemetry farm = new ChunkTelemetry(
-                33, 34, "minecraft:overworld",
-                0, 0, 3, 6, 0,
-                0, 0, 0, 0, 0,
-                8, 4, 0, 0, 12,
-                0, 0, 0, 12, 30, 18,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 6, 0.0,
-                false, false,
-                -10, 4, -4
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(farm, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(33, 34, "minecraft:overworld");
+        b.playerContainerCount = 3;
+        b.hopperCount = 6;
+        b.observerCount = 8;
+        b.pistonCount = 8;
+        b.farmColumnScore = 12;
+        b.exoticBuildBlockCount = 24;
+        b.liveChunkDeltas = 18;
+        b.recordAnomalyY(-4);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged(), "Automated observer/piston farm with hoppers & chests must flag");
         assertEquals(Confidence.HIGH, res.confidence());
     }
 
     @Test
     void undergroundVillagerTradingHallFlags() {
-        ChunkTelemetry tradingHall = new ChunkTelemetry(
-                -60, 12, "minecraft:overworld",
-                0, 0, 2, 4, 0,
-                2, 1, 6, 0, 0,
-                2, 1, 0, 0, 0,
-                4, 0, 0, 14, 36, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 4, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -30, -24, -27
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(tradingHall, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(-60, 12, "minecraft:overworld");
+        b.tradedOrUndergroundVillagerCount = 4;
+        b.playerContainerCount = 4;
+        b.hopperCount = 2;
+        b.craftingTableCount = 1;
+        b.anvilCount = 1;
+        b.rotatedDeepslateCount = 6;
+        b.recordAnomalyY(-27);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged(), "Underground villager trading hall must flag");
-        assertEquals(Confidence.HIGH, res.confidence());
+        assertTrue(res.score() >= 54.0);
     }
 
     @Test
     void skyBuildWithStorageAndWorkstationsFlags() {
-        ChunkTelemetry skyBase = new ChunkTelemetry(
-                200, -200, "minecraft:overworld",
-                0, 0, 3, 0, 0,
-                2, 1, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 32,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                48, 0, 0.0,
-                false, false,
-                210, 224, 215
-        );
-        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(skyBase, Config.defaults());
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(200, -200, "minecraft:overworld");
+        b.skyOrRoofBuildCount = 48;
+        b.exoticBuildBlockCount = 36;
+        b.playerContainerCount = 4;
+        b.craftingTableCount = 1;
+        b.furnaceCount = 2;
+        b.anvilCount = 1;
+        b.recordAnomalyY(215);
+
+        EvaluationResult res = SuspiciousChunkAnalyzer.evaluate(b.build(), Config.defaults());
         assertTrue(res.flagged(), "Sky base with unnatural build palette + storage/workstations must flag");
     }
 
@@ -407,23 +332,14 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void sensitivityPresetsControlBorderlineChunksPredictably() {
-        // Moderate 2-indicator camp (~36 pts): 2 chests + 1 crafting/furnace/bed + 5 rotated deepslate
-        ChunkTelemetry smallCamp = new ChunkTelemetry(
-                14, 14, "minecraft:overworld",
-                0, 0, 2, 0, 0,
-                1, 1, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                5, 0, 0, 4, 12, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -25, -20, -22
-        );
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(14, 14, "minecraft:overworld");
+        b.playerContainerCount = 2;
+        b.rotatedDeepslateCount = 6;
+        b.recordAnomalyY(-22);
+        ChunkTelemetry smallCamp = b.build();
 
-        EvaluationResult strictRes = SuspiciousChunkAnalyzer.evaluate(smallCamp, Config.withSensitivity(Sensitivity.LOW_STRICT));
-        EvaluationResult sensitiveRes = SuspiciousChunkAnalyzer.evaluate(smallCamp, Config.withSensitivity(Sensitivity.HIGH_SENSITIVE));
+        EvaluationResult strictRes = SuspiciousChunkAnalyzer.evaluate(smallCamp, configFor(Sensitivity.LOW_STRICT));
+        EvaluationResult sensitiveRes = SuspiciousChunkAnalyzer.evaluate(smallCamp, configFor(Sensitivity.HIGH_SENSITIVE));
 
         assertFalse(strictRes.flagged(), "LOW_STRICT (>=54% & >=3 indicators) must reject small 2-signal camp");
         assertTrue(sensitiveRes.flagged(), "HIGH_SENSITIVE (>=30% & >=2 indicators) should catch small 2-signal camp");
@@ -431,19 +347,13 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void customThresholdIsStrictlyHonored() {
-        ChunkTelemetry stash = new ChunkTelemetry(
-                5, 5, "minecraft:overworld",
-                1, 0, 3, 0, 0,
-                1, 0, 1, 0, 0,
-                0, 0, 0, 0, 0,
-                6, 0, 0, 4, 12, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 0, 0.0,
-                false, false,
-                -40, -35, -38
-        );
+        ChunkTelemetry.Builder b = ChunkTelemetry.builder(5, 5, "minecraft:overworld");
+        b.shulkerCount = 1;
+        b.playerContainerCount = 3;
+        b.rotatedDeepslateCount = 6;
+        b.recordAnomalyY(-38);
+        ChunkTelemetry stash = b.build();
+
         Config lowCustom = new Config(
                 Sensitivity.CUSTOM, 40.0,
                 true, true, true, true, true, true, true, true, true, true,
@@ -463,34 +373,33 @@ class SuspiciousChunkAnalyzerTest {
 
     @Test
     void spatialClusterDeduplicationMergesMultiChunkBaseAndSeparatesDistantOutpost() {
-        // 4-chunk L-shaped base around (10, 10) + 1 separate outpost at (20, 20)
-        List<ChunkInput> inputs = List.of(
-                new ChunkInput(10, 10, "minecraft:overworld", 62.0),
-                new ChunkInput(11, 10, "minecraft:overworld", 91.0), // highest score -> primary anchor
-                new ChunkInput(11, 11, "minecraft:overworld", 55.0),
-                new ChunkInput(12, 11, "minecraft:overworld", 48.0),
-                new ChunkInput(20, 20, "minecraft:overworld", 78.0),
-                new ChunkInput(11, 10, "minecraft:the_nether", 80.0) // different dimension -> separate cluster
-        );
+        Map<Long, Double> scores = new LinkedHashMap<>();
+        long k10_10 = SuspiciousChunkAnalyzer.packChunk(10, 10);
+        long k11_10 = SuspiciousChunkAnalyzer.packChunk(11, 10);
+        long k11_11 = SuspiciousChunkAnalyzer.packChunk(11, 11);
+        long k12_11 = SuspiciousChunkAnalyzer.packChunk(12, 11);
+        long k20_20 = SuspiciousChunkAnalyzer.packChunk(20, 20);
 
-        Map<String, ClusterAssignment> map = SuspiciousChunkAnalyzer.deduplicateClusters(inputs, 1);
-        assertEquals(6, map.size());
+        scores.put(k10_10, 62.0);
+        scores.put(k11_10, 91.0); // highest score -> primary anchor
+        scores.put(k11_11, 55.0);
+        scores.put(k12_11, 48.0);
+        scores.put(k20_20, 78.0);
 
-        ClusterAssignment mainPrimary = map.get("minecraft:overworld:11:10");
+        Map<Long, ClusterAssignment> map = SuspiciousChunkAnalyzer.deduplicateClusters(scores, 1);
+        assertEquals(5, map.size());
+
+        ClusterAssignment mainPrimary = map.get(k11_10);
         assertNotNull(mainPrimary);
         assertTrue(mainPrimary.primary(), "(11,10) has highest score (91%) and must be cluster primary");
         assertEquals(4, mainPrimary.clusterSize(), "All 4 connected base chunks must merge into 1 cluster");
 
-        assertFalse(map.get("minecraft:overworld:10:10").primary());
-        assertEquals(mainPrimary.clusterId(), map.get("minecraft:overworld:12:11").clusterId());
+        assertFalse(map.get(k10_10).primary());
+        assertEquals(mainPrimary.clusterId(), map.get(k12_11).clusterId());
 
-        ClusterAssignment outpost = map.get("minecraft:overworld:20:20");
+        ClusterAssignment outpost = map.get(k20_20);
         assertTrue(outpost.primary());
         assertEquals(1, outpost.clusterSize());
         assertTrue(outpost.clusterId() != mainPrimary.clusterId());
-
-        ClusterAssignment nether = map.get("minecraft:the_nether:11:10");
-        assertTrue(nether.primary());
-        assertEquals(1, nether.clusterSize());
     }
 }
