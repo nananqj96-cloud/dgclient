@@ -92,7 +92,7 @@ public final class ScreenshotToolModule extends Module {
             coords = String.format(Locale.ROOT, "X:%d Y:%d Z:%d",
                     mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
         }
-        String line1 = "DGClient v" + DGClient.MOD_VERSION + "  |  " + server;
+        String line1 = "DGClient v" + DGClient.VERSION + "  |  " + server;
         String line2 = LocalDateTime.now().format(STAMP_FMT) + "  |  " + coords;
 
         float w = Math.max(DGFontRenderer.getWidth(line1, true, 0.92f), DGFontRenderer.getWidth(line2, false, 0.82f)) + 22.0f;

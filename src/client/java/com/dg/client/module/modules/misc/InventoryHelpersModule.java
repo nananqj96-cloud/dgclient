@@ -136,7 +136,7 @@ public final class InventoryHelpersModule extends Module {
         ctx.getMatrices().translate(0.0f, 0.0f, 450.0f);
 
         Render2DUtil.drawGaussianGlow(ctx.getMatrices(), x, y, boxW, boxH, 5.0f, 7.0f, ColorUtil.NEON_GREEN, 0.75f);
-        Render2DUtil.drawRoundedRect(ctx.getMatrices(), x, y, boxW, boxH, 5.0f, ColorUtil.BG_CHARCOAL);
+        Render2DUtil.drawRoundedRect(ctx.getMatrices(), x, y, boxW, boxH, 5.0f, ColorUtil.PANEL_DARK);
         Render2DUtil.drawRoundedOutline(ctx.getMatrices(), x, y, boxW, boxH, 5.0f, 1.2f, ColorUtil.NEON_GREEN);
         DGFontRenderer.drawScaledText(ctx, hovered.getName().getString(), x + 6.0f, y + 4.5f, ColorUtil.NEON_GREEN, true, 0.8f, false);
 
@@ -145,7 +145,7 @@ public final class InventoryHelpersModule extends Module {
                 int idx = row * 9 + col;
                 int sx = Math.round(x + 6.0f + col * 18.0f);
                 int sy = Math.round(y + 16.0f + row * 18.0f);
-                Render2DUtil.drawRect(ctx.getMatrices(), sx, sy, 16.0f, 16.0f, ColorUtil.PANEL_ELEVATED);
+                Render2DUtil.drawQuad(ctx.getMatrices(), sx, sy, 16.0f, 16.0f, ColorUtil.PANEL_ELEVATED);
                 ItemStack slotStack = items.get(idx);
                 if (!slotStack.isEmpty()) {
                     ctx.drawItem(slotStack, sx, sy);
