@@ -3,13 +3,12 @@ package com.dg.client.mixin;
 import com.dg.client.DGClient;
 import com.dg.client.module.modules.render.BlockHighlightModule;
 import com.dg.client.module.modules.render.WeatherParticleReducerModule;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.LightmapTextureManager;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import net.minecraft.client.render.FrameGraphBuilder;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.state.OutlineRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,12 +20,12 @@ public abstract class WorldRendererMixin {
     private void dgclient$onDrawBlockOutline(
             MatrixStack matrices,
             VertexConsumer vertexConsumer,
-            Entity entity,
             double cameraX,
             double cameraY,
             double cameraZ,
-            BlockPos pos,
-            BlockState state,
+            OutlineRenderState state,
+            int color,
+            float lineWidth,
             CallbackInfo ci
     ) {
         DGClient inst = DGClient.getInstance();
@@ -39,7 +38,7 @@ public abstract class WorldRendererMixin {
     }
 
     @Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)
-    private void dgclient$onRenderWeather(LightmapTextureManager manager, float tickDelta, double cameraX, double cameraY, double cameraZ, CallbackInfo ci) {
+    private void dgclient$onRenderWeather(FrameGraphBuilder frameGraphBuilder, GpuBufferSlice fogBuffer, CallbackInfo ci) {
         DGClient inst = DGClient.getInstance();
         if (inst != null && inst.isReady()) {
             WeatherParticleReducerModule mod = inst.getModuleManager().get(WeatherParticleReducerModule.class);

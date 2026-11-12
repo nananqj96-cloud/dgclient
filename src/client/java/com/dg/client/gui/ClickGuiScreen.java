@@ -25,10 +25,13 @@ import com.dg.client.util.ColorUtil;
 import com.dg.client.util.KeyUtil;
 import com.dg.client.util.MathUtil;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.nio.file.Path;
@@ -169,9 +172,10 @@ public final class ClickGuiScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        Render2DUtil.setContext(context);
         ClickGuiModule guiMod = DGClient.getInstance().getModuleManager().get(ClickGuiModule.class);
         if (guiMod == null || guiMod.blurBackground.getValue()) {
-            this.applyBlur(delta);
+            this.applyBlur(context);
         }
 
         float animSpeed = 0.18f * getAnimSpeed();
@@ -179,7 +183,7 @@ public final class ClickGuiScreen extends Screen {
         float openEase = MathUtil.easeOutCubic(openProgress);
 
         float dimAlpha = guiMod != null ? guiMod.dimOpacity.getValue().floatValue() : 0.55f;
-        MatrixStack ms = context.getMatrices();
+        Matrix3x2fStack ms = context.getMatrices();
         Render2DUtil.drawQuad(ms, 0, 0, this.width, this.height,
                 ColorUtil.rgba(8, 13, 10, Math.round(255.0f * dimAlpha * openEase)));
 
@@ -196,18 +200,18 @@ public final class ClickGuiScreen extends Screen {
         float scaledMy = mouseY * invScale;
         float maxPanelBottom = (this.height * invScale) - 18.0f;
 
-        ms.push();
+        ms.pushMatrix();
         float introScale = uiScale * (0.94f + 0.06f * openEase);
         float centerShiftX = (this.width * (1.0f - (0.94f + 0.06f * openEase))) * 0.5f;
         float centerShiftY = (this.height * (1.0f - (0.94f + 0.06f * openEase))) * 0.5f;
-        ms.translate(centerShiftX, centerShiftY, 0.0f);
-        ms.scale(introScale, introScale, 1.0f);
+        ms.translate(centerShiftX, centerShiftY);
+        ms.scale(introScale, introScale);
 
         for (CategoryPanel panel : panels) {
             renderCategoryPanel(context, panel, scaledMx, scaledMy, maxPanelBottom, glow, animSpeed, uiScale, centerShiftX, centerShiftY);
         }
 
-        ms.pop();
+        ms.popMatrix();
 
         if (showProfilesPanel) {
             renderProfilesWindow(context, mouseX, mouseY, glow);
@@ -225,7 +229,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void renderTopBar(DrawContext context, int mouseX, int mouseY, float glow) {
-        MatrixStack ms = context.getMatrices();
+        Matrix3x2fStack ms = context.getMatrices();
         float barW = Math.min(this.width - 28.0f, 640.0f);
         float barX = (this.width - barW) * 0.5f;
         float barY = 8.0f;
@@ -284,7 +288,7 @@ public final class ClickGuiScreen extends Screen {
             float shiftX,
             float shiftY
     ) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         panel.expandAnim = MathUtil.approach(panel.expandAnim, panel.expanded ? 1.0f : 0.0f, animSpeed);
         float expandEase = MathUtil.easeOutCubic(panel.expandAnim);
 
@@ -359,7 +363,7 @@ public final class ClickGuiScreen extends Screen {
             float glow,
             float animSpeed
     ) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         float x = panel.x + 3.0f;
         float w = PANEL_WIDTH - 6.0f;
         boolean inClip = (my >= clipTop && my <= clipBottom);
@@ -425,7 +429,7 @@ public final class ClickGuiScreen extends Screen {
             boolean inClip,
             float glow
     ) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         float cy = y;
 
         // Keybind row
@@ -520,7 +524,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void renderSlider(DrawContext ctx, String name, String valText, float norm, float x, float y, float w, float glow) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         DGFontRenderer.drawScaledText(ctx, name, x + 2.0f, y + 1.5f, ColorUtil.SOFT_WHITE, false, 0.76f, false);
         float vw = DGFontRenderer.getWidth(valText, true, 0.75f);
         DGFontRenderer.drawScaledText(ctx, valText, x + w - vw - 2.0f, y + 1.5f, ColorUtil.NEON_GREEN, true, 0.75f, false);
@@ -539,7 +543,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void renderColorPickerBody(DrawContext ctx, ColorSetting cs, float x, float y, float w) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         float svH = 38.0f;
         int pureHue = ColorUtil.hsvToArgb(cs.getHue(), 1.0f, 1.0f, 255);
         Render2DUtil.drawGradientQuad(ms, x, y, w, svH, ColorUtil.PURE_WHITE, pureHue, pureHue, ColorUtil.PURE_WHITE);
@@ -569,7 +573,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void renderProfilesWindow(DrawContext ctx, int mx, int my, float glow) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         ConfigManager cm = DGClient.getInstance().getConfigManager();
         List<String> profiles = cm.listProfiles();
         float w = 186.0f;
@@ -605,7 +609,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void renderDetectionsWindow(DrawContext ctx, int mx, int my, float glow) {
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         var reg = DGClient.getInstance().getDetectionRegistry();
         List<DetectionEntry> all = new ArrayList<>(reg.getAll());
         MinecraftClient mc = MinecraftClient.getInstance();
@@ -660,7 +664,7 @@ public final class ClickGuiScreen extends Screen {
         if (text == null || text.isEmpty()) {
             return;
         }
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         float tw = DGFontRenderer.getWidth(text, false, 0.82f) + 14.0f;
         float th = 16.0f;
         float tx = Math.min(this.width - tw - 6.0f, mx + 10.0f);
@@ -672,7 +676,10 @@ public final class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
         searchFocused = false;
         profileInputFocused = false;
         editingString = null;
@@ -748,7 +755,7 @@ public final class ClickGuiScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     private boolean handlePanelBodyClick(CategoryPanel panel, float mx, float my, int button) {
@@ -975,7 +982,9 @@ public final class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+        double mouseX = click.x();
+        double mouseY = click.y();
         if (draggingProfiles) {
             profX = (float) mouseX - dragOffX;
             profY = (float) mouseY - dragOffY;
@@ -1007,7 +1016,7 @@ public final class ClickGuiScreen extends Screen {
             updateColorDrag(mx, my);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, deltaX, deltaY);
     }
 
     private void updateColorDrag(float mx, float my) {
@@ -1026,13 +1035,13 @@ public final class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(Click click) {
         draggingPanel = null;
         draggingSlider = null;
         activeColorDrag = null;
         draggingProfiles = false;
         draggingDetections = false;
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(click);
     }
 
     @Override
@@ -1055,7 +1064,8 @@ public final class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
+        int keyCode = input.getKeycode();
         if (listeningBind != null) {
             if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE) {
                 listeningBind.unbind();
@@ -1134,11 +1144,16 @@ public final class ClickGuiScreen extends Screen {
             close();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 
     @Override
-    public boolean charTyped(char chr, int modifiers) {
+    public boolean charTyped(CharInput input) {
+        String str = input.asString();
+        if (str.isEmpty() || !input.isValidChar()) {
+            return false;
+        }
+        char chr = str.charAt(0);
         if (chr < 32 || chr == 127) {
             return false;
         }
@@ -1158,7 +1173,7 @@ public final class ClickGuiScreen extends Screen {
             if (listDraft.length() < 48) listDraft += chr;
             return true;
         }
-        return super.charTyped(chr, modifiers);
+        return super.charTyped(input);
     }
 
     @Override

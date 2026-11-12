@@ -57,7 +57,7 @@ public final class TotemPopEffectsModule extends Module {
                     count = popCounts.merge(pe.getUuid(), 1, Integer::sum);
                 }
                 String text = entity.getName().getString() + " -" + count + " TOTEM";
-                bursts.add(new PopBurst(entity.getPos().add(0.0, 1.0, 0.0), text, System.currentTimeMillis()));
+                bursts.add(new PopBurst(entity.getEntityPos().add(0.0, 1.0, 0.0), text, System.currentTimeMillis()));
             }
         }
     }

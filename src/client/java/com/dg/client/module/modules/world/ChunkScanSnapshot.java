@@ -157,7 +157,7 @@ public final class ChunkScanSnapshot {
         }
 
         // Count special clustered entities inside chunk column
-        Box chunkBox = new Box(baseX, bottomY, baseZ, baseX + 16, chunk.getTopY(), baseZ + 16);
+        Box chunkBox = new Box(baseX, bottomY, baseZ, baseX + 16, chunk.getTopYInclusive(), baseZ + 16);
         int specialEnts = 0;
         for (Entity e : world.getOtherEntities(null, chunkBox)) {
             if (e instanceof ItemFrameEntity || e instanceof ArmorStandEntity

@@ -85,7 +85,7 @@ public final class WaypointsModule extends Module {
                 continue;
             }
 
-            double dist = mc.player.getPos().distanceTo(pos);
+            double dist = mc.player.getEntityPos().distanceTo(pos);
             // Clamp far-away render position to 220m horizon so distant waypoints remain visible!
             Vec3d renderPos = pos;
             if (dist > 220.0) {
@@ -98,7 +98,7 @@ public final class WaypointsModule extends Module {
 
             if (renderBeacons.getValue() && dist <= 260.0) {
                 Box pillar = new Box(renderPos.x - 0.25, mc.world.getBottomY(), renderPos.z - 0.25,
-                        renderPos.x + 0.25, mc.world.getTopY(), renderPos.z + 0.25);
+                        renderPos.x + 0.25, mc.world.getTopYInclusive(), renderPos.z + 0.25);
                 Render3DUtil.drawFilledBox(event.getMatrices(), event.getCamera(), pillar,
                         ColorUtil.withAlpha(primary, 36), true);
                 Render3DUtil.drawBoxOutline(event.getMatrices(), event.getCamera(), pillar,

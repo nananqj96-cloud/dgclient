@@ -131,9 +131,9 @@ public final class EntityEspModule extends Module {
             if (count >= maxTargets.getValue()) {
                 break;
             }
-            double ix = MathUtil.lerp(e.prevX, e.getX(), delta) - e.getX();
-            double iy = MathUtil.lerp(e.prevY, e.getY(), delta) - e.getY();
-            double iz = MathUtil.lerp(e.prevZ, e.getZ(), delta) - e.getZ();
+            double ix = MathUtil.lerp(e.lastX, e.getX(), delta) - e.getX();
+            double iy = MathUtil.lerp(e.lastY, e.getY(), delta) - e.getY();
+            double iz = MathUtil.lerp(e.lastZ, e.getZ(), delta) - e.getZ();
             Box box = e.getBoundingBox().offset(ix, iy, iz).expand(0.03);
             if (event.getFrustum() != null && !event.getFrustum().isVisible(box.expand(0.25))) {
                 continue;

@@ -34,7 +34,7 @@ public abstract class LightmapTextureManagerMixin {
         }
     }
 
-    @Inject(method = "getBrightness", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getBrightness(Lnet/minecraft/world/dimension/DimensionType;I)F", at = @At("RETURN"), cancellable = true)
     private static void dgclient$onGetBrightness(DimensionType type, int lightLevel, CallbackInfoReturnable<Float> cir) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {
@@ -42,7 +42,19 @@ public abstract class LightmapTextureManagerMixin {
         }
         FullbrightModule fb = inst.getModuleManager().get(FullbrightModule.class);
         if (fb != null && fb.isEnabled() && fb.mode.getValue() == FullbrightModule.Mode.GAMMA) {
-            cir.setReturnValue(Math.max(cir.getReturnValueF(), fb.strength.getValue().floatValue()));
+            cir.setReturnValue(Math.max(cir.getReturnValueF(), Math.min(1.0f, fb.strength.getValue().floatValue())));
+        }
+    }
+
+    @Inject(method = "getBrightness(FI)F", at = @At("RETURN"), cancellable = true)
+    private static void dgclient$onGetBrightnessAmbient(float ambientLight, int lightLevel, CallbackInfoReturnable<Float> cir) {
+        DGClient inst = DGClient.getInstance();
+        if (inst == null || !inst.isReady()) {
+            return;
+        }
+        FullbrightModule fb = inst.getModuleManager().get(FullbrightModule.class);
+        if (fb != null && fb.isEnabled() && fb.mode.getValue() == FullbrightModule.Mode.GAMMA) {
+            cir.setReturnValue(Math.max(cir.getReturnValueF(), Math.min(1.0f, fb.strength.getValue().floatValue())));
         }
     }
 }

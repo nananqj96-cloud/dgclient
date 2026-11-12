@@ -33,7 +33,7 @@ jobs:
           STATUS=$?
           cat gradle-build.log
           if [ $STATUS -ne 0 ]; then
-            grep -E "error:|FAILED|Caused by:|What went wrong:|> " gradle-build.log | tail -n 20 | while IFS= read -r line; do
+            grep -E "error:|warning:.*Mixin|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 60 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=GradleError::$CLEAN"
             done
@@ -58,12 +58,12 @@ jobs:
           path: dist-jar/dgclient-*.jar
           if-no-files-found: error
 
-      - name: Publish v1.0.0 GitHub Release with JAR
+      - name: Publish v1.0.1 GitHub Release with JAR
         if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.0' }}
-          name: "DGClient v1.0.0 — Minecraft 1.21.1 Fabric"
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'v1.0.1' }}
+          name: "DGClient v1.0.1 — Minecraft 1.21.11 Fabric"
           target_commitish: ${{ github.sha }}
           files: dist-jar/dgclient-*.jar
           generate_release_notes: true

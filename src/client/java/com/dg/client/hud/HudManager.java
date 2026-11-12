@@ -13,13 +13,14 @@ import com.dg.client.util.ColorUtil;
 import com.dg.client.util.MathUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
+import org.joml.Matrix3x2fStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,7 +87,7 @@ public final class HudManager {
         if (toasts.isEmpty()) {
             return;
         }
-        MatrixStack matrices = ctx.getMatrices();
+        Matrix3x2fStack matrices = ctx.getMatrices();
         float y = 10.0f;
         for (NotificationManager.Toast toast : toasts) {
             toast.updateAnimation(0.22f);
@@ -144,7 +145,7 @@ public final class HudManager {
                 float x = getX(sw);
                 float y = getY(sh);
 
-                MatrixStack ms = ctx.getMatrices();
+                Matrix3x2fStack ms = ctx.getMatrices();
                 Render2DUtil.drawGaussianGlow(ms, x, y, w, h, 6.0f, 8.0f, ColorUtil.NEON_GREEN, glow * 0.8f);
                 Render2DUtil.drawRoundedRect(ms, x, y, w, h, 6.0f, ColorUtil.PANEL_DARK);
                 Render2DUtil.drawRoundedOutline(ms, x, y, w, h, 6.0f, 1.0f, ColorUtil.withAlpha(ColorUtil.NEON_GREEN, 190));
@@ -207,7 +208,7 @@ public final class HudManager {
                 boolean rightAligned = (boxLeft + maxW * 0.5f) > sw * 0.5f;
                 float cursorY = getY(sh);
 
-                MatrixStack ms = ctx.getMatrices();
+                Matrix3x2fStack ms = ctx.getMatrices();
                 int idx = 0;
                 for (Module mod : visible) {
                     float slide = MathUtil.easeOutCubic(mod.getArraySlideAnim());
@@ -271,7 +272,7 @@ public final class HudManager {
                 float x = getX(sw);
                 float y = getY(sh);
 
-                MatrixStack ms = ctx.getMatrices();
+                Matrix3x2fStack ms = ctx.getMatrices();
                 Render2DUtil.drawGaussianGlow(ms, x, y, w, h, 5.5f, 6.0f, ColorUtil.NEON_GREEN, glow * 0.55f);
                 Render2DUtil.drawRoundedRect(ms, x, y, w, h, 5.5f, ColorUtil.PANEL_DARK);
                 Render2DUtil.drawRoundedOutline(ms, x, y, w, h, 5.5f, 1.0f, ColorUtil.BORDER_SUBTLE);
@@ -328,7 +329,7 @@ public final class HudManager {
                 float x = getX(sw);
                 float y = getY(sh);
 
-                MatrixStack ms = ctx.getMatrices();
+                Matrix3x2fStack ms = ctx.getMatrices();
                 Render2DUtil.drawGaussianGlow(ms, x, y, w, h, 5.5f, 5.5f, ColorUtil.NEON_GREEN, glow * 0.45f);
                 Render2DUtil.drawRoundedRect(ms, x, y, w, h, 5.5f, ColorUtil.PANEL_DARK);
                 Render2DUtil.drawRoundedOutline(ms, x, y, w, h, 5.5f, 1.0f, ColorUtil.BORDER_SUBTLE);
@@ -357,8 +358,8 @@ public final class HudManager {
 
                 List<ItemStack> armor = new ArrayList<>();
                 if (mc.player != null) {
-                    for (int i = 3; i >= 0; i--) {
-                        armor.add(mc.player.getInventory().getArmorStack(i));
+                    for (EquipmentSlot eqSlot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                        armor.add(mc.player.getEquippedStack(eqSlot));
                     }
                 }
                 boolean any = armor.stream().anyMatch(s -> !s.isEmpty());
@@ -366,7 +367,7 @@ public final class HudManager {
                     return;
                 }
 
-                MatrixStack ms = ctx.getMatrices();
+                Matrix3x2fStack ms = ctx.getMatrices();
                 Render2DUtil.drawRoundedRect(ms, x, y, w, h, 5.0f, 0xCC0A0F0C);
                 Render2DUtil.drawRoundedOutline(ms, x, y, w, h, 5.0f, 1.0f, ColorUtil.BORDER_SUBTLE);
 
@@ -475,7 +476,7 @@ public final class HudManager {
                 float x = getX(sw);
                 float y = getY(sh);
 
-                MatrixStack ms = ctx.getMatrices();
+                Matrix3x2fStack ms = ctx.getMatrices();
                 int border = count > 0 ? ColorUtil.withAlpha(ColorUtil.NEON_GREEN, 180) : ColorUtil.BORDER_SUBTLE;
                 Render2DUtil.drawRoundedRect(ms, x, y, w, h, 5.0f, ColorUtil.PANEL_DARK);
                 Render2DUtil.drawRoundedOutline(ms, x, y, w, h, 5.0f, 1.0f, border);

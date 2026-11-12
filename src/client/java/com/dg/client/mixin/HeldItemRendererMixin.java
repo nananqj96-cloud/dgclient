@@ -3,7 +3,7 @@ package com.dg.client.mixin;
 import com.dg.client.DGClient;
 import com.dg.client.module.modules.render.ViewmodelModule;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -23,14 +23,14 @@ public abstract class HeldItemRendererMixin {
     @Inject(method = "renderFirstPersonItem", at = @At("HEAD"), cancellable = true)
     private void dgclient$beforeRenderItem(
             AbstractClientPlayerEntity player,
-            float tickDelta,
+            float tickProgress,
             float pitch,
             Hand hand,
             float swingProgress,
             ItemStack item,
             float equipProgress,
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             CallbackInfo ci
     ) {
@@ -66,14 +66,14 @@ public abstract class HeldItemRendererMixin {
     @Inject(method = "renderFirstPersonItem", at = @At("RETURN"))
     private void dgclient$afterRenderItem(
             AbstractClientPlayerEntity player,
-            float tickDelta,
+            float tickProgress,
             float pitch,
             Hand hand,
             float swingProgress,
             ItemStack item,
             float equipProgress,
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             CallbackInfo ci
     ) {

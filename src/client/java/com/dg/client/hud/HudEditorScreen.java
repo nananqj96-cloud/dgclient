@@ -5,10 +5,12 @@ import com.dg.client.module.modules.hud.ClickGuiModule;
 import com.dg.client.render.Render2DUtil;
 import com.dg.client.render.font.DGFontRenderer;
 import com.dg.client.util.ColorUtil;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -35,11 +37,12 @@ public final class HudEditorScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        Render2DUtil.setContext(context);
         ClickGuiModule guiMod = DGClient.getInstance().getModuleManager().get(ClickGuiModule.class);
         if (guiMod != null && guiMod.blurBackground.getValue()) {
-            this.applyBlur(delta);
+            this.applyBlur(context);
         }
-        MatrixStack ms = context.getMatrices();
+        Matrix3x2fStack ms = context.getMatrices();
         Render2DUtil.drawQuad(ms, 0, 0, this.width, this.height, 0x660A0F0C);
 
         // Center alignment guides
@@ -70,7 +73,10 @@ public final class HudEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
         var list = DGClient.getInstance().getHudManager().getElements();
         for (int i = list.size() - 1; i >= 0; i--) {
             HudElement elem = list.get(i);
@@ -88,14 +94,14 @@ public final class HudEditorScreen extends Screen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (dragging != null && button == 0) {
-            float nx = (float) mouseX - dragOffsetX;
-            float ny = (float) mouseY - dragOffsetY;
+    public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+        if (dragging != null && click.button() == 0) {
+            float nx = (float) click.x() - dragOffsetX;
+            float ny = (float) click.y() - dragOffsetY;
             // Snap to screen center within 6px
             float centerX = (this.width - dragging.getWidth()) * 0.5f;
             float centerY = (this.height - dragging.getHeight()) * 0.5f;
@@ -104,26 +110,26 @@ public final class HudEditorScreen extends Screen {
             dragging.setPosition(nx, ny, this.width, this.height);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(Click click) {
         if (dragging != null) {
             dragging = null;
             DGClient.getInstance().getConfigManager().saveAll();
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(click);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+    public boolean keyPressed(KeyInput input) {
+        if (input.getKeycode() == GLFW.GLFW_KEY_ESCAPE) {
             close();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 
     @Override

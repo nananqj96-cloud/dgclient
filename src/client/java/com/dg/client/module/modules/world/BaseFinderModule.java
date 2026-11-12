@@ -463,7 +463,7 @@ public final class BaseFinderModule extends Module {
             switch (boxMode.getValue()) {
                 case FULL_COLUMN -> {
                     y1 = mc.world.getBottomY();
-                    y2 = Math.min(mc.world.getTopY(), mc.player.getY() + 64.0);
+                    y2 = Math.min(mc.world.getTopYInclusive(), mc.player.getY() + 64.0);
                 }
                 case Y_RANGE -> {
                     y1 = customMinY.getValue();

@@ -1,5 +1,6 @@
 package com.dg.client.event.events;
 
+import com.dg.client.render.Render2DUtil;
 import net.minecraft.client.gui.DrawContext;
 
 public final class Render2DEvent {
@@ -9,6 +10,7 @@ public final class Render2DEvent {
     private final float tickDelta;
 
     public Render2DEvent(DrawContext context, int screenWidth, int screenHeight, float tickDelta) {
+        Render2DUtil.setContext(context);
         this.context = context;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;

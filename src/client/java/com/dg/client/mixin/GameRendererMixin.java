@@ -12,14 +12,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
-    private void dgclient$modifyFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> cir) {
+    private void dgclient$modifyFov(Camera camera, float tickProgress, boolean changingFov, CallbackInfoReturnable<Float> cir) {
         DGClient inst = DGClient.getInstance();
         if (inst == null || !inst.isReady()) {
             return;
         }
         ZoomModule zoom = inst.getModuleManager().get(ZoomModule.class);
         if (zoom != null) {
-            cir.setReturnValue(zoom.modifyFov(cir.getReturnValueD()));
+            cir.setReturnValue((float) zoom.modifyFov(cir.getReturnValueF()));
         }
     }
 }

@@ -61,7 +61,7 @@ public final class AutoTotemModule extends Module {
 
         float totalHp = mc.player.getHealth() + mc.player.getAbsorptionAmount();
         boolean danger = totalHp <= totemHealth.getValue().floatValue()
-                || (elytraSafety.getValue() && (mc.player.isFallFlying() || mc.player.fallDistance > 5.0f));
+                || (elytraSafety.getValue() && (mc.player.isGliding() || mc.player.fallDistance > 5.0f));
 
         Item desired = Items.TOTEM_OF_UNDYING;
         if (!danger) {

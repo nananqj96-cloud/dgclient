@@ -79,10 +79,10 @@ public final class InventoryHelpersModule extends Module {
 
         for (int i = 0; i < 9; i++) {
             if (mc.player.getInventory().getStack(i).isOf(target)) {
-                int prev = mc.player.getInventory().selectedSlot;
-                mc.player.getInventory().selectedSlot = i;
+                int prev = mc.player.getInventory().getSelectedSlot();
+                mc.player.getInventory().setSelectedSlot(i);
                 mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-                mc.player.getInventory().selectedSlot = prev;
+                mc.player.getInventory().setSelectedSlot(prev);
                 event.cancel();
                 return;
             }
@@ -132,8 +132,8 @@ public final class InventoryHelpersModule extends Module {
         float x = Math.min(sw - boxW - 6.0f, mouseX + 12.0f);
         float y = Math.max(6.0f, mouseY - boxH - 8.0f);
 
-        ctx.getMatrices().push();
-        ctx.getMatrices().translate(0.0f, 0.0f, 450.0f);
+        Render2DUtil.setContext(ctx);
+        ctx.getMatrices().pushMatrix();
 
         Render2DUtil.drawGaussianGlow(ctx.getMatrices(), x, y, boxW, boxH, 5.0f, 7.0f, ColorUtil.NEON_GREEN, 0.75f);
         Render2DUtil.drawRoundedRect(ctx.getMatrices(), x, y, boxW, boxH, 5.0f, ColorUtil.PANEL_DARK);
@@ -149,10 +149,10 @@ public final class InventoryHelpersModule extends Module {
                 ItemStack slotStack = items.get(idx);
                 if (!slotStack.isEmpty()) {
                     ctx.drawItem(slotStack, sx, sy);
-                    ctx.drawItemInSlot(mc.textRenderer, slotStack, sx, sy);
+                    ctx.drawStackOverlay(mc.textRenderer, slotStack, sx, sy);
                 }
             }
         }
-        ctx.getMatrices().pop();
+        ctx.getMatrices().popMatrix();
     }
 }

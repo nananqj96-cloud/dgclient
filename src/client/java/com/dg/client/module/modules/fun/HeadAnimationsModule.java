@@ -75,10 +75,10 @@ public final class HeadAnimationsModule extends Module {
             mc.player.headYaw = spinYaw;
             if (serverLookPacket.getValue() && mc.getNetworkHandler() != null && !mc.player.isUsingItem()) {
                 mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(
-                        spinYaw, mc.player.getPitch(), mc.player.isOnGround()));
+                        spinYaw, mc.player.getPitch(), mc.player.isOnGround(), mc.player.horizontalCollision));
             }
         } else if (mode.getValue() == AnimMode.FAKE_LAG_GHOST) {
-            lagPositions.addLast(mc.player.getPos());
+            lagPositions.addLast(mc.player.getEntityPos());
             while (lagPositions.size() > 16) {
                 lagPositions.removeFirst();
             }

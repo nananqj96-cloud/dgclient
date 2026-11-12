@@ -62,7 +62,7 @@ public final class CoordLoggerModule extends Module {
             prevPos = null;
             return;
         }
-        Vec3d cur = mc.player.getPos();
+        Vec3d cur = mc.player.getEntityPos();
         String dim = WaypointManager.getCurrentDimensionId();
 
         if (prevPos != null && dim.equals(prevDim)) {

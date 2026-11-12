@@ -53,7 +53,7 @@ public final class SessionStatsModule extends Module {
             lastPos = null;
             return;
         }
-        Vec3d cur = mc.player.getPos();
+        Vec3d cur = mc.player.getEntityPos();
         if (lastPos != null) {
             double d = cur.distanceTo(lastPos);
             if (d > 0.001 && d < 90.0) {

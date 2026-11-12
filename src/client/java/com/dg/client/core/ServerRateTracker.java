@@ -65,7 +65,7 @@ public final class ServerRateTracker {
         if (hasLastPos) {
             double dx = x - lastX;
             double dz = z - lastZ;
-            double dy = mc.player.isFallFlying() ? (y - lastY) : 0.0;
+            double dy = mc.player.isGliding() ? (y - lastY) : 0.0;
             double instantBps = Math.sqrt(dx * dx + dy * dy + dz * dz) * 20.0;
             blocksPerSecond = blocksPerSecond * 0.65 + instantBps * 0.35;
         } else {

@@ -75,9 +75,9 @@ public final class AutoEatModule extends Module {
         }
 
         if (!eating) {
-            returnSlot = mc.player.getInventory().selectedSlot;
+            returnSlot = mc.player.getInventory().getSelectedSlot();
         }
-        mc.player.getInventory().selectedSlot = bestHotbar;
+        mc.player.getInventory().setSelectedSlot(bestHotbar);
         startPressingUse(returnSlot);
     }
 
@@ -92,7 +92,7 @@ public final class AutoEatModule extends Module {
             mc.options.useKey.setPressed(false);
         }
         if (returnSlot >= 0 && returnSlot < 9 && mc.player != null) {
-            mc.player.getInventory().selectedSlot = returnSlot;
+            mc.player.getInventory().setSelectedSlot(returnSlot);
         }
         eating = false;
         returnSlot = -1;

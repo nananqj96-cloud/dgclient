@@ -49,9 +49,9 @@ public final class ItemGlowModule extends Module {
             if (event.getFrustum() != null && !event.getFrustum().isVisible(item.getBoundingBox().expand(0.5))) {
                 continue;
             }
-            double ix = MathUtil.lerp(item.prevX, item.getX(), delta);
-            double iy = MathUtil.lerp(item.prevY, item.getY(), delta);
-            double iz = MathUtil.lerp(item.prevZ, item.getZ(), delta);
+            double ix = MathUtil.lerp(item.lastX, item.getX(), delta);
+            double iy = MathUtil.lerp(item.lastY, item.getY(), delta);
+            double iz = MathUtil.lerp(item.lastZ, item.getZ(), delta);
             Box box = new Box(ix - 0.18, iy + 0.05, iz - 0.18, ix + 0.18, iy + 0.42, iz + 0.18);
 
             Render3DUtil.drawGlowingBox(event.getMatrices(), event.getCamera(), box,

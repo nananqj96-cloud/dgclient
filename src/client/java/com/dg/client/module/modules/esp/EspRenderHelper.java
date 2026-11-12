@@ -6,7 +6,7 @@ import com.dg.client.render.Render3DUtil;
 import com.dg.client.util.ColorUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix3x2fStack;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
@@ -120,7 +120,7 @@ public final class EspRenderHelper {
         if (rects.isEmpty()) {
             return;
         }
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         for (ProjectedRect r : rects) {
             float w = r.x2() - r.x1();
             float h = r.y2() - r.y1();

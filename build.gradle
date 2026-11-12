@@ -14,6 +14,13 @@ repositories {
 	mavenCentral()
 }
 
+java {
+	// Must be configured before splitEnvironmentSourceSets in Loom 1.13+
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
 loom {
 	splitEnvironmentSourceSets()
 
@@ -49,12 +56,6 @@ processResources {
 tasks.withType(JavaCompile).configureEach {
 	it.options.release = 21
 	it.options.encoding = "UTF-8"
-}
-
-java {
-	withSourcesJar()
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {

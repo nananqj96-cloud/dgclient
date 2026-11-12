@@ -3,7 +3,6 @@
 	"package": "com.dg.client.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"BackgroundRendererMixin",
 		"CameraMixin",
 		"ClientConnectionMixin",
 		"ClientPlayerEntityMixin",
@@ -11,6 +10,7 @@
 		"ClientWorldMixin",
 		"EntityMixin",
 		"EntityRendererMixin",
+		"FogRendererMixin",
 		"GameRendererMixin",
 		"HandledScreenMixin",
 		"HeldItemRendererMixin",

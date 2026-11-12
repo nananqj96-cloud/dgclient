@@ -20,7 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix3x2fStack;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -385,7 +385,7 @@ public final class YZeroDiagnosticsModule extends Module {
             return;
         }
         DrawContext ctx = event.getContext();
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         List<String> lines = buildSummaryLines();
 
         float maxW = 230.0f;

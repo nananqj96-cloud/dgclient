@@ -15,7 +15,6 @@ import com.dg.client.setting.IntSetting;
 import com.dg.client.setting.SettingGroup;
 import com.dg.client.util.ColorUtil;
 import com.dg.client.util.MathUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +25,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -101,7 +101,7 @@ public final class TracersModule extends Module {
         int sh = mc.getWindow().getScaledHeight();
         Matrix4f posMat = event.getPositionMatrix();
         Matrix4f projMat = event.getProjectionMatrix();
-        Vec3d camPos = event.getCamera().getPos();
+        Vec3d camPos = event.getCamera().getCameraPos();
         float delta = event.getTickDelta();
         double maxDist = range.getValue();
         double maxSq = maxDist * maxDist;
@@ -115,9 +115,9 @@ public final class TracersModule extends Module {
             if (color == 0) continue;
 
             Vec3d target = new Vec3d(
-                    MathUtil.lerp(e.prevX, e.getX(), delta),
-                    MathUtil.lerp(e.prevY, e.getY(), delta) + e.getHeight() * 0.5,
-                    MathUtil.lerp(e.prevZ, e.getZ(), delta)
+                    MathUtil.lerp(e.lastX, e.getX(), delta),
+                    MathUtil.lerp(e.lastY, e.getY(), delta) + e.getHeight() * 0.5,
+                    MathUtil.lerp(e.lastZ, e.getZ(), delta)
             );
             float[] pt = projectClamped(target, camPos, posMat, projMat, sw, sh);
             frameLines.add(new TracerLine(pt[0], pt[1], color, dSq));
@@ -169,7 +169,7 @@ public final class TracersModule extends Module {
             case BOTTOM -> sh - 2.0f;
             case TOP -> 2.0f;
         };
-        MatrixStack ms = event.getContext().getMatrices();
+        Matrix3x2fStack ms = event.getContext().getMatrices();
         float lw = width.getValue().floatValue();
         int maxAlpha = opacity.getValue();
 

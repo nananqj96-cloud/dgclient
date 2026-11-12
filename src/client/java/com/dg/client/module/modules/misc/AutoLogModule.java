@@ -100,7 +100,7 @@ public final class AutoLogModule extends Module {
                 logoutSpots.add(new LogoutSpot(
                         name,
                         p.getBoundingBox(),
-                        p.getPos().add(0, p.getHeight() + 0.45, 0),
+                        p.getEntityPos().add(0, p.getHeight() + 0.45, 0),
                         System.currentTimeMillis()
                 ));
             }

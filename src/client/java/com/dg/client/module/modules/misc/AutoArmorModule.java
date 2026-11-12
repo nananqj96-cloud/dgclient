@@ -8,18 +8,20 @@ import com.dg.client.setting.BooleanSetting;
 import com.dg.client.setting.IntSetting;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.SlotActionType;
 
 /**
- * Equips highest-scoring armor automatically while avoiding Curse of Binding,
- * preserving chestplate Elytra when desired, and swapping low-durability pieces.
+ * Equips highest-scoring armor automatically using 1.21.11 EquippableComponent
+ * and AttributeModifiersComponent, while avoiding Curse of Binding, preserving
+ * chestplate Elytra when desired, and swapping low-durability pieces.
  */
 public final class AutoArmorModule extends Module {
     public final BooleanSetting preserveElytra = addSetting(new BooleanSetting(
@@ -89,10 +91,11 @@ public final class AutoArmorModule extends Module {
     }
 
     private double scoreArmor(ItemStack stack, EquipmentSlot targetSlot) {
-        if (stack == null || stack.isEmpty() || !(stack.getItem() instanceof ArmorItem armor)) {
+        if (stack == null || stack.isEmpty() || stack.isOf(Items.ELYTRA)) {
             return -1.0;
         }
-        if (armor.getType().getEquipmentSlot() != targetSlot) {
+        EquippableComponent eq = stack.get(DataComponentTypes.EQUIPPABLE);
+        if (eq == null || eq.slot() != targetSlot) {
             return -1.0;
         }
         if (avoidBindingCurse.getValue() && hasBindingCurse(stack)) {
@@ -106,7 +109,21 @@ public final class AutoArmorModule extends Module {
             }
         }
 
-        double score = armor.getProtection() * 4.0 + armor.getToughness() * 2.5;
+        double[] attrSum = {0.0, 0.0};
+        AttributeModifiersComponent mods = stack.getOrDefault(DataComponentTypes.ATTRIBUTE_MODIFIERS, AttributeModifiersComponent.DEFAULT);
+        mods.applyModifiers(targetSlot, (attr, modifier) -> {
+            String path = attr.getKey().map(k -> k.getValue().getPath()).orElse("");
+            if (path.equals("armor") || path.endsWith(".armor")) {
+                attrSum[0] += modifier.value();
+            } else if (path.equals("armor_toughness") || path.endsWith(".armor_toughness")) {
+                attrSum[1] += modifier.value();
+            }
+        });
+        if (attrSum[0] <= 0.0 && attrSum[1] <= 0.0) {
+            return -1.0;
+        }
+
+        double score = attrSum[0] * 4.0 + attrSum[1] * 2.5;
         ItemEnchantmentsComponent ench = stack.getOrDefault(DataComponentTypes.ENCHANTMENTS, ItemEnchantmentsComponent.DEFAULT);
         for (RegistryEntry<Enchantment> entry : ench.getEnchantments()) {
             int lvl = ench.getLevel(entry);

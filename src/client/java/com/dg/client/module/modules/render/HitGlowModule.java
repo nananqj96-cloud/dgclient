@@ -63,9 +63,9 @@ public final class HitGlowModule extends Module {
                 continue;
             }
             float life = 1.0f - (float) elapsed / (float) maxAge;
-            double ix = MathUtil.lerp(entity.prevX, entity.getX(), delta) - entity.getX();
-            double iy = MathUtil.lerp(entity.prevY, entity.getY(), delta) - entity.getY();
-            double iz = MathUtil.lerp(entity.prevZ, entity.getZ(), delta) - entity.getZ();
+            double ix = MathUtil.lerp(entity.lastX, entity.getX(), delta) - entity.getX();
+            double iy = MathUtil.lerp(entity.lastY, entity.getY(), delta) - entity.getY();
+            double iz = MathUtil.lerp(entity.lastZ, entity.getZ(), delta) - entity.getZ();
             Box box = entity.getBoundingBox().offset(ix, iy, iz).expand(0.05 + (1.0f - life) * 0.12);
 
             int base = hitColor.getColor();

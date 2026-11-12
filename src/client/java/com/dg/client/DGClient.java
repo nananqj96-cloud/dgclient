@@ -66,6 +66,7 @@ import com.dg.client.module.modules.world.WaypointsModule;
 import com.dg.client.module.modules.world.YZeroBypassModule;
 import com.dg.client.module.modules.world.YZeroDiagnosticsModule;
 import com.dg.client.render.Render2DUtil;
+import com.dg.client.render.Render3DUtil;
 import com.dg.client.render.font.DGFontRenderer;
 import com.dg.client.util.ColorUtil;
 import net.fabricmc.api.ClientModInitializer;
@@ -73,24 +74,34 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import org.joml.Matrix3x2fStack;
+import org.joml.Matrix4f;
 
 /**
- * Primary client-only entrypoint for DGClient (Minecraft 1.21.1, Fabric).
+ * Primary client-only entrypoint for DGClient (Minecraft 1.21.11, Fabric).
  */
 public final class DGClient implements ClientModInitializer {
     public static final String MOD_ID = "dgclient";
     public static final String NAME = "DGClient";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
 
     private static DGClient instance;
+
+    private Matrix4f lastViewMatrix = new Matrix4f();
+    private Matrix4f lastProjectionMatrix = new Matrix4f();
+    private Frustum lastFrustum;
+    private Camera lastCamera;
+    private float lastTickProgress = 1.0f;
 
     private final EventBus eventBus = new EventBus();
     private final NotificationManager notificationManager = new NotificationManager();
@@ -114,8 +125,9 @@ public final class DGClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         instance = this;
-        DGLogger.info("Initializing {} v{} for Minecraft 1.21.1...", NAME, VERSION);
+        DGLogger.info("Initializing {} v{} for Minecraft 1.21.11...", NAME, VERSION);
 
+        Render3DUtil.initPipelines();
         moduleManager.init();
         registerModules();
 
@@ -197,27 +209,36 @@ public final class DGClient implements ClientModInitializer {
 
     private void registerFabricHooks() {
         // Sodium-safe block outline suppression when BlockHighlightModule is active
-        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context, hitResult) -> {
+        WorldRenderEvents.BEFORE_BLOCK_OUTLINE.register((context, outlineRenderState) -> {
             BlockHighlightModule bh = moduleManager.get(BlockHighlightModule.class);
             return bh == null || !bh.isEnabled();
         });
 
-        // 3D World Render hook (compatible with Sodium & Iris)
-        WorldRenderEvents.LAST.register(context -> {
+        // Capture per-frame view/projection/frustum state at end of world extraction
+        WorldRenderEvents.END_EXTRACTION.register(context -> {
+            lastViewMatrix = new Matrix4f(context.viewMatrix());
+            lastProjectionMatrix = new Matrix4f(context.cullProjectionMatrix());
+            lastFrustum = context.frustum();
+            lastCamera = context.camera();
+            lastTickProgress = context.tickCounter().getTickProgress(false);
+        });
+
+        // 3D World Render hook at END_MAIN (compatible with Sodium & Iris on 1.21.11)
+        WorldRenderEvents.END_MAIN.register(context -> {
             MinecraftClient mc = MinecraftClient.getInstance();
             if (mc.world == null || mc.player == null) {
                 return;
             }
-            MatrixStack matrices = context.matrixStack() != null ? context.matrixStack() : new MatrixStack();
-            float delta = context.tickCounter().getTickDelta(false);
+            MatrixStack matrices = context.matrices() != null ? context.matrices() : new MatrixStack();
+            Camera cam = lastCamera != null ? lastCamera : context.gameRenderer().getCamera();
             eventBus.post(new Render3DEvent(
                     matrices,
-                    context.positionMatrix(),
-                    context.projectionMatrix(),
-                    context.camera(),
-                    context.frustum(),
-                    context.world(),
-                    delta
+                    lastViewMatrix,
+                    lastProjectionMatrix,
+                    cam,
+                    lastFrustum,
+                    mc.world,
+                    lastTickProgress
             ));
         });
 
@@ -231,7 +252,7 @@ public final class DGClient implements ClientModInitializer {
                     drawContext,
                     mc.getWindow().getScaledWidth(),
                     mc.getWindow().getScaledHeight(),
-                    tickCounter.getTickDelta(false)
+                    tickCounter.getTickProgress(false)
             ));
         });
 
@@ -257,7 +278,8 @@ public final class DGClient implements ClientModInitializer {
                 Screens.getButtons(screen).add(dgBtn);
 
                 ScreenEvents.afterRender(screen).register((scr, drawContext, mouseX, mouseY, tickDelta) -> {
-                    MatrixStack ms = drawContext.getMatrices();
+                    Render2DUtil.setContext(drawContext);
+                    Matrix3x2fStack ms = drawContext.getMatrices();
                     Render2DUtil.drawGaussianGlow(ms, 8.0f, 8.0f, 152.0f, 22.0f, 6.0f, 8.0f, ColorUtil.NEON_GREEN, 0.85f);
                     Render2DUtil.drawRoundedRect(ms, 8.0f, 8.0f, 152.0f, 22.0f, 6.0f, ColorUtil.PANEL_DARK);
                     Render2DUtil.drawRoundedOutline(ms, 8.0f, 8.0f, 152.0f, 22.0f, 6.0f, 1.0f, ColorUtil.NEON_GREEN);

@@ -3,56 +3,102 @@ package com.dg.client.render;
 import com.dg.client.render.font.DGFontRenderer;
 import com.dg.client.util.ColorUtil;
 import com.dg.client.util.MathUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderSetup;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import org.lwjgl.opengl.GL11;
 
 /**
- * 3D world rendering utilities: filled boxes, vertical gradient boxes, outlines,
- * corner-bracket ESP boxes, multi-pass glowing outlines, 3D lines with color gradients,
- * camera-facing floating labels, and 3D-to-2D screen projection.
+ * 3D world rendering utilities built natively on Minecraft 1.21.11's Blaze3D RenderPipeline
+ * & RenderLayer system: filled boxes, vertical gradient boxes, outlines, corner-bracket ESP boxes,
+ * multi-pass glowing outlines, 3D lines with color gradients, camera-facing floating labels,
+ * and 3D-to-2D screen projection.
  */
 public final class Render3DUtil {
+    private static final RenderPipeline ESP_QUADS_THROUGH_WALLS_PIPELINE = RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET)
+                    .withLocation(Identifier.of("dgclient", "pipeline/esp_quads_xray"))
+                    .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS)
+                    .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                    .withDepthWrite(false)
+                    .withCull(false)
+                    .build()
+    );
+
+    private static final RenderPipeline ESP_QUADS_DEPTH_PIPELINE = RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.POSITION_COLOR_SNIPPET)
+                    .withLocation(Identifier.of("dgclient", "pipeline/esp_quads_depth"))
+                    .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS)
+                    .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+                    .withDepthWrite(false)
+                    .withCull(false)
+                    .build()
+    );
+
+    private static final RenderPipeline ESP_LINES_THROUGH_WALLS_PIPELINE = RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.RENDERTYPE_LINES_SNIPPET)
+                    .withLocation(Identifier.of("dgclient", "pipeline/esp_lines_xray"))
+                    .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                    .withDepthWrite(false)
+                    .withCull(false)
+                    .build()
+    );
+
+    private static final RenderPipeline ESP_LINES_DEPTH_PIPELINE = RenderPipelines.register(
+            RenderPipeline.builder(RenderPipelines.RENDERTYPE_LINES_SNIPPET)
+                    .withLocation(Identifier.of("dgclient", "pipeline/esp_lines_depth"))
+                    .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+                    .withDepthWrite(false)
+                    .withCull(false)
+                    .build()
+    );
+
+    private static final RenderLayer LAYER_QUADS_XRAY = RenderLayer.of(
+            "dgclient_quads_xray",
+            RenderSetup.builder(ESP_QUADS_THROUGH_WALLS_PIPELINE).translucent().expectedBufferSize(1024).build()
+    );
+
+    private static final RenderLayer LAYER_QUADS_DEPTH = RenderLayer.of(
+            "dgclient_quads_depth",
+            RenderSetup.builder(ESP_QUADS_DEPTH_PIPELINE).translucent().expectedBufferSize(1024).build()
+    );
+
+    private static final RenderLayer LAYER_LINES_XRAY = RenderLayer.of(
+            "dgclient_lines_xray",
+            RenderSetup.builder(ESP_LINES_THROUGH_WALLS_PIPELINE).translucent().expectedBufferSize(1024).build()
+    );
+
+    private static final RenderLayer LAYER_LINES_DEPTH = RenderLayer.of(
+            "dgclient_lines_depth",
+            RenderSetup.builder(ESP_LINES_DEPTH_PIPELINE).translucent().expectedBufferSize(1024).build()
+    );
+
     private Render3DUtil() {
     }
 
-    public static void begin3D(boolean throughWalls) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableCull();
-        if (throughWalls) {
-            RenderSystem.disableDepthTest();
-        } else {
-            RenderSystem.enableDepthTest();
-        }
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-    }
-
-    public static void end3D() {
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
-        GL11.glLineWidth(1.0f);
+    public static void initPipelines() {
+        // Forces static registration of RenderPipelines during client init
     }
 
     public static Box offsetToCamera(Box worldBox, Camera camera) {
-        Vec3d cam = camera.getPos();
+        Vec3d cam = camera.getCameraPos();
         return worldBox.offset(-cam.x, -cam.y, -cam.z);
     }
 
@@ -63,9 +109,6 @@ public final class Render3DUtil {
         drawGradientBoxY(matrices, camera, worldBox, color, color, throughWalls);
     }
 
-    /**
-     * Draws a translucent 3D box with smooth vertical gradient between bottomColor and topColor.
-     */
     public static void drawGradientBoxY(
             MatrixStack matrices,
             Camera camera,
@@ -83,7 +126,6 @@ public final class Render3DUtil {
         float z2 = (float) b.maxZ;
 
         Matrix4f mat = matrices.peek().getPositionMatrix();
-        begin3D(throughWalls);
         BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         // Bottom
@@ -122,8 +164,7 @@ public final class Render3DUtil {
         buf.vertex(mat, x2, y2, z2).color(topColor);
         buf.vertex(mat, x2, y1, z2).color(bottomColor);
 
-        flush(buf);
-        end3D();
+        flushLayer(buf, throughWalls ? LAYER_QUADS_XRAY : LAYER_QUADS_DEPTH);
     }
 
     public static void drawBoxOutline(
@@ -144,35 +185,30 @@ public final class Render3DUtil {
         float x2 = (float) b.maxX;
         float y2 = (float) b.maxY;
         float z2 = (float) b.maxZ;
+        float lw = MathUtil.clamp(lineWidth, 1.0f, 6.0f);
 
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        begin3D(throughWalls);
-        GL11.glLineWidth(MathUtil.clamp(lineWidth, 1.0f, 6.0f));
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        MatrixStack.Entry entry = matrices.peek();
+        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR_NORMAL_LINE_WIDTH);
 
         // Bottom ring
-        edge(buf, mat, x1, y1, z1, x2, y1, z1, color);
-        edge(buf, mat, x2, y1, z1, x2, y1, z2, color);
-        edge(buf, mat, x2, y1, z2, x1, y1, z2, color);
-        edge(buf, mat, x1, y1, z2, x1, y1, z1, color);
+        edge(buf, entry, x1, y1, z1, x2, y1, z1, color, lw);
+        edge(buf, entry, x2, y1, z1, x2, y1, z2, color, lw);
+        edge(buf, entry, x2, y1, z2, x1, y1, z2, color, lw);
+        edge(buf, entry, x1, y1, z2, x1, y1, z1, color, lw);
         // Top ring
-        edge(buf, mat, x1, y2, z1, x2, y2, z1, color);
-        edge(buf, mat, x2, y2, z1, x2, y2, z2, color);
-        edge(buf, mat, x2, y2, z2, x1, y2, z2, color);
-        edge(buf, mat, x1, y2, z2, x1, y2, z1, color);
+        edge(buf, entry, x1, y2, z1, x2, y2, z1, color, lw);
+        edge(buf, entry, x2, y2, z1, x2, y2, z2, color, lw);
+        edge(buf, entry, x2, y2, z2, x1, y2, z2, color, lw);
+        edge(buf, entry, x1, y2, z2, x1, y2, z1, color, lw);
         // Vertical pillars
-        edge(buf, mat, x1, y1, z1, x1, y2, z1, color);
-        edge(buf, mat, x2, y1, z1, x2, y2, z1, color);
-        edge(buf, mat, x2, y1, z2, x2, y2, z2, color);
-        edge(buf, mat, x1, y1, z2, x1, y2, z2, color);
+        edge(buf, entry, x1, y1, z1, x1, y2, z1, color, lw);
+        edge(buf, entry, x2, y1, z1, x2, y2, z1, color, lw);
+        edge(buf, entry, x2, y1, z2, x2, y2, z2, color, lw);
+        edge(buf, entry, x1, y1, z2, x1, y2, z2, color, lw);
 
-        flush(buf);
-        end3D();
+        flushLayer(buf, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
     }
 
-    /**
-     * Multi-pass shader-style glowing 3D box outline + soft volumetric shell.
-     */
     public static void drawGlowingBox(
             MatrixStack matrices,
             Camera camera,
@@ -182,9 +218,9 @@ public final class Render3DUtil {
             float intensity,
             boolean throughWalls
     ) {
-        int passes = 4;
+        int passes = 3;
         for (int i = passes; i >= 1; i--) {
-            double expand = i * 0.028 * intensity;
+            double expand = i * 0.03 * intensity;
             int shellAlpha = MathUtil.clamp(Math.round(24.0f * intensity / i), 3, 60);
             drawFilledBox(matrices, camera, worldBox.expand(expand), ColorUtil.withAlpha(glowColor, shellAlpha), throughWalls);
             int wireAlpha = MathUtil.clamp(Math.round(90.0f * intensity / i), 8, 160);
@@ -193,9 +229,6 @@ public final class Render3DUtil {
         drawBoxOutline(matrices, camera, worldBox, 1.8f, coreEdgeColor, throughWalls);
     }
 
-    /**
-     * 3D tactical corner-bracket box (used by ESP Corner Mode and BaseFinder accents).
-     */
     public static void drawCornerBox(
             MatrixStack matrices,
             Camera camera,
@@ -211,11 +244,10 @@ public final class Render3DUtil {
         float dx = (x2 - x1) * cornerFraction;
         float dy = (y2 - y1) * cornerFraction;
         float dz = (z2 - z1) * cornerFraction;
+        float lw = MathUtil.clamp(lineWidth, 1.0f, 6.0f);
 
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        begin3D(throughWalls);
-        GL11.glLineWidth(MathUtil.clamp(lineWidth, 1.0f, 6.0f));
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        MatrixStack.Entry entry = matrices.peek();
+        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR_NORMAL_LINE_WIDTH);
 
         float[][] corners = {
                 {x1, y1, z1, 1, 1, 1},
@@ -228,13 +260,12 @@ public final class Render3DUtil {
                 {x1, y2, z2, 1, -1, -1}
         };
         for (float[] c : corners) {
-            edge(buf, mat, c[0], c[1], c[2], c[0] + c[3] * dx, c[1], c[2], color);
-            edge(buf, mat, c[0], c[1], c[2], c[0], c[1] + c[4] * dy, c[2], color);
-            edge(buf, mat, c[0], c[1], c[2], c[0], c[1], c[2] + c[5] * dz, color);
+            edge(buf, entry, c[0], c[1], c[2], c[0] + c[3] * dx, c[1], c[2], color, lw);
+            edge(buf, entry, c[0], c[1], c[2], c[0], c[1] + c[4] * dy, c[2], color, lw);
+            edge(buf, entry, c[0], c[1], c[2], c[0], c[1], c[2] + c[5] * dz, color, lw);
         }
 
-        flush(buf);
-        end3D();
+        flushLayer(buf, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
     }
 
     public static void drawLine3D(
@@ -247,28 +278,34 @@ public final class Render3DUtil {
             float width,
             boolean throughWalls
     ) {
-        Vec3d cam = camera.getPos();
+        Vec3d cam = camera.getCameraPos();
         float x1 = (float) (startWorld.x - cam.x);
         float y1 = (float) (startWorld.y - cam.y);
         float z1 = (float) (startWorld.z - cam.z);
         float x2 = (float) (endWorld.x - cam.x);
         float y2 = (float) (endWorld.y - cam.y);
         float z2 = (float) (endWorld.z - cam.z);
+        float lw = MathUtil.clamp(width, 1.0f, 5.0f);
 
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        begin3D(throughWalls);
-        GL11.glLineWidth(MathUtil.clamp(width, 1.0f, 5.0f));
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        buf.vertex(mat, x1, y1, z1).color(startColor);
-        buf.vertex(mat, x2, y2, z2).color(endColor);
-        flush(buf);
-        end3D();
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float dz = z2 - z1;
+        float len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (len < 1e-4f) {
+            return;
+        }
+        float nx = dx / len;
+        float ny = dy / len;
+        float nz = dz / len;
+
+        MatrixStack.Entry entry = matrices.peek();
+        Matrix4f mat = entry.getPositionMatrix();
+        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR_NORMAL_LINE_WIDTH);
+        buf.vertex(mat, x1, y1, z1).color(startColor).normal(entry, nx, ny, nz).lineWidth(lw);
+        buf.vertex(mat, x2, y2, z2).color(endColor).normal(entry, nx, ny, nz).lineWidth(lw);
+        flushLayer(buf, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
     }
 
-    /**
-     * Projects a 3D world position into 2D scaled GUI coordinates [screenX, screenY, ndcZ].
-     * Returns null when the point lies behind the camera clip plane.
-     */
     public static float[] projectToScreen(
             Vec3d worldPos,
             Camera camera,
@@ -277,7 +314,7 @@ public final class Render3DUtil {
             int scaledWidth,
             int scaledHeight
     ) {
-        Vec3d cam = camera.getPos();
+        Vec3d cam = camera.getCameraPos();
         Vector4f clip = new Vector4f(
                 (float) (worldPos.x - cam.x),
                 (float) (worldPos.y - cam.y),
@@ -297,10 +334,6 @@ public final class Render3DUtil {
         return new float[]{sx, sy, ndcZ};
     }
 
-    /**
-     * Renders a crisp camera-facing billboard text tag in 3D space with a dark charcoal pill
-     * and neon green border.
-     */
     public static void drawBillboardLabel(
             MatrixStack matrices,
             Camera camera,
@@ -319,7 +352,7 @@ public final class Render3DUtil {
         if (tr == null) {
             return;
         }
-        Vec3d camPos = camera.getPos();
+        Vec3d camPos = camera.getCameraPos();
         double dist = camPos.distanceTo(worldPos);
         float distScale = (float) Math.max(1.0, dist * 0.085) * 0.025f * baseScale;
 
@@ -334,23 +367,22 @@ public final class Render3DUtil {
         float top = -2.0f;
         float bottom = 10.5f;
 
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        begin3D(throughWalls);
+        MatrixStack.Entry entry = matrices.peek();
+        Matrix4f mat = entry.getPositionMatrix();
         BufferBuilder bg = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         int bgCol = 0xCC0A0F0C;
         bg.vertex(mat, -halfW, bottom, 0.01f).color(bgCol);
         bg.vertex(mat, halfW, bottom, 0.01f).color(bgCol);
         bg.vertex(mat, halfW, top, 0.01f).color(bgCol);
         bg.vertex(mat, -halfW, top, 0.01f).color(bgCol);
-        flush(bg);
+        flushLayer(bg, throughWalls ? LAYER_QUADS_XRAY : LAYER_QUADS_DEPTH);
 
-        GL11.glLineWidth(1.5f);
-        BufferBuilder border = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        edge(border, mat, -halfW, top, 0.0f, halfW, top, 0.0f, borderColor);
-        edge(border, mat, halfW, top, 0.0f, halfW, bottom, 0.0f, borderColor);
-        edge(border, mat, halfW, bottom, 0.0f, -halfW, bottom, 0.0f, borderColor);
-        edge(border, mat, -halfW, bottom, 0.0f, -halfW, top, 0.0f, borderColor);
-        flush(border);
+        BufferBuilder border = Tessellator.getInstance().begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR_NORMAL_LINE_WIDTH);
+        edge(border, entry, -halfW, top, 0.0f, halfW, top, 0.0f, borderColor, 1.5f);
+        edge(border, entry, halfW, top, 0.0f, halfW, bottom, 0.0f, borderColor, 1.5f);
+        edge(border, entry, halfW, bottom, 0.0f, -halfW, bottom, 0.0f, borderColor, 1.5f);
+        edge(border, entry, -halfW, bottom, 0.0f, -halfW, top, 0.0f, borderColor, 1.5f);
+        flushLayer(border, throughWalls ? LAYER_LINES_XRAY : LAYER_LINES_DEPTH);
 
         VertexConsumerProvider.Immediate immediate = mc.getBufferBuilders().getEntityVertexConsumers();
         TextRenderer.TextLayerType layerType = throughWalls
@@ -358,20 +390,27 @@ public final class Render3DUtil {
                 : TextRenderer.TextLayerType.NORMAL;
         tr.draw(styled, -width * 0.5f, 0.0f, textColor, false, mat, immediate, layerType, 0, 0xF000F0);
         immediate.draw();
-        end3D();
 
         matrices.pop();
     }
 
-    private static void edge(BufferBuilder buf, Matrix4f mat, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
-        buf.vertex(mat, x1, y1, z1).color(color);
-        buf.vertex(mat, x2, y2, z2).color(color);
+    private static void edge(BufferBuilder buf, MatrixStack.Entry entry, float x1, float y1, float z1, float x2, float y2, float z2, int color, float lw) {
+        float dx = x2 - x1;
+        float dy = y2 - y1;
+        float dz = z2 - z1;
+        float len = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+        float nx = len > 1e-4f ? dx / len : 1.0f;
+        float ny = len > 1e-4f ? dy / len : 0.0f;
+        float nz = len > 1e-4f ? dz / len : 0.0f;
+        Matrix4f mat = entry.getPositionMatrix();
+        buf.vertex(mat, x1, y1, z1).color(color).normal(entry, nx, ny, nz).lineWidth(lw);
+        buf.vertex(mat, x2, y2, z2).color(color).normal(entry, nx, ny, nz).lineWidth(lw);
     }
 
-    private static void flush(BufferBuilder buf) {
+    private static void flushLayer(BufferBuilder buf, RenderLayer layer) {
         BuiltBuffer built = buf.endNullable();
         if (built != null) {
-            BufferRenderer.drawWithGlobalProgram(built);
+            layer.draw(built);
         }
     }
 }

@@ -60,7 +60,7 @@ public final class DamageIndicatorsModule extends Module {
                 float diff = current - previous;
                 if (Math.abs(diff) >= 0.25f) {
                     if (diff < 0.0f || showHeals.getValue()) {
-                        Vec3d pos = living.getPos().add(0.0, living.getHeight() + 0.25, 0.0);
+                        Vec3d pos = living.getEntityPos().add(0.0, living.getHeight() + 0.25, 0.0);
                         indicators.add(new FloatingNumber(pos, diff, System.currentTimeMillis()));
                         if (indicators.size() > 64) {
                             indicators.remove(0);

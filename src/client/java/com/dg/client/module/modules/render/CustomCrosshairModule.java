@@ -11,7 +11,7 @@ import com.dg.client.setting.DoubleSetting;
 import com.dg.client.setting.EnumSetting;
 import com.dg.client.util.ColorUtil;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix3x2fStack;
 import net.minecraft.util.hit.HitResult;
 
 /**
@@ -59,7 +59,7 @@ public final class CustomCrosshairModule extends Module {
             return;
         }
         DrawContext ctx = event.getContext();
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         float cx = event.getScreenWidth() * 0.5f;
         float cy = event.getScreenHeight() * 0.5f;
 

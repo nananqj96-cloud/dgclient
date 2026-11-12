@@ -50,7 +50,7 @@ public final class ChunkBordersModule extends Module {
                 ? Math.max(mc.world.getBottomY(), Math.floor(mc.player.getY()) - verticalSpan.getValue())
                 : minY.getValue();
         double yTop = followPlayerY.getValue()
-                ? Math.min(mc.world.getTopY(), Math.floor(mc.player.getY()) + verticalSpan.getValue())
+                ? Math.min(mc.world.getTopYInclusive(), Math.floor(mc.player.getY()) + verticalSpan.getValue())
                 : maxY.getValue();
 
         int mainCol = cornerColor.getColor();

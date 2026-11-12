@@ -68,7 +68,7 @@ public final class KeyUtil {
             if (glfwName != null && !glfwName.isBlank()) {
                 return glfwName.toUpperCase(Locale.ROOT);
             }
-            return InputUtil.fromKeyCode(key, 0).getLocalizedText().getString().toUpperCase(Locale.ROOT);
+            return InputUtil.fromKeyCode(new net.minecraft.client.input.KeyInput(key, 0, 0)).getLocalizedText().getString().toUpperCase(Locale.ROOT);
         } catch (Throwable ignored) {
             return "KEY_" + key;
         }

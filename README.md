@@ -1,6 +1,6 @@
-# DGClient (`v1.0.0`)
+# DGClient (`v1.0.1`)
 
-**DGClient** is a standalone, client-only anarchy utility mod for **Minecraft 1.21.1 (Fabric)** built from scratch in **Java 21**. It features a custom neon-green & white ClickGUI (`Right Shift`), bundled FreeType TTF crisp typography, a drag-and-snap HUD editor, **48 standalone modules**, **ESP & Tracers**, an asynchronous 10-heuristic **Suspicious Chunk Detector (`BaseFinder`)**, and a diagnostic-driven **Y-0 Underground Bypass (`Y0Diagnostics` + `Y0Bypass`)**.
+**DGClient** is a standalone, client-only anarchy utility mod for **Minecraft 1.21.11 (Fabric)** built from scratch in **Java 21**. It features a custom neon-green & white ClickGUI (`Right Shift`), bundled FreeType TTF crisp typography, a drag-and-snap HUD editor, **48 standalone modules**, **ESP & Tracers**, an asynchronous 10-heuristic **Suspicious Chunk Detector (`BaseFinder`)**, and a diagnostic-driven **Y-0 Underground Bypass (`Y0Diagnostics` + `Y0Bypass`)**.
 
 - **Zero external client dependencies** (completely original standalone codebase; no Meteor dependency).
 - **Strict Neon Green & White visual identity**: `#39FF14` / `#00FF88` neon emerald accents, `#FFFFFF` crisp white highlights, and `#0A0F0C`–`#121A15` translucent dark charcoal glass panels.
@@ -8,22 +8,22 @@
 
 ---
 
-##Supported Versions & Requirements
+## Supported Versions & Requirements
 
 | Component | Required Version |
 | :--- | :--- |
-| **Minecraft** | `1.21.1` (`1.21.x`) |
-| **Mod Loader** | **Fabric Loader** `0.16.10` or newer |
-| **Fabric API** | `0.116.x+1.21.1` (required in `mods/`) |
+| **Minecraft** | **`1.21.11`** |
+| **Mod Loader** | **Fabric Loader** `0.19.5` or newer (`>=0.18.0`) |
+| **Fabric API** | `0.141.6+1.21.11` (required in `mods/`) |
 | **Java Runtime** | **Java 21** (`Temurin 21` recommended) |
 
 ---
 
 ## Installation (Prism / Modrinth / Official Launcher)
 
-1. Install **Minecraft 1.21.1** with **Fabric Loader `>= 0.16.10`** on **Java 21**.
-2. Download **[Fabric API for 1.21.1](https://modrinth.com/mod/fabric-api)** and place it in your instance's `mods/` folder.
-3. Download **`dgclient-1.0.0.jar`** from the **[GitHub Releases](https://github.com/nananqj96-cloud/dgclient/releases/tag/v1.0.0)** page and place it in `mods/`.
+1. Install **Minecraft 1.21.11** with **Fabric Loader `>= 0.19.5`** on **Java 21**.
+2. Download **[Fabric API `0.141.6+1.21.11`](https://modrinth.com/mod/fabric-api)** and place it in your instance's `mods/` folder.
+3. Download **`dgclient-1.0.1.jar`** from the **[GitHub Releases](https://github.com/nananqj96-cloud/dgclient/releases/tag/v1.0.1)** page and place it in `mods/`.
 4. Launch Minecraft and press **`Right Shift`** in-game (or click **`DGClient`** on the Title Screen) to open the ClickGUI.
 
 ---
@@ -38,7 +38,7 @@ cd dgclient
 
 The remapped production mod JAR is written to:
 ```text
-build/libs/dgclient-1.0.0.jar
+build/libs/dgclient-1.0.1.jar
 ```
 
 ---

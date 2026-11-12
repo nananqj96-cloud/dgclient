@@ -16,6 +16,7 @@ import com.dg.client.setting.IntSetting;
 import com.dg.client.util.ColorUtil;
 import com.dg.client.util.MathUtil;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Box;
@@ -106,9 +107,9 @@ public final class PlayerEspModule extends Module {
             if (count >= maxTargets.getValue()) {
                 break;
             }
-            double ix = MathUtil.lerp(p.prevX, p.getX(), delta) - p.getX();
-            double iy = MathUtil.lerp(p.prevY, p.getY(), delta) - p.getY();
-            double iz = MathUtil.lerp(p.prevZ, p.getZ(), delta) - p.getZ();
+            double ix = MathUtil.lerp(p.lastX, p.getX(), delta) - p.getX();
+            double iy = MathUtil.lerp(p.lastY, p.getY(), delta) - p.getY();
+            double iz = MathUtil.lerp(p.lastZ, p.getZ(), delta) - p.getZ();
             Box box = p.getBoundingBox().offset(ix, iy, iz).expand(0.04);
 
             if (event.getFrustum() != null && !event.getFrustum().isVisible(box.expand(0.35))) {
@@ -145,8 +146,8 @@ public final class PlayerEspModule extends Module {
     private static int computeArmorDurabilityPercent(PlayerEntity p) {
         int totalMax = 0;
         int totalRem = 0;
-        for (int i = 0; i < 4; i++) {
-            ItemStack s = p.getInventory().getArmorStack(i);
+        for (EquipmentSlot eqSlot : new EquipmentSlot[]{EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD}) {
+            ItemStack s = p.getEquippedStack(eqSlot);
             if (!s.isEmpty() && s.isDamageable()) {
                 totalMax += s.getMaxDamage();
                 totalRem += (s.getMaxDamage() - s.getDamage());

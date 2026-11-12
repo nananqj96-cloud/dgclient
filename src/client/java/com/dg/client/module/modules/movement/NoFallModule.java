@@ -42,13 +42,13 @@ public final class NoFallModule extends Module {
         if (mc.player == null || mc.world == null || mc.getNetworkHandler() == null) {
             return;
         }
-        if (mc.player.isFallFlying() || mc.player.getAbilities().flying || mc.player.fallDistance <= 2.85f) {
+        if (mc.player.isGliding() || mc.player.getAbilities().flying || mc.player.fallDistance <= 2.85f) {
             return;
         }
 
         switch (mode.getValue()) {
             case PACKET_GROUND -> {
-                mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true));
+                mc.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(true, mc.player.horizontalCollision));
                 mc.player.fallDistance = 0.0f;
             }
             case ELYTRA_GLIDE -> {
@@ -65,13 +65,13 @@ public final class NoFallModule extends Module {
                 if (hit.getType() == HitResult.Type.BLOCK) {
                     for (int i = 0; i < 9; i++) {
                         if (mc.player.getInventory().getStack(i).isOf(Items.WATER_BUCKET)) {
-                            int prev = mc.player.getInventory().selectedSlot;
+                            int prev = mc.player.getInventory().getSelectedSlot();
                             float prevPitch = mc.player.getPitch();
-                            mc.player.getInventory().selectedSlot = i;
+                            mc.player.getInventory().setSelectedSlot(i);
                             mc.player.setPitch(90.0f);
                             mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
                             mc.player.setPitch(prevPitch);
-                            mc.player.getInventory().selectedSlot = prev;
+                            mc.player.getInventory().setSelectedSlot(prev);
                             break;
                         }
                     }

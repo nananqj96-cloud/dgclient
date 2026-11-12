@@ -15,10 +15,11 @@ import com.dg.client.util.ColorUtil;
 import com.dg.client.util.MathUtil;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
+import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -67,9 +68,9 @@ public final class NametagsModule extends Module {
             if (distSq > maxSq) {
                 continue;
             }
-            double ix = MathUtil.lerp(p.prevX, p.getX(), delta);
-            double iy = MathUtil.lerp(p.prevY, p.getY(), delta) + p.getHeight() + 0.35;
-            double iz = MathUtil.lerp(p.prevZ, p.getZ(), delta);
+            double ix = MathUtil.lerp(p.lastX, p.getX(), delta);
+            double iy = MathUtil.lerp(p.lastY, p.getY(), delta) + p.getHeight() + 0.35;
+            double iz = MathUtil.lerp(p.lastZ, p.getZ(), delta);
             float[] screen = Render3DUtil.projectToScreen(new Vec3d(ix, iy, iz), event.getCamera(), posMat, projMat, sw, sh);
             if (screen != null) {
                 frameTags.add(new ProjectedTag(p, screen[0], screen[1], Math.sqrt(distSq)));
@@ -83,7 +84,7 @@ public final class NametagsModule extends Module {
             return;
         }
         DrawContext ctx = event.getContext();
-        MatrixStack ms = ctx.getMatrices();
+        Matrix3x2fStack ms = ctx.getMatrices();
         float s = scale.getValue().floatValue();
 
         for (ProjectedTag tag : frameTags) {
@@ -124,8 +125,8 @@ public final class NametagsModule extends Module {
             if (showArmor.getValue()) {
                 List<ItemStack> gear = new ArrayList<>();
                 if (!p.getMainHandStack().isEmpty()) gear.add(p.getMainHandStack());
-                for (int i = 3; i >= 0; i--) {
-                    ItemStack a = p.getInventory().getArmorStack(i);
+                for (EquipmentSlot eqSlot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                    ItemStack a = p.getEquippedStack(eqSlot);
                     if (!a.isEmpty()) gear.add(a);
                 }
                 if (!p.getOffHandStack().isEmpty()) gear.add(p.getOffHandStack());

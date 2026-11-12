@@ -4,12 +4,13 @@ import com.dg.client.util.ColorUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.Identifier;
+import org.joml.Matrix3x2fStack;
 
 /**
  * Crisp anti-aliased TrueType font renderer backed by DGClient's bundled 4x-oversampled
@@ -20,8 +21,8 @@ public final class DGFontRenderer {
     public static final Identifier UI_FONT_ID = Identifier.of("dgclient", "ui");
     public static final Identifier UI_BOLD_FONT_ID = Identifier.of("dgclient", "ui_bold");
 
-    private static final Style REGULAR_STYLE = Style.EMPTY.withFont(UI_FONT_ID);
-    private static final Style BOLD_STYLE = Style.EMPTY.withFont(UI_BOLD_FONT_ID);
+    private static final Style REGULAR_STYLE = Style.EMPTY.withFont(new StyleSpriteSource.Font(UI_FONT_ID));
+    private static final Style BOLD_STYLE = Style.EMPTY.withFont(new StyleSpriteSource.Font(UI_BOLD_FONT_ID));
 
     private static boolean useCustomTtf = true;
 
@@ -95,19 +96,16 @@ public final class DGFontRenderer {
         if (tr == null) {
             return;
         }
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
-        matrices.translate(x, y, 0.0f);
+        Matrix3x2fStack matrices = context.getMatrices();
+        matrices.pushMatrix();
+        matrices.translate(x, y);
         if (Math.abs(scale - 1.0f) > 0.001f) {
-            matrices.scale(scale, scale, 1.0f);
+            matrices.scale(scale, scale);
         }
         context.drawText(tr, styled(text, bold), 0, 0, argb, shadow);
-        matrices.pop();
+        matrices.popMatrix();
     }
 
-    /**
-     * Renders text surrounded by a soft multi-offset neon glow halo before drawing the crisp core glyphs.
-     */
     public static void drawGlowText(
             DrawContext context,
             String text,
@@ -138,9 +136,6 @@ public final class DGFontRenderer {
         drawScaledText(context, text, x, y, coreColor, bold, scale, false);
     }
 
-    /**
-     * Renders an animated per-character green-and-white gradient string with optional soft neon halo.
-     */
     public static void drawAnimatedGradientText(
             DrawContext context,
             String text,
@@ -168,25 +163,25 @@ public final class DGFontRenderer {
             gradientText.append(Text.literal(String.valueOf(text.charAt(i))).setStyle(charStyle));
         }
 
-        MatrixStack matrices = context.getMatrices();
+        Matrix3x2fStack matrices = context.getMatrices();
         if (glowStrength > 0.02f) {
             int halo = ColorUtil.withAlpha(ColorUtil.NEON_GREEN, Math.round(40.0f * Math.min(1.5f, glowStrength)));
             Text plain = styled(text, bold);
             float d = 0.9f * scale;
             float[][] offsets = {{-d, 0}, {d, 0}, {0, -d}, {0, d}};
             for (float[] off : offsets) {
-                matrices.push();
-                matrices.translate(x + off[0], y + off[1], 0.0f);
-                matrices.scale(scale, scale, 1.0f);
+                matrices.pushMatrix();
+                matrices.translate(x + off[0], y + off[1]);
+                matrices.scale(scale, scale);
                 context.drawText(tr, plain, 0, 0, halo, false);
-                matrices.pop();
+                matrices.popMatrix();
             }
         }
 
-        matrices.push();
-        matrices.translate(x, y, 0.0f);
-        matrices.scale(scale, scale, 1.0f);
+        matrices.pushMatrix();
+        matrices.translate(x, y);
+        matrices.scale(scale, scale);
         context.drawText(tr, gradientText, 0, 0, 0xFFFFFFFF, false);
-        matrices.pop();
+        matrices.popMatrix();
     }
 }

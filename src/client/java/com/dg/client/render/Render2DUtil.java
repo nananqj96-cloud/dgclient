@@ -2,58 +2,43 @@ package com.dg.client.render;
 
 import com.dg.client.util.ColorUtil;
 import com.dg.client.util.MathUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.BuiltBuffer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.MatrixStack;
-import org.joml.Matrix4f;
+import org.joml.Matrix3x2fStack;
 
 /**
- * High-precision 2D immediate-mode vector primitives for DGClient's neon green & white UI:
- * anti-aliased rounded rectangles, multi-pass gaussian outer bloom, drop shadows,
- * gradient quads, circles, and glowing outlines.
+ * 2D vector primitives for DGClient's neon green & white UI built natively on
+ * Minecraft 1.21.11's GuiRenderState / DrawContext pipeline:
+ * rounded rectangles, multi-pass gaussian outer bloom, drop shadows, gradient quads,
+ * circles, rotated 2D lines, and scissor clipping.
  */
 public final class Render2DUtil {
-    private static final int CORNER_SEGMENTS = 7;
+    private static DrawContext activeContext;
 
     private Render2DUtil() {
     }
 
-    public static void setup2D() {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableCull();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+    public static void setContext(DrawContext context) {
+        activeContext = context;
     }
 
-    public static void end2D() {
-        RenderSystem.enableCull();
-        RenderSystem.disableBlend();
+    public static DrawContext getContext() {
+        return activeContext;
     }
 
-    public static void drawQuad(MatrixStack matrices, float x, float y, float w, float h, int color) {
-        if (w <= 0.0f || h <= 0.0f || ColorUtil.getAlpha(color) == 0) {
+    public static void drawQuad(Matrix3x2fStack matrices, float x, float y, float w, float h, int color) {
+        DrawContext ctx = activeContext;
+        if (ctx == null || w <= 0.0f || h <= 0.0f || ColorUtil.getAlpha(color) == 0) {
             return;
         }
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        setup2D();
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buf.vertex(mat, x, y + h, 0.0f).color(color);
-        buf.vertex(mat, x + w, y + h, 0.0f).color(color);
-        buf.vertex(mat, x + w, y, 0.0f).color(color);
-        buf.vertex(mat, x, y, 0.0f).color(color);
-        drawBuilt(buf);
-        end2D();
+        int x1 = Math.round(x);
+        int y1 = Math.round(y);
+        int x2 = Math.max(x1 + 1, Math.round(x + w));
+        int y2 = Math.max(y1 + 1, Math.round(y + h));
+        ctx.fill(x1, y1, x2, y2, color);
     }
 
     public static void drawGradientQuad(
-            MatrixStack matrices,
+            Matrix3x2fStack matrices,
             float x,
             float y,
             float w,
@@ -63,58 +48,68 @@ public final class Render2DUtil {
             int bottomRight,
             int bottomLeft
     ) {
-        if (w <= 0.0f || h <= 0.0f) {
+        DrawContext ctx = activeContext;
+        if (ctx == null || w <= 0.0f || h <= 0.0f) {
             return;
         }
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        setup2D();
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buf.vertex(mat, x, y + h, 0.0f).color(bottomLeft);
-        buf.vertex(mat, x + w, y + h, 0.0f).color(bottomRight);
-        buf.vertex(mat, x + w, y, 0.0f).color(topRight);
-        buf.vertex(mat, x, y, 0.0f).color(topLeft);
-        drawBuilt(buf);
-        end2D();
+        int x1 = Math.round(x);
+        int y1 = Math.round(y);
+        int x2 = Math.max(x1 + 1, Math.round(x + w));
+        int y2 = Math.max(y1 + 1, Math.round(y + h));
+        // If horizontal gradient differs from vertical, slice horizontally for smooth interpolation
+        if (topLeft != topRight || bottomLeft != bottomRight) {
+            int steps = Math.max(2, Math.min(24, x2 - x1));
+            for (int i = 0; i < steps; i++) {
+                float t = i / (float) Math.max(1, steps - 1);
+                int sx1 = x1 + Math.round((x2 - x1) * (i / (float) steps));
+                int sx2 = x1 + Math.round((x2 - x1) * ((i + 1) / (float) steps));
+                if (sx2 <= sx1) continue;
+                int topCol = ColorUtil.lerpColor(topLeft, topRight, t);
+                int botCol = ColorUtil.lerpColor(bottomLeft, bottomRight, t);
+                ctx.fillGradient(sx1, y1, sx2, y2, topCol, botCol);
+            }
+        } else {
+            ctx.fillGradient(x1, y1, x2, y2, topLeft, bottomLeft);
+        }
     }
 
-    public static void drawRoundedRect(MatrixStack matrices, float x, float y, float w, float h, float radius, int color) {
-        if (w <= 0.0f || h <= 0.0f || ColorUtil.getAlpha(color) == 0) {
+    public static void drawRoundedRect(Matrix3x2fStack matrices, float x, float y, float w, float h, float radius, int color) {
+        DrawContext ctx = activeContext;
+        if (ctx == null || w <= 0.0f || h <= 0.0f || ColorUtil.getAlpha(color) == 0) {
             return;
         }
-        float r = Math.min(Math.max(0.0f, radius), Math.min(w, h) * 0.5f);
-        if (r < 0.5f) {
-            drawQuad(matrices, x, y, w, h, color);
+        int x1 = Math.round(x);
+        int y1 = Math.round(y);
+        int x2 = Math.max(x1 + 1, Math.round(x + w));
+        int y2 = Math.max(y1 + 1, Math.round(y + h));
+        int r = Math.min(Math.round(Math.max(0.0f, radius)), Math.min(x2 - x1, y2 - y1) / 2);
+        if (r <= 1) {
+            ctx.fill(x1, y1, x2, y2, color);
             return;
         }
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        setup2D();
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
-        buf.vertex(mat, x + w * 0.5f, y + h * 0.5f, 0.0f).color(color);
 
-        float[][] centers = {
-                {x + w - r, y + r, -90.0f, 0.0f},
-                {x + w - r, y + h - r, 0.0f, 90.0f},
-                {x + r, y + h - r, 90.0f, 180.0f},
-                {x + r, y + r, 180.0f, 270.0f}
-        };
-
-        for (float[] c : centers) {
-            for (int i = 0; i <= CORNER_SEGMENTS; i++) {
-                double rad = Math.toRadians(c[2] + (c[3] - c[2]) * (i / (float) CORNER_SEGMENTS));
-                float px = c[0] + (float) Math.cos(rad) * r;
-                float py = c[1] + (float) Math.sin(rad) * r;
-                buf.vertex(mat, px, py, 0.0f).color(color);
+        // Central vertical band between top & bottom corner arcs
+        if (y1 + r < y2 - r) {
+            ctx.fill(x1, y1 + r, x2, y2 - r, color);
+        }
+        // Scanline corner arcs (top & bottom)
+        for (int dy = 0; dy < r; dy++) {
+            double distFromCenter = (r - 0.5) - dy;
+            int inset = Math.max(0, (int) Math.round(r - Math.sqrt(Math.max(0.0, r * r - distFromCenter * distFromCenter))));
+            int lx = x1 + inset;
+            int rx = x2 - inset;
+            if (rx > lx) {
+                ctx.fill(lx, y1 + dy, rx, y1 + dy + 1, color);
+                int by = y2 - 1 - dy;
+                if (by >= y1 + r || y1 + dy != by) {
+                    ctx.fill(lx, by, rx, by + 1, color);
+                }
             }
         }
-        // Close fan back to first perimeter vertex
-        double rad0 = Math.toRadians(centers[0][2]);
-        buf.vertex(mat, centers[0][0] + (float) Math.cos(rad0) * r, centers[0][1] + (float) Math.sin(rad0) * r, 0.0f).color(color);
-        drawBuilt(buf);
-        end2D();
     }
 
     public static void drawRoundedOutline(
-            MatrixStack matrices,
+            Matrix3x2fStack matrices,
             float x,
             float y,
             float w,
@@ -123,50 +118,58 @@ public final class Render2DUtil {
             float thickness,
             int color
     ) {
-        if (w <= 0.0f || h <= 0.0f || thickness <= 0.0f || ColorUtil.getAlpha(color) == 0) {
+        DrawContext ctx = activeContext;
+        if (ctx == null || w <= 0.0f || h <= 0.0f || thickness <= 0.0f || ColorUtil.getAlpha(color) == 0) {
             return;
         }
-        float r = Math.min(Math.max(0.0f, radius), Math.min(w, h) * 0.5f);
-        float halfT = thickness * 0.5f;
-        float rOuter = r + halfT;
-        float rInner = Math.max(0.0f, r - halfT);
+        int x1 = Math.round(x);
+        int y1 = Math.round(y);
+        int x2 = Math.max(x1 + 1, Math.round(x + w));
+        int y2 = Math.max(y1 + 1, Math.round(y + h));
+        int t = Math.max(1, Math.round(thickness));
+        int r = Math.min(Math.round(Math.max(0.0f, radius)), Math.min(x2 - x1, y2 - y1) / 2);
 
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        setup2D();
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
+        if (r <= 1) {
+            ctx.fill(x1, y1, x2, y1 + t, color);
+            ctx.fill(x1, y2 - t, x2, y2, color);
+            ctx.fill(x1, y1 + t, x1 + t, y2 - t, color);
+            ctx.fill(x2 - t, y1 + t, x2, y2 - t, color);
+            return;
+        }
 
-        float[][] centers = {
-                {x + w - r, y + r, -90.0f, 0.0f},
-                {x + w - r, y + h - r, 0.0f, 90.0f},
-                {x + r, y + h - r, 90.0f, 180.0f},
-                {x + r, y + r, 180.0f, 270.0f}
-        };
-
-        for (float[] c : centers) {
-            for (int i = 0; i <= CORNER_SEGMENTS; i++) {
-                double rad = Math.toRadians(c[2] + (c[3] - c[2]) * (i / (float) CORNER_SEGMENTS));
-                float cos = (float) Math.cos(rad);
-                float sin = (float) Math.sin(rad);
-                buf.vertex(mat, c[0] + cos * rOuter, c[1] + sin * rOuter, 0.0f).color(color);
-                buf.vertex(mat, c[0] + cos * rInner, c[1] + sin * rInner, 0.0f).color(color);
+        // Top & bottom straight edges
+        if (x1 + r < x2 - r) {
+            ctx.fill(x1 + r, y1, x2 - r, y1 + t, color);
+            ctx.fill(x1 + r, y2 - t, x2 - r, y2, color);
+        }
+        // Left & right straight edges
+        if (y1 + r < y2 - r) {
+            ctx.fill(x1, y1 + r, x1 + t, y2 - r, color);
+            ctx.fill(x2 - t, y1 + r, x2, y2 - r, color);
+        }
+        // Corner arc pixels
+        int rInner = Math.max(0, r - t);
+        for (int dy = 0; dy < r; dy++) {
+            double dc = (r - 0.5) - dy;
+            int outerInset = Math.max(0, (int) Math.round(r - Math.sqrt(Math.max(0.0, r * r - dc * dc))));
+            int innerInset = (dc >= rInner)
+                    ? r
+                    : Math.max(outerInset + 1, (int) Math.round(r - Math.sqrt(Math.max(0.0, rInner * rInner - dc * dc))));
+            int spanEnd = Math.min(r, Math.max(outerInset + t, innerInset));
+            // Top-left & Top-right
+            ctx.fill(x1 + outerInset, y1 + dy, x1 + spanEnd, y1 + dy + 1, color);
+            ctx.fill(x2 - spanEnd, y1 + dy, x2 - outerInset, y1 + dy + 1, color);
+            // Bottom-left & Bottom-right
+            int by = y2 - 1 - dy;
+            if (by != y1 + dy) {
+                ctx.fill(x1 + outerInset, by, x1 + spanEnd, by + 1, color);
+                ctx.fill(x2 - spanEnd, by, x2 - outerInset, by + 1, color);
             }
         }
-        double rad0 = Math.toRadians(centers[0][2]);
-        float cos0 = (float) Math.cos(rad0);
-        float sin0 = (float) Math.sin(rad0);
-        buf.vertex(mat, centers[0][0] + cos0 * rOuter, centers[0][1] + sin0 * rOuter, 0.0f).color(color);
-        buf.vertex(mat, centers[0][0] + cos0 * rInner, centers[0][1] + sin0 * rInner, 0.0f).color(color);
-        drawBuilt(buf);
-        end2D();
     }
 
-    /**
-     * Multi-pass gaussian outer bloom around a rounded rectangle.
-     * Uses true exponential gaussian falloff exp(-t^2 * 3.4) across concentric rings
-     * for smooth, authentic neon bloom rather than a flat border.
-     */
     public static void drawGaussianGlow(
-            MatrixStack matrices,
+            Matrix3x2fStack matrices,
             float x,
             float y,
             float w,
@@ -179,14 +182,14 @@ public final class Render2DUtil {
         if (spread <= 0.5f || intensity <= 0.01f) {
             return;
         }
-        int passes = Math.max(5, Math.min(11, Math.round(spread * 0.85f)));
+        int passes = Math.max(4, Math.min(8, Math.round(spread * 0.65f)));
         float step = spread / passes;
-        float baseAlpha = MathUtil.clamp(intensity, 0.0f, 2.0f) * 34.0f;
+        float baseAlpha = MathUtil.clamp(intensity, 0.0f, 2.0f) * 32.0f;
 
         for (int i = passes; i >= 1; i--) {
             float t = (float) i / (float) passes;
             float gaussian = (float) Math.exp(-(t * t) * 3.2);
-            int ringAlpha = MathUtil.clamp(Math.round(baseAlpha * gaussian), 1, 95);
+            int ringAlpha = MathUtil.clamp(Math.round(baseAlpha * gaussian), 1, 90);
             float expand = i * step;
             drawRoundedOutline(
                     matrices,
@@ -195,18 +198,18 @@ public final class Render2DUtil {
                     w + expand * 2.0f,
                     h + expand * 2.0f,
                     radius + expand,
-                    step * 1.45f,
+                    Math.max(1.0f, step * 1.35f),
                     ColorUtil.withAlpha(glowColor, ringAlpha)
             );
         }
     }
 
-    public static void drawDropShadow(MatrixStack matrices, float x, float y, float w, float h, float radius, float spread, int maxAlpha) {
-        int passes = 6;
+    public static void drawDropShadow(Matrix3x2fStack matrices, float x, float y, float w, float h, float radius, float spread, int maxAlpha) {
+        int passes = 5;
         float step = spread / passes;
         for (int i = passes; i >= 1; i--) {
             float t = (float) i / (float) passes;
-            int alpha = Math.round(maxAlpha * (float) Math.exp(-(t * t) * 2.8) * 0.32f);
+            int alpha = Math.round(maxAlpha * (float) Math.exp(-(t * t) * 2.8) * 0.30f);
             if (alpha <= 0) {
                 continue;
             }
@@ -215,33 +218,46 @@ public final class Render2DUtil {
         }
     }
 
-    public static void drawCircle(MatrixStack matrices, float cx, float cy, float radius, int color) {
+    public static void drawCircle(Matrix3x2fStack matrices, float cx, float cy, float radius, int color) {
         drawRoundedRect(matrices, cx - radius, cy - radius, radius * 2.0f, radius * 2.0f, radius, color);
     }
 
-    public static void drawCircleOutline(MatrixStack matrices, float cx, float cy, float radius, float thickness, int color) {
+    public static void drawCircleOutline(Matrix3x2fStack matrices, float cx, float cy, float radius, float thickness, int color) {
         drawRoundedOutline(matrices, cx - radius, cy - radius, radius * 2.0f, radius * 2.0f, radius, thickness, color);
     }
 
-    public static void drawLine2D(MatrixStack matrices, float x1, float y1, float x2, float y2, float thickness, int startColor, int endColor) {
+    public static void drawLine2D(Matrix3x2fStack matrices, float x1, float y1, float x2, float y2, float thickness, int startColor, int endColor) {
+        DrawContext ctx = activeContext;
+        if (ctx == null) {
+            return;
+        }
         float dx = x2 - x1;
         float dy = y2 - y1;
         float len = (float) Math.hypot(dx, dy);
-        if (len < 0.001f) {
+        if (len < 0.5f) {
             return;
         }
-        float nx = (-dy / len) * (thickness * 0.5f);
-        float ny = (dx / len) * (thickness * 0.5f);
+        float angle = (float) Math.atan2(dy, dx);
+        int ilen = Math.max(1, Math.round(len));
+        int halfT = Math.max(1, Math.round(thickness * 0.5f));
 
-        Matrix4f mat = matrices.peek().getPositionMatrix();
-        setup2D();
-        BufferBuilder buf = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buf.vertex(mat, x1 + nx, y1 + ny, 0.0f).color(startColor);
-        buf.vertex(mat, x2 + nx, y2 + ny, 0.0f).color(endColor);
-        buf.vertex(mat, x2 - nx, y2 - ny, 0.0f).color(endColor);
-        buf.vertex(mat, x1 - nx, y1 - ny, 0.0f).color(startColor);
-        drawBuilt(buf);
-        end2D();
+        matrices.pushMatrix();
+        matrices.translate(x1, y1);
+        matrices.rotate(angle);
+        if (startColor == endColor) {
+            ctx.fill(0, -halfT, ilen, halfT, startColor);
+        } else {
+            int segs = Math.min(12, Math.max(2, ilen / 16));
+            for (int i = 0; i < segs; i++) {
+                int sx1 = Math.round(ilen * (i / (float) segs));
+                int sx2 = Math.round(ilen * ((i + 1) / (float) segs));
+                if (sx2 > sx1) {
+                    int col = ColorUtil.lerpColor(startColor, endColor, i / (float) Math.max(1, segs - 1));
+                    ctx.fill(sx1, -halfT, sx2, halfT, col);
+                }
+            }
+        }
+        matrices.popMatrix();
     }
 
     public static void pushScissor(DrawContext context, float x, float y, float w, float h) {
@@ -255,12 +271,5 @@ public final class Render2DUtil {
 
     public static void popScissor(DrawContext context) {
         context.disableScissor();
-    }
-
-    private static void drawBuilt(BufferBuilder buf) {
-        BuiltBuffer built = buf.endNullable();
-        if (built != null) {
-            BufferRenderer.drawWithGlobalProgram(built);
-        }
     }
 }

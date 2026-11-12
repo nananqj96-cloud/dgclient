@@ -61,7 +61,7 @@ public final class TrailsModule extends Module {
             if (p != mc.player && !otherPlayers.getValue()) continue;
 
             Deque<TrailPoint> pts = playerTrails.computeIfAbsent(p.getUuid(), k -> new ArrayDeque<>());
-            Vec3d foot = p.getPos().add(0.0, 0.12, 0.0);
+            Vec3d foot = p.getEntityPos().add(0.0, 0.12, 0.0);
             if (pts.isEmpty() || pts.peekLast().pos().squaredDistanceTo(foot) > 0.015) {
                 pts.addLast(new TrailPoint(foot, now));
             }

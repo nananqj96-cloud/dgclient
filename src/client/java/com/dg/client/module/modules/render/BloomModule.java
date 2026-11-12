@@ -11,7 +11,7 @@ import com.dg.client.render.Render2DUtil;
 import com.dg.client.setting.BooleanSetting;
 import com.dg.client.setting.DoubleSetting;
 import com.dg.client.util.ColorUtil;
-import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Matrix3x2fStack;
 
 /**
  * Adds a Sodium/Iris-compatible soft neon bloom halo on bright HUD elements and screen edges
@@ -51,7 +51,7 @@ public final class BloomModule extends Module {
         if (!ambientEdgeVignette.getValue() || mc.options.hudHidden) {
             return;
         }
-        MatrixStack ms = event.getContext().getMatrices();
+        Matrix3x2fStack ms = event.getContext().getMatrices();
         int sw = event.getScreenWidth();
         int sh = event.getScreenHeight();
         int edgeAlpha = Math.min(36, Math.round(14.0f * intensity.getValue().floatValue()));

@@ -47,7 +47,7 @@ public final class ElytraHelperModule extends Module {
 
     @Override
     public String getDisplayInfo() {
-        if (mc.player != null && mc.player.isFallFlying()) {
+        if (mc.player != null && mc.player.isGliding()) {
             double bps = mc.player.getVelocity().horizontalLength() * 20.0;
             return String.format(java.util.Locale.ROOT, "%.1fm/s", bps);
         }
@@ -70,7 +70,7 @@ public final class ElytraHelperModule extends Module {
 
         // Auto-deploy when airborne & falling
         if (autoDeploy.getValue()
-                && !mc.player.isFallFlying()
+                && !mc.player.isGliding()
                 && !mc.player.isOnGround()
                 && !mc.player.isTouchingWater()
                 && mc.player.fallDistance > 1.35f
@@ -79,7 +79,7 @@ public final class ElytraHelperModule extends Module {
             mc.getNetworkHandler().sendPacket(new ClientCommandC2SPacket(mc.player, ClientCommandC2SPacket.Mode.START_FALL_FLYING));
         }
 
-        if (!mc.player.isFallFlying()) {
+        if (!mc.player.isGliding()) {
             return;
         }
 
@@ -122,12 +122,12 @@ public final class ElytraHelperModule extends Module {
             mc.interactionManager.interactItem(mc.player, Hand.OFF_HAND);
             return;
         }
-        int prevSlot = mc.player.getInventory().selectedSlot;
+        int prevSlot = mc.player.getInventory().getSelectedSlot();
         for (int i = 0; i < 9; i++) {
             if (mc.player.getInventory().getStack(i).isOf(Items.FIREWORK_ROCKET)) {
-                mc.player.getInventory().selectedSlot = i;
+                mc.player.getInventory().setSelectedSlot(i);
                 mc.interactionManager.interactItem(mc.player, Hand.MAIN_HAND);
-                mc.player.getInventory().selectedSlot = prevSlot;
+                mc.player.getInventory().setSelectedSlot(prevSlot);
                 return;
             }
         }

@@ -3,7 +3,7 @@
 	"id": "dgclient",
 	"version": "${version}",
 	"name": "DGClient",
-	"description": "Standalone neon-green & white anarchy utility mod for Minecraft 1.21.1 featuring ClickGUI, HUD Editor, ESP/Tracers, Y-0 Diagnostics & Underground Bypass, and async BaseFinder.",
+	"description": "Standalone neon-green & white anarchy utility mod for Minecraft 1.21.11 featuring ClickGUI, HUD Editor, ESP/Tracers, Y-0 Diagnostics & Underground Bypass, and async BaseFinder.",
 	"authors": [
 		"DGClient Team"
 	],
@@ -27,9 +27,9 @@
 		}
 	],
 	"depends": {
-		"fabricloader": ">=0.16.0",
-		"minecraft": "~${minecraft_version}",
+		"fabricloader": ">=0.18.0",
+		"minecraft": ">=1.21.11 <1.22.0",
 		"java": ">=21",
-		"fabric-api": ">=0.116.0"
+		"fabric-api": ">=0.141.0"
 	}
 }

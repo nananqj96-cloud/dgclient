@@ -5,6 +5,7 @@ import com.dg.client.event.events.MouseButtonEvent;
 import com.dg.client.event.events.MouseScrollEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
+import net.minecraft.client.input.MouseInput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,14 +29,14 @@ public abstract class MouseMixin {
     }
 
     @Inject(method = "onMouseButton", at = @At("HEAD"), cancellable = true)
-    private void dgclient$onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
+    private void dgclient$onMouseButton(long window, MouseInput input, int action, CallbackInfo ci) {
         MinecraftClient mc = MinecraftClient.getInstance();
         if (mc == null || mc.getWindow() == null || window != mc.getWindow().getHandle()) {
             return;
         }
         DGClient inst = DGClient.getInstance();
         if (inst != null && inst.isReady()) {
-            MouseButtonEvent event = inst.getEventBus().post(new MouseButtonEvent(button, action, mods));
+            MouseButtonEvent event = inst.getEventBus().post(new MouseButtonEvent(input.button(), action, input.modifiers()));
             if (event.isCancelled()) {
                 ci.cancel();
             }

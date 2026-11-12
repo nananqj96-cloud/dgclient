@@ -3,11 +3,10 @@ package com.dg.client.render;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 
 /**
- * Wraps a VertexConsumerProvider so every emitted quad uses an emissive translucent layer
- * tinted with DGClient's pulsing neon green/white color.
+ * Wraps a VertexConsumerProvider so every emitted quad is fullbright and tinted
+ * with DGClient's pulsing neon green/white aura color on Minecraft 1.21.11.
  */
 public final class TintingVertexConsumerProvider implements VertexConsumerProvider {
     private final VertexConsumerProvider delegate;
@@ -26,7 +25,7 @@ public final class TintingVertexConsumerProvider implements VertexConsumerProvid
 
     @Override
     public VertexConsumer getBuffer(RenderLayer renderLayer) {
-        VertexConsumer inner = delegate.getBuffer(RenderLayer.getEntityTranslucentEmissive(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE));
+        VertexConsumer inner = delegate.getBuffer(renderLayer);
         return new TintedConsumer(inner, r, g, b, a);
     }
 
@@ -39,6 +38,12 @@ public final class TintingVertexConsumerProvider implements VertexConsumerProvid
 
         @Override
         public VertexConsumer color(int red, int green, int blue, int alpha) {
+            inner.color(r, g, b, a);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer color(int argb) {
             inner.color(r, g, b, a);
             return this;
         }
@@ -64,6 +69,12 @@ public final class TintingVertexConsumerProvider implements VertexConsumerProvid
         @Override
         public VertexConsumer normal(float x, float y, float z) {
             inner.normal(x, y, z);
+            return this;
+        }
+
+        @Override
+        public VertexConsumer lineWidth(float width) {
+            inner.lineWidth(width);
             return this;
         }
     }
