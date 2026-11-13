@@ -41,7 +41,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
             require(CorzPortBus.isAvailable(), "CorzPortBus must be registered by bundled corzport mod");
             CorzPortProvider corz = CorzPortBus.provider();
             List<CorzModuleHandle> corzMods = corz.modules();
-            require(corzMods.size() >= 140, "Expected >= 140 bridged Corz modules, got " + corzMods.size());
+            require(corzMods.size() == 139, "Expected all 139 gameplay Corz modules bridged, got " + corzMods.size());
             require(corz.categories().contains("Bots") && corz.categories().contains("DonutSMP"), "Corz categories must include Bots and DonutSMP");
 
             // Verify toggling a bridged Corz module works live

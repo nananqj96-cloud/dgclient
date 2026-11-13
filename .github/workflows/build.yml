@@ -114,7 +114,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="v2.1.0-pinkbloom"
-          NOTES="Aether Client 2.1.0 (PinkBloom Edition) for Minecraft 1.21.11 Fabric — includes the PinkBloom default theme, Dual-Mode NanoVG ClickGUI, and all 145 ported CorzClient modules inside the synced Corz Port secondary UI."
+          NOTES="Aether Client 2.1.0 (PinkBloom Edition) for Minecraft 1.21.11 Fabric — includes the PinkBloom default theme, Dual-Mode NanoVG ClickGUI, and all 139 ported CorzClient gameplay modules (+ native Studio editors) inside the synced Corz Port secondary UI."
           if gh release view "$TAG" --repo "${{ github.repository }}" >/dev/null 2>&1; then
             gh release upload "$TAG" dist-jar/aetherclient-*.jar build/run/clientGameTest/screenshots/*.png --clobber --repo "${{ github.repository }}"
             gh release edit "$TAG" --title "Aether Client 2.1.0 (PinkBloom + Corz Port) — Minecraft 1.21.11 Fabric" --notes "$NOTES" --repo "${{ github.repository }}"
