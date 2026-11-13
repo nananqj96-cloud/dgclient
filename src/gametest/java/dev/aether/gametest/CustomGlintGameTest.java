@@ -17,17 +17,9 @@ public class CustomGlintGameTest implements FabricClientGameTest {
    private static final String[] STYLES = new String[]{"Ender", "Void", "Galaxy", "Toxic", "Amethyst", "Cyber", "Solar", "Prismatic", "Abyss"};
 
    public void runTest(ClientGameTestContext context) {
-      context.runOnClient(mc -> {
-         mc.options.framerateLimit().set(20);
-         mc.options.pauseOnLostFocus = false;
-      });
-      TestSingleplayerContext world = context.worldBuilder().create();
+      TestSingleplayerContext world = GameTestWorldHelper.createWorld(context, "CustomGlintGameTest");
 
       try {
-         context.runOnClient(mc -> {
-            mc.options.framerateLimit().set(120);
-            mc.options.pauseOnLostFocus = false;
-         });
          world.getClientWorld().waitForChunksRender();
          context.getInput().resizeWindow(1600, 900);
          context.waitTicks(2);

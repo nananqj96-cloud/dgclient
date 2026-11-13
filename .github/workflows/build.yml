@@ -74,14 +74,16 @@ jobs:
           GT_STATUS=$?
           cat gametest.log
           if [ $GT_STATUS -ne 0 ]; then
-            grep "World loading finished:" gametest.log | tail -n 3 | while IFS= read -r line; do
-              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
-              echo "::error title=WorldLoadState::$CLEAN"
-            done
-            grep -E "AssertionError|OutOfMemory|FAILED|MixinApplyError|MixinTransformerError|Exception|Caused by:|at dev\.aether\.|at com\.corz\.|\[ERROR\]|\[FATAL\]" gametest.log | grep -vE "libflite|SignedJWT|OpenAL" | head -n 40 | while IFS= read -r line; do
-              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
-              echo "::error title=ClientGameTestError::$CLEAN"
-            done
+            python3 - << 'PY'
+          from pathlib import Path
+          lines = [
+              l for l in Path("gametest.log").read_text(errors="replace").splitlines()
+              if "World loading finished:" not in l
+          ]
+          tail = "\n".join(lines[-120:])
+          esc = tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+          print(f"::error title=GameTestLogTail::{esc}")
+          PY
             exit $GT_STATUS
           fi
 

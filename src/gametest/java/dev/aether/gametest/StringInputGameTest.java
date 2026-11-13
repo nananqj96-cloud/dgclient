@@ -15,17 +15,9 @@ public class StringInputGameTest implements FabricClientGameTest {
    private static final String YEN = codePoint(165);
 
    public void runTest(ClientGameTestContext context) {
-      context.runOnClient(mc -> {
-         mc.options.framerateLimit().set(20);
-         mc.options.pauseOnLostFocus = false;
-      });
-      TestSingleplayerContext world = context.worldBuilder().create();
+      TestSingleplayerContext world = GameTestWorldHelper.createWorld(context, "StringInputGameTest");
 
       try {
-         context.runOnClient(mc -> {
-            mc.options.framerateLimit().set(120);
-            mc.options.pauseOnLostFocus = false;
-         });
          world.getClientWorld().waitForChunksRender();
          context.getInput().resizeWindow(1600, 900);
          context.waitTicks(2);

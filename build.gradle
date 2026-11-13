@@ -103,7 +103,13 @@ tasks.named("sourcesJar", Jar) {
 
 tasks.matching { it.name == "runClientGameTest" }.configureEach {
     maxHeapSize = "4096M"
-    jvmArgs("-Xms1024M", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=50")
+    jvmArgs(
+        "-Xms1024M",
+        "-XX:+UseG1GC",
+        "-XX:MaxGCPauseMillis=50",
+        "-Dfabric.client.gametest.disableNetworkSynchronizer=true"
+    )
+    systemProperty("fabric.client.gametest.disableNetworkSynchronizer", "true")
     environment("LP_NUM_THREADS", "1")
 }
 
