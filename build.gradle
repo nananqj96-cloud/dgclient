@@ -105,9 +105,6 @@ tasks.matching { it.name == "runClientGameTest" }.configureEach {
     maxHeapSize = "4096M"
     jvmArgs("-Xms1024M", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=50")
     environment("LP_NUM_THREADS", "1")
-    if (System.getenv("DISPLAY") != null && !System.getenv("DISPLAY").isEmpty()) {
-        useXvfb = false
-    }
 }
 
 jar {
