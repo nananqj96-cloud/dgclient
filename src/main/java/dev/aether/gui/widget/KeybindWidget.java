@@ -80,20 +80,9 @@ public class KeybindWidget extends SettingWidget {
       if (!this.listening) {
          return false;
       }
-      if (button >= 2) {
-         this.setting.set(Integer.valueOf(button));
-         this.listening = false;
-         UiSounds.keybindSet();
-         return true;
-      }
-      if (button == 1) {
-         this.setting.set(Integer.valueOf(KeybindSetting.NONE));
-         this.listening = false;
-         UiSounds.keybindSet();
-         return true;
-      }
+      this.setting.set(Integer.valueOf(button));
       this.listening = false;
-      UiSounds.select();
+      UiSounds.keybindSet();
       return true;
    }
 
