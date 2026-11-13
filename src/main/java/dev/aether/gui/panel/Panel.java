@@ -177,4 +177,15 @@ public abstract class Panel {
    public boolean isListening() {
       return false;
    }
+
+   public boolean hasPendingKeybind() {
+      return false;
+   }
+
+   public boolean handlePendingKeybindMouse(int button) {
+      return false;
+   }
+
+   public void unfocusInputs() {
+   }
 }

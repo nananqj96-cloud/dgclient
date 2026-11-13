@@ -237,4 +237,9 @@ public class ThemesPanel extends Panel {
    public boolean isListening() {
       return this.accentWidget.isListening();
    }
+
+   @Override
+   public void unfocusInputs() {
+      this.accentWidget.unfocus();
+   }
 }

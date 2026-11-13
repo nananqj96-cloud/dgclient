@@ -27,6 +27,7 @@ import dev.aether.theme.ThemeManager;
 import dev.aether.util.Colors;
 import dev.aether.util.UiSounds;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ModuleEntry {
@@ -39,6 +40,7 @@ public class ModuleEntry {
    private final ClickGuiState state;
    private final String key;
    private final List<SettingWidget> widgets = new ArrayList<>();
+   private final KeybindWidget moduleKeybindWidget;
    private final Animation hover = new Animation(120.0F, 0.0F);
    private final Animation enable = new Animation(140.0F, 0.0F);
    private final Animation expand;
@@ -74,7 +76,8 @@ public class ModuleEntry {
             this.widgets.add(new KeybindWidget(themes, kb));
          }
       }
-      this.widgets.add(new KeybindWidget(themes, module.getKeybind()));
+      this.moduleKeybindWidget = new KeybindWidget(themes, module.getKeybind());
+      this.widgets.add(this.moduleKeybindWidget);
    }
 
    public Module getModule() {
@@ -83,6 +86,22 @@ public class ModuleEntry {
 
    public String key() {
       return this.key;
+   }
+
+   public float x() {
+      return this.x;
+   }
+
+   public float y() {
+      return this.y;
+   }
+
+   public float width() {
+      return this.width;
+   }
+
+   public List<SettingWidget> widgets() {
+      return Collections.unmodifiableList(this.widgets);
    }
 
    public boolean isFavourite() {
@@ -110,22 +129,41 @@ public class ModuleEntry {
       }
    }
 
-   private float settingsHeight(NVGRenderer vg) {
+   /**
+    * Pure height measurement that never clobbers widget (x, y) hitboxes.
+    */
+   private float measureSettingsHeight(NVGRenderer vg) {
       float innerW = Math.max(120.0F, this.width - 24.0F);
       float total = 8.0F;
       for (SettingWidget w : this.widgets) {
          if (w.isVisible()) {
-            w.setBounds(this.x + 12.0F, this.y, innerW);
+            w.setWidth(innerW);
             total += w.height(vg) + 4.0F;
          }
       }
       return total + 4.0F;
    }
 
+   /**
+    * Positions all visible submenu widgets at their exact submenu coordinates and returns full drawer height.
+    */
+   public float layoutWidgets(NVGRenderer vg) {
+      float headH = this.headerHeight();
+      float innerW = Math.max(120.0F, this.width - 24.0F);
+      float wy = this.y + headH + 8.0F;
+      for (SettingWidget w : this.widgets) {
+         if (w.isVisible()) {
+            w.setBounds(this.x + 12.0F, wy, innerW);
+            wy += w.height(vg) + 4.0F;
+         }
+      }
+      return (wy - (this.y + headH)) + 4.0F;
+   }
+
    public float height(NVGRenderer vg) {
       this.syncExternalExpand();
       float exp = this.expand.value();
-      return this.headerHeight() + (exp <= 0.005F ? 0.0F : exp * this.settingsHeight(vg));
+      return this.headerHeight() + (exp <= 0.005F ? 0.0F : exp * this.measureSettingsHeight(vg));
    }
 
    public void render(NVGRenderer vg, float mx, float my, float alphaMul) {
@@ -133,7 +171,8 @@ public class ModuleEntry {
       Theme theme = this.theme();
       float headH = this.headerHeight();
       float exp = this.expand.value();
-      float fullH = headH + (exp <= 0.005F ? 0.0F : exp * this.settingsHeight(vg));
+      float fullSettingsH = exp <= 0.005F ? 0.0F : this.layoutWidgets(vg);
+      float fullH = headH + exp * fullSettingsH;
 
       boolean rowHovered = mx >= this.x && mx <= this.x + this.width && my >= this.y && my <= this.y + headH;
       if (rowHovered && this.hover.getTarget() < 0.5F) {
@@ -171,7 +210,7 @@ public class ModuleEntry {
          vg.rect(this.x + 2.5F, barY, 3.0F, barH, 1.5F, Colors.withAlpha(theme.accentBright(), en));
       }
 
-      // Title + optional concise subtitle (single text pass — no double render!)
+      // Title + optional concise subtitle
       float textLeft = this.x + 12.0F;
       float rightControlsW = 78.0F;
       float maxTitleW = Math.max(40.0F, this.width - rightControlsW - 16.0F);
@@ -186,7 +225,7 @@ public class ModuleEntry {
 
       float midY = this.y + headH * 0.5F;
 
-      // Favourite star (single draw call!)
+      // Favourite star
       float starCx = this.x + this.width - 62.0F;
       boolean fav = this.isFavourite();
       vg.star(starCx, midY, 5.2F, 2.4F, fav ? FAV_GOLD : Colors.withAlpha(theme.textDisabled(), 0.75F), fav);
@@ -211,19 +250,15 @@ public class ModuleEntry {
 
       // Expandable settings drawer
       if (exp > 0.005F) {
-         float sh = this.settingsHeight(vg) * exp;
+         float sh = fullSettingsH * exp;
          vg.save();
          vg.scissor(this.x, this.y + headH, this.width, sh);
          vg.alpha(exp);
          vg.line(this.x + 10.0F, this.y + headH, this.x + this.width - 10.0F, this.y + headH, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.85F));
 
-         float wy = this.y + headH + 8.0F;
-         float innerW = this.width - 24.0F;
          for (SettingWidget widget : this.widgets) {
             if (widget.isVisible()) {
-               widget.setBounds(this.x + 12.0F, wy, innerW);
                widget.render(vg, mx, my);
-               wy += widget.height(vg) + 4.0F;
             }
          }
          vg.restore();
@@ -236,10 +271,14 @@ public class ModuleEntry {
       return this.themes.current();
    }
 
+   private void setExpandState(boolean open) {
+      this.expand.setTarget(open ? 1.0F : 0.0F);
+      this.state.setExpanded(this.key, open);
+   }
+
    private void toggleExpand() {
-      boolean next = !(this.expand.getTarget() > 0.5F);
-      this.expand.setTarget(next ? 1.0F : 0.0F);
-      this.state.setExpanded(this.key, next);
+      boolean next = !(this.state.isExpanded(this.key) || this.expand.getTarget() > 0.5F);
+      this.setExpandState(next);
       UiSounds.select();
    }
 
@@ -258,19 +297,30 @@ public class ModuleEntry {
             this.toggleExpand();
             return true;
          }
+         if (button == 2) {
+            this.setExpandState(true);
+            this.moduleKeybindWidget.startListening();
+            return true;
+         }
          if (button == 0) {
             this.module.toggle();
             UiSounds.toggle(this.module.isEnabled());
             return true;
          }
          return true;
-      } else if (this.expand.getTarget() > 0.5F && my >= this.y + headH && my <= this.y + this.height(null)) {
-         for (SettingWidget w : this.widgets) {
-            if (w.isVisible() && w.mouseClicked(mx, my, button)) {
-               return true;
+      }
+
+      boolean isOpen = this.state.isExpanded(this.key) || this.expand.getTarget() > 0.5F || this.expand.value() > 0.5F;
+      if (isOpen && mx >= this.x && mx <= this.x + this.width) {
+         float settingsH = this.layoutWidgets(null);
+         if (my >= this.y + headH && my <= this.y + headH + settingsH) {
+            for (SettingWidget w : this.widgets) {
+               if (w.isVisible() && w.mouseClicked(mx, my, button)) {
+                  return true;
+               }
             }
+            return true;
          }
-         return mx >= this.x && mx <= this.x + this.width;
       }
       return false;
    }
@@ -312,5 +362,29 @@ public class ModuleEntry {
          }
       }
       return false;
+   }
+
+   public boolean hasPendingKeybind() {
+      for (SettingWidget w : this.widgets) {
+         if (w.hasPendingKeybind()) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public boolean handlePendingKeybindMouse(int button) {
+      for (SettingWidget w : this.widgets) {
+         if (w.hasPendingKeybind() && w.handlePendingKeybindMouse(button)) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public void unfocusInputs() {
+      for (SettingWidget w : this.widgets) {
+         w.unfocus();
+      }
    }
 }

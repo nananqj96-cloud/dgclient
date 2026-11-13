@@ -100,4 +100,9 @@ public class StringWidget extends SettingWidget {
    public boolean isListening() {
       return this.focused;
    }
+
+   @Override
+   public void unfocus() {
+      this.focused = false;
+   }
 }

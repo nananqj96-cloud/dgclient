@@ -52,6 +52,7 @@ dependencies {
     gametestImplementation project(':corz-api')
     gametestRuntimeOnly project(':corz-api')
     testImplementation project(':corz-api')
+    include project(':corz-api')
     include project(':corzport')
 
     // Load remapped CorzPort mod in dev / headless Client GameTests when built
@@ -101,9 +102,7 @@ tasks.named("sourcesJar", Jar) {
 }
 
 jar {
-    dependsOn(":corz-api:classes")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from(project(":corz-api").sourceSets.main.output)
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
     }

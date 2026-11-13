@@ -92,8 +92,63 @@ public final class CorzPortWindow {
       }
    }
 
+   public float x() {
+      return this.x;
+   }
+
+   public float y() {
+      return this.y;
+   }
+
+   public float w() {
+      return this.w;
+   }
+
+   public float h() {
+      return this.h;
+   }
+
    public boolean isListening() {
       return this.listeningSettingKey != null || this.listeningModuleKey != null || this.focusedStringSetting != null || this.searchFocused;
+   }
+
+   public boolean hasPendingKeybind() {
+      return this.listeningSettingKey != null || this.listeningModuleKey != null;
+   }
+
+   public boolean handlePendingKeybindMouse(int btn) {
+      if (this.listeningSettingKey != null) {
+         if (btn >= 2) {
+            this.listeningSettingKey.setKey(btn);
+            UiSounds.keybindSet();
+         } else if (btn == 1) {
+            this.listeningSettingKey.setKey(-1);
+            UiSounds.keybindSet();
+         } else {
+            UiSounds.select();
+         }
+         this.listeningSettingKey = null;
+         return true;
+      }
+      if (this.listeningModuleKey != null) {
+         if (btn >= 2) {
+            this.listeningModuleKey.setBindKey(btn);
+            UiSounds.keybindSet();
+         } else if (btn == 1) {
+            this.listeningModuleKey.setBindKey(-1);
+            UiSounds.keybindSet();
+         } else {
+            UiSounds.select();
+         }
+         this.listeningModuleKey = null;
+         return true;
+      }
+      return false;
+   }
+
+   public void unfocusInputs() {
+      this.searchFocused = false;
+      this.focusedStringSetting = null;
    }
 
    public void syncThemeToCorz() {
@@ -515,6 +570,9 @@ public final class CorzPortWindow {
    }
 
    public boolean mouseClicked(NVGRenderer vg, float mx, float my, int btn) {
+      if (this.hasPendingKeybind()) {
+         return this.handlePendingKeybindMouse(btn);
+      }
       if (!this.state.isCorzPortOpen() || !this.hit(mx, my, this.x, this.y, this.w, this.h)) {
          this.searchFocused = false;
          this.focusedStringSetting = null;
@@ -582,11 +640,15 @@ public final class CorzPortWindow {
             float ch = this.measureModuleCard(mod, exp);
             if (this.hit(mx, my, cx, curY, cardW, ch)) {
                if (my <= curY + 34.0F) {
-                  if (btn == 1 || mx >= cx + cardW - 20.0F) {
+                  if (btn == 1 || (btn == 0 && mx >= cx + cardW - 22.0F)) {
                      if (!this.expandedIds.remove(mod.id())) {
                         this.expandedIds.add(mod.id());
                      }
                      UiSounds.panelCollapse();
+                  } else if (btn == 2) {
+                     this.expandedIds.add(mod.id());
+                     this.listeningModuleKey = mod;
+                     UiSounds.keybindListen();
                   } else if (btn == 0) {
                      mod.toggle();
                      UiSounds.toggle(mod.isEnabled());

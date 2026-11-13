@@ -17,12 +17,32 @@ public abstract class SettingWidget {
       this.boundSetting = boundSetting;
    }
 
+   public Setting<?> boundSetting() {
+      return this.boundSetting;
+   }
+
+   public float x() {
+      return this.x;
+   }
+
+   public float y() {
+      return this.y;
+   }
+
+   public float width() {
+      return this.width;
+   }
+
    public boolean isVisible() {
       return this.boundSetting == null || this.boundSetting.isVisible();
    }
 
    protected Theme theme() {
       return this.themes.current();
+   }
+
+   public void setWidth(float width) {
+      this.width = width;
    }
 
    public void setBounds(float x, float y, float width) {
@@ -59,5 +79,16 @@ public abstract class SettingWidget {
 
    public boolean isListening() {
       return false;
+   }
+
+   public boolean hasPendingKeybind() {
+      return false;
+   }
+
+   public boolean handlePendingKeybindMouse(int button) {
+      return false;
+   }
+
+   public void unfocus() {
    }
 }

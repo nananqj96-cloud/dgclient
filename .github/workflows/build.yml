@@ -81,7 +81,7 @@ jobs:
             exit $GT_STATUS
           fi
 
-      - name: Prepare release jar & screenshots directory
+      - name: Prepare & verify standalone release JAR (KnotClassLoader isolation check)
         run: |
           mkdir -p dist-jar
           for f in build/libs/aetherclient-*.jar; do
@@ -91,7 +91,83 @@ jobs:
             esac
           done
           ls -lh dist-jar/
-          unzip -l dist-jar/aetherclient-*.jar | grep -E "fabric.mod.json|aetherclient.mixins.json|corzport|CorzPortBus|icon.png"
+
+          python3 - << 'PY'
+          import json, os, shutil, subprocess, tempfile, zipfile
+          from pathlib import Path
+
+          jars = list(Path("dist-jar").glob("aetherclient-*.jar"))
+          assert len(jars) == 1, f"Expected exactly 1 release jar, got {jars}"
+          jar_path = jars[0]
+
+          with zipfile.ZipFile(jar_path, "r") as zf:
+              names = set(zf.namelist())
+              fmj = json.loads(zf.read("fabric.mod.json").decode("utf-8"))
+              nested_entries = [entry["file"] for entry in fmj.get("jars", [])]
+              print("Nested JAR entries in fabric.mod.json:", nested_entries)
+
+              assert "META-INF/jars/corz-api-2.1.0.jar" in nested_entries, "corz-api-2.1.0.jar missing from fabric.mod.json jars!"
+              assert "META-INF/jars/corzport-2.1.0.jar" in nested_entries, "corzport-2.1.0.jar missing from fabric.mod.json jars!"
+              assert "META-INF/jars/corz-api-2.1.0.jar" in names, "META-INF/jars/corz-api-2.1.0.jar missing from outer JAR!"
+              assert "META-INF/jars/corzport-2.1.0.jar" in names, "META-INF/jars/corzport-2.1.0.jar missing from outer JAR!"
+
+              tmp = Path(tempfile.mkdtemp(prefix="knot-verify-"))
+              shutil.copy2(jar_path, tmp / jar_path.name)
+              urls = [str(tmp / jar_path.name)]
+              for nf in nested_entries:
+                  assert nf in names, f"Listed nested jar {nf} missing from archive!"
+                  out = tmp / Path(nf).name
+                  out.write_bytes(zf.read(nf))
+                  urls.append(str(out))
+
+              with zipfile.ZipFile(tmp / "corz-api-2.1.0.jar", "r") as api_zf:
+                  api_names = set(api_zf.namelist())
+                  for req in [
+                      "fabric.mod.json",
+                      "dev/aether/corz/CorzPortProvider.class",
+                      "dev/aether/corz/CorzPortBus.class",
+                      "dev/aether/corz/CorzModuleHandle.class",
+                      "dev/aether/corz/CorzSettingHandle.class",
+                  ]:
+                      assert req in api_names, f"Missing {req} in nested corz-api-2.1.0.jar!"
+
+              with zipfile.ZipFile(tmp / "corzport-2.1.0.jar", "r") as cp_zf:
+                  cp_names = set(cp_zf.namelist())
+                  for req in [
+                      "fabric.mod.json",
+                      "com/corz/client/CorzClient.class",
+                      "com/corz/client/bridge/CorzPortProviderImpl.class",
+                  ]:
+                      assert req in cp_names, f"Missing {req} in nested corzport-2.1.0.jar!"
+
+              verifier = tmp / "VerifyKnot.java"
+              verifier.write_text("""
+          import java.io.File;
+          import java.net.URL;
+          import java.net.URLClassLoader;
+          public class VerifyKnot {
+              public static void main(String[] args) throws Exception {
+                  URL[] urls = new URL[args.length];
+                  for (int i = 0; i < args.length; i++) {
+                      urls[i] = new File(args[i]).toURI().toURL();
+                  }
+                  try (URLClassLoader knotSim = new URLClassLoader(urls, ClassLoader.getPlatformClassLoader())) {
+                      for (String cls : new String[]{
+                          "dev.aether.corz.CorzPortProvider",
+                          "dev.aether.corz.CorzPortBus",
+                          "dev.aether.corz.CorzModuleHandle",
+                          "dev.aether.corz.CorzSettingHandle",
+                          "dev.aether.corz.CorzSettingHandle$Kind"
+                      }) {
+                          Class<?> loaded = Class.forName(cls, true, knotSim);
+                          System.out.println("Verified isolated Knot load: " + loaded.getName());
+                      }
+                  }
+              }
+          }
+          """)
+              subprocess.run(["java", str(verifier), *urls], check=True)
+          PY
 
       - name: Upload compiled JAR artifact
         uses: actions/upload-artifact@v4

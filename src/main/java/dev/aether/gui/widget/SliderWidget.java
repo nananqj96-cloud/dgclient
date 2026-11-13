@@ -56,7 +56,7 @@ public class SliderWidget extends SettingWidget {
 
    @Override
    public boolean mouseClicked(float mx, float my, int button) {
-      if (button == 0 && this.contains(mx, my) && my >= this.y + 9.0F) {
+      if (button == 0 && this.contains(mx, my)) {
          this.dragging = true;
          this.applyMouse(mx);
          return true;

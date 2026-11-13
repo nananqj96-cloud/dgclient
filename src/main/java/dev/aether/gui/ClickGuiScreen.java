@@ -822,6 +822,24 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return this.configPanel;
    }
 
+   public ModuleEntry findEntry(String key) {
+      for (CategoryPanel cp : this.categoryPanels.values()) {
+         for (ModuleEntry entry : cp.allEntries()) {
+            if (entry.key().equals(key)) {
+               return entry;
+            }
+         }
+      }
+      return null;
+   }
+
+   private void unfocusAllTextInputs() {
+      this.dashAccentWidget.unfocus();
+      for (Panel p : this.panels) {
+         p.unfocusInputs();
+      }
+   }
+
    private float uiX(double x) {
       return OverlayRenderer.guiToUi(x);
    }
@@ -846,6 +864,20 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.configPanel.mouseClicked(mx, my, btn);
          return true;
       }
+
+      // If any KeybindWidget or Corz keybind is waiting for input, route mouse button directly to it
+      if (this.corzPortWindow.hasPendingKeybind()) {
+         this.corzPortWindow.handlePendingKeybindMouse(btn);
+         return true;
+      }
+      for (Panel p : this.panels) {
+         if (p.hasPendingKeybind()) {
+            p.handlePendingKeybindMouse(btn);
+            return true;
+         }
+      }
+
+      this.unfocusAllTextInputs();
 
       // Route clicks inside synced Corz Port secondary UI first when open
       if (this.corzPortWindow.mouseClicked(vg, mx, my, btn)) {

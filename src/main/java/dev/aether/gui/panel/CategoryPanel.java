@@ -108,8 +108,8 @@ public class CategoryPanel extends Panel {
       float entryW = Panel.WIDTH - ENTRY_INSET * 2.0F;
       for (ModuleEntry e : vis) {
          e.setShowSubtitle(false);
-         float eh = e.height(vg);
          e.setBounds(this.ps.x + ENTRY_INSET, y, entryW);
+         float eh = e.height(vg);
          if (y + eh >= viewTop - 20.0F && y <= viewBottom + 20.0F) {
             float fade = this.edgeFade(y, y + eh, viewTop, viewBottom);
             e.render(vg, mx, my, fade);
@@ -130,21 +130,21 @@ public class CategoryPanel extends Panel {
 
    @Override
    public void mouseDragged(float mx, float my) {
-      for (ModuleEntry e : this.visibleEntries()) {
+      for (ModuleEntry e : this.entries) {
          e.mouseDragged(mx, my);
       }
    }
 
    @Override
    public void mouseReleased() {
-      for (ModuleEntry e : this.visibleEntries()) {
+      for (ModuleEntry e : this.entries) {
          e.mouseReleased();
       }
    }
 
    @Override
    public boolean keyPressed(int keyCode) {
-      for (ModuleEntry e : this.visibleEntries()) {
+      for (ModuleEntry e : this.entries) {
          if (e.keyPressed(keyCode)) {
             return true;
          }
@@ -154,7 +154,7 @@ public class CategoryPanel extends Panel {
 
    @Override
    public boolean charTyped(int codepoint) {
-      for (ModuleEntry e : this.visibleEntries()) {
+      for (ModuleEntry e : this.entries) {
          if (e.charTyped(codepoint)) {
             return true;
          }
@@ -164,11 +164,38 @@ public class CategoryPanel extends Panel {
 
    @Override
    public boolean isListening() {
-      for (ModuleEntry e : this.visibleEntries()) {
+      for (ModuleEntry e : this.entries) {
          if (e.isListening()) {
             return true;
          }
       }
       return false;
+   }
+
+   @Override
+   public boolean hasPendingKeybind() {
+      for (ModuleEntry e : this.entries) {
+         if (e.hasPendingKeybind()) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   @Override
+   public boolean handlePendingKeybindMouse(int button) {
+      for (ModuleEntry e : this.entries) {
+         if (e.hasPendingKeybind() && e.handlePendingKeybindMouse(button)) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   @Override
+   public void unfocusInputs() {
+      for (ModuleEntry e : this.entries) {
+         e.unfocusInputs();
+      }
    }
 }

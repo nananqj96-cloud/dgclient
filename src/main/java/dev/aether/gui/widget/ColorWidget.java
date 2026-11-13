@@ -44,6 +44,7 @@ public class ColorWidget extends SettingWidget {
       }
 
       this.expanded = var1;
+      this.expand.setTarget(var1 ? 1.0F : 0.0F);
    }
 
    public boolean isExpanded() {
@@ -132,7 +133,8 @@ public class ColorWidget extends SettingWidget {
       if (var3 != 0) {
          return false;
       } else if (var2 >= this.y && var2 <= this.y + 22.0F && var1 >= this.x && var1 <= this.x + this.width) {
-         boolean var4 = this.expanded = !this.expanded;
+         this.expanded = !this.expanded;
+         this.expand.setTarget(this.expanded ? 1.0F : 0.0F);
          if (this.expanded) {
             this.syncFromSetting();
          }
@@ -252,5 +254,12 @@ public class ColorWidget extends SettingWidget {
    @Override
    public boolean isListening() {
       return this.hexFocused;
+   }
+
+   @Override
+   public void unfocus() {
+      if (this.hexFocused) {
+         this.commitHex();
+      }
    }
 }

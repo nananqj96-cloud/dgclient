@@ -23,6 +23,20 @@ public class ModeWidget extends SettingWidget {
    }
 
    @Override
+   public void setBounds(float x, float y, float width) {
+      float dx = x - this.x;
+      float dy = y - this.y;
+      super.setBounds(x, y, width);
+      if (this.boundCount > 0 && (Math.abs(dx) > 0.001F || Math.abs(dy) > 0.001F)) {
+         for (int i = 0; i < this.boundCount; i++) {
+            int base = i * 3;
+            this.boundsFlat[base] += dx;
+            this.boundsFlat[base + 1] += dy;
+         }
+      }
+   }
+
+   @Override
    public float height(NVGRenderer vg) {
       if (vg != null) {
          float cx = 0.0F;
@@ -93,20 +107,34 @@ public class ModeWidget extends SettingWidget {
 
    @Override
    public boolean mouseClicked(float mx, float my, int button) {
-      if (button != 0) {
+      List<String> modes = this.setting.getModes();
+      if (modes.isEmpty()) {
          return false;
       }
-      List<String> modes = this.setting.getModes();
-      for (int i = 0; i < this.boundCount && i < modes.size(); i++) {
-         int base = i * 3;
-         float bx = this.boundsFlat[base];
-         float by = this.boundsFlat[base + 1];
-         float bw = this.boundsFlat[base + 2];
-         if (mx >= bx && mx <= bx + bw && my >= by && my <= by + CHIP_H) {
-            this.setting.set(modes.get(i));
+      if (button == 0) {
+         for (int i = 0; i < this.boundCount && i < modes.size(); i++) {
+            int base = i * 3;
+            float bx = this.boundsFlat[base];
+            float by = this.boundsFlat[base + 1];
+            float bw = this.boundsFlat[base + 2];
+            if (mx >= bx && mx <= bx + bw && my >= by && my <= by + CHIP_H) {
+               this.setting.set(modes.get(i));
+               UiSounds.select();
+               return true;
+            }
+         }
+         // Clicking the label header cycles forward if not directly on a chip
+         if (mx >= this.x && mx <= this.x + this.width && my >= this.y && my <= this.y + 18.0F) {
+            int idx = modes.indexOf(this.setting.get());
+            this.setting.set(modes.get((idx + 1) % modes.size()));
             UiSounds.select();
             return true;
          }
+      } else if (button == 1 && this.contains(mx, my)) {
+         int idx = modes.indexOf(this.setting.get());
+         this.setting.set(modes.get((idx - 1 + modes.size()) % modes.size()));
+         UiSounds.select();
+         return true;
       }
       return false;
    }
