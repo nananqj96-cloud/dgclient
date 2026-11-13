@@ -30,10 +30,17 @@ import net.minecraft.client.Minecraft;
 public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
    @Override
    public void runTest(ClientGameTestContext context) {
+      context.runOnClient(mc -> {
+         mc.options.framerateLimit().set(20);
+         mc.options.pauseOnLostFocus = false;
+      });
       TestSingleplayerContext world = context.worldBuilder().create();
       try {
+         context.runOnClient(mc -> {
+            mc.options.framerateLimit().set(120);
+            mc.options.pauseOnLostFocus = false;
+         });
          world.getClientWorld().waitForChunksRender();
-         context.runOnClient(mc -> mc.options.pauseOnLostFocus = false);
          context.getInput().resizeWindow(1600, 900);
          context.waitTicks(4);
 

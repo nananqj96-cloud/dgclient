@@ -70,11 +70,15 @@ jobs:
       - name: Run real Minecraft 1.21.11 Client GameTests (PinkBloom + Synced Corz Port UI)
         run: |
           set +e
-          xvfb-run -a -s "-screen 0 1600x900x24" ./gradlew runClientGameTest --no-daemon --stacktrace > gametest.log 2>&1
+          LP_NUM_THREADS=1 xvfb-run -a -s "-screen 0 1600x900x24" ./gradlew runClientGameTest -Dorg.gradle.jvmargs="-Xmx1024M" --no-daemon --stacktrace > gametest.log 2>&1
           GT_STATUS=$?
           cat gametest.log
           if [ $GT_STATUS -ne 0 ]; then
-            grep -E "AssertionError|FAILED|MixinApplyError|MixinTransformerError|Exception|Caused by:" gametest.log | head -n 80 | while IFS= read -r line; do
+            grep "World loading finished:" gametest.log | tail -n 3 | while IFS= read -r line; do
+              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
+              echo "::error title=WorldLoadState::$CLEAN"
+            done
+            grep -E "AssertionError|OutOfMemory|FAILED|MixinApplyError|MixinTransformerError|Exception|Caused by:|at dev\.aether\.|at com\.corz\.|\[ERROR\]|\[FATAL\]" gametest.log | grep -vE "libflite|SignedJWT|OpenAL" | head -n 40 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=ClientGameTestError::$CLEAN"
             done

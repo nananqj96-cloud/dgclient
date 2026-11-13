@@ -118,11 +118,8 @@ public final class CorzPortWindow {
 
    public boolean handlePendingKeybindMouse(int btn) {
       if (this.listeningSettingKey != null) {
-         if (btn >= 2) {
-            this.listeningSettingKey.setKey(btn);
-            UiSounds.keybindSet();
-         } else if (btn == 1) {
-            this.listeningSettingKey.setKey(-1);
+         if (btn >= 0) {
+            this.listeningSettingKey.setKey(1000 + btn);
             UiSounds.keybindSet();
          } else {
             UiSounds.select();
@@ -131,11 +128,8 @@ public final class CorzPortWindow {
          return true;
       }
       if (this.listeningModuleKey != null) {
-         if (btn >= 2) {
-            this.listeningModuleKey.setBindKey(btn);
-            UiSounds.keybindSet();
-         } else if (btn == 1) {
-            this.listeningModuleKey.setBindKey(-1);
+         if (btn >= 0) {
+            this.listeningModuleKey.setBindKey(1000 + btn);
             UiSounds.keybindSet();
          } else {
             UiSounds.select();
@@ -878,6 +872,15 @@ public final class CorzPortWindow {
    private static String formatKey(int keyCode) {
       if (keyCode < 0) {
          return "None";
+      }
+      if (keyCode >= 1000) {
+         int btn = keyCode - 1000;
+         return switch (btn) {
+            case 0 -> "LMB";
+            case 1 -> "RMB";
+            case 2 -> "MMB";
+            default -> "MOUSE " + (btn + 1);
+         };
       }
       try {
          String s = InputConstants.Type.KEYSYM.getOrCreate(keyCode).getDisplayName().getString();

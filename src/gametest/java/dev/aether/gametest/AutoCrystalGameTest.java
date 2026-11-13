@@ -27,11 +27,18 @@ public class AutoCrystalGameTest implements FabricClientGameTest {
    private static final AABB CRYSTAL_BOX = new AABB(-0.5, 1.5, -0.5, 1.5, 5.5, 2.5);
 
    public void runTest(ClientGameTestContext context) {
+      context.runOnClient(mc -> {
+         mc.options.framerateLimit().set(20);
+         mc.options.pauseOnLostFocus = false;
+      });
       TestSingleplayerContext world = context.worldBuilder().create();
 
       try {
+         context.runOnClient(mc -> {
+            mc.options.framerateLimit().set(120);
+            mc.options.pauseOnLostFocus = false;
+         });
          world.getClientWorld().waitForChunksRender();
-         context.runOnClient(mc -> mc.options.pauseOnLostFocus = false);
          context.getInput().resizeWindow(1280, 720);
          context.waitTicks(2);
          TestServerContext server = world.getServer();
