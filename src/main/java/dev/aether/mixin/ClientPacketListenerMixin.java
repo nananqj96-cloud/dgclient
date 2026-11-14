@@ -1,6 +1,7 @@
 package dev.aether.mixin;
 
 import dev.aether.AetherClient;
+import dev.aether.chunkbypass.ChunkBypassCapture;
 import dev.aether.module.ModuleManager;
 import dev.aether.module.impl.NetheriteFinderModule;
 import dev.aether.module.impl.SpawnerProtectModule;
@@ -11,11 +12,18 @@ import dev.aether.util.TpsTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.Packet;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundBlockEventPacket;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelEventPacket;
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -86,6 +94,16 @@ public class ClientPacketListenerMixin {
       }
    }
 
+   private static void captureChunkBypass(Packet<?> packet) {
+      ModuleManager modules = AetherClient.modules();
+      if (modules != null && modules.chunkBypass != null && modules.chunkBypass.isEnabled()) {
+         try {
+            ChunkBypassCapture.handle(packet);
+         } catch (Exception ignored) {
+         }
+      }
+   }
+
    private static void markSpawnerNotifierDirty() {
       ModuleManager var0 = AetherClient.modules();
       if (var0 != null && var0.spawnerNametags != null && var0.spawnerNametags.isEnabled()) {
@@ -105,6 +123,8 @@ public class ClientPacketListenerMixin {
          } catch (Exception var5) {
          }
       }
+
+      captureChunkBypass(var1);
    }
 
    @Inject(
@@ -120,6 +140,7 @@ public class ClientPacketListenerMixin {
       StorageEspRenderer.markChunkDirty(var3.getX() >> 4, var3.getZ() >> 4);
       markSpawnerNotifierDirty();
       markSusChunkDirty(var3.getX() >> 4, var3.getZ() >> 4);
+      captureChunkBypass(var1);
       NetheriteFinderModule finder = netheriteFinder();
       if (finder != null) {
          finder.onServerBlockUpdate(var3, var1.getBlockState());
@@ -162,5 +183,55 @@ public class ClientPacketListenerMixin {
          });
       } catch (Exception var6) {
       }
+
+      captureChunkBypass(var1);
+   }
+
+   @Inject(
+      method = {"handleLevelEvent"},
+      at = {@At("HEAD")}
+   )
+   private void aetherclient$chunkBypassLevelEvent(ClientboundLevelEventPacket var1, CallbackInfo var2) {
+      captureChunkBypass(var1);
+   }
+
+   @Inject(
+      method = {"handleParticles"},
+      at = {@At("HEAD")}
+   )
+   private void aetherclient$chunkBypassParticles(ClientboundLevelParticlesPacket var1, CallbackInfo var2) {
+      captureChunkBypass(var1);
+   }
+
+   @Inject(
+      method = {"handleBlockEvent"},
+      at = {@At("HEAD")}
+   )
+   private void aetherclient$chunkBypassBlockEvent(ClientboundBlockEventPacket var1, CallbackInfo var2) {
+      captureChunkBypass(var1);
+   }
+
+   @Inject(
+      method = {"handleBlockEntityData"},
+      at = {@At("HEAD")}
+   )
+   private void aetherclient$chunkBypassBlockEntityData(ClientboundBlockEntityDataPacket var1, CallbackInfo var2) {
+      captureChunkBypass(var1);
+   }
+
+   @Inject(
+      method = {"handleAddEntity"},
+      at = {@At("HEAD")}
+   )
+   private void aetherclient$chunkBypassSpawnEntity(ClientboundAddEntityPacket var1, CallbackInfo var2) {
+      captureChunkBypass(var1);
+   }
+
+   @Inject(
+      method = {"handleSoundEvent"},
+      at = {@At("HEAD")}
+   )
+   private void aetherclient$chunkBypassSound(ClientboundSoundPacket var1, CallbackInfo var2) {
+      captureChunkBypass(var1);
    }
 }

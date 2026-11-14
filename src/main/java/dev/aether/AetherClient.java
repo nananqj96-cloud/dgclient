@@ -4,6 +4,7 @@ import dev.aether.config.ConfigManager;
 import dev.aether.config.ConfigStore;
 import dev.aether.corz.CorzPortBus;
 import dev.aether.corz.CorzPortProvider;
+import dev.aether.chunkbypass.ChunkBypassLedger;
 import dev.aether.gui.ClickGuiScreen;
 import dev.aether.hud.HudManager;
 import dev.aether.module.Category;
@@ -11,6 +12,7 @@ import dev.aether.module.ModuleManager;
 import dev.aether.module.impl.FreecamModule;
 import dev.aether.notification.NotificationManager;
 import dev.aether.render.BlockEspRenderer;
+import dev.aether.render.ChunkBypassRenderer;
 import dev.aether.render.ClusterEspRenderer;
 import dev.aether.render.MotionBlurRenderer;
 import dev.aether.render.OverlayRenderer;
@@ -142,6 +144,13 @@ public class AetherClient implements ClientModInitializer {
       if (modules.chunkFinder != null) {
          modules.chunkFinder.clear();
       }
+
+      if (modules.chunkBypass != null) {
+         modules.chunkBypass.clear();
+      }
+
+      ChunkBypassLedger.INSTANCE.clear();
+      ChunkBypassRenderer.reset();
       if (modules.spawnerNametags != null) {
          modules.spawnerNametags.clear();
       }

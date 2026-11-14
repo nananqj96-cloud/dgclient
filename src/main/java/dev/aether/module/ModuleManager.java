@@ -11,6 +11,7 @@ import dev.aether.module.impl.AutoTpaModule;
 import dev.aether.module.impl.AutoWalkModule;
 import dev.aether.module.impl.BlockEspModule;
 import dev.aether.module.impl.ChatMacroModule;
+import dev.aether.module.impl.ChunkBypassModule;
 import dev.aether.module.impl.ChunkFinderModule;
 import dev.aether.module.impl.ClusterEspModule;
 import dev.aether.module.impl.CoordSnapperModule;
@@ -110,6 +111,7 @@ public class ModuleManager {
    public CustomGlintModule customGlint;
    public CustomAccessoriesModule customAccessories;
    public ChunkFinderModule chunkFinder;
+   public ChunkBypassModule chunkBypass;
    public FreeLookModule freeLook;
    public AutoClickerModule autoClicker;
    public CoordSnapperModule coordSnapper;
@@ -243,6 +245,8 @@ public class ModuleManager {
       this.register(this.susChunkFinder);
       this.chunkFinder = new ChunkFinderModule();
       this.register(this.chunkFinder);
+      this.chunkBypass = new ChunkBypassModule();
+      this.register(this.chunkBypass);
       this.regionMap = new RegionMapModule();
       this.register(this.regionMap);
    }

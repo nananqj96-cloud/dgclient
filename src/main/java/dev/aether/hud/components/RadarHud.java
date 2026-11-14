@@ -2,6 +2,7 @@ package dev.aether.hud.components;
 
 import dev.aether.hud.HudComponent;
 import dev.aether.module.Modules;
+import dev.aether.module.impl.ChunkBypassModule;
 import dev.aether.render.nanovg.NVGImages;
 import dev.aether.render.nanovg.NVGRenderer;
 import dev.aether.suschunk.SusChunkScanner;
@@ -15,14 +16,18 @@ import net.minecraft.client.player.LocalPlayer;
 
 public class RadarHud extends HudComponent {
    private static final float SIZE = 110.0F;
+   private static final int CHUNK_BYPASS_PURPLE = 0xA855F7;
+   private static final int CHUNK_BYPASS_PURPLE_BRIGHT = 0xC084FC;
    private final Modules.HudModule module;
    private final Modules.SusChunkFinderModule susFinder;
+   private final ChunkBypassModule chunkBypass;
    private final ThemeManager themes;
 
-   public RadarHud(Modules.HudModule var1, Modules.SusChunkFinderModule var2, ThemeManager var3, BooleanSupplier var4) {
+   public RadarHud(Modules.HudModule var1, Modules.SusChunkFinderModule var2, ChunkBypassModule var5, ThemeManager var3, BooleanSupplier var4) {
       super("radar", 0.006F, 0.45F, var4);
       this.module = var1;
       this.susFinder = var2;
+      this.chunkBypass = var5;
       this.themes = var3;
    }
 
@@ -72,7 +77,6 @@ public class RadarHud extends HudComponent {
             for (SusChunkScanner.Zone var35 : this.susFinder.scanner.zones()) {
                this.drawZoneBlip(
                   var1,
-                  var6,
                   var9,
                   var10,
                   var8,
@@ -80,7 +84,27 @@ public class RadarHud extends HudComponent {
                   var14,
                   (float)(var35.centroidX() - var7.getX()),
                   (float)(var35.centroidZ() - var7.getZ()),
-                  strength(var35.maxScore(), var31)
+                  strength(var35.maxScore(), var31),
+                  var6.accent(),
+                  var6.accentBright()
+               );
+            }
+         }
+
+         if (this.chunkBypass != null && this.chunkBypass.isEnabled() && this.chunkBypass.showOnRadar.get()) {
+            for (ChunkBypassModule.Zone var37 : this.chunkBypass.zones()) {
+               this.drawZoneBlip(
+                  var1,
+                  var9,
+                  var10,
+                  var8,
+                  var30,
+                  var14,
+                  (float)(var37.centroidX() - var7.getX()),
+                  (float)(var37.centroidZ() - var7.getZ()),
+                  strength(var37.maxScore(), this.chunkBypass.minHits()),
+                  CHUNK_BYPASS_PURPLE,
+                  CHUNK_BYPASS_PURPLE_BRIGHT
                );
             }
          }
@@ -125,7 +149,7 @@ public class RadarHud extends HudComponent {
       return var2 <= 0 ? 1.0F : Math.clamp((float)((var0 - (double)var2) / ((double)var2 * 2.0)), 0.0F, 1.0F);
    }
 
-   private void drawZoneBlip(NVGRenderer var1, Theme var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, float var10) {
+   private void drawZoneBlip(NVGRenderer var1, float var3, float var4, float var5, float var6, float var7, float var8, float var9, float var10, int accent, int accentBright) {
       float var11 = (float)Math.sqrt((double)(var8 * var8 + var9 * var9));
       if (!(var11 < 0.5F)) {
          boolean var12 = var11 > var6;
@@ -137,17 +161,16 @@ public class RadarHud extends HudComponent {
          float var19 = (float)(0.5 + 0.5 * Math.sin(var17 * Math.PI * 2.0 / 1.8));
          float var20 = (var12 ? 2.4F : 3.0F + 1.5F * var10) * (1.0F + 0.1F * var19);
          float var21 = (0.72F + 0.28F * var10) * (0.88F + 0.12F * var19);
-         int var22 = var2.accent();
-         var1.circleGlow(var15, var16, var20, 3.5F + 2.5F * var19, Colors.withAlpha(var22, (0.3F + 0.25F * var10) * var21));
-         var1.circle(var15, var16, var20, Colors.withAlpha(var22, var21));
-         var1.circleOutline(var15, var16, var20 + 1.5F, 1.0F, Colors.withAlpha(var2.accentBright(), 0.55F * var21));
+         var1.circleGlow(var15, var16, var20, 3.5F + 2.5F * var19, Colors.withAlpha(accent, (0.3F + 0.25F * var10) * var21));
+         var1.circle(var15, var16, var20, Colors.withAlpha(accent, var21));
+         var1.circleOutline(var15, var16, var20 + 1.5F, 1.0F, Colors.withAlpha(accentBright, 0.55F * var21));
          if (var12 && var11 <= var6 * 2.5F) {
             String var23 = (int)var11 + "m";
             float var24 = var1.textWidth(var23, 8.5F);
             float var25 = var15 + (var3 - var15) * 0.24F;
             float var26 = var16 + (var4 - var16) * 0.24F;
             var1.rect(var25 - var24 / 2.0F - 3.0F, var26 - 5.5F, var24 + 6.0F, 11.0F, 5.5F, Colors.withAlpha(-15856621, 0.72F));
-            var1.text(var23, var25 - var24 / 2.0F, var26, 8.5F, Colors.withAlpha(var2.accentBright(), 0.95F));
+            var1.text(var23, var25 - var24 / 2.0F, var26, 8.5F, Colors.withAlpha(accentBright, 0.95F));
          }
       }
    }

@@ -17,6 +17,9 @@ public class NotificationManager extends HudComponent {
    private static final float WIDTH_PAD = 12.0F;
    private static final float HEIGHT = 30.0F;
    private static final float HEIGHT_WEATHER = 42.0F;
+   private static final float HEIGHT_BIG = 64.0F;
+   private static final int BIG_ACCENT = 0xA855F7;
+   private static final int BIG_ACCENT_BRIGHT = 0xC084FC;
    private static final float GAP = 6.0F;
    private static final float FONT = 13.5F;
    private static final float FONT_SUB = 11.0F;
@@ -48,11 +51,15 @@ public class NotificationManager extends HudComponent {
    }
 
    public void pushInfo(String var1) {
-      this.add(new NotificationManager.Toast(var1, null, null, true));
+      this.add(new NotificationManager.Toast(var1, null, null, true, false));
+   }
+
+   public void pushBig(String var1, String var2) {
+      this.add(new NotificationManager.Toast(var1, var2, null, true, true));
    }
 
    public void pushWeather(String var1, String var2, NotificationManager.Weather var3, boolean var4) {
-      this.add(new NotificationManager.Toast(var1, var2, var3, var4));
+      this.add(new NotificationManager.Toast(var1, var2, var3, var4, false));
    }
 
    private void add(NotificationManager.Toast var1) {
@@ -115,12 +122,12 @@ public class NotificationManager extends HudComponent {
                float var21 = (float)(System.nanoTime() - var20.bornNanos) / 1.0E9F;
                float var22 = Math.clamp((var5 + 0.3F - var21) / 0.3F, 0.0F, 1.0F);
                float var23 = var20.slide.value();
-               float var24 = this.drawToast(var1, var4, var17, var18, var23, var22, var20.title, var20.subtitle, var20.weather, var20.accent);
+               float var24 = this.drawToast(var1, var4, var17, var18, var23, var22, var20.title, var20.subtitle, var20.weather, var20.accent, var20.big);
                var18 -= var24 + 6.0F;
             }
 
             if (var10.isEmpty() && var27) {
-               this.drawToast(var1, var4, var17, var18, 1.0F, 0.5F, "Notification", null, null, true);
+               this.drawToast(var1, var4, var17, var18, 1.0F, 0.5F, "Notification", null, null, true, false);
             }
 
             var1.restore();
@@ -129,45 +136,58 @@ public class NotificationManager extends HudComponent {
    }
 
    private float drawToast(
-      NVGRenderer var1, Theme var2, float var3, float var4, float var5, float var6, String var7, String var8, NotificationManager.Weather var9, boolean var10
+      NVGRenderer var1,
+      Theme var2,
+      float var3,
+      float var4,
+      float var5,
+      float var6,
+      String var7,
+      String var8,
+      NotificationManager.Weather var9,
+      boolean var10,
+      boolean big
    ) {
       boolean var11 = var8 != null;
-      float var12 = var11 ? 42.0F : 30.0F;
+      float var12 = big ? HEIGHT_BIG : (var11 ? HEIGHT_WEATHER : HEIGHT);
       float var13 = var9 != null ? 26.0F : 0.0F;
-      float var14 = 16.0F + var13;
-      float var15 = Math.max(var1.textWidth(var7, 13.5F), var11 ? var1.textWidth(var8, 11.0F) : 0.0F);
-      float var16 = var14 + var15 + 12.0F;
+      float titleFont = big ? 16.0F : 13.5F;
+      float subFont = big ? 12.0F : 11.0F;
+      float var14 = big ? 20.0F + var13 : 16.0F + var13;
+      float var15 = Math.max(var1.textWidth(var7, titleFont), var11 ? var1.textWidth(var8, subFont) : 0.0F);
+      float var16 = big ? Math.min(360.0F, var14 + var15 + 20.0F) : var14 + var15 + 12.0F;
       float var17 = var3 - var16 + (1.0F - var5) * (var16 + 10.0F);
       float var18 = var4 - var12;
-      int var19 = var10 ? var2.accent() : var2.textDisabled();
+      int accent = big ? BIG_ACCENT : (var10 ? var2.accent() : var2.textDisabled());
+      int accentBright = big ? BIG_ACCENT_BRIGHT : var2.accentBright();
       var1.save();
       var1.alpha(var6);
-      var1.rectGradient(var17, var18, var16, var12, 3.0F, var2.background(), var2.backgroundTo(), true);
-      var1.rectOutline(var17 + 0.5F, var18 + 0.5F, var16 - 1.0F, var12 - 1.0F, 3.0F, 1.0F, Colors.withAlpha(var19, 0.34F * var6));
-      var1.rect(var17 + 9.0F, var18, 28.0F, 2.0F, 1.0F, var19);
-      var1.glow(var17 + 9.0F, var18, 28.0F, 2.0F, 1.0F, 4.0F, Colors.withAlpha(var19, 0.18F * var6));
+      var1.rectGradient(var17, var18, var16, var12, big ? 5.0F : 3.0F, var2.background(), var2.backgroundTo(), true);
+      var1.rectOutline(var17 + 0.5F, var18 + 0.5F, var16 - 1.0F, var12 - 1.0F, big ? 5.0F : 3.0F, 1.0F, Colors.withAlpha(accent, 0.34F * var6));
+      var1.rect(var17 + (big ? 12.0F : 9.0F), var18, big ? 36.0F : 28.0F, 2.0F, 1.0F, accent);
+      var1.glow(var17 + (big ? 12.0F : 9.0F), var18, big ? 36.0F : 28.0F, 2.0F, 1.0F, 4.0F, Colors.withAlpha(accent, 0.18F * var6));
       var1.save();
-      var1.translate(var17 + 7.0F, var18 + var12 / 2.0F);
+      var1.translate(var17 + (big ? 10.0F : 7.0F), var18 + var12 / 2.0F);
       var1.rotate((float) (Math.PI / 4));
-      var1.rect(-2.0F, -2.0F, 4.0F, 4.0F, 0.7F, Colors.withAlpha(var19, 0.9F));
+      var1.rect(-2.0F, -2.0F, 4.0F, 4.0F, 0.7F, Colors.withAlpha(accent, 0.9F));
       var1.restore();
-      var1.line(var17 + var16 - 9.0F, var18 + var12 - 1.0F, var17 + var16 - 1.0F, var18 + var12 - 1.0F, 1.0F, Colors.withAlpha(var19, 0.45F));
+      var1.line(var17 + var16 - (big ? 12.0F : 9.0F), var18 + var12 - 1.0F, var17 + var16 - 1.0F, var18 + var12 - 1.0F, 1.0F, Colors.withAlpha(accent, 0.45F));
       if (var9 != null) {
-         this.drawWeatherGlyph(var1, var17 + 12.0F + 2.0F + var13 / 2.0F - 4.0F, var18 + var12 / 2.0F, var9, var19, var2.accentBright());
+         this.drawWeatherGlyph(var1, var17 + 12.0F + 2.0F + var13 / 2.0F - 4.0F, var18 + var12 / 2.0F, var9, accent, accentBright);
       }
 
       if (var11) {
-         if (var10) {
-            var1.textGradient(var7, var17 + var14, var18 + var12 / 2.0F - 8.0F, 13.5F, var2.accentBright(), var2.accent());
+         if (var10 || big) {
+            var1.textGradient(var7, var17 + var14, var18 + var12 / 2.0F - (big ? 12.0F : 8.0F), titleFont, accentBright, accent);
          } else {
-            var1.text(var7, var17 + var14, var18 + var12 / 2.0F - 8.0F, 13.5F, var2.textPrimary());
+            var1.text(var7, var17 + var14, var18 + var12 / 2.0F - (big ? 12.0F : 8.0F), titleFont, var2.textPrimary());
          }
 
-         var1.text(var8, var17 + var14, var18 + var12 / 2.0F + 8.0F, 11.0F, var2.textMuted());
-      } else if (var10) {
-         var1.textGradient(var7, var17 + var14, var18 + var12 / 2.0F, 13.5F, var2.accentBright(), var2.accent());
+         var1.text(var8, var17 + var14, var18 + var12 / 2.0F + (big ? 12.0F : 8.0F), subFont, var2.textMuted());
+      } else if (var10 || big) {
+         var1.textGradient(var7, var17 + var14, var18 + var12 / 2.0F, titleFont, accentBright, accent);
       } else {
-         var1.text(var7, var17 + var14, var18 + var12 / 2.0F, 13.5F, var2.textMuted());
+         var1.text(var7, var17 + var14, var18 + var12 / 2.0F, titleFont, var2.textMuted());
       }
 
       var1.restore();
@@ -214,14 +234,16 @@ public class NotificationManager extends HudComponent {
       final String subtitle;
       final NotificationManager.Weather weather;
       final boolean accent;
+      final boolean big;
       final long bornNanos = System.nanoTime();
       final Animation slide = new Animation(220.0F, 0.0F, Easing.EASE_OUT_CUBIC);
 
-      Toast(String var1, String var2, NotificationManager.Weather var3, boolean var4) {
+      Toast(String var1, String var2, NotificationManager.Weather var3, boolean var4, boolean var5) {
          this.title = var1;
          this.subtitle = var2;
          this.weather = var3;
          this.accent = var4;
+         this.big = var5;
          this.slide.setTarget(1.0F);
       }
    }

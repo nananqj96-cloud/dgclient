@@ -112,7 +112,7 @@ public class HudManager {
       this.components.add(new ArmorHud(var2, () -> var5.isEnabled() && var5.armor.get()));
       this.components.add(new PotionsHud(var2, () -> var5.isEnabled() && var5.potions.get()));
       this.components.add(new KeystrokesHud(var2, () -> var5.isEnabled() && var5.keystrokes.get()));
-      this.components.add(new RadarHud(var5, var1.susChunkFinder, var2, () -> var5.isEnabled() && var5.radar.get()));
+      this.components.add(new RadarHud(var5, var1.susChunkFinder, var1.chunkBypass, var2, () -> var5.isEnabled() && var5.radar.get()));
       this.components.add(new RegionMapHud(var1.regionMap, var2));
       this.components.add(new StaffListHud(var1.staffList, var2));
       this.components.add(new SpotifyHud(var1.spotify, var3, var2));

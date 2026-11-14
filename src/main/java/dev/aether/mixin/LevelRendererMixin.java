@@ -6,6 +6,7 @@ import dev.aether.module.ModuleManager;
 import dev.aether.render.AccessoryRenderer;
 import dev.aether.render.BlockEspRenderer;
 import dev.aether.render.BlockOutlineRenderer;
+import dev.aether.render.ChunkBypassRenderer;
 import dev.aether.render.ChunkFinderRenderer;
 import dev.aether.render.ClusterEspRenderer;
 import dev.aether.render.EntityEspRenderer;
@@ -42,6 +43,10 @@ public class LevelRendererMixin {
 
          if (var3 && var6.chunkFinder != null && var6.chunkFinder.isEnabled()) {
             ChunkFinderRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.chunkFinder);
+         }
+
+         if (var3 && var6.chunkBypass != null && var6.chunkBypass.isEnabled()) {
+            ChunkBypassRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.chunkBypass);
          }
 
          if (var3 && var6.storageEsp != null && var6.storageEsp.isEnabled()) {
