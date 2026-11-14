@@ -185,6 +185,15 @@ public final class ChunkBypassCapture {
          || state.getBlock() == Blocks.STONE_BUTTON;
    }
 
+   /**
+    * Mechanical habitation evidence the addon looks for via proximity block updates — a mob
+    * spawner or a redstone component. Used by the distance scan so bases surface from loaded
+    * chunks at render distance, not only from packets that reach the client up close.
+    */
+   public static boolean isMechanicalEvidence(BlockState state) {
+      return state.getBlock() == Blocks.SPAWNER || isRedstone(state);
+   }
+
    private static BlockPos posOf(double x, double y, double z) {
       return new BlockPos((int)Math.round(x), (int)Math.round(y), (int)Math.round(z));
    }

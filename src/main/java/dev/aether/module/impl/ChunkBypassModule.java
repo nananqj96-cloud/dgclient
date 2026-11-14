@@ -24,8 +24,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 
 /**
  * Chunk Bypass — port of the Relapse addon's suspicious chunk finder. Clusters the digging,
@@ -37,6 +42,9 @@ public final class ChunkBypassModule extends Module {
    private static final int[] SENSITIVITY_MIN_HITS = {1, 2, 3, 3, 4, 5, 6, 7, 9, 11, 14, 18, 23, 28, 35};
    private static final int REBUILD_INTERVAL_TICKS = 20;
    private static final int MAX_RECENT = 4000;
+   private static final int DISTANCE_SCAN_RADIUS_CHUNKS = 32;
+   private static final int SPAWNER_WEIGHT = 3;
+   private static final int REDSTONE_WEIGHT = 1;
    public final SliderSetting sensitivity = this.addSetting(
       new SliderSetting(
             "Sensitivity",
@@ -53,6 +61,9 @@ public final class ChunkBypassModule extends Module {
    );
    public final SliderSetting maxY = this.addSetting(
       new SliderSetting("Max Y", "Only count activity at or below this Y", 0.0, -64.0, 320.0, 1.0)
+   );
+   public final BooleanSetting distanceScan = this.addSetting(
+      new BooleanSetting("Distance Scan", "Scan loaded chunks for spawners & redstone so bases surface while flying", true)
    );
    public final SliderSetting renderY = this.addSetting(
       new SliderSetting("Render Y", "Height the flat chunk highlights render at", 100.0, -64.0, 320.0, 1.0)
@@ -90,7 +101,7 @@ public final class ChunkBypassModule extends Module {
    public ChunkBypassModule() {
       super(
          "ChunkBypass",
-         "Clusters digging, breaking and sound evidence into purple chunk cells to reveal inhabited ground underground.",
+         "Clusters activity leaks and scanned spawner/redstone evidence into purple chunk cells to reveal inhabited ground.",
          Category.RENDER
       );
       this.outlineOpacity.visibleWhen(this.outline::get);
@@ -133,7 +144,79 @@ public final class ChunkBypassModule extends Module {
          }
       }
 
+      if (this.distanceScan.get()) {
+         this.scanLoadedChunks(yCap);
+      }
+
       this.buildFlagsAndZones();
+   }
+
+   /**
+    * Distance scan: walk the chunks loaded around the player and fold mechanical habitation
+    * evidence (spawners, redstone components) into the cell grid. Unlike the packet-leak model
+    * this reads already-loaded chunk data, so it works at render distance while flying — the
+    * same complement to SusChunkFinder the addon intends, but overlaid on the activity grid.
+    */
+   private void scanLoadedChunks(int yCap) {
+      Minecraft mc = Minecraft.getInstance();
+      ClientLevel level = mc.level;
+      if (level == null || mc.player == null) {
+         return;
+      }
+
+      int pcx = mc.player.getChunkX();
+      int pcz = mc.player.getChunkZ();
+      for (int dx = -DISTANCE_SCAN_RADIUS_CHUNKS; dx <= DISTANCE_SCAN_RADIUS_CHUNKS; dx++) {
+         for (int dz = -DISTANCE_SCAN_RADIUS_CHUNKS; dz <= DISTANCE_SCAN_RADIUS_CHUNKS; dz++) {
+            LevelChunk chunk = level.getChunkSource().getChunk(pcx + dx, pcz + dz, false);
+            if (chunk != null) {
+               this.scanChunkForHabitation(chunk, yCap);
+            }
+         }
+      }
+   }
+
+   private void scanChunkForHabitation(LevelChunk chunk, int yCap) {
+      LevelChunkSection[] sections = chunk.getSections();
+      int minSectionY = chunk.getMinSectionY();
+      int minX = chunk.getPos().getMinBlockX();
+      int minZ = chunk.getPos().getMinBlockZ();
+
+      for (int i = 0; i < sections.length; i++) {
+         LevelChunkSection section = sections[i];
+         if (section.hasOnlyAir()) {
+            continue;
+         }
+
+         int baseY = minSectionY + (i << 4);
+         if (baseY > yCap) {
+            continue;
+         }
+
+         if (!section.getStates().maybeHas(ChunkBypassCapture::isMechanicalEvidence)) {
+            continue;
+         }
+
+         for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 16; y++) {
+               for (int z = 0; z < 16; z++) {
+                  BlockState state = section.getBlockState(x, y, z);
+                  if (!ChunkBypassCapture.isMechanicalEvidence(state)) {
+                     continue;
+                  }
+
+                  int by = baseY + y;
+                  if (by <= yCap) {
+                     // Aggregate per chunk column (y-slice 0) so all mechanical evidence in a
+                     // chunk counts together and renders through the existing flat-quad pipeline.
+                     long key = pack((minX + x) >> 4, 0, (minZ + z) >> 4);
+                     int weight = state.getBlock() == Blocks.SPAWNER ? SPAWNER_WEIGHT : REDSTONE_WEIGHT;
+                     this.cells.merge(key, weight, Integer::sum);
+                  }
+               }
+            }
+         }
+      }
    }
 
    private void buildFlagsAndZones() {
