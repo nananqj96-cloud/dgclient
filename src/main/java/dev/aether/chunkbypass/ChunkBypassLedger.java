@@ -134,7 +134,7 @@ public final class ChunkBypassLedger {
          }
       }
 
-      out.sort(Comparator.comparingDouble(c -> c.score).reversed());
+      out.sort(Comparator.comparingDouble(ChunkScore::score).reversed());
       return out.size() > limit ? new ArrayList<>(out.subList(0, limit)) : out;
    }
 

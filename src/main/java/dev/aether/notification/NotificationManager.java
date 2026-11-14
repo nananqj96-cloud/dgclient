@@ -46,7 +46,7 @@ public class NotificationManager extends HudComponent {
 
    public void push(String var1, boolean var2) {
       this.add(
-         new NotificationManager.Toast(var1 + (var2 ? " enabled" : " disabled"), null, null, var2)
+         new NotificationManager.Toast(var1 + (var2 ? " enabled" : " disabled"), null, null, var2, false)
       );
    }
 
