@@ -164,8 +164,8 @@ public final class ChunkBypassModule extends Module {
          return;
       }
 
-      int pcx = mc.player.getChunkX();
-      int pcz = mc.player.getChunkZ();
+      int pcx = (int) Math.floor(mc.player.getX() / 16.0);
+      int pcz = (int) Math.floor(mc.player.getZ() / 16.0);
       for (int dx = -DISTANCE_SCAN_RADIUS_CHUNKS; dx <= DISTANCE_SCAN_RADIUS_CHUNKS; dx++) {
          for (int dz = -DISTANCE_SCAN_RADIUS_CHUNKS; dz <= DISTANCE_SCAN_RADIUS_CHUNKS; dz++) {
             LevelChunk chunk = level.getChunkSource().getChunk(pcx + dx, pcz + dz, false);
