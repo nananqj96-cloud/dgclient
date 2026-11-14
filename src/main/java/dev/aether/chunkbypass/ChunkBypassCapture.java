@@ -182,7 +182,7 @@ public final class ChunkBypassCapture {
          || state.getBlock() == Blocks.OBSERVER
          || state.getBlock() == Blocks.DISPENSER
          || state.getBlock() == Blocks.DROPPER
-         || state.getBlock() == Blocks.BUTTON;
+         || state.getBlock() == Blocks.STONE_BUTTON;
    }
 
    private static BlockPos posOf(double x, double y, double z) {
