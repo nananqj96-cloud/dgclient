@@ -78,7 +78,7 @@ public final class ChunkBypassCapture {
       } else if (packet instanceof ClientboundSoundPacket p) {
          hit(ChunkBypassSource.SOUND);
          BlockPos pos = posOf(p.getX(), p.getY(), p.getZ());
-         ChunkBypassLedger.INSTANCE.add(pos, null, ChunkBypassSource.SOUND, ChunkBypassTier.ACTIVITY, p.getSound().value().getId().getPath());
+         ChunkBypassLedger.INSTANCE.add(pos, null, ChunkBypassSource.SOUND, ChunkBypassTier.ACTIVITY, p.getSound().getRegisteredName());
       }
    }
 
@@ -121,7 +121,7 @@ public final class ChunkBypassCapture {
          BlockPos pos = posOf(p.getX(), p.getY(), p.getZ());
          if (effect instanceof BlockParticleOption block) {
             BlockState state = block.getState();
-            if (state != null && !state.isAir() && !state.isEmpty()) {
+            if (state != null && !state.isAir()) {
                hit(ChunkBypassSource.BREAK_PARTICLE);
                ChunkBypassLedger.INSTANCE.add(pos, state, ChunkBypassSource.BREAK_PARTICLE, ChunkBypassTier.DIRECT, "block particle");
             }
