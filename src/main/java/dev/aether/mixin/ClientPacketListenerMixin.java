@@ -196,7 +196,7 @@ public class ClientPacketListenerMixin {
    }
 
    @Inject(
-      method = {"handleParticles"},
+      method = {"handleParticleEvent"},
       at = {@At("HEAD")}
    )
    private void aetherclient$chunkBypassParticles(ClientboundLevelParticlesPacket var1, CallbackInfo var2) {
