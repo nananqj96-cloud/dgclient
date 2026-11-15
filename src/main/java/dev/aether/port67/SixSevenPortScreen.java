@@ -33,7 +33,6 @@ public class SixSevenPortScreen extends Screen implements NvgDrawable {
       );
       this.window.setFullScreen(true);
       ClickGuiScreen.state().setSixSevenPortOpen(true);
-      this.window.setCategoryOpen(dev.aether.module.Category.COMBAT, true);
    }
 
    @Override
