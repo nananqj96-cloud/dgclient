@@ -21,6 +21,7 @@ public class ClickGuiState {
    private Category selectedCategory = Category.COMBAT;
    private boolean themesTabSelected;
    private boolean corzPortOpen;
+   private boolean sixSevenPortOpen;
    private String corzSelectedCategory = "All";
    private boolean laidOut;
    private boolean customized;
@@ -92,6 +93,18 @@ public class ClickGuiState {
 
    public void toggleCorzPort() {
       this.corzPortOpen = !this.corzPortOpen;
+   }
+
+   public boolean isSixSevenPortOpen() {
+      return this.sixSevenPortOpen;
+   }
+
+   public void setSixSevenPortOpen(boolean open) {
+      this.sixSevenPortOpen = open;
+   }
+
+   public void toggleSixSevenPort() {
+      this.sixSevenPortOpen = !this.sixSevenPortOpen;
    }
 
    public String corzSelectedCategory() {
@@ -170,6 +183,7 @@ public class ClickGuiState {
       root.add("favourites", favArr);
       root.addProperty("selectedCategory", this.selectedCategory.name());
       root.addProperty("corzPortOpen", this.corzPortOpen);
+      root.addProperty("sixSevenPortOpen", this.sixSevenPortOpen);
       root.addProperty("corzCategory", this.corzSelectedCategory);
       root.addProperty("v", LAYOUT_VERSION);
       root.addProperty("custom", this.customized);
@@ -205,6 +219,9 @@ public class ClickGuiState {
       }
       if (root.has("corzPortOpen") && root.get("corzPortOpen").isJsonPrimitive()) {
          this.corzPortOpen = root.get("corzPortOpen").getAsBoolean();
+      }
+      if (root.has("sixSevenPortOpen") && root.get("sixSevenPortOpen").isJsonPrimitive()) {
+         this.sixSevenPortOpen = root.get("sixSevenPortOpen").getAsBoolean();
       }
       if (root.has("corzCategory") && root.get("corzCategory").isJsonPrimitive()) {
          this.corzSelectedCategory = root.get("corzCategory").getAsString();

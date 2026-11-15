@@ -68,6 +68,28 @@ public final class Modules {
       }
    }
 
+   /**
+    * Launches the 67Client GUI ported from the 67port source. Pressing its keybind shows the
+    * two-choice warning (unload Aether & load 67port only, or keep both loaded and sync).
+    */
+   public static class SixSevenPortModule extends Module {
+      public SixSevenPortModule() {
+         super("67 Port", "Opens the 67Client GUI ported from the 67port source.", Category.CLIENT);
+         this.getKeybind().set(Integer.valueOf(346));
+         this.setEnabled(true);
+      }
+
+      @Override
+      public boolean onKeyPress(int keyCode) {
+         if (this.getKeybind().matches(keyCode)) {
+            net.minecraft.client.Minecraft.getInstance()
+               .setScreen(new dev.aether.port67.SixSevenPortWarningScreen());
+            return true;
+         }
+         return false;
+      }
+   }
+
    public static class HudModule extends Module {
       public final BooleanSetting watermark = this.addSetting(
          new BooleanSetting("Watermark", "The Aether Client badge", true)
