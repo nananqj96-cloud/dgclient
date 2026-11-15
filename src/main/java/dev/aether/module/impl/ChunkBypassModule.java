@@ -139,7 +139,7 @@ public final class ChunkBypassModule extends Module {
 
       for (ChunkBypassLeak leak : ChunkBypassLedger.INSTANCE.recentSnapshot(MAX_RECENT)) {
          if (leak.tier == ChunkBypassTier.ACTIVITY && leak.pos.getY() <= yCap) {
-            long key = pack(leak.pos.getX() >> 4, leak.pos.getY() >> 4, leak.pos.getZ() >> 4);
+            long key = ChunkPos.asLong(leak.pos.getX() >> 4, leak.pos.getZ() >> 4);
             this.cells.merge(key, 1, Integer::sum);
          }
       }
@@ -179,8 +179,6 @@ public final class ChunkBypassModule extends Module {
    private void scanChunkForHabitation(LevelChunk chunk, int yCap) {
       LevelChunkSection[] sections = chunk.getSections();
       int minSectionY = chunk.getMinSectionY();
-      int minX = chunk.getPos().getMinBlockX();
-      int minZ = chunk.getPos().getMinBlockZ();
 
       for (int i = 0; i < sections.length; i++) {
          LevelChunkSection section = sections[i];
@@ -207,9 +205,10 @@ public final class ChunkBypassModule extends Module {
 
                   int by = baseY + y;
                   if (by <= yCap) {
-                     // Aggregate per chunk column (y-slice 0) so all mechanical evidence in a
-                     // chunk counts together and renders through the existing flat-quad pipeline.
-                     long key = pack((minX + x) >> 4, 0, (minZ + z) >> 4);
+                     // Aggregate per chunk column so all mechanical evidence in a chunk counts
+                     // together and renders through the existing flat-quad pipeline. Key uses the
+                     // standard ChunkPos.asLong scheme the renderer unpacks with.
+                     long key = chunk.getPos().toLong();
                      int weight = state.getBlock() == Blocks.SPAWNER ? SPAWNER_WEIGHT : REDSTONE_WEIGHT;
                      this.cells.merge(key, weight, Integer::sum);
                   }
@@ -362,15 +361,11 @@ public final class ChunkBypassModule extends Module {
    }
 
    private static int chunkX(long key) {
-      return (int)(key >> 42);
+      return ChunkPos.getX(key);
    }
 
    private static int chunkZ(long key) {
-      return (int)(key & 2097151L);
-   }
-
-   private static long pack(int x, int y, int z) {
-      return (x & 2097151L) << 42 | (y & 2097151L) << 21 | z & 2097151L;
+      return ChunkPos.getZ(key);
    }
 
    public record CellFlag(long cellKey, int hits) {
