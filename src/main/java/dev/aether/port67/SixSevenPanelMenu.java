@@ -74,11 +74,11 @@ public final class SixSevenPanelMenu {
          ModulePanel modulePanel = this.list2.get(index);
          modulePanel.render(fontManager, mx, my, uiW, uiH);
       }
-      this.render(fontManager, mx, my);
+      this.renderTopBar(fontManager, mx, my);
    }
 
    /** Top bar: search field + watermark (the real 67client top-bar drawing). */
-   public void render(SixSevenFontManager fontManager, float mx, float my) {
+   public void renderTopBar(SixSevenFontManager fontManager, float mx, float my) {
       ColorPalette instance = ColorPalette.getInstance();
       float floatValue3 = (this.amount10 - 280.0F) / 2.0F;
       float float2 = this.computeFloat2();
@@ -165,14 +165,14 @@ public final class SixSevenPanelMenu {
       return null;
    }
 
-   public void click(float mx, float my, int btn) {
+   public boolean click(float mx, float my, int btn) {
       if (this.enabled2) {
-         return;
+         return false;
       }
       ModulePanel modulePanel = this.getModulePanel(mx, my);
       if (modulePanel == null) {
          this.update2();
-         return;
+         return false;
       }
       float amount62 = mx;
       float amount72 = my;
@@ -202,6 +202,7 @@ public final class SixSevenPanelMenu {
          this.modulePanel2 = modulePanel;
          modulePanel.test(mx, my, btn);
       }
+      return true;
    }
 
    public void apply(float mx, float my) {

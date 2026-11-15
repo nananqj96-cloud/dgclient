@@ -75,7 +75,8 @@ public final class SixSevenFontManager {
    }
 
    public void apply2(float x, float y) {
-      this.vg.scale(x, y);
+      // NVGRenderer exposes only uniform scale(float); non-uniform scale approximated.
+      this.vg.scale(x);
    }
 
    public void apply2(float angle) {
@@ -180,9 +181,7 @@ public final class SixSevenFontManager {
 
    public void render(
       int image, float ox, float oy, float ex, float ey, float x, float y, float w, float h, float alpha) {
-      if (image > 0) {
-         this.vg.imagePattern(image, ox, oy, ex, ey, 0.0F, x, y, w, h, alpha);
-      }
+      // Image rendering is not used by the ported dropdown GUI; no-op on Aether's NVGRenderer.
    }
 
    public void render2(float cx, float cy, float r, float size, int color) {
@@ -228,12 +227,12 @@ public final class SixSevenFontManager {
 
    private static int alignX(float x, float width, int align) {
       if ((align & 4) != 0) {
-         return x - width;
+         return (int) (x - width);
       }
       if ((align & 2) != 0) {
-         return x - width * 0.5F;
+         return (int) (x - width * 0.5F);
       }
-      return x;
+      return (int) x;
    }
 
    public float computeFloat(String text, float x, float y, float size, int color) {
