@@ -94,7 +94,7 @@ public class ChunkBypassHud extends HudComponent {
       vg.line(RADAR_CX, RADAR_CY - RADAR_R, RADAR_CX, RADAR_CY + RADAR_R, 1.0F, grid);
 
       // Rotating scan sweep — a partial arc of short segments
-      float sweepAngle = t * 1.6F % (Math.PI * 2.0F);
+      float sweepAngle = (float)(t * 1.6F % (Math.PI * 2.0F));
       int segments = 46;
       float sweepSpan = (float)(Math.PI * 0.72);
       for (int i = 0; i < segments; i++) {
@@ -201,7 +201,7 @@ public class ChunkBypassHud extends HudComponent {
          }
          vg.text(labels[i], cx, y, 8.0F, theme.textMuted());
          float vSize = 15.0F;
-         float vColor = i == 0 && zones > 0 ? theme.accentBright() : theme.textPrimary();
+         int vColor = i == 0 && zones > 0 ? theme.accentBright() : theme.textPrimary();
          vg.textGlow(values[i], cx, y + 12.0F, vSize, Colors.withAlpha(theme.accent(), 0.30F));
          vg.text(values[i], cx, y + 12.0F, vSize, vColor);
       }
@@ -261,6 +261,6 @@ public class ChunkBypassHud extends HudComponent {
    }
 
    private static float screenY(float x, float z, float yaw) {
-      return -((x * Math.cos(yaw) + z * Math.sin(yaw)));
+      return (float)(-((x * Math.cos(yaw) + z * Math.sin(yaw))));
    }
 }
