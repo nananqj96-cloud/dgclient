@@ -111,6 +111,9 @@ public final class Modules {
       public final BooleanSetting radarHeads = this.addSetting(
          new BooleanSetting("Radar Heads", "Skin faces instead of dots", true)
       );
+      public final BooleanSetting chunkBypassHud = this.addSetting(
+         new BooleanSetting("Chunk Bypass HUD", "Experimental glass panel: live zone radar, stats & zone list", false)
+      );
       public final BooleanSetting notifications = this.addSetting(
          new BooleanSetting("Notifications", "Themed toasts when modules toggle & weather changes", true)
       );

@@ -3,6 +3,7 @@ package dev.aether.hud;
 import com.google.gson.JsonObject;
 import dev.aether.hud.components.ArmorHud;
 import dev.aether.hud.components.ArrayListHud;
+import dev.aether.hud.components.ChunkBypassHud;
 import dev.aether.hud.components.InfoHud;
 import dev.aether.hud.components.KeystrokesHud;
 import dev.aether.hud.components.PotionsHud;
@@ -113,6 +114,13 @@ public class HudManager {
       this.components.add(new PotionsHud(var2, () -> var5.isEnabled() && var5.potions.get()));
       this.components.add(new KeystrokesHud(var2, () -> var5.isEnabled() && var5.keystrokes.get()));
       this.components.add(new RadarHud(var5, var1.susChunkFinder, var1.chunkBypass, var2, () -> var5.isEnabled() && var5.radar.get()));
+      this.components.add(
+         new ChunkBypassHud(
+            var1.chunkBypass,
+            var2,
+            () -> var5.isEnabled() && var5.chunkBypassHud.get() && var1.chunkBypass != null && var1.chunkBypass.isEnabled()
+         )
+      );
       this.components.add(new RegionMapHud(var1.regionMap, var2));
       this.components.add(new StaffListHud(var1.staffList, var2));
       this.components.add(new SpotifyHud(var1.spotify, var3, var2));
