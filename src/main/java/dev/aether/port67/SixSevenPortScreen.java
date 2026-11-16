@@ -55,7 +55,11 @@ public class SixSevenPortScreen extends Screen implements NvgDrawable {
 
    @Override
    public void renderNvg(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
-      this.window.render(vg, mx, my, uiW, uiH, 0.0F, 0.0F, uiH);
+      try {
+         this.window.render(vg, mx, my, uiW, uiH, 0.0F, 0.0F, uiH);
+      } catch (Throwable t) {
+         AetherClient.LOGGER.error("67Port full-screen render failed", t);
+      }
    }
 
    @Override

@@ -87,7 +87,9 @@ public class SixSevenPortWarningScreen extends Screen implements NvgDrawable {
       vg.text("You are about to load the 67Client GUI, ported from the", x, y, 13.0F, theme.textPrimary());
       y += 20.0F;
       vg.text("67port source. Choose how it should run:", x, y, 13.0F, theme.textPrimary());
-      y += 34.0F;
+      y += 20.0F;
+      vg.text("Reopen anytime by pressing Right Alt.", x, y, 11.5F, theme.textMuted());
+      y += 24.0F;
 
       vg.line(x, y, x + PANEL_W - 80.0F, y, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.8F));
       y += 20.0F;

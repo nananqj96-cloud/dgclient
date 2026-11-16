@@ -1,5 +1,6 @@
 package dev.aether.port67;
 
+import dev.aether.AetherClient;
 import dev.aether.gui.ClickGuiState;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
@@ -164,21 +165,36 @@ public final class SixSevenPortWindow {
       this.draggingHeader = this.hit(mx, my, this.x, this.y, this.w, HEADER_H);
 
       // The real 67client dropdown menu, drawn through the ported source.
-      SixSevenFontManager fontManager = new SixSevenFontManager(vg);
-      this.menu.render(fontManager, uiW, uiH);
+      // Wrapped in exception-safe save/restore so a porting bug can never crash
+      // Aether's whole overlay (which would freeze/break the screen).
       float bodyTop = this.y + HEADER_H;
       float bodyH = this.h - HEADER_H;
       float menuX = this.x + 8.0F;
       float menuY = bodyTop + 8.0F;
       float menuW = this.w - 16.0F;
       float menuH = bodyH - 16.0F;
+      SixSevenFontManager fontManager = new SixSevenFontManager(vg);
+      try {
+         this.menu.render(fontManager, menuW, menuH);
+      } catch (Throwable t) {
+         AetherClient.LOGGER.error("67Port menu layout failed", t);
+         return;
+      }
       vg.save();
-      vg.scissor(this.x + 6.0F, bodyTop, this.w - 12.0F, bodyH);
-      fontManager.save();
-      fontManager.translate(menuX, menuY);
-      this.menu.render2(fontManager, mx - menuX, my - menuY, menuW, menuH);
-      fontManager.restore();
-      vg.restore();
+      try {
+         vg.scissor(this.x + 6.0F, bodyTop, this.w - 12.0F, bodyH);
+         fontManager.save();
+         try {
+            fontManager.translate(menuX, menuY);
+            this.menu.render2(fontManager, mx - menuX, my - menuY, menuW, menuH);
+         } finally {
+            fontManager.restore();
+         }
+      } catch (Throwable t) {
+         AetherClient.LOGGER.error("67Port menu render failed", t);
+      } finally {
+         vg.restore();
+      }
    }
 
    // =========================================================================

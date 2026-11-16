@@ -81,7 +81,7 @@ public final class ModulePanel extends MenuPanel {
       float floatValue3,
       float floatValue4) {
       fontManager.update2();
-      fontManager.apply3(this.amount);
+      fontManager.apply3(1.0F);
       fontManager.apply(0.0F, this.amount3);
       fontManager.render2(this.computeFloat2() + 105.0F, this.computeFloat3() + 19.0F, this.amount2);
       super.render(

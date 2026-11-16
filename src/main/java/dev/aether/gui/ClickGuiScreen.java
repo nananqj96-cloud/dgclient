@@ -960,9 +960,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
-      // 67 Port subtab toggle button (works in both Dashboard sidebar and Columns top dock)
+      // 67 Port subtab -> show the two-choice warning popup (load 67+Aether / only 67)
       if (btn == 0 && this.hit(mx, my, this.sixSevenTabX, this.sixSevenTabY, this.sixSevenTabW, this.sixSevenTabH)) {
-         this.toggleSixSevenPort();
+         this.minecraft.setScreen(new dev.aether.port67.SixSevenPortWarningScreen());
          return true;
       }
 
