@@ -46,7 +46,9 @@ import java.util.Map;
  * the GUI keybind — is fully editable here. A flat {@code Themes & Audio} tab mirrors the default
  * GUI's theme/audio studio. The 67port is left untouched and always uses its original GUI.
  *
- * <p>All drawing is exception-guarded so a render error can never crash the overlay.
+ * <p>The constructor is intentionally trivial (no widget construction) so opening the default GUI is
+ * unaffected. Settings widgets and the themes studio are built lazily on first use. All drawing is
+ * exception-guarded so a render error can never crash the overlay.
  */
 public final class AetherMinimalGui {
    // Flat Vape-style monochrome palette (no glow, no gradients).
@@ -73,11 +75,12 @@ public final class AetherMinimalGui {
    private final ThemeManager flatThemes;
 
    // Themes & Audio studio (uses the real theme manager so selections affect the client).
-   private final ColorSetting accentProxy;
-   private final ColorWidget accentWidget;
+   // Built lazily on first use to keep the constructor trivial.
+   private ColorSetting accentProxy;
+   private ColorWidget accentWidget;
    private final List<SettingWidget> soundWidgets = new ArrayList<>();
 
-   // Per-module settings widgets (built once, flat theme).
+   // Per-module settings widgets (built lazily on first expand), keyed by module.
    private final Map<Module, List<SettingWidget>> moduleWidgets = new LinkedHashMap<>();
    private final Map<Module, Boolean> expanded = new LinkedHashMap<>();
 
@@ -108,7 +111,7 @@ public final class AetherMinimalGui {
 
    private static final class CatHit {
       final float x, y, w, h;
-      final Category cat; // null == ALL; sentinel THEMES handled by themesTab flag
+      final Category cat; // null == ALL; THEMES handled via the themes flag
       final boolean themes;
       CatHit(float x, float y, float w, float h, Category cat, boolean themes) {
          this.x = x; this.y = y; this.w = w; this.h = h; this.cat = cat; this.themes = themes;
@@ -136,16 +139,42 @@ public final class AetherMinimalGui {
    public AetherMinimalGui(ModuleManager modules, ThemeManager realThemes) {
       this.modules = modules;
       this.realThemes = realThemes;
-
       // Flat theme used to render the settings widgets (dark surface, white accent, no glow).
       this.flatThemes = new ThemeManager();
       Theme flat = new Theme("Minimal", C_ACCENT, false);
       this.flatThemes.getThemes().add(flat);
       this.flatThemes.select(flat);
+   }
 
-      // Themes & Audio studio.
+   /** Returns (building on first use) the settings widgets for a module, mirroring ModuleEntry. */
+   private List<SettingWidget> widgetsFor(Module m) {
+      List<SettingWidget> ws = this.moduleWidgets.get(m);
+      if (ws != null) {
+         return ws;
+      }
+      ws = new ArrayList<>();
+      for (Setting<?> s : m.getSettings()) {
+         if (s instanceof BooleanSetting b) ws.add(new BooleanWidget(this.flatThemes, b));
+         else if (s instanceof SliderSetting sl) ws.add(new SliderWidget(this.flatThemes, sl));
+         else if (s instanceof ModeSetting mo) ws.add(new ModeWidget(this.flatThemes, mo));
+         else if (s instanceof ColorSetting c) ws.add(new ColorWidget(this.flatThemes, c));
+         else if (s instanceof BlockListSetting bl) ws.add(new BlockListWidget(this.flatThemes, bl));
+         else if (s instanceof IconListSetting il) ws.add(new IconListWidget(this.flatThemes, il));
+         else if (s instanceof StringSetting st) ws.add(new StringWidget(this.flatThemes, st));
+         else if (s instanceof KeybindSetting kb) ws.add(new KeybindWidget(this.flatThemes, kb));
+      }
+      ws.add(new KeybindWidget(this.flatThemes, m.getKeybind()));
+      this.moduleWidgets.put(m, ws);
+      return ws;
+   }
+
+   /** Builds the themes & audio studio widgets on first use. */
+   private void ensureThemesStudio() {
+      if (this.accentProxy != null) {
+         return;
+      }
       this.accentProxy = new ColorSetting("Custom Accent", "Accent color for the active custom theme",
-         realThemes.current().accent()) {
+         this.realThemes.current().accent()) {
          @Override
          public void set(Integer value) {
             super.set(value);
@@ -164,26 +193,6 @@ public final class AetherMinimalGui {
             } else if (s instanceof BooleanSetting b) {
                this.soundWidgets.add(new BooleanWidget(this.flatThemes, b));
             }
-         }
-      }
-
-      // Pre-build settings widgets for every module (mirrors ModuleEntry).
-      for (Category cat : Category.values()) {
-         for (Module m : modules.inCategory(cat)) {
-            List<SettingWidget> ws = new ArrayList<>();
-            for (Setting<?> s : m.getSettings()) {
-               if (s instanceof BooleanSetting b) ws.add(new BooleanWidget(this.flatThemes, b));
-               else if (s instanceof SliderSetting sl) ws.add(new SliderWidget(this.flatThemes, sl));
-               else if (s instanceof ModeSetting mo) ws.add(new ModeWidget(this.flatThemes, mo));
-               else if (s instanceof ColorSetting c) ws.add(new ColorWidget(this.flatThemes, c));
-               else if (s instanceof BlockListSetting bl) ws.add(new BlockListWidget(this.flatThemes, bl));
-               else if (s instanceof IconListSetting il) ws.add(new IconListWidget(this.flatThemes, il));
-               else if (s instanceof StringSetting st) ws.add(new StringWidget(this.flatThemes, st));
-               else if (s instanceof KeybindSetting kb) ws.add(new KeybindWidget(this.flatThemes, kb));
-            }
-            ws.add(new KeybindWidget(this.flatThemes, m.getKeybind()));
-            this.moduleWidgets.put(m, ws);
-            this.expanded.put(m, Boolean.FALSE);
          }
       }
    }
@@ -228,7 +237,6 @@ public final class AetherMinimalGui {
          }
          cy += 4.0F;
          this.addCat(vg, mx, my, cy, null, "THEMES & AUDIO");
-         // themes tab selected indicator stored via themesTab flag.
 
          if (this.themesTab) {
             this.renderThemesStudio(vg, mx, my, uiW, uiH);
@@ -297,7 +305,7 @@ public final class AetherMinimalGui {
             if (!this.matchesSearch(module)) {
                continue;
             }
-            List<SettingWidget> ws = this.moduleWidgets.get(module);
+            List<SettingWidget> ws = this.widgetsFor(module);
             boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
             float cardH = CARD_H + (exp ? this.settingsHeight(ws) : 0.0F);
             boolean hov = this.hit(mx, my, this.bodyX, contentY, this.bodyW, CARD_H);
@@ -333,7 +341,7 @@ public final class AetherMinimalGui {
             this.moduleHits.add(new ModuleHit(module, this.bodyX, contentY, this.bodyW, CARD_H, chevX, chevYTop, chevW, chevH));
 
             // Expanded settings drawer.
-            if (exp && ws != null) {
+            if (exp) {
                vg.save();
                vg.scissor(this.bodyX, contentY + CARD_H, this.bodyW, cardH - CARD_H);
                vg.line(this.bodyX + 10.0F, contentY + CARD_H, this.bodyX + this.bodyW - 10.0F, contentY + CARD_H,
@@ -416,8 +424,8 @@ public final class AetherMinimalGui {
                continue;
             }
             boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
-            List<SettingWidget> ws = this.moduleWidgets.get(module);
-            h += CARD_H + (exp ? this.settingsHeight(ws) : 0.0F) + CARD_GAP;
+            float ws = exp ? this.settingsHeight(this.widgetsFor(module)) : 0.0F;
+            h += CARD_H + ws + CARD_GAP;
          }
          h += 6.0F;
       }
@@ -429,6 +437,7 @@ public final class AetherMinimalGui {
    // =========================================================================
 
    private void renderThemesStudio(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
+      this.ensureThemesStudio();
       float pad = 18.0F;
       this.bodyX = SIDEBAR_W + pad;
       this.bodyW = uiW - SIDEBAR_W - pad * 2.0F;
@@ -520,6 +529,7 @@ public final class AetherMinimalGui {
       }
 
       if (this.themesTab) {
+         this.ensureThemesStudio();
          // Themes studio clicks.
          if (this.accentWidget.mouseClicked(mx, my, btn)) {
             return true;
@@ -593,8 +603,8 @@ public final class AetherMinimalGui {
             return true;
          }
          // Settings area of an expanded card.
-         List<SettingWidget> ws = this.moduleWidgets.get(mh.module);
-         if (ws != null && Boolean.TRUE.equals(this.expanded.get(mh.module))) {
+         List<SettingWidget> ws = this.widgetsFor(mh.module);
+         if (Boolean.TRUE.equals(this.expanded.get(mh.module))) {
             float top = mh.y + mh.headerH;
             if (my >= top && my <= top + this.settingsHeight(ws)) {
                for (SettingWidget w : ws) {
