@@ -13,6 +13,7 @@ import dev.aether.gui.widget.StringWidget;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.module.ModuleManager;
+import dev.aether.module.Modules;
 import dev.aether.render.nanovg.NVGRenderer;
 import dev.aether.settings.BlockListSetting;
 import dev.aether.settings.BooleanSetting;
@@ -47,8 +48,12 @@ import java.util.Map;
  * GUI's theme/audio studio. The 67port is left untouched and always uses its original GUI.
  *
  * <p>The constructor is intentionally trivial (no widget construction) so opening the default GUI is
- * unaffected. Settings widgets and the themes studio are built lazily on first use. All drawing is
- * exception-guarded so a render error can never crash the overlay.
+ * unaffected. Settings widgets and the themes studio are built lazily on first use.
+ *
+ * <p><b>Geometry is computed during {@link #render} with the real renderer and cached for input.</b>
+ * This avoids the classic stale-height bug where layout math (which needs text metrics) disagrees with
+ * what is actually drawn, which made cards overlap and clicks misalign. All drawing and input routing
+ * is exception-guarded so a render error can never crash the overlay.
  */
 public final class AetherMinimalGui {
    // Flat Vape-style monochrome palette (no glow, no gradients).
@@ -63,12 +68,14 @@ public final class AetherMinimalGui {
    private static final int C_WHITE = 0xFFFFFFFF;
    private static final int C_ACCENT = 0xFFFFFFFF;
 
+   private static final float HEADER_H = 48.0F;
    private static final float SIDEBAR_W = 190.0F;
-   private static final float CARD_H = 32.0F;
-   private static final float CARD_GAP = 5.0F;
-   private static final float CAT_H = 30.0F;
+   private static final float CARD_H = 34.0F;
+   private static final float CARD_GAP = 6.0F;
+   private static final float CAT_H = 32.0F;
    private static final float CLOSE_SIZE = 20.0F;
-   private static final float SEARCH_H = 32.0F;
+   private static final float SEARCH_H = 30.0F;
+   private static final float DOTS_SIZE = 18.0F;
 
    private final ModuleManager modules;
    private final ThemeManager realThemes;
@@ -93,18 +100,14 @@ public final class AetherMinimalGui {
    private float scroll;
    private float maxScroll;
 
-   // Layout caches (recomputed every render, read by input).
-   private float closeX;
-   private float closeY;
-   private float searchX;
-   private float searchY;
-   private float searchW;
-   private float searchH;
-   private float bodyX;
-   private float bodyY;
-   private float bodyW;
-   private float bodyH;
+   // Header controls (recomputed every render, read by input).
+   private float toggleX, toggleY, toggleW, toggleH;
+   private float themesBtnX, themesBtnY, themesBtnW, themesBtnH;
+   private float closeX, closeY;
+   private float searchX, searchY, searchW, searchH;
+   private float bodyX, bodyY, bodyW, bodyH;
 
+   // Hit regions + active widgets rebuilt every render for exact input routing.
    private final List<CatHit> catHits = new ArrayList<>();
    private final List<ModuleHit> moduleHits = new ArrayList<>();
    private final List<ThemeHit> themeHits = new ArrayList<>();
@@ -121,11 +124,16 @@ public final class AetherMinimalGui {
 
    private static final class ModuleHit {
       final Module module;
-      final float x, y, w, headerH;
-      final float chevX, chevY, chevW, chevH;
-      ModuleHit(Module module, float x, float y, float w, float headerH, float chevX, float chevY, float chevW, float chevH) {
-         this.module = module; this.x = x; this.y = y; this.w = w; this.headerH = headerH;
-         this.chevX = chevX; this.chevY = chevY; this.chevW = chevW; this.chevH = chevH;
+      final float headerX, headerY, headerW, headerH;
+      final float dotsX, dotsY, dotsW, dotsH;
+      final float settingsTop, settingsBottom;
+      ModuleHit(Module module, float headerX, float headerY, float headerW, float headerH,
+                float dotsX, float dotsY, float dotsW, float dotsH,
+                float settingsTop, float settingsBottom) {
+         this.module = module;
+         this.headerX = headerX; this.headerY = headerY; this.headerW = headerW; this.headerH = headerH;
+         this.dotsX = dotsX; this.dotsY = dotsY; this.dotsW = dotsW; this.dotsH = dotsH;
+         this.settingsTop = settingsTop; this.settingsBottom = settingsBottom;
       }
    }
 
@@ -172,6 +180,7 @@ public final class AetherMinimalGui {
          else if (s instanceof StringSetting st) ws.add(new StringWidget(flat, st));
          else if (s instanceof KeybindSetting kb) ws.add(new KeybindWidget(flat, kb));
       }
+      // Always expose the module's keybind so it can be bound in-game.
       ws.add(new KeybindWidget(flat, m.getKeybind()));
       this.moduleWidgets.put(m, ws);
       return ws;
@@ -207,6 +216,10 @@ public final class AetherMinimalGui {
       }
    }
 
+   private Modules.ClickGuiModule clickGuiModule() {
+      return this.modules.clickGui;
+   }
+
    // =========================================================================
    // RENDER
    // =========================================================================
@@ -221,32 +234,15 @@ public final class AetherMinimalGui {
          // Full-screen flat dark background — no glow.
          vg.rect(0.0F, 0.0F, uiW, uiH, 0.0F, C_BG);
 
+         // Header band.
+         vg.rect(0.0F, 0.0F, uiW, HEADER_H, 0.0F, C_HEADER);
+         vg.rectOutline(0.0F, HEADER_H - 1.0F, uiW, 1.0F, 0.0F, C_BORDER);
+         this.renderHeader(vg, mx, my, uiW);
+
          // Left sidebar.
-         vg.rect(0.0F, 0.0F, SIDEBAR_W, uiH, 0.0F, C_SURFACE);
-         vg.rectOutline(0.0F, 0.0F, SIDEBAR_W, uiH, 0.0F, 1.0F, C_BORDER);
-
-         // Sidebar title.
-         vg.text("AETHER", 22.0F, 46.0F, 15.0F, C_TEXT);
-         float subX = 22.0F + vg.textWidth("AETHER", 15.0F) + 8.0F;
-         vg.text("minimal", subX, 46.0F, 10.0F, C_MUTED);
-
-         // Close button (top-right of the whole screen).
-         this.closeX = uiW - 28.0F;
-         this.closeY = 14.0F;
-         boolean cHov = this.hit(mx, my, this.closeX, this.closeY, CLOSE_SIZE, CLOSE_SIZE);
-         vg.rect(this.closeX, this.closeY, CLOSE_SIZE, CLOSE_SIZE, 5.0F, Colors.withAlpha(C_WHITE, cHov ? 0.14F : 0.05F));
-         vg.cross(this.closeX + 5.0F, this.closeY + 5.0F, 10.0F, 1.4F, cHov ? C_TEXT : C_MUTED);
-
-         // Sidebar category list: ALL + categories + Themes & Audio.
-         float cy = 78.0F;
-         this.addCat(vg, mx, my, cy, null, "ALL");
-         cy += CAT_H + 3.0F;
-         for (Category cat : Category.values()) {
-            this.addCat(vg, mx, my, cy, cat, cat.getDisplayName());
-            cy += CAT_H + 3.0F;
-         }
-         cy += 4.0F;
-         this.addCat(vg, mx, my, cy, null, "THEMES & AUDIO");
+         vg.rect(0.0F, HEADER_H, SIDEBAR_W, uiH - HEADER_H, 0.0F, C_SURFACE);
+         vg.rectOutline(SIDEBAR_W - 1.0F, HEADER_H, 1.0F, uiH - HEADER_H, 0.0F, C_BORDER);
+         this.renderSidebar(vg, mx, my, uiH);
 
          if (this.themesTab) {
             this.renderThemesStudio(vg, mx, my, uiW, uiH);
@@ -258,9 +254,74 @@ public final class AetherMinimalGui {
       }
    }
 
+   private void renderHeader(NVGRenderer vg, float mx, float my, float uiW) {
+      // Title.
+      vg.text("AETHER", 22.0F, 30.0F, 15.0F, C_TEXT);
+      float subX = 22.0F + vg.textWidth("AETHER", 15.0F) + 8.0F;
+      vg.text("minimal", subX, 30.0F, 10.0F, C_MUTED);
+
+      // Experimental-UI toggle pill — prominently reachable from inside the minimal GUI.
+      boolean minimalOn = this.clickGuiModule().experimentalMinimalGui.get();
+      String toggleLabel = minimalOn ? "MINIMAL  ON" : "MINIMAL  OFF";
+      float tw = vg.textWidth(toggleLabel, 11.0F) + 24.0F;
+      this.toggleW = tw;
+      this.toggleH = 26.0F;
+      this.toggleX = 22.0F;
+      this.toggleY = (HEADER_H - this.toggleH) * 0.5F;
+      boolean tHov = this.hit(mx, my, this.toggleX, this.toggleY, this.toggleW, this.toggleH);
+      vg.rect(this.toggleX, this.toggleY, this.toggleW, this.toggleH, 6.0F,
+         minimalOn ? Colors.withAlpha(C_WHITE, 0.14F) : Colors.withAlpha(C_WHITE, 0.04F));
+      vg.rectOutline(this.toggleX, this.toggleY, this.toggleW, this.toggleH, 6.0F, 1.0F,
+         minimalOn ? Colors.withAlpha(C_WHITE, 0.45F) : C_BORDER_SOFT);
+      vg.circle(this.toggleX + 13.0F, this.toggleY + this.toggleH * 0.5F, 4.0F, minimalOn ? C_WHITE : C_MUTED);
+      vg.text(toggleLabel, this.toggleX + 24.0F, this.toggleY + this.toggleH * 0.5F, 11.0F,
+         minimalOn ? C_TEXT : C_MUTED);
+
+      // Themes & Audio button (right of header, left of close).
+      String themesLabel = "THEMES & AUDIO";
+      float thw = vg.textWidth(themesLabel, 11.0F) + 22.0F;
+      this.themesBtnW = thw;
+      this.themesBtnH = 26.0F;
+      this.themesBtnX = uiW - 30.0F - CLOSE_SIZE - 8.0F - thw;
+      this.themesBtnY = (HEADER_H - this.themesBtnH) * 0.5F;
+      boolean thHov = this.hit(mx, my, this.themesBtnX, this.themesBtnY, this.themesBtnW, this.themesBtnH);
+      vg.rect(this.themesBtnX, this.themesBtnY, this.themesBtnW, this.themesBtnH, 6.0F,
+         this.themesTab ? Colors.withAlpha(C_WHITE, 0.14F) : (thHov ? Colors.withAlpha(C_WHITE, 0.06F) : Colors.withAlpha(C_WHITE, 0.03F)));
+      vg.rectOutline(this.themesBtnX, this.themesBtnY, this.themesBtnW, this.themesBtnH, 6.0F, 1.0F,
+         this.themesTab ? Colors.withAlpha(C_WHITE, 0.45F) : C_BORDER_SOFT);
+      vg.text(themesLabel, this.themesBtnX + 11.0F, this.themesBtnY + this.themesBtnH * 0.5F, 11.0F,
+         this.themesTab ? C_TEXT : (thHov ? C_TEXT : C_MUTED));
+
+      // Close button (top-right).
+      this.closeX = uiW - 30.0F;
+      this.closeY = (HEADER_H - CLOSE_SIZE) * 0.5F;
+      boolean cHov = this.hit(mx, my, this.closeX, this.closeY, CLOSE_SIZE, CLOSE_SIZE);
+      vg.rect(this.closeX, this.closeY, CLOSE_SIZE, CLOSE_SIZE, 5.0F, Colors.withAlpha(C_WHITE, cHov ? 0.14F : 0.05F));
+      vg.cross(this.closeX + 5.0F, this.closeY + 5.0F, 10.0F, 1.4F, cHov ? C_TEXT : C_MUTED);
+   }
+
+   private void renderSidebar(NVGRenderer vg, float mx, float my, float uiH) {
+      // Search box (top of sidebar).
+      this.searchH = SEARCH_H;
+      this.searchX = 12.0F;
+      this.searchY = HEADER_H + 12.0F;
+      this.searchW = SIDEBAR_W - 24.0F;
+      this.drawSearchBox(vg, mx, my);
+
+      float cy = this.searchY + this.searchH + 12.0F;
+      this.addCat(vg, mx, my, cy, null, "ALL");
+      cy += CAT_H + 4.0F;
+      for (Category cat : Category.values()) {
+         this.addCat(vg, mx, my, cy, cat, cat.getDisplayName());
+         cy += CAT_H + 4.0F;
+      }
+      cy += 2.0F;
+      this.addCat(vg, mx, my, cy, null, "THEMES & AUDIO");
+   }
+
    private void addCat(NVGRenderer vg, float mx, float my, float y, Category cat, String label) {
-      float x = 14.0F;
-      float w = SIDEBAR_W - 28.0F;
+      float x = 12.0F;
+      float w = SIDEBAR_W - 24.0F;
       boolean isThemes = label.equals("THEMES & AUDIO");
       boolean selected = isThemes ? this.themesTab : (!this.themesTab && ((cat == null && this.selectedCat == null)
          || (cat != null && cat == this.selectedCat)));
@@ -274,29 +335,21 @@ public final class AetherMinimalGui {
       } else if (hov) {
          vg.rect(x, y, w, CAT_H, 6.0F, Colors.withAlpha(C_WHITE, 0.05F));
       }
-      vg.text(label, x + 22.0F, y + CAT_H * 0.5F, 12.0F, selected ? C_TEXT : (hov ? C_TEXT : C_MUTED));
+      vg.text(label, x + 20.0F, y + CAT_H * 0.5F, 12.0F, selected ? C_TEXT : (hov ? C_TEXT : C_MUTED));
    }
 
    private void renderModuleList(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
       float pad = 18.0F;
       this.bodyX = SIDEBAR_W + pad;
       this.bodyW = uiW - SIDEBAR_W - pad * 2.0F;
-
-      // Search box.
-      this.searchH = SEARCH_H;
-      this.searchX = this.bodyX;
-      this.searchY = 20.0F;
-      this.searchW = this.bodyW;
-      this.drawSearchBox(vg, mx, my);
-
-      this.bodyY = this.searchY + this.searchH + 18.0F;
-      this.bodyH = uiH - this.bodyY - 20.0F;
+      this.bodyY = HEADER_H + 14.0F;
+      this.bodyH = uiH - this.bodyY - 16.0F;
 
       vg.save();
       vg.scissor(this.bodyX - 1.0F, this.bodyY, this.bodyW + 2.0F, this.bodyH);
 
       float contentY = this.bodyY + 10.0F - this.scroll;
-      float contentH = this.computeContentHeight();
+      float contentH = this.computeContentHeight(vg);
       this.maxScroll = Math.max(0.0F, contentH - this.bodyH);
       this.scroll = Math.clamp(this.scroll, 0.0F, this.maxScroll);
 
@@ -309,7 +362,7 @@ public final class AetherMinimalGui {
             continue;
          }
          vg.text(cat.getDisplayName().toUpperCase(Locale.ROOT), this.bodyX, contentY + 12.0F, 10.5F, C_MUTED);
-         contentY += 20.0F;
+         contentY += 22.0F;
 
          for (Module module : inCat) {
             if (!this.matchesSearch(module)) {
@@ -317,11 +370,14 @@ public final class AetherMinimalGui {
             }
             List<SettingWidget> ws = this.widgetsFor(module);
             boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
-            float cardH = CARD_H + (exp ? this.settingsHeight(ws) : 0.0F);
+            // Layout height uses the REAL renderer so wrapped ModeWidgets/expanded ColorWidgets
+            // measure exactly as drawn — no stale height(null) divergence.
+            float settingsH = exp ? this.settingsHeight(ws, vg) : 0.0F;
+            float cardH = CARD_H + settingsH;
             boolean hov = this.hit(mx, my, this.bodyX, contentY, this.bodyW, CARD_H);
             boolean enabled = module.isEnabled();
 
-            // Row card: enabled = white, disabled = dark.
+            // Row card: enabled = paper-white tint, disabled = dark tint (Vape idiom).
             int card = enabled
                ? Colors.withAlpha(C_WHITE, hov ? 0.16F : 0.10F)
                : Colors.withAlpha(C_WHITE, hov ? 0.07F : 0.035F);
@@ -335,25 +391,18 @@ public final class AetherMinimalGui {
             vg.circle(dotX, dotY, 3.4F, enabled ? C_WHITE : C_MUTED);
             vg.text(module.getName(), this.bodyX + 30.0F, dotY, 12.0F, enabled ? C_DARK : C_MUTED);
 
-            // Expand chevron (right side of the header).
-            float chevCx = this.bodyX + this.bodyW - 22.0F;
-            float chevY = contentY + CARD_H * 0.5F;
-            vg.save();
-            vg.translate(chevCx, chevY);
-            vg.rotate(exp ? (float)(Math.PI * 0.5) : 0.0F);
-            vg.chevron(0.0F, 0.0F, 4.0F, 1.6F, exp ? C_TEXT : C_MUTED, false);
-            vg.restore();
+            // Three-dots expand control (Vape idiom) at the right of the header.
+            float dotsCX = this.bodyX + this.bodyW - 22.0F;
+            float dotsCY = contentY + CARD_H * 0.5F;
+            this.drawDots(vg, dotsCX, dotsCY, exp ? C_TEXT : C_MUTED);
+            float dotsX = dotsCX - DOTS_SIZE * 0.5F;
+            float dotsY = dotsCY - DOTS_SIZE * 0.5F;
 
-            float chevX = chevCx - 8.0F;
-            float chevW = 16.0F;
-            float chevH = 16.0F;
-            float chevYTop = chevY - chevH * 0.5F;
-            this.moduleHits.add(new ModuleHit(module, this.bodyX, contentY, this.bodyW, CARD_H, chevX, chevYTop, chevW, chevH));
+            this.moduleHits.add(new ModuleHit(module, this.bodyX, contentY, this.bodyW, CARD_H,
+               dotsX, dotsY, DOTS_SIZE, DOTS_SIZE, contentY + CARD_H, contentY + cardH));
 
-            // Expanded settings drawer.
+            // Expanded settings rows.
             if (exp) {
-               vg.save();
-               vg.scissor(this.bodyX, contentY + CARD_H, this.bodyW, cardH - CARD_H);
                vg.line(this.bodyX + 10.0F, contentY + CARD_H, this.bodyX + this.bodyW - 10.0F, contentY + CARD_H,
                   1.0F, C_BORDER_SOFT);
                float wy = contentY + CARD_H + 8.0F;
@@ -367,7 +416,6 @@ public final class AetherMinimalGui {
                   this.activeWidgets.add(w);
                   wy += w.height(vg) + 4.0F;
                }
-               vg.restore();
             }
 
             contentY += cardH + CARD_GAP;
@@ -385,6 +433,13 @@ public final class AetherMinimalGui {
       vg.restore();
    }
 
+   private void drawDots(NVGRenderer vg, float cx, float cy, int color) {
+      float off = 4.0F;
+      vg.circle(cx - off, cy, 1.8F, color);
+      vg.circle(cx, cy, 1.8F, color);
+      vg.circle(cx + off, cy, 1.8F, color);
+   }
+
    private void drawSearchBox(NVGRenderer vg, float mx, float my) {
       boolean hov = this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH);
       vg.rect(this.searchX, this.searchY, this.searchW, this.searchH, 8.0F, Colors.withAlpha(C_HEADER, 0.9F));
@@ -392,20 +447,20 @@ public final class AetherMinimalGui {
          this.searchFocused ? Colors.withAlpha(C_WHITE, 0.55F) : C_BORDER);
       float cy = this.searchY + this.searchH * 0.5F;
       if (this.search.isEmpty() && !this.searchFocused) {
-         vg.text("Search modules...", this.searchX + 16.0F, cy, 11.5F, C_MUTED);
+         vg.text("Search...", this.searchX + 14.0F, cy, 11.0F, C_MUTED);
       } else {
-         vg.textTruncated(this.search, this.searchX + 16.0F, cy, 12.0F, C_TEXT, this.searchW - 48.0F);
+         vg.textTruncated(this.search, this.searchX + 14.0F, cy, 11.5F, C_TEXT, this.searchW - 40.0F);
       }
       if (!this.search.isEmpty()) {
-         vg.cross(this.searchX + this.searchW - 20.0F, cy - 5.0F, 10.0F, 1.5F, C_MUTED);
+         vg.cross(this.searchX + this.searchW - 18.0F, cy - 5.0F, 10.0F, 1.5F, C_MUTED);
       }
    }
 
-   private float settingsHeight(List<SettingWidget> ws) {
+   private float settingsHeight(List<SettingWidget> ws, NVGRenderer vg) {
       float h = 8.0F;
       for (SettingWidget w : ws) {
          if (w.isVisible()) {
-            h += w.height(null) + 4.0F;
+            h += w.height(vg) + 4.0F;
          }
       }
       return h + 4.0F;
@@ -418,7 +473,7 @@ public final class AetherMinimalGui {
       return m.getName().toLowerCase(Locale.ROOT).contains(this.search);
    }
 
-   private float computeContentHeight() {
+   private float computeContentHeight(NVGRenderer vg) {
       float h = 10.0F;
       for (Category cat : Category.values()) {
          if (this.selectedCat != null && this.selectedCat != cat) {
@@ -428,13 +483,13 @@ public final class AetherMinimalGui {
          if (inCat.isEmpty()) {
             continue;
          }
-         h += 20.0F;
+         h += 22.0F;
          for (Module module : inCat) {
             if (!this.matchesSearch(module)) {
                continue;
             }
             boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
-            float ws = exp ? this.settingsHeight(this.widgetsFor(module)) : 0.0F;
+            float ws = exp ? this.settingsHeight(this.widgetsFor(module), vg) : 0.0F;
             h += CARD_H + ws + CARD_GAP;
          }
          h += 6.0F;
@@ -451,11 +506,11 @@ public final class AetherMinimalGui {
       float pad = 18.0F;
       this.bodyX = SIDEBAR_W + pad;
       this.bodyW = uiW - SIDEBAR_W - pad * 2.0F;
-      this.bodyY = 20.0F;
-      this.bodyH = uiH - this.bodyY - 20.0F;
+      this.bodyY = HEADER_H + 14.0F;
+      this.bodyH = uiH - this.bodyY - 16.0F;
 
-      vg.text("THEMES & AUDIO", this.bodyX, this.bodyY + 14.0F, 13.0F, C_TEXT);
-      float y = this.bodyY + 34.0F;
+      vg.text("THEMES & AUDIO", this.bodyX, this.bodyY + 16.0F, 13.0F, C_TEXT);
+      float y = this.bodyY + 38.0F;
 
       Theme active = this.realThemes.current();
       vg.text("ACCENT PALETTES", this.bodyX, y + 6.0F, 10.5F, C_MUTED);
@@ -537,11 +592,23 @@ public final class AetherMinimalGui {
       if (this.hit(mx, my, this.closeX, this.closeY, CLOSE_SIZE, CLOSE_SIZE)) {
          return true;
       }
+      // Header: experimental-UI toggle (turn the minimal GUI off).
+      if (this.hit(mx, my, this.toggleX, this.toggleY, this.toggleW, this.toggleH)) {
+         this.clickGuiModule().experimentalMinimalGui.set(!this.clickGuiModule().experimentalMinimalGui.get());
+         UiSounds.select();
+         return true;
+      }
+      // Header: Themes & Audio button.
+      if (this.hit(mx, my, this.themesBtnX, this.themesBtnY, this.themesBtnW, this.themesBtnH)) {
+         this.themesTab = !this.themesTab;
+         UiSounds.select();
+         return true;
+      }
 
       if (this.themesTab) {
          this.ensureThemesStudio();
-         // Themes studio clicks.
-         if (this.accentWidget.mouseClicked(mx, my, btn)) {
+         // Themes studio clicks: accent picker (only when a custom theme is active), audio, cards.
+         if (this.realThemes.current().isCustom() && this.accentWidget.mouseClicked(mx, my, btn)) {
             return true;
          }
          for (SettingWidget sw : this.soundWidgets) {
@@ -573,7 +640,7 @@ public final class AetherMinimalGui {
 
       // Search box.
       if (this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH)) {
-         if (!this.search.isEmpty() && mx >= this.searchX + this.searchW - 26.0F) {
+         if (!this.search.isEmpty() && mx >= this.searchX + this.searchW - 22.0F) {
             this.search = "";
          } else {
             this.searchFocused = true;
@@ -582,7 +649,7 @@ public final class AetherMinimalGui {
       }
       this.searchFocused = false;
 
-      // Category selection.
+      // Sidebar category selection.
       for (int i = this.catHits.size() - 1; i >= 0; i--) {
          CatHit ch = this.catHits.get(i);
          if (this.hit(mx, my, ch.x, ch.y, ch.w, ch.h)) {
@@ -598,31 +665,27 @@ public final class AetherMinimalGui {
          }
       }
 
-      // Module card: chevron expands, body toggles, settings widgets capture.
+      // Module cards: three-dots expand, header toggles, settings widgets capture (hit priority).
       for (int i = this.moduleHits.size() - 1; i >= 0; i--) {
          ModuleHit mh = this.moduleHits.get(i);
-         if (this.hit(mx, my, mh.chevX, mh.chevY, mh.chevW, mh.chevH)) {
+         if (this.hit(mx, my, mh.dotsX, mh.dotsY, mh.dotsW, mh.dotsH)) {
             Boolean prev = this.expanded.get(mh.module);
             this.expanded.put(mh.module, prev == null || !prev);
             UiSounds.select();
             return true;
          }
-         if (this.hit(mx, my, mh.x, mh.y, mh.w, mh.headerH)) {
+         // Settings rows of an expanded card capture first (so they sit above the header).
+         if (this.hit(mx, my, mh.headerX, mh.settingsTop, mh.headerW, mh.settingsBottom - mh.settingsTop)) {
+            for (SettingWidget w : this.widgetsFor(mh.module)) {
+               if (w.isVisible() && w.mouseClicked(mx, my, btn)) {
+                  return true;
+               }
+            }
+         }
+         if (this.hit(mx, my, mh.headerX, mh.headerY, mh.headerW, mh.headerH)) {
             mh.module.toggle();
             UiSounds.toggle(mh.module.isEnabled());
             return true;
-         }
-         // Settings area of an expanded card.
-         List<SettingWidget> ws = this.widgetsFor(mh.module);
-         if (Boolean.TRUE.equals(this.expanded.get(mh.module))) {
-            float top = mh.y + mh.headerH;
-            if (my >= top && my <= top + this.settingsHeight(ws)) {
-               for (SettingWidget w : ws) {
-                  if (w.isVisible() && w.mouseClicked(mx, my, btn)) {
-                     return true;
-                  }
-               }
-            }
          }
       }
       return true;
