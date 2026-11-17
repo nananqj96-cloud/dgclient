@@ -55,6 +55,7 @@ public final class SixSevenPortWindow {
    private boolean closeRequested;
 
    private final List<ModulePanel> panels = new ArrayList<>();
+   private final SixSevenMinimalGui minimalGui;
 
    public SixSevenPortWindow(ThemeManager themes, ClickGuiState state, ModuleManager modules) {
       this.themes = themes;
@@ -72,6 +73,12 @@ public final class SixSevenPortWindow {
          this.panels.add(new ModulePanel(cat.getDisplayName(), this.panelLayout, inCategory));
       }
       this.menu = new SixSevenPanelMenu(this.panelLayout, this.panels);
+      this.minimalGui = new SixSevenMinimalGui(this.modules, this.themes);
+   }
+
+   /** True when the experimental minimalistic (Vape-style) GUI override is enabled. */
+   public boolean isMinimal() {
+      return this.modules.sixSevenPort != null && this.modules.sixSevenPort.experimentalMinimalGui.get();
    }
 
    public boolean isVisible() {
@@ -140,6 +147,13 @@ public final class SixSevenPortWindow {
          }
       }
 
+      // Experimental minimalistic (Vape-style) override: flat dark/white, no glow.
+      // Renders both the panel and floating versions when the setting is enabled.
+      if (this.isMinimal()) {
+         this.minimalGui.render(vg, mx, my, this.x, this.y, this.w, this.h);
+         return;
+      }
+
       this.syncTheme(theme);
 
       // Floating-window glass shell (Aether-side chrome, mirroring the synced-UI window pattern)
@@ -202,6 +216,22 @@ public final class SixSevenPortWindow {
    // =========================================================================
 
    public boolean mouseClicked(float mx, float my, int btn) {
+      if (this.isMinimal()) {
+         if (this.minimalGui.mouseClicked(mx, my, btn)) {
+            if (this.minimalGui.hitClose(mx, my)) {
+               this.state.setSixSevenPortOpen(false);
+               this.closeRequested = true;
+            }
+            return true;
+         }
+         if (this.minimalGui.hitHeader(mx, my)) {
+            this.draggingHeader = true;
+            this.dragOffX = mx - this.x;
+            this.dragOffY = my - this.y;
+            return true;
+         }
+         return false;
+      }
       if (btn == 0 && this.hit(mx, my, this.x + this.w - 30.0F, this.y + (HEADER_H * 0.5F) - 11.0F, 22.0F, 22.0F)) {
          this.state.setSixSevenPortOpen(false);
          this.closeRequested = true;
@@ -223,7 +253,9 @@ public final class SixSevenPortWindow {
    }
 
    public void mouseDragged(float mx, float my) {
-      this.menu.apply(mx - (this.x + 8.0F), my - (this.y + HEADER_H + 8.0F));
+      if (!this.isMinimal()) {
+         this.menu.apply(mx - (this.x + 8.0F), my - (this.y + HEADER_H + 8.0F));
+      }
       if (this.draggingHeader) {
          this.customMoved = true;
          this.customX = mx - this.dragOffX;
@@ -232,11 +264,16 @@ public final class SixSevenPortWindow {
    }
 
    public void mouseReleased() {
-      this.menu.update3();
+      if (!this.isMinimal()) {
+         this.menu.update3();
+      }
       this.draggingHeader = false;
    }
 
    public boolean mouseScrolled(float mx, float my, double scrollY) {
+      if (this.isMinimal()) {
+         return this.minimalGui.mouseScrolled(mx, my, scrollY, this.x, this.y, this.w, this.h);
+      }
       for (ModulePanel panel : this.panels) {
          panel.apply((float) scrollY);
       }
@@ -251,15 +288,15 @@ public final class SixSevenPortWindow {
    }
 
    public boolean keyPressed(int keyCode) {
-      return this.menu.test(keyCode, false);
+      return !this.isMinimal() && this.menu.test(keyCode, false);
    }
 
    public boolean charTyped(int codepoint) {
-      return this.menu.charTyped(codepoint);
+      return !this.isMinimal() && this.menu.charTyped(codepoint);
    }
 
    public boolean isListening() {
-      return this.menu.enabled;
+      return !this.isMinimal() && this.menu.enabled;
    }
 
    private boolean hit(float mx, float my, float x, float y, float w, float h) {

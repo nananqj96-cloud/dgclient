@@ -73,9 +73,16 @@ public final class Modules {
     * two-choice warning (unload Aether & load 67port only, or keep both loaded and sync).
     */
    public static class SixSevenPortModule extends Module {
+      public final BooleanSetting experimentalMinimalGui = new BooleanSetting(
+         "Experimental Minimal GUI",
+         "Vape-style flat dark/white GUI with no glow. Overrides both the panel and floating 67port.",
+         false
+      );
+
       public SixSevenPortModule() {
          super("67 Port", "Opens the 67Client GUI ported from the 67port source.", Category.CLIENT);
          this.getKeybind().set(Integer.valueOf(346));
+         this.addSetting(this.experimentalMinimalGui);
          this.setEnabled(true);
       }
 
