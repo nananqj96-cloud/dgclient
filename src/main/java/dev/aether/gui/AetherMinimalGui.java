@@ -72,7 +72,8 @@ public final class AetherMinimalGui {
 
    private final ModuleManager modules;
    private final ThemeManager realThemes;
-   private final ThemeManager flatThemes;
+   // Flat theme manager for the settings widgets; built lazily to keep the ctor trivial.
+   private ThemeManager flatThemes;
 
    // Themes & Audio studio (uses the real theme manager so selections affect the client).
    // Built lazily on first use to keep the constructor trivial.
@@ -139,11 +140,18 @@ public final class AetherMinimalGui {
    public AetherMinimalGui(ModuleManager modules, ThemeManager realThemes) {
       this.modules = modules;
       this.realThemes = realThemes;
-      // Flat theme used to render the settings widgets (dark surface, white accent, no glow).
-      this.flatThemes = new ThemeManager();
-      Theme flat = new Theme("Minimal", C_ACCENT, false);
-      this.flatThemes.getThemes().add(flat);
-      this.flatThemes.select(flat);
+   }
+
+   /** Flat theme manager for the settings widgets; built lazily on first use to keep the ctor trivial. */
+   private ThemeManager flat() {
+      if (this.flatThemes == null) {
+         ThemeManager tm = new ThemeManager();
+         Theme flat = new Theme("Minimal", C_ACCENT, false);
+         tm.getThemes().add(flat);
+         tm.select(flat);
+         this.flatThemes = tm;
+      }
+      return this.flatThemes;
    }
 
    /** Returns (building on first use) the settings widgets for a module, mirroring ModuleEntry. */
@@ -153,17 +161,18 @@ public final class AetherMinimalGui {
          return ws;
       }
       ws = new ArrayList<>();
+      ThemeManager flat = flat();
       for (Setting<?> s : m.getSettings()) {
-         if (s instanceof BooleanSetting b) ws.add(new BooleanWidget(this.flatThemes, b));
-         else if (s instanceof SliderSetting sl) ws.add(new SliderWidget(this.flatThemes, sl));
-         else if (s instanceof ModeSetting mo) ws.add(new ModeWidget(this.flatThemes, mo));
-         else if (s instanceof ColorSetting c) ws.add(new ColorWidget(this.flatThemes, c));
-         else if (s instanceof BlockListSetting bl) ws.add(new BlockListWidget(this.flatThemes, bl));
-         else if (s instanceof IconListSetting il) ws.add(new IconListWidget(this.flatThemes, il));
-         else if (s instanceof StringSetting st) ws.add(new StringWidget(this.flatThemes, st));
-         else if (s instanceof KeybindSetting kb) ws.add(new KeybindWidget(this.flatThemes, kb));
+         if (s instanceof BooleanSetting b) ws.add(new BooleanWidget(flat, b));
+         else if (s instanceof SliderSetting sl) ws.add(new SliderWidget(flat, sl));
+         else if (s instanceof ModeSetting mo) ws.add(new ModeWidget(flat, mo));
+         else if (s instanceof ColorSetting c) ws.add(new ColorWidget(flat, c));
+         else if (s instanceof BlockListSetting bl) ws.add(new BlockListWidget(flat, bl));
+         else if (s instanceof IconListSetting il) ws.add(new IconListWidget(flat, il));
+         else if (s instanceof StringSetting st) ws.add(new StringWidget(flat, st));
+         else if (s instanceof KeybindSetting kb) ws.add(new KeybindWidget(flat, kb));
       }
-      ws.add(new KeybindWidget(this.flatThemes, m.getKeybind()));
+      ws.add(new KeybindWidget(flat, m.getKeybind()));
       this.moduleWidgets.put(m, ws);
       return ws;
    }
@@ -184,14 +193,15 @@ public final class AetherMinimalGui {
             }
          }
       };
-      this.accentWidget = new ColorWidget(this.flatThemes, this.accentProxy);
+      ThemeManager flat = flat();
+      this.accentWidget = new ColorWidget(flat, this.accentProxy);
       SoundSettings sounds = AetherClient.sounds();
       if (sounds != null) {
          for (Setting<?> s : sounds.all()) {
             if (s instanceof SliderSetting sl) {
-               this.soundWidgets.add(new SliderWidget(this.flatThemes, sl));
+               this.soundWidgets.add(new SliderWidget(flat, sl));
             } else if (s instanceof BooleanSetting b) {
-               this.soundWidgets.add(new BooleanWidget(this.flatThemes, b));
+               this.soundWidgets.add(new BooleanWidget(flat, b));
             }
          }
       }
