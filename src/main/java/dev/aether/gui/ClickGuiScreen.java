@@ -139,7 +139,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       ThemeManager themes = AetherClient.themes();
       this.corzPortWindow = new CorzPortWindow(themes, STATE);
       this.sixSevenPortWindow = new SixSevenPortWindow(themes, STATE, modules);
-      this.minimalGui = new AetherMinimalGui(modules);
+      this.minimalGui = new AetherMinimalGui(modules, themes);
 
       for (Category cat : Category.values()) {
          CategoryPanel cp = new CategoryPanel(cat, modules, themes, STATE);
@@ -1149,14 +1149,15 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    @Override
    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+      float mx = this.uiX(event.x());
+      float my = this.uiY(event.y());
       if (this.isMinimal()) {
+         this.minimalGui.mouseDragged(mx, my);
          return true;
       }
       if (this.configPanel.isOpen()) {
          return true;
       }
-      float mx = this.uiX(event.x());
-      float my = this.uiY(event.y());
       if (this.pressedInCorzPort) {
          this.corzPortWindow.mouseDragged(mx, my);
          return true;
@@ -1200,6 +1201,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    @Override
    public boolean mouseReleased(MouseButtonEvent event) {
       if (this.isMinimal()) {
+         this.minimalGui.mouseReleased();
          return true;
       }
       if (this.configPanel.isOpen()) {
@@ -1284,9 +1286,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       if (this.isMinimal()) {
          int k = event.key();
-         this.minimalGui.keyPressed(k);
-         if (k == 256 || this.guiModule().getKeybind().matches(k)) {
-            this.onClose();
+         if (!this.minimalGui.keyPressed(k)) {
+            if (k == 256 || this.guiModule().getKeybind().matches(k)) {
+               this.onClose();
+            }
          }
          return true;
       }
