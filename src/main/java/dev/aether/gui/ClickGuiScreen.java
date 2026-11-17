@@ -65,6 +65,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private final ConfigPanel configPanel = new ConfigPanel();
    private final CorzPortWindow corzPortWindow;
    private final SixSevenPortWindow sixSevenPortWindow;
+   private final AetherMinimalGui minimalGui;
 
    // Themes & Audio studio widgets for Dashboard mode
    private final ColorSetting dashAccentProxy;
@@ -138,6 +139,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       ThemeManager themes = AetherClient.themes();
       this.corzPortWindow = new CorzPortWindow(themes, STATE);
       this.sixSevenPortWindow = new SixSevenPortWindow(themes, STATE, modules);
+      this.minimalGui = new AetherMinimalGui(modules);
 
       for (Category cat : Category.values()) {
          CategoryPanel cp = new CategoryPanel(cat, modules, themes, STATE);
@@ -222,6 +224,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return !"Columns".equals(this.guiModule().layout.get());
    }
 
+   /** True when the experimental minimalistic (Vape-style) Aether GUI override is enabled. */
+   public boolean isMinimal() {
+      return this.guiModule().experimentalMinimalGui.get();
+   }
+
    public void toggleLayoutMode() {
       this.guiModule().layout.set(this.isDashboardMode() ? "Columns" : "Dashboard");
       this.dashScroll.snapTo(0.0F);
@@ -291,11 +298,19 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (!vg.hasFont()) {
          return;
       }
-      this.corzPortWindow.syncThemeToCorz();
       float anim = this.openAnim.value();
       if (anim <= 0.002F && this.closing) {
          return;
       }
+
+      // Experimental minimalistic (Vape-style) override: flat dark/white Aether GUI, no glow.
+      // Replaces both the Dashboard (panel) and Columns (floating) layouts when enabled.
+      if (this.isMinimal()) {
+         this.minimalGui.render(vg, mx, my, uiW, uiH);
+         return;
+      }
+
+      this.corzPortWindow.syncThemeToCorz();
 
       Theme theme = AetherClient.themes().current();
       vg.save();
@@ -921,6 +936,14 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       NVGRenderer vg = NVGRenderer.get();
       float uiH = OverlayRenderer.uiHeight();
 
+      if (this.isMinimal()) {
+         this.minimalGui.mouseClicked(mx, my, btn);
+         if (this.minimalGui.hitClose(mx, my)) {
+            this.onClose();
+         }
+         return true;
+      }
+
       if (this.configPanel.isOpen()) {
          this.configPanel.mouseClicked(mx, my, btn);
          return true;
@@ -1126,6 +1149,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    @Override
    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+      if (this.isMinimal()) {
+         return true;
+      }
       if (this.configPanel.isOpen()) {
          return true;
       }
@@ -1173,6 +1199,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    @Override
    public boolean mouseReleased(MouseButtonEvent event) {
+      if (this.isMinimal()) {
+         return true;
+      }
       if (this.configPanel.isOpen()) {
          return true;
       }
@@ -1220,6 +1249,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float mx = this.uiX(mouseX);
       float my = this.uiY(mouseY);
+      if (this.isMinimal()) {
+         this.minimalGui.mouseScrolled(mx, my, scrollY, OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
+         return true;
+      }
       if (this.corzPortWindow.mouseScrolled(mx, my, scrollY)) {
          return true;
       }
@@ -1247,6 +1280,14 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public boolean keyPressed(KeyEvent event) {
       if (this.configPanel.isOpen()) {
          this.configPanel.keyPressed(event.key());
+         return true;
+      }
+      if (this.isMinimal()) {
+         int k = event.key();
+         this.minimalGui.keyPressed(k);
+         if (k == 256 || this.guiModule().getKeybind().matches(k)) {
+            this.onClose();
+         }
          return true;
       }
       if (this.corzPortWindow.isListening() && this.corzPortWindow.keyPressed(event.key())) {
@@ -1291,6 +1332,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public boolean charTyped(CharacterEvent event) {
       if (this.configPanel.isOpen()) {
          this.configPanel.charTyped(event.codepoint());
+         return true;
+      }
+      if (this.isMinimal()) {
+         this.minimalGui.charTyped(event.codepoint());
          return true;
       }
       if (this.corzPortWindow.isListening() && this.corzPortWindow.charTyped(event.codepoint())) {

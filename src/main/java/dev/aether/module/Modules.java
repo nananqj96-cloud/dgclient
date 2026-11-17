@@ -60,6 +60,13 @@ public final class Modules {
       public final ModeSetting font = this.addSetting(
          new ModeSetting("Font", "GUI font (Xuong TTF or vanilla-style)", "Xuong", "Xuong", "Vanilla")
       );
+      public final BooleanSetting experimentalMinimalGui = this.addSetting(
+         new BooleanSetting(
+            "Experimental Minimal GUI",
+            "Flat Vape-style dark/white GUI with no glow. Replaces the Aether ClickGUI (panel & floating).",
+            false
+         )
+      );
 
       public ClickGuiModule() {
          super("Aether Client", "Opens the Aether Client control dashboard.", Category.CLIENT);
@@ -73,16 +80,9 @@ public final class Modules {
     * two-choice warning (unload Aether & load 67port only, or keep both loaded and sync).
     */
    public static class SixSevenPortModule extends Module {
-      public final BooleanSetting experimentalMinimalGui = new BooleanSetting(
-         "Experimental Minimal GUI",
-         "Vape-style flat dark/white GUI with no glow. Overrides both the panel and floating 67port.",
-         false
-      );
-
       public SixSevenPortModule() {
          super("67 Port", "Opens the 67Client GUI ported from the 67port source.", Category.CLIENT);
          this.getKeybind().set(Integer.valueOf(346));
-         this.addSetting(this.experimentalMinimalGui);
          this.setEnabled(true);
       }
 
