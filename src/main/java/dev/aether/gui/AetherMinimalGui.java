@@ -236,12 +236,12 @@ public final class AetherMinimalGui {
 
          // Header band.
          vg.rect(0.0F, 0.0F, uiW, HEADER_H, 0.0F, C_HEADER);
-         vg.rectOutline(0.0F, HEADER_H - 1.0F, uiW, 1.0F, 0.0F, C_BORDER);
+         vg.rectOutline(0.0F, HEADER_H - 1.0F, uiW, 1.0F, 0.0F, 1.0F, C_BORDER);
          this.renderHeader(vg, mx, my, uiW);
 
          // Left sidebar.
          vg.rect(0.0F, HEADER_H, SIDEBAR_W, uiH - HEADER_H, 0.0F, C_SURFACE);
-         vg.rectOutline(SIDEBAR_W - 1.0F, HEADER_H, 1.0F, uiH - HEADER_H, 0.0F, C_BORDER);
+         vg.rectOutline(SIDEBAR_W - 1.0F, HEADER_H, 1.0F, uiH - HEADER_H, 0.0F, 1.0F, C_BORDER);
          this.renderSidebar(vg, mx, my, uiH);
 
          if (this.themesTab) {
