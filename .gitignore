@@ -8,3 +8,6 @@ dist-jar/
 .vscode/
 *.iml
 .DS_Store
+
+# local syntax-check tooling (not source)
+.syncheck/

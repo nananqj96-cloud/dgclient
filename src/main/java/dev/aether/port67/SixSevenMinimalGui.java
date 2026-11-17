@@ -98,8 +98,8 @@ public final class SixSevenMinimalGui {
          vg.rect(x, y, w, h, 10.0F, C_BG);
          vg.rectOutline(x, y, w, h, 10.0F, 1.0F, C_BORDER);
 
-         // Header band (flat, no glow).
-         vg.rect(x, y, w, HEADER_H, 10.0F, 0.0F, C_HEADER);
+         // Header band (flat, no glow) — rounded top corners only.
+         vg.rectVarying(x, y, w, HEADER_H, 10.0F, 10.0F, 0.0F, 0.0F, C_HEADER);
          vg.rect(x, y + HEADER_H - 1.0F, w, 1.0F, 0.0F, C_BORDER_SOFT);
          vg.text("67 PORT", x + 16.0F, y + HEADER_H * 0.5F, 13.0F, C_TEXT);
          vg.text("minimal", x + 16.0F + vg.textWidth("67 PORT", 13.0F) + 8.0F, y + HEADER_H * 0.5F, 10.0F, C_MUTED);
