@@ -12,7 +12,7 @@ import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.Sounds;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -90,7 +90,7 @@ public class DLSusFinderModule extends Module {
          mc.player.displayClientMessage(Component.literal("Sus area around X " + bx + "  Z " + bz), false);
       }
       if (this.sound.get() && mc.player != null) {
-         mc.player.playSound(Sounds.BLOCK_NOTE_BLOCK_PLING, 0.6F, 0.8F);
+         mc.player.playSound(SoundEvents.NOTE_BLOCK_PLING, 0.6F, 0.8F);
       }
    }
 

@@ -12,7 +12,7 @@ import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.Sounds;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
@@ -81,7 +81,7 @@ public class DLActivityInspectorModule extends Module {
                   + " (" + a.players() + " " + plural + ")"), false);
          }
          if (this.sound.get() && mc.player != null) {
-            mc.player.playSound(Sounds.ENTITY_EXPERIENCE_BOTTLE_POP, 0.8F, 0.6F);
+            mc.player.playSound(SoundEvents.EXPERIENCE_BOTTLE_POP, 0.8F, 0.6F);
          }
       }
       this.seen.clear();
