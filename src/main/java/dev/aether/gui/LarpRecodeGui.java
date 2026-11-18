@@ -49,12 +49,25 @@ import java.util.Map;
  */
 public final class LarpRecodeGui {
    // ---- Theme palettes (R, G, B) ----
-   private static final int[] OCEAN = {0x08, 0x18, 0x38, 0x0C, 0x24, 0x44, 0x14, 0x34, 0x60, 0x2E, 0x6B, 0xD6, 0xB8, 0xD4, 0xF0, 0x88, 0xB8, 0xE0};
-   private static final int[] CHERRY = {0x2A, 0x14, 0x20, 0x3A, 0x1C, 0x2A, 0x4A, 0x24, 0x3A, 0xE8, 0x5B, 0xA8, 0xF0, 0xD0, 0xE0, 0xC8, 0x98, 0xB8};
-   private static final int[] FOREST = {0x0E, 0x24, 0x18, 0x14, 0x30, 0x20, 0x1C, 0x40, 0x28, 0x4C, 0xC0, 0x6A, 0xC0, 0xE8, 0xC8, 0x88, 0xC8, 0x98};
-   private static final int[] CHARCOAL = {0x0A, 0x0A, 0x0C, 0x16, 0x16, 0x1A, 0x20, 0x20, 0x28, 0x8A, 0x8A, 0x92, 0xD0, 0xD0, 0xD8, 0x9A, 0x9A, 0xA2};
+   // Each palette: [bg_top, surface, surface_elev, accent, text, text_muted]
+   // Ocean: header (72,142,218), body gradient (51,96,158)->(12,42,85), panel (50,88,146)
+   private static final int[] OCEAN = {0x33, 0x60, 0x9E, 0x32, 0x58, 0x92, 0x2D, 0x54, 0x8E, 0x48, 0x8E, 0xDA, 0xB8, 0xD4, 0xF0, 0x7A, 0xA0, 0xCC};
+   // Cherry Blossom: header (230,216,221), body (168,116,139), accent (220,129,169)
+   private static final int[] CHERRY = {0xA8, 0x74, 0x8B, 0xC8, 0x88, 0x9A, 0xB8, 0x78, 0x8E, 0xE8, 0x81, 0xA9, 0xFF, 0xF0, 0xF4, 0xD8, 0xB8, 0xC8};
+   // Green Forest: header (100,180,100), body (40,80,50), accent (100,180,100)
+   private static final int[] FOREST = {0x28, 0x50, 0x32, 0x38, 0x68, 0x48, 0x48, 0x78, 0x58, 0x6A, 0xBF, 0x6A, 0xD8, 0xF0, 0xD0, 0x98, 0xC8, 0x98};
+   // Charcoal: header (60,60,65), body (20,20,24), accent (138,138,146)
+   private static final int[] CHARCOAL = {0x14, 0x14, 0x18, 0x1C, 0x1C, 0x20, 0x28, 0x28, 0x2C, 0x8A, 0x8A, 0x92, 0xD0, 0xD0, 0xD8, 0x9A, 0x9A, 0xA2};
    private static final String[] THEME_NAMES = {"Ocean", "Cherry Blossom", "Green Forest", "Charcoal"};
    private static final int[][] THEMES = {OCEAN, CHERRY, FOREST, CHARCOAL};
+
+   // Per-theme header bar color (solid, not translucent)
+   private static final int[] HEADER_COLORS = {
+      (0x48 << 16) | (0x8E << 8) | 0xDA,  // Ocean: #488EDA
+      (0xE6 << 16) | (0xD8 << 8) | 0xDD,  // Cherry: #E6D8DD
+      (0x6A << 16) | (0xBF << 8) | 0x6A,  // Forest: #6ABF6A
+      (0x3C << 16) | (0x3C << 8) | 0x42   // Charcoal: #3C3C42
+   };
 
    private final ModuleManager modules;
    private int themeIndex;
@@ -62,14 +75,14 @@ public final class LarpRecodeGui {
    private boolean searchFocused;
 
    // Column definition: each column holds one or more categories.
-   // The last column is the Corz column (folded-in Corz feature set, tagged "corz").
+   // Five columns, matching the reference layout. Corz modules render as a floating
+   // panel to the right of the five columns when CorzPortBus is available.
    private static final Category[][] COLUMNS = {
       {Category.COMBAT, Category.RENDER},
       {Category.MOVEMENT, Category.PLAYER},
       {Category.VISUALS},
       {Category.BASEFINDING},
-      {Category.DONUT, Category.MISC, Category.CLIENT},
-      {}
+      {Category.DONUT, Category.MISC, Category.CLIENT}
    };
 
    // Lazy widget caches (built on first expand), keyed by module.
@@ -199,9 +212,9 @@ public final class LarpRecodeGui {
 
       try {
          this.renderBackground(vg, uiW, uiH);
-         this.headerH = 64.0F;
+         this.headerH = 30.0F;
          this.renderHeader(vg, mx, my, uiW);
-         this.bodyTop = this.headerH + 12.0F;
+         this.bodyTop = this.headerH + 8.0F;
          this.renderColumns(vg, mx, my, uiW, uiH);
          this.renderCorzColumn(vg, mx, my, uiW, uiH);
          this.renderThemeDock(vg, mx, my, uiW, uiH);
@@ -212,146 +225,69 @@ public final class LarpRecodeGui {
 
    private void renderBackground(NVGRenderer vg, float uiW, float uiH) {
       int[] p = THEMES[themeIndex];
-      // Base vertical gradient.
+      // Base vertical gradient from bg_top to a darker body color.
+      int bodyDark = ((int)(p[0] * 0.4F) & 0xFF) << 16 | ((int)(p[1] * 0.4F) & 0xFF) << 8 | ((int)(p[2] * 0.4F) & 0xFF);
       vg.rectGradient(0.0F, 0.0F, uiW, uiH, 0.0F,
-         rgb(p, 0) | 0xFF000000, rgb(p, 3) | 0xFF000000, true);
+         rgb(p, 0) | 0xFF000000, bodyDark | 0xFF000000, true);
 
       long now = System.nanoTime();
       float t = (float)(now % 10000000000L) / 1.0E9F;
 
       if (themeIndex == 0) {
-         // Ocean: light rays + jellyfish + seaweed.
+         // Ocean: subtle light rays.
          for (int i = 0; i < 5; i++) {
             float rx = uiW * (0.15F + 0.7F * ((i + 0.5F) / 5.0F)) + (float)Math.sin(t * 0.3F + i) * 20.0F;
             float rw = 60.0F + i * 18.0F;
-            vg.rect(rx, 0.0F, rw, uiH, 0.0F, Colors.withAlpha(rgb(p, 9), 0.05F));
-         }
-         // Jellyfish.
-         for (int i = 0; i < 2; i++) {
-            float jx = uiW * (0.55F + 0.25F * i) + (float)Math.sin(t * 0.5F + i * 2.0F) * 30.0F;
-            float jy = uiH * 0.18F + (float)Math.sin(t * 0.4F + i) * 14.0F;
-            vg.circle(jx, jy, 22.0F, Colors.withAlpha(rgb(p, 12), 0.18F));
-            vg.circle(jx, jy, 12.0F, Colors.withAlpha(rgb(p, 12), 0.28F));
-            for (int l = 0; l < 5; l++) {
-               float ly = jy + 22.0F + l * 10.0F;
-               float lx = jx + (float)Math.sin(t * 2.0F + l + i) * 8.0F;
-               vg.line(jx, ly - 10.0F, lx, ly, 2.0F, Colors.withAlpha(rgb(p, 12), 0.14F));
-            }
-         }
-         // Seaweed at the bottom.
-         for (int i = 0; i < 10; i++) {
-            float sx = uiW * (i / 10.0F) + 20.0F;
-            float sy = uiH - 40.0F;
-            for (int s = 0; s < 6; s++) {
-               float yy = sy - s * 18.0F;
-               float xx = sx + (float)Math.sin(t * 1.5F + i + s) * 6.0F;
-               vg.line(sx, sy - (s - 1) * 18.0F, xx, yy, 3.0F, Colors.withAlpha(rgb(p, 3), 0.5F));
-               sx = xx;
-            }
+            vg.rect(rx, 0.0F, rw, uiH, 0.0F, Colors.withAlpha(rgb(p, 9), 0.04F));
          }
       } else if (themeIndex == 1) {
-         // Cherry blossom: branches + drifting petals.
-         for (int i = 0; i < 6; i++) {
-            float bx = uiW * (i * 0.2F);
-            float by = 0.0F;
-            float ex = bx + 80.0F + (float)Math.sin(i) * 40.0F;
-            float ey = 180.0F + (float)Math.cos(i) * 30.0F;
-            vg.line(bx, by, ex, ey, 3.0F, Colors.withAlpha(rgb(p, 3), 0.6F));
-            for (int b = 0; b < 4; b++) {
-               float bx2 = bx + (ex - bx) * (b + 1) / 5.0F;
-               float by2 = by + (ey - by) * (b + 1) / 5.0F;
-               vg.line(bx2, by2, bx2 + 30.0F, by2 - 20.0F, 2.0F, Colors.withAlpha(rgb(p, 3), 0.4F));
-               vg.circle(bx2 + 30.0F, by2 - 20.0F, 4.0F, Colors.withAlpha(rgb(p, 12), 0.7F));
-            }
-         }
-         // Drifting petals.
-         for (int i = 0; i < 18; i++) {
-            float px = (float)((i * 137.5F + t * 30.0F * (i % 3 + 1)) % uiW);
-            float py = (float)((t * 20.0F * (i % 4 + 1) + i * 90.0F) % uiH);
-            vg.circle(px, py, 3.5F, Colors.withAlpha(rgb(p, 12), 0.55F));
+         // Cherry blossom: drifting petals.
+         for (int i = 0; i < 12; i++) {
+            float px = (float)((i * 137.5F + t * 20.0F * (i % 3 + 1)) % uiW);
+            float py = (float)((t * 15.0F * (i % 4 + 1) + i * 90.0F) % uiH);
+            vg.circle(px, py, 3.0F, Colors.withAlpha(rgb(p, 12), 0.3F));
          }
       } else if (themeIndex == 2) {
-         // Green forest: light rays + bokeh.
-         for (int i = 0; i < 5; i++) {
-            float rx = uiW * (0.1F + 0.8F * (i / 5.0F));
-            vg.rect(rx, 0.0F, 50.0F, uiH, 0.0F, Colors.withAlpha(rgb(p, 9), 0.05F));
-         }
-         for (int i = 0; i < 14; i++) {
-            float bx = (i * 73.0F + t * 10.0F) % uiW;
-            float by = (i * 113.0F + t * 6.0F) % uiH;
-            float r = 10.0F + (i % 4) * 8.0F;
-            vg.circleGlow(bx, by, r, r * 2.0F, Colors.withAlpha(rgb(p, 9), 0.12F));
+         // Green forest: subtle bokeh.
+         for (int i = 0; i < 10; i++) {
+            float bx = (i * 73.0F + t * 8.0F) % uiW;
+            float by = (i * 113.0F + t * 5.0F) % uiH;
+            float r = 8.0F + (i % 3) * 6.0F;
+            vg.circleGlow(bx, by, r, r * 2.0F, Colors.withAlpha(rgb(p, 9), 0.08F));
          }
       } else {
-         // Charcoal: faint vignette + grid.
-         vg.rect(0.0F, 0.0F, uiW, uiH, 0.0F, Colors.withAlpha(0x000000, 0.0F));
+         // Charcoal: faint grid.
          for (int gx = 0; gx < uiW; gx += 48.0F) {
-            vg.line(gx, 0.0F, gx, uiH, 1.0F, Colors.withAlpha(rgb(p, 9), 0.04F));
+            vg.line(gx, 0.0F, gx, uiH, 1.0F, Colors.withAlpha(rgb(p, 9), 0.03F));
          }
          for (int gy = 0; gy < uiH; gy += 48.0F) {
-            vg.line(0.0F, gy, uiW, gy, 1.0F, Colors.withAlpha(rgb(p, 9), 0.04F));
+            vg.line(0.0F, gy, uiW, gy, 1.0F, Colors.withAlpha(rgb(p, 9), 0.03F));
          }
       }
-      // Top + bottom vignette for depth.
-      vg.rect(0.0F, 0.0F, uiW, 40.0F, 0.0F, Colors.withAlpha(rgb(p, 0), 0.5F));
-      vg.rect(0.0F, uiH - 70.0F, uiW, 70.0F, 0.0F, Colors.withAlpha(rgb(p, 0), 0.55F));
    }
 
    private void renderHeader(NVGRenderer vg, float mx, float my, float uiW) {
-      // Header background.
-      vg.rect(0.0F, 0.0F, uiW, this.headerH, 0.0F, Colors.withAlpha(bg(), 0.75F));
-      vg.rectOutline(0.0F, this.headerH - 1.0F, uiW, 1.0F, 0.0F, 1.0F, Colors.withAlpha(accent(), 0.3F));
+      // Solid header bar (thin, ~30px) in theme header color.
+      int headerColor = HEADER_COLORS[themeIndex];
+      vg.rect(0.0F, 0.0F, uiW, this.headerH, 0.0F, headerColor | 0xFF000000);
 
-      // LR logo tile + title.
-      float lx = 18.0F;
-      float ly = 16.0F;
-      vg.rect(lx, ly, 32.0F, 32.0F, 7.0F, Colors.withAlpha(accent(), 0.22F));
-      vg.rectOutline(lx, ly, 32.0F, 32.0F, 7.0F, 1.0F, Colors.withAlpha(accent(), 0.5F));
-      vg.text("LR", lx + 16.0F, ly + 22.0F, 13.0F, text());
-      vg.text("LARP RECODE", lx + 42.0F, ly + 14.0F, 15.0F, text());
-      vg.text("BETA · 1.21.11", lx + 42.0F, ly + 28.0F, 9.0F, textMuted());
+      // Title text (white, centered-left).
+      float textSize = 13.0F;
+      float textY = this.headerH * 0.5F + 4.0F;
+      float titleX = 16.0F;
+      vg.text("LARP RECODE", titleX, textY, textSize, 0xFFFFFFFF);
 
-      // Search bar (top center).
-      this.searchH = 32.0F;
-      this.searchW = Math.min(360.0F, uiW * 0.4F);
-      this.searchX = (uiW - this.searchW) * 0.5F;
-      this.searchY = (this.headerH - this.searchH) * 0.5F;
-      boolean sHov = this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH);
-      vg.rect(this.searchX, this.searchY, this.searchW, this.searchH, 16.0F, Colors.withAlpha(surfaceElev(), 0.85F));
-      vg.rectOutline(this.searchX, this.searchY, this.searchW, this.searchH, 16.0F, 1.0F,
-         this.searchFocused ? Colors.withAlpha(accent(), 0.6F) : Colors.withAlpha(accent(), 0.25F));
-      float scy = this.searchY + this.searchH * 0.5F;
-      vg.text("SEARCH MODULES · CTRL+F", this.searchX + 16.0F, scy, 10.0F,
-         (!this.search.isEmpty() || this.searchFocused) ? text() : textMuted());
-      if (!this.search.isEmpty()) {
-         vg.textTruncated(this.search, this.searchX + 16.0F, scy, 11.0F, text(), this.searchW - 40.0F);
-         vg.cross(this.searchX + this.searchW - 18.0F, scy - 5.0F, 10.0F, 1.4F, textMuted());
-      }
-
-      // HUD + gear round buttons (top right).
-      this.hudBtnR = 14.0F;
-      this.hudBtnX = uiW - 30.0F - this.hudBtnR * 2.0F - 12.0F;
-      this.hudBtnY = this.headerH * 0.5F;
-      boolean hHov = this.hit(mx, my, this.hudBtnX - this.hudBtnR, this.hudBtnY - this.hudBtnR, this.hudBtnR * 2.0F, this.hudBtnR * 2.0F);
-      vg.circle(this.hudBtnX, this.hudBtnY, this.hudBtnR, Colors.withAlpha(surfaceElev(), hHov ? 0.95F : 0.7F));
-      vg.circleOutline(this.hudBtnX, this.hudBtnY, this.hudBtnR, 1.0F, Colors.withAlpha(accent(), hHov ? 0.6F : 0.3F));
-      vg.text("H", this.hudBtnX, this.hudBtnY + 4.0F, 11.0F, hHov ? accent() : text());
-
-      this.gearBtnR = 14.0F;
-      this.gearBtnX = uiW - 30.0F;
-      this.gearBtnY = this.headerH * 0.5F;
-      boolean gHov = this.hit(mx, my, this.gearBtnX - this.gearBtnR, this.gearBtnY - this.gearBtnR, this.gearBtnR * 2.0F, this.gearBtnR * 2.0F);
-      vg.circle(this.gearBtnX, this.gearBtnY, this.gearBtnR, Colors.withAlpha(surfaceElev(), gHov ? 0.95F : 0.7F));
-      vg.circleOutline(this.gearBtnX, this.gearBtnY, this.gearBtnR, 1.0F, Colors.withAlpha(accent(), gHov ? 0.6F : 0.3F));
-      vg.text("G", this.gearBtnX, this.gearBtnY + 4.0F, 11.0F, gHov ? accent() : text());
+      // Subtitle "BETA · 1.21.11" to the right of title.
+      float subX = titleX + vg.textWidth("LARP RECODE", textSize) + 10.0F;
+      vg.text("BETA · 1.21.11", subX, textY, 9.0F, 0xCCFFFFFF);
    }
 
    private void renderColumns(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
       float gap = 12.0F;
       float sidePad = 14.0F;
       float colW = (uiW - sidePad * 2.0F - gap * (COLUMNS.length - 1)) / (float) COLUMNS.length;
-      float dockH = 70.0F;
-      float availH = uiH - this.bodyTop - dockH - 16.0F;
+      float dockH = 48.0F;
+      float availH = uiH - this.bodyTop - dockH - 12.0F;
 
       for (int c = 0; c < COLUMNS.length; c++) {
          float cx = sidePad + c * (colW + gap);
@@ -380,7 +316,7 @@ public final class LarpRecodeGui {
 
    private float panelHeight(Category cat, float colW) {
       List<Module> inCat = this.modules.inCategory(cat);
-      float h = 44.0F; // header
+      float h = 36.0F; // header
       int visible = 0;
       for (Module m : inCat) {
          if (!this.matchesSearch(m)) {
@@ -388,7 +324,7 @@ public final class LarpRecodeGui {
          }
          visible++;
          boolean exp = Boolean.TRUE.equals(this.expanded.get(m));
-         h += 30.0F;
+         h += 28.0F;
          if (exp) {
             h += this.settingsHeight(this.widgetsFor(m), null) + 4.0F;
          }
@@ -431,15 +367,16 @@ public final class LarpRecodeGui {
       float gap = 12.0F;
       float sidePad = 14.0F;
       float colW = (uiW - sidePad * 2.0F - gap * (COLUMNS.length - 1)) / (float) COLUMNS.length;
-      float dockH = 70.0F;
-      float availH = uiH - this.bodyTop - dockH - 16.0F;
-      float cx = sidePad + (COLUMNS.length - 1) * (colW + gap);
+      float dockH = 48.0F;
+      float availH = uiH - this.bodyTop - dockH - 12.0F;
+      // Position Corz panel to the right of the 5 module columns.
+      float cx = sidePad + COLUMNS.length * (colW + gap) + 4.0F;
       float cy = this.bodyTop;
 
       List<CorzModuleHandle> mods = this.corzModules();
       int count = mods.size();
-      float headerH = 44.0F;
-      float rowH = 30.0F;
+      float headerH = 36.0F;
+      float rowH = 28.0F;
       float contentH = headerH + count * (rowH + 4.0F) + 8.0F;
       this.corzMaxScroll = Math.max(0.0F, contentH - availH);
       this.corzScroll.setTarget(Math.clamp(this.corzScroll.getTarget(), 0.0F, this.corzMaxScroll));
@@ -449,21 +386,21 @@ public final class LarpRecodeGui {
       this.corzColH = availH;
 
       // Frosted-glass panel.
-      vg.rect(cx, cy, colW, availH, 12.0F, Colors.withAlpha(surface(), 0.78F));
-      vg.rectOutline(cx, cy, colW, availH, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
+      vg.rect(cx, cy, colW, availH, 12.0F, Colors.withAlpha(surface(), 0.82F));
+      vg.rectOutline(cx, cy, colW, availH, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.2F));
 
       // Header: "CORZ" title + count pill.
       float ix = cx + 12.0F;
-      float iy = cy + 10.0F;
-      vg.rect(ix, iy, 24.0F, 24.0F, 6.0F, Colors.withAlpha(accent(), 0.25F));
-      vg.text("C", ix + 16.0F, iy + 17.0F, 12.0F, accent());
-      vg.text("CORZ", ix + 32.0F, iy + 17.0F, 12.0F, text());
+      float iy = cy + 8.0F;
+      vg.rect(ix, iy, 20.0F, 20.0F, 5.0F, Colors.withAlpha(accent(), 0.3F));
+      vg.text("C", ix + 14.0F, iy + 15.0F, 11.0F, 0xFFFFFFFF);
+      vg.text("CORZ", ix + 28.0F, iy + 15.0F, 12.0F, text());
       if (count > 0) {
          String cnt = Integer.toString(count);
          float cw = vg.textWidth(cnt, 9.0F) + 12.0F;
-         float cpx = cx + colW - cw - 30.0F;
-         vg.rect(cpx, iy + 4.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.2F));
-         vg.text(cnt, cpx + 6.0F, iy + 15.0F, 9.0F, accent());
+         float cpx = cx + colW - cw - 12.0F;
+         vg.rect(cpx, iy + 2.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.25F));
+         vg.text(cnt, cpx + 6.0F, iy + 13.0F, 9.0F, accent());
       }
       vg.line(cx + 10.0F, cy + headerH, cx + colW - 10.0F, cy + headerH, 1.0F, Colors.withAlpha(accent(), 0.15F));
 
@@ -532,16 +469,16 @@ public final class LarpRecodeGui {
    private void renderPanel(NVGRenderer vg, float mx, float my, int col, float x, float y, float w, float h,
                             Category cat, List<Module> inCat) {
       // Frosted-glass panel.
-      vg.rect(x, y, w, h, 12.0F, Colors.withAlpha(surface(), 0.78F));
-      vg.rectOutline(x, y, w, h, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
+      vg.rect(x, y, w, h, 12.0F, Colors.withAlpha(surface(), 0.82F));
+      vg.rectOutline(x, y, w, h, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.2F));
 
-      // Header: icon tile + title + count pill + chevron.
-      float hh = 44.0F;
+      // Header: icon tile + title + count pill.
+      float hh = 36.0F;
       float ix = x + 12.0F;
-      float iy = y + 10.0F;
-      vg.rect(ix, iy, 24.0F, 24.0F, 6.0F, Colors.withAlpha(accent(), 0.25F));
-      vg.text(cat.getDisplayName().substring(0, 1), ix + 16.0F, iy + 17.0F, 12.0F, accent());
-      vg.text(cat.getDisplayName().toUpperCase(Locale.ROOT), ix + 32.0F, iy + 17.0F, 12.0F, text());
+      float iy = y + 8.0F;
+      vg.rect(ix, iy, 20.0F, 20.0F, 5.0F, Colors.withAlpha(accent(), 0.3F));
+      vg.text(cat.getDisplayName().substring(0, 1), ix + 14.0F, iy + 15.0F, 11.0F, 0xFFFFFFFF);
+      vg.text(cat.getDisplayName().toUpperCase(Locale.ROOT), ix + 28.0F, iy + 15.0F, 12.0F, text());
 
       int count = 0;
       for (Module m : inCat) {
@@ -552,14 +489,10 @@ public final class LarpRecodeGui {
       if (count > 0) {
          String cnt = Integer.toString(count);
          float cw = vg.textWidth(cnt, 9.0F) + 12.0F;
-         float cpx = x + w - cw - 30.0F;
-         vg.rect(cpx, iy + 4.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.2F));
-         vg.text(cnt, cpx + 6.0F, iy + 15.0F, 9.0F, accent());
+         float cpx = x + w - cw - 12.0F;
+         vg.rect(cpx, iy + 2.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.25F));
+         vg.text(cnt, cpx + 6.0F, iy + 13.0F, 9.0F, accent());
       }
-      // Chevron (collapse) — right of header.
-      float chX = x + w - 18.0F;
-      float chY = y + hh * 0.5F;
-      vg.chevron(chX, chY, 4.0F, 1.6F, textMuted(), false);
       vg.line(x + 10.0F, y + hh, x + w - 10.0F, y + hh, 1.0F, Colors.withAlpha(accent(), 0.15F));
 
       this.panelHits.add(new PanelHit(col, x, y, w, hh));
@@ -571,7 +504,7 @@ public final class LarpRecodeGui {
             continue;
          }
          boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
-         float rowH = 30.0F;
+         float rowH = 28.0F;
          float settingsH = exp ? this.settingsHeight(this.widgetsFor(module), vg) + 4.0F : 0.0F;
          float totalH = rowH + settingsH;
          if (ry + totalH > y + h) {
@@ -630,30 +563,30 @@ public final class LarpRecodeGui {
    }
 
    private void renderThemeDock(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
-      this.dockH = 56.0F;
-      this.dockW = Math.min(560.0F, uiW - 80.0F);
+      this.dockH = 48.0F;
+      this.dockW = Math.min(480.0F, uiW - 80.0F);
       this.dockX = (uiW - this.dockW) * 0.5F;
       this.dockY = uiH - this.dockH - 12.0F;
-      vg.rect(this.dockX, this.dockY, this.dockW, this.dockH, 28.0F, Colors.withAlpha(surface(), 0.8F));
-      vg.rectOutline(this.dockX, this.dockY, this.dockW, this.dockH, 28.0F, 1.0F, Colors.withAlpha(accent(), 0.25F));
+      vg.rect(this.dockX, this.dockY, this.dockW, this.dockH, 14.0F, Colors.withAlpha(surface(), 0.85F));
+      vg.rectOutline(this.dockX, this.dockY, this.dockW, this.dockH, 14.0F, 1.0F, Colors.withAlpha(accent(), 0.2F));
 
       int n = THEME_NAMES.length;
-      float thumbW = (this.dockW - 24.0F - (n - 1) * 10.0F) / (float) n;
-      float thumbH = this.dockH - 20.0F;
-      float ty = this.dockY + 10.0F;
+      float thumbW = (this.dockW - 24.0F - (n - 1) * 8.0F) / (float) n;
+      float thumbH = this.dockH - 16.0F;
+      float ty = this.dockY + 8.0F;
       for (int i = 0; i < n; i++) {
-         float tx = this.dockX + 12.0F + i * (thumbW + 10.0F);
+         float tx = this.dockX + 12.0F + i * (thumbW + 8.0F);
          boolean sel = i == this.themeIndex;
          boolean hov = this.hit(mx, my, tx, ty, thumbW, thumbH);
          int[] tp = THEMES[i];
-         vg.rect(tx, ty, thumbW, thumbH, 10.0F,
-            sel ? Colors.withAlpha(accent(), 0.25F) : Colors.withAlpha(rgb(tp, 3), 0.6F));
-         vg.rectOutline(tx, ty, thumbW, thumbH, 10.0F, 1.0F,
-            sel ? Colors.withAlpha(accent(), 0.7F) : Colors.withAlpha(accent(), 0.2F));
-         // Thumbnail swatch.
-         vg.rect(tx + 6.0F, ty + 6.0F, thumbW - 12.0F, thumbH * 0.55F, 6.0F, Colors.withAlpha(rgb(tp, 6), 0.8F));
-         vg.text(THEME_NAMES[i], tx + (thumbW - vg.textWidth(THEME_NAMES[i], 8.0F)) * 0.5F, ty + thumbH - 8.0F, 8.0F,
-            sel ? accent() : textMuted());
+         int[] hc = HEADER_COLORS;
+         vg.rect(tx, ty, thumbW, thumbH, 8.0F,
+            sel ? (hc[i] | 0xFF000000) : Colors.withAlpha(rgb(tp, 3), 0.7F));
+         vg.rectOutline(tx, ty, thumbW, thumbH, 8.0F, 1.0F,
+            sel ? Colors.withAlpha(accent(), 0.7F) : Colors.withAlpha(accent(), 0.15F));
+         // Theme name label.
+         vg.text(THEME_NAMES[i], tx + (thumbW - vg.textWidth(THEME_NAMES[i], 8.0F)) * 0.5F, ty + thumbH - 6.0F, 8.0F,
+            sel ? 0xFFFFFFFF : textMuted());
          if (sel) {
             vg.circle(tx + thumbW * 0.5F, ty + thumbH + 3.0F, 2.4F, accent());
          }
@@ -743,23 +676,7 @@ public final class LarpRecodeGui {
             return true;
          }
       }
-      // Search bar.
-      if (this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH)) {
-         if (!this.search.isEmpty() && mx >= this.searchX + this.searchW - 22.0F) {
-            this.search = "";
-         } else {
-            this.searchFocused = true;
-         }
-         return true;
-      }
       this.searchFocused = false;
-      // HUD / gear buttons (no-op placeholders for now).
-      if (this.hit(mx, my, this.hudBtnX - this.hudBtnR, this.hudBtnY - this.hudBtnR, this.hudBtnR * 2.0F, this.hudBtnR * 2.0F)) {
-         return true;
-      }
-      if (this.hit(mx, my, this.gearBtnX - this.gearBtnR, this.gearBtnY - this.gearBtnR, this.gearBtnR * 2.0F, this.gearBtnR * 2.0F)) {
-         return true;
-      }
       // Module rows: chevron expands, body toggles, settings capture.
       for (int i = this.moduleHits.size() - 1; i >= 0; i--) {
          ModuleHit mh = this.moduleHits.get(i);
