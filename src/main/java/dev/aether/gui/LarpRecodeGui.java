@@ -62,7 +62,7 @@ public final class LarpRecodeGui {
    private boolean searchFocused;
 
    // Column definition: each column holds one or more categories.
-   // The last column is the Corz column (folded-in Corz/Vulxts features, tagged "corz").
+   // The last column is the Corz column (folded-in Corz feature set, tagged "corz").
    private static final Category[][] COLUMNS = {
       {Category.COMBAT, Category.RENDER},
       {Category.MOVEMENT, Category.PLAYER},
@@ -397,7 +397,7 @@ public final class LarpRecodeGui {
    }
 
    // =========================================================================
-   // CORZ COLUMN (folded-in Corz/Vulxts features, tagged "corz")
+   // CORZ COLUMN (folded-in Corz feature set, tagged "corz")
    // =========================================================================
 
    private List<CorzModuleHandle> corzModules() {
