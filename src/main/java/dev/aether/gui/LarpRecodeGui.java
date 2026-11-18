@@ -34,114 +34,71 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The <b>Vulxts Client</b> ClickGUI — a modern, polished interface with a frosted-glass
- * category sidebar, animated module cards, a live search bar, a Corz integration panel,
- * and a theme dock. Designed for clarity and visual appeal: clean dark surfaces, smooth
- * easing animations, hover glow effects, and a clear visual hierarchy.
+ * The <b>Vulxts Client</b> GUI — a dashboard / clickgui variant with a frosted-glass,
+ * five-column layout, a themed background, and a theme dock. It is a separate variant from the
+ * Aether Dashboard / Columns / Experimental Minimal GUIs and does not modify them.
  *
- * <p>Layout: left sidebar (categories) → main module area → right Corz panel, with a
- * top header bar and bottom theme dock. All geometry is computed during {@link #render}
- * and cached for input, so layout and click regions always match what is drawn.
+ * <p>Four themes are available (Ocean, Cherry Blossom, Green Forest, Charcoal), each with its own
+ * palette and procedurally-drawn background. Modules are toggled by clicking a row; expanding a row
+ * (chevron) reveals its settings, reusing Aether's real {@link SettingWidget}s so every module —
+ * including keybinds — is fully editable here.
+ *
+ * <p>All geometry is computed during {@link #render} and cached for input, so layout and click
+ * regions always match what is drawn. The constructor is trivial (no widget construction) so opening
+ * the GUI is unaffected by lazy initialisation.
  */
 public final class LarpRecodeGui {
-   // ---- Theme palettes: [bg_top, bg_bottom, surface, surface_elev, surface_elev2, accent, accent_bright, text, text_muted, header] ----
-   // Each color is (R, G, B). 10 colors × 3 = 30 elements.
-   private static final int[] OCEAN = {
-      0x0A, 0x1E, 0x3F,   // bg_top
-      0x08, 0x14, 0x2A,   // bg_bottom
-      0x14, 0x28, 0x50,   // surface
-      0x1C, 0x38, 0x68,   // surface_elev
-      0x24, 0x48, 0x80,   // surface_elev2
-      0x48, 0x8E, 0xDA,   // accent
-      0x7A, 0xC8, 0xF0,   // accent_bright
-      0xE8, 0xF0, 0xFF,   // text
-      0x9A, 0xB8, 0xD8,   // text_muted
-      0x48, 0x8E, 0xDA    // header
-   };
-   private static final int[] CHERRY = {
-      0x1E, 0x12, 0x1E,
-      0x14, 0x0C, 0x16,
-      0x2A, 0x1C, 0x2E,
-      0x3A, 0x24, 0x3E,
-      0x4A, 0x2E, 0x4A,
-      0xE8, 0x5B, 0xA8,
-      0xF0, 0x9A, 0xD0,
-      0xFF, 0xF0, 0xF4,
-      0xC8, 0x98, 0xB8,
-      0xE6, 0xD8, 0xDD
-   };
-   private static final int[] FOREST = {
-      0x0A, 0x1A, 0x10,
-      0x06, 0x10, 0x0A,
-      0x14, 0x28, 0x1C,
-      0x1C, 0x40, 0x28,
-      0x24, 0x50, 0x34,
-      0x4A, 0xBF, 0x6A,
-      0x88, 0xE8, 0xA8,
-      0xE8, 0xF0, 0xE0,
-      0x98, 0xC8, 0x98,
-      0x4A, 0xBF, 0x6A
-   };
-   private static final int[] CHARCOAL = {
-      0x0C, 0x0C, 0x10,
-      0x08, 0x08, 0x0C,
-      0x14, 0x14, 0x1A,
-      0x1C, 0x1C, 0x22,
-      0x28, 0x28, 0x30,
-      0x8A, 0x8A, 0x92,
-      0xC0, 0xC0, 0xD0,
-      0xE0, 0xE0, 0xE8,
-      0x9A, 0x9A, 0xA2,
-      0x3C, 0x3C, 0x42
-   };
+   // ---- Theme palettes (R, G, B) ----
+   private static final int[] OCEAN = {0x08, 0x18, 0x38, 0x0C, 0x24, 0x44, 0x14, 0x34, 0x60, 0x2E, 0x6B, 0xD6, 0xB8, 0xD4, 0xF0, 0x88, 0xB8, 0xE0};
+   private static final int[] CHERRY = {0x2A, 0x14, 0x20, 0x3A, 0x1C, 0x2A, 0x4A, 0x24, 0x3A, 0xE8, 0x5B, 0xA8, 0xF0, 0xD0, 0xE0, 0xC8, 0x98, 0xB8};
+   private static final int[] FOREST = {0x0E, 0x24, 0x18, 0x14, 0x30, 0x20, 0x1C, 0x40, 0x28, 0x4C, 0xC0, 0x6A, 0xC0, 0xE8, 0xC8, 0x88, 0xC8, 0x98};
+   private static final int[] CHARCOAL = {0x0A, 0x0A, 0x0C, 0x16, 0x16, 0x1A, 0x20, 0x20, 0x28, 0x8A, 0x8A, 0x92, 0xD0, 0xD0, 0xD8, 0x9A, 0x9A, 0xA2};
    private static final String[] THEME_NAMES = {"Ocean", "Cherry Blossom", "Green Forest", "Charcoal"};
    private static final int[][] THEMES = {OCEAN, CHERRY, FOREST, CHARCOAL};
-
-   // Sidebar category order
-   private static final Category[] SIDEBAR_CATEGORIES = {
-      Category.COMBAT, Category.MOVEMENT, Category.PLAYER, Category.VISUALS,
-      Category.RENDER, Category.BASEFINDING, Category.DONUT, Category.MISC, Category.CLIENT
-   };
 
    private final ModuleManager modules;
    private int themeIndex;
    private String search = "";
    private boolean searchFocused;
-   private int activeCategory = 0;
-   private boolean sidebarCollapsed;
 
-   // Lazy widget caches
+   // Column definition: each column holds one or more categories.
+   // The last column is the Corz column (folded-in Corz feature set, tagged "corz").
+   private static final Category[][] COLUMNS = {
+      {Category.COMBAT, Category.RENDER},
+      {Category.MOVEMENT, Category.PLAYER},
+      {Category.VISUALS},
+      {Category.BASEFINDING},
+      {Category.DONUT, Category.MISC, Category.CLIENT},
+      {}
+   };
+
+   // Lazy widget caches (built on first expand), keyed by module.
    private final Map<Module, List<SettingWidget>> moduleWidgets = new LinkedHashMap<>();
    private final Map<Module, Boolean> expanded = new LinkedHashMap<>();
-   private final Map<Module, Float> openAnim = new LinkedHashMap<>();
 
-   // Layout caches
+   // Layout caches (recomputed every render, read by input).
    private float headerH;
-   private float sidebarX, sidebarW, sidebarY, sidebarH;
-   private float bodyX, bodyY, bodyW, bodyH;
    private float searchX, searchY, searchW, searchH;
+   private float hudBtnX, hudBtnY, hudBtnR;
+   private float gearBtnX, gearBtnY, gearBtnR;
    private float dockX, dockY, dockW, dockH;
    private float bodyTop;
-   private float bodyContentY;
-   private float bodyContentH;
-   private float scrollY;
-   private float maxScroll;
-   private final List<CatHit> catHits = new ArrayList<>();
+   private final List<PanelHit> panelHits = new ArrayList<>();
    private final List<ModuleHit> moduleHits = new ArrayList<>();
    private final List<ThemeHit> themeHits = new ArrayList<>();
    private final List<SettingWidget> activeWidgets = new ArrayList<>();
 
-   // Corz panel state
+   // Corz column scroll state.
    private final Animation corzScroll = new Animation(120.0F, 0.0F);
    private float corzMaxScroll;
-   private float corzX, corzY, corzW, corzH;
+   private float corzColX, corzColY, corzColW, corzColH;
    private final List<CorzHit> corzHits = new ArrayList<>();
 
-   private static final class CatHit {
-      final int index;
+   private static final class PanelHit {
+      final int col;
       final float x, y, w, h;
-      CatHit(int index, float x, float y, float w, float h) {
-         this.index = index; this.x = x; this.y = y; this.w = w; this.h = h;
+      PanelHit(int col, float x, float y, float w, float h) {
+         this.col = col; this.x = x; this.y = y; this.w = w; this.h = h;
       }
    }
 
@@ -171,8 +128,12 @@ public final class LarpRecodeGui {
    private static final class CorzHit {
       final CorzModuleHandle module;
       final float x, y, w, rowH;
-      CorzHit(CorzModuleHandle module, float x, float y, float w, float rowH) {
-         this.module = module; this.x = x; this.y = y; this.w = w; this.rowH = rowH;
+      final float tagX, tagY, tagW, tagH;
+      CorzHit(CorzModuleHandle module, float x, float y, float w, float rowH,
+              float tagX, float tagY, float tagW, float tagH) {
+         this.module = module;
+         this.x = x; this.y = y; this.w = w; this.rowH = rowH;
+         this.tagX = tagX; this.tagY = tagY; this.tagW = tagW; this.tagH = tagH;
       }
    }
 
@@ -180,19 +141,33 @@ public final class LarpRecodeGui {
       this.modules = modules;
    }
 
+   /** Sets the active theme index (used by tests / screenshots). */
    public void setThemeIndex(int index) {
       this.themeIndex = Math.max(0, Math.min(THEME_NAMES.length - 1, index));
    }
 
-   public int themeIndex() { return this.themeIndex; }
-   public int themeCount() { return THEME_NAMES.length; }
-   public String themeName(int index) { return THEME_NAMES[index]; }
+   /** Returns the active theme index. */
+   public int themeIndex() {
+      return this.themeIndex;
+   }
 
+   /** Returns the number of available themes. */
+   public int themeCount() {
+      return THEME_NAMES.length;
+   }
+
+   /** Returns the theme name at the given index. */
+   public String themeName(int index) {
+      return THEME_NAMES[index];
+   }
+
+   /** Toggles the expanded (settings-visible) state of a module (used by tests/screenshots). */
    public void toggleExpanded(Module module) {
       Boolean prev = this.expanded.get(module);
       this.expanded.put(module, prev == null || !prev);
    }
 
+   /** Returns whether a module's settings are expanded. */
    public boolean isExpanded(Module module) {
       return Boolean.TRUE.equals(this.expanded.get(module));
    }
@@ -205,52 +180,30 @@ public final class LarpRecodeGui {
       return (p[i] << 16) | (p[i + 1] << 8) | p[i + 2];
    }
 
-   private int bgTop() { return rgb(THEMES[themeIndex], 0); }
-   private int bgBottom() { return rgb(THEMES[themeIndex], 1); }
-   private int surface() { return rgb(THEMES[themeIndex], 2); }
-   private int surfaceElev() { return rgb(THEMES[themeIndex], 3); }
-   private int surfaceElev2() { return rgb(THEMES[themeIndex], 4); }
-   private int accent() { return rgb(THEMES[themeIndex], 5); }
-   private int accentBright() { return rgb(THEMES[themeIndex], 6); }
-   private int text() { return rgb(THEMES[themeIndex], 7); }
-   private int textMuted() { return rgb(THEMES[themeIndex], 8); }
-   private int headerColor() { return rgb(THEMES[themeIndex], 9); }
+   private int bg() { return rgb(THEMES[themeIndex], 0); }
+   private int surface() { return rgb(THEMES[themeIndex], 3); }
+   private int surfaceElev() { return rgb(THEMES[themeIndex], 6); }
+   private int accent() { return rgb(THEMES[themeIndex], 9); }
+   private int text() { return rgb(THEMES[themeIndex], 12); }
+   private int textMuted() { return rgb(THEMES[themeIndex], 15); }
 
    // =========================================================================
    // RENDER
    // =========================================================================
 
    public void render(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
-      this.catHits.clear();
+      this.panelHits.clear();
       this.moduleHits.clear();
       this.themeHits.clear();
       this.activeWidgets.clear();
 
       try {
          this.renderBackground(vg, uiW, uiH);
-
-         // ---- Header ----
-         this.headerH = 56.0F;
+         this.headerH = 64.0F;
          this.renderHeader(vg, mx, my, uiW);
-
-         // ---- Layout ----
-         this.bodyTop = this.headerH + 10.0F;
-         this.sidebarW = this.sidebarCollapsed ? 52.0F : 190.0F;
-         this.sidebarX = 10.0F;
-         this.sidebarY = this.bodyTop;
-         this.sidebarH = uiH - this.bodyTop - 76.0F;
-
-         this.bodyX = this.sidebarX + this.sidebarW + 10.0F;
-         this.bodyY = this.bodyTop;
-         this.bodyW = uiW - this.bodyX - 14.0F;
-         this.bodyH = uiH - this.bodyTop - 76.0F;
-
-         this.bodyContentY = this.bodyY + 8.0F;
-         this.bodyContentH = this.bodyH - 16.0F;
-
-         this.renderSidebar(vg, mx, my);
-         this.renderBody(vg, mx, my);
-         this.renderCorzPanel(vg, mx, my, uiW, uiH);
+         this.bodyTop = this.headerH + 12.0F;
+         this.renderColumns(vg, mx, my, uiW, uiH);
+         this.renderCorzColumn(vg, mx, my, uiW, uiH);
          this.renderThemeDock(vg, mx, my, uiW, uiH);
       } catch (Throwable t) {
          dev.aether.AetherClient.LOGGER.error("Vulxts Client GUI render failed", t);
@@ -259,389 +212,207 @@ public final class LarpRecodeGui {
 
    private void renderBackground(NVGRenderer vg, float uiW, float uiH) {
       int[] p = THEMES[themeIndex];
+      // Base vertical gradient.
       vg.rectGradient(0.0F, 0.0F, uiW, uiH, 0.0F,
-         rgb(p, 0) | 0xFF000000, rgb(p, 1) | 0xFF000000, true);
+         rgb(p, 0) | 0xFF000000, rgb(p, 3) | 0xFF000000, true);
 
       long now = System.nanoTime();
       float t = (float)(now % 10000000000L) / 1.0E9F;
 
-      // Animated ambient glow orbs
-      for (int i = 0; i < 3; i++) {
-         float ox = uiW * (0.2F + 0.3F * i) + (float)Math.sin(t * 0.15F + i * 2.0F) * 40.0F;
-         float oy = uiH * (0.3F + 0.2F * i) + (float)Math.cos(t * 0.1F + i) * 30.0F;
-         vg.circleGlow(ox, oy, 30.0F, 80.0F, Colors.withAlpha(rgb(p, 5), 0.04F));
+      if (themeIndex == 0) {
+         // Ocean: light rays + jellyfish + seaweed.
+         for (int i = 0; i < 5; i++) {
+            float rx = uiW * (0.15F + 0.7F * ((i + 0.5F) / 5.0F)) + (float)Math.sin(t * 0.3F + i) * 20.0F;
+            float rw = 60.0F + i * 18.0F;
+            vg.rect(rx, 0.0F, rw, uiH, 0.0F, Colors.withAlpha(rgb(p, 9), 0.05F));
+         }
+         // Jellyfish.
+         for (int i = 0; i < 2; i++) {
+            float jx = uiW * (0.55F + 0.25F * i) + (float)Math.sin(t * 0.5F + i * 2.0F) * 30.0F;
+            float jy = uiH * 0.18F + (float)Math.sin(t * 0.4F + i) * 14.0F;
+            vg.circle(jx, jy, 22.0F, Colors.withAlpha(rgb(p, 12), 0.18F));
+            vg.circle(jx, jy, 12.0F, Colors.withAlpha(rgb(p, 12), 0.28F));
+            for (int l = 0; l < 5; l++) {
+               float ly = jy + 22.0F + l * 10.0F;
+               float lx = jx + (float)Math.sin(t * 2.0F + l + i) * 8.0F;
+               vg.line(jx, ly - 10.0F, lx, ly, 2.0F, Colors.withAlpha(rgb(p, 12), 0.14F));
+            }
+         }
+         // Seaweed at the bottom.
+         for (int i = 0; i < 10; i++) {
+            float sx = uiW * (i / 10.0F) + 20.0F;
+            float sy = uiH - 40.0F;
+            for (int s = 0; s < 6; s++) {
+               float yy = sy - s * 18.0F;
+               float xx = sx + (float)Math.sin(t * 1.5F + i + s) * 6.0F;
+               vg.line(sx, sy - (s - 1) * 18.0F, xx, yy, 3.0F, Colors.withAlpha(rgb(p, 3), 0.5F));
+               sx = xx;
+            }
+         }
+      } else if (themeIndex == 1) {
+         // Cherry blossom: branches + drifting petals.
+         for (int i = 0; i < 6; i++) {
+            float bx = uiW * (i * 0.2F);
+            float by = 0.0F;
+            float ex = bx + 80.0F + (float)Math.sin(i) * 40.0F;
+            float ey = 180.0F + (float)Math.cos(i) * 30.0F;
+            vg.line(bx, by, ex, ey, 3.0F, Colors.withAlpha(rgb(p, 3), 0.6F));
+            for (int b = 0; b < 4; b++) {
+               float bx2 = bx + (ex - bx) * (b + 1) / 5.0F;
+               float by2 = by + (ey - by) * (b + 1) / 5.0F;
+               vg.line(bx2, by2, bx2 + 30.0F, by2 - 20.0F, 2.0F, Colors.withAlpha(rgb(p, 3), 0.4F));
+               vg.circle(bx2 + 30.0F, by2 - 20.0F, 4.0F, Colors.withAlpha(rgb(p, 12), 0.7F));
+            }
+         }
+         // Drifting petals.
+         for (int i = 0; i < 18; i++) {
+            float px = (float)((i * 137.5F + t * 30.0F * (i % 3 + 1)) % uiW);
+            float py = (float)((t * 20.0F * (i % 4 + 1) + i * 90.0F) % uiH);
+            vg.circle(px, py, 3.5F, Colors.withAlpha(rgb(p, 12), 0.55F));
+         }
+      } else if (themeIndex == 2) {
+         // Green forest: light rays + bokeh.
+         for (int i = 0; i < 5; i++) {
+            float rx = uiW * (0.1F + 0.8F * (i / 5.0F));
+            vg.rect(rx, 0.0F, 50.0F, uiH, 0.0F, Colors.withAlpha(rgb(p, 9), 0.05F));
+         }
+         for (int i = 0; i < 14; i++) {
+            float bx = (i * 73.0F + t * 10.0F) % uiW;
+            float by = (i * 113.0F + t * 6.0F) % uiH;
+            float r = 10.0F + (i % 4) * 8.0F;
+            vg.circleGlow(bx, by, r, r * 2.0F, Colors.withAlpha(rgb(p, 9), 0.12F));
+         }
+      } else {
+         // Charcoal: faint vignette + grid.
+         vg.rect(0.0F, 0.0F, uiW, uiH, 0.0F, Colors.withAlpha(0x000000, 0.0F));
+         for (int gx = 0; gx < uiW; gx += 48.0F) {
+            vg.line(gx, 0.0F, gx, uiH, 1.0F, Colors.withAlpha(rgb(p, 9), 0.04F));
+         }
+         for (int gy = 0; gy < uiH; gy += 48.0F) {
+            vg.line(0.0F, gy, uiW, gy, 1.0F, Colors.withAlpha(rgb(p, 9), 0.04F));
+         }
       }
+      // Top + bottom vignette for depth.
+      vg.rect(0.0F, 0.0F, uiW, 40.0F, 0.0F, Colors.withAlpha(rgb(p, 0), 0.5F));
+      vg.rect(0.0F, uiH - 70.0F, uiW, 70.0F, 0.0F, Colors.withAlpha(rgb(p, 0), 0.55F));
    }
 
    private void renderHeader(NVGRenderer vg, float mx, float my, float uiW) {
-      // Header bar with frosted glass
-      vg.rect(0.0F, 0.0F, uiW, this.headerH, 0.0F,
-         Colors.withAlpha(surface(), 0.85F));
-      vg.rectOutline(0.0F, 0.0F, uiW, this.headerH, 0.0F, 1.0F,
-         Colors.withAlpha(accent(), 0.12F));
-      vg.line(0.0F, this.headerH - 1.0F, uiW, this.headerH - 1.0F, 1.0F,
-         Colors.withAlpha(accent(), 0.1F));
+      // Header background.
+      vg.rect(0.0F, 0.0F, uiW, this.headerH, 0.0F, Colors.withAlpha(bg(), 0.75F));
+      vg.rectOutline(0.0F, this.headerH - 1.0F, uiW, 1.0F, 0.0F, 1.0F, Colors.withAlpha(accent(), 0.3F));
 
-      // Logo block
-      float lx = 16.0F;
-      float ly = this.headerH * 0.5F;
-      vg.rect(lx, ly - 14.0F, 28.0F, 28.0F, 7.0F, Colors.withAlpha(accent(), 0.25F));
-      vg.text("V", lx + 19.0F, ly + 5.0F, 16.0F, accentBright());
+      // LR logo tile + title.
+      float lx = 18.0F;
+      float ly = 16.0F;
+      vg.rect(lx, ly, 32.0F, 32.0F, 7.0F, Colors.withAlpha(accent(), 0.22F));
+      vg.rectOutline(lx, ly, 32.0F, 32.0F, 7.0F, 1.0F, Colors.withAlpha(accent(), 0.5F));
+      vg.text("LR", lx + 16.0F, ly + 22.0F, 13.0F, text());
+      vg.text("VULXTS CLIENT", lx + 42.0F, ly + 14.0F, 15.0F, text());
+      vg.text("BETA · 1.21.11", lx + 42.0F, ly + 28.0F, 9.0F, textMuted());
 
-      // Title
-      vg.text("VULXTS CLIENT", lx + 38.0F, ly + 6.0F, 14.0F, 0xFFFFFFFF);
-      vg.text("v2.2.0 · 1.21.11", lx + 38.0F, ly + 20.0F, 8.0F, textMuted());
-
-      // Search bar
-      this.searchX = uiW - 240.0F;
-      this.searchY = 12.0F;
-      this.searchW = 220.0F;
+      // Search bar (top center).
       this.searchH = 32.0F;
-
-      float sx = this.searchX;
-      float sy = this.searchY;
-      boolean sf = this.searchFocused;
-      vg.rect(sx, sy, this.searchW, this.searchH, 8.0F,
-         sf ? Colors.withAlpha(surfaceElev2(), 0.9F) : Colors.withAlpha(surfaceElev(), 0.6F));
-      vg.rectOutline(sx, sy, this.searchW, this.searchH, 8.0F, 1.0F,
-         sf ? Colors.withAlpha(accent(), 0.5F) : Colors.withAlpha(accent(), 0.15F));
-      // Search icon
-      vg.circle(sx + 18.0F, sy + this.searchH * 0.5F, 3.0F, textMuted());
-      vg.line(sx + 18.0F + 2.0F, sy + this.searchH * 0.5F + 2.0F,
-         sx + 18.0F + 5.0F, sy + this.searchH * 0.5F + 5.0F, 1.0F, textMuted());
-      if (this.search.isEmpty()) {
-         vg.text("Search modules…", sx + 30.0F, sy + this.searchH * 0.5F + 4.0F, 10.0F, textMuted());
-      } else {
-         vg.text(this.search, sx + 30.0F, sy + this.searchH * 0.5F + 4.0F, 10.0F, text());
-      }
-      // Clear button
+      this.searchW = Math.min(360.0F, uiW * 0.4F);
+      this.searchX = (uiW - this.searchW) * 0.5F;
+      this.searchY = (this.headerH - this.searchH) * 0.5F;
+      boolean sHov = this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH);
+      vg.rect(this.searchX, this.searchY, this.searchW, this.searchH, 16.0F, Colors.withAlpha(surfaceElev(), 0.85F));
+      vg.rectOutline(this.searchX, this.searchY, this.searchW, this.searchH, 16.0F, 1.0F,
+         this.searchFocused ? Colors.withAlpha(accent(), 0.6F) : Colors.withAlpha(accent(), 0.25F));
+      float scy = this.searchY + this.searchH * 0.5F;
+      vg.text("SEARCH MODULES · CTRL+F", this.searchX + 16.0F, scy, 10.0F,
+         (!this.search.isEmpty() || this.searchFocused) ? text() : textMuted());
       if (!this.search.isEmpty()) {
-         float cw = 20.0F;
-         vg.rect(sx + this.searchW - cw - 6.0F, sy + 4.0F, cw, this.searchH - 8.0F, 6.0F,
-            Colors.withAlpha(surfaceElev2(), 0.5F));
-         vg.text("×", sx + this.searchW - cw - 6.0F + 13.0F, sy + this.searchH * 0.5F + 4.0F, 12.0F, textMuted());
+         vg.textTruncated(this.search, this.searchX + 16.0F, scy, 11.0F, text(), this.searchW - 40.0F);
+         vg.cross(this.searchX + this.searchW - 18.0F, scy - 5.0F, 10.0F, 1.4F, textMuted());
+      }
+
+      // HUD + gear round buttons (top right).
+      this.hudBtnR = 14.0F;
+      this.hudBtnX = uiW - 30.0F - this.hudBtnR * 2.0F - 12.0F;
+      this.hudBtnY = this.headerH * 0.5F;
+      boolean hHov = this.hit(mx, my, this.hudBtnX - this.hudBtnR, this.hudBtnY - this.hudBtnR, this.hudBtnR * 2.0F, this.hudBtnR * 2.0F);
+      vg.circle(this.hudBtnX, this.hudBtnY, this.hudBtnR, Colors.withAlpha(surfaceElev(), hHov ? 0.95F : 0.7F));
+      vg.circleOutline(this.hudBtnX, this.hudBtnY, this.hudBtnR, 1.0F, Colors.withAlpha(accent(), hHov ? 0.6F : 0.3F));
+      vg.text("H", this.hudBtnX, this.hudBtnY + 4.0F, 11.0F, hHov ? accent() : text());
+
+      this.gearBtnR = 14.0F;
+      this.gearBtnX = uiW - 30.0F;
+      this.gearBtnY = this.headerH * 0.5F;
+      boolean gHov = this.hit(mx, my, this.gearBtnX - this.gearBtnR, this.gearBtnY - this.gearBtnR, this.gearBtnR * 2.0F, this.gearBtnR * 2.0F);
+      vg.circle(this.gearBtnX, this.gearBtnY, this.gearBtnR, Colors.withAlpha(surfaceElev(), gHov ? 0.95F : 0.7F));
+      vg.circleOutline(this.gearBtnX, this.gearBtnY, this.gearBtnR, 1.0F, Colors.withAlpha(accent(), gHov ? 0.6F : 0.3F));
+      vg.text("G", this.gearBtnX, this.gearBtnY + 4.0F, 11.0F, gHov ? accent() : text());
+   }
+
+   private void renderColumns(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
+      float gap = 12.0F;
+      float sidePad = 14.0F;
+      float colW = (uiW - sidePad * 2.0F - gap * (COLUMNS.length - 1)) / (float) COLUMNS.length;
+      float dockH = 70.0F;
+      float availH = uiH - this.bodyTop - dockH - 16.0F;
+
+      for (int c = 0; c < COLUMNS.length; c++) {
+         float cx = sidePad + c * (colW + gap);
+         float cy = this.bodyTop;
+         for (Category cat : COLUMNS[c]) {
+            List<Module> inCat = this.modules.inCategory(cat);
+            boolean hasVisible = false;
+            for (Module m : inCat) {
+               if (this.matchesSearch(m)) {
+                  hasVisible = true;
+                  break;
+               }
+            }
+            if (!hasVisible) {
+               continue;
+            }
+            float panelH = this.panelHeight(cat, colW);
+            if (cy + panelH > this.bodyTop + availH) {
+               break;
+            }
+            this.renderPanel(vg, mx, my, c, cx, cy, colW, panelH, cat, inCat);
+            cy += panelH + gap;
+         }
       }
    }
 
-   private void renderSidebar(NVGRenderer vg, float mx, float my) {
-      // Sidebar background
-      vg.rect(this.sidebarX, this.sidebarY, this.sidebarW, this.sidebarH, 12.0F,
-         Colors.withAlpha(surface(), 0.75F));
-      vg.rectOutline(this.sidebarX, this.sidebarY, this.sidebarW, this.sidebarH, 12.0F, 1.0F,
-         Colors.withAlpha(accent(), 0.15F));
-
-      if (this.sidebarCollapsed) {
-         // Collapsed: just show dots
-         float cy = this.sidebarY + 20.0F;
-         for (int i = 0; i < SIDEBAR_CATEGORIES.length; i++) {
-            boolean active = i == this.activeCategory;
-            vg.circle(this.sidebarX + this.sidebarW * 0.5F, cy, 4.0F,
-               active ? accentBright() : textMuted());
-            this.catHits.add(new CatHit(i, this.sidebarX, cy - 8.0F, this.sidebarW, 16.0F));
-            cy += 28.0F;
-         }
-         // Expand button
-         vg.chevron(this.sidebarX + this.sidebarW * 0.5F, this.sidebarY + this.sidebarH - 16.0F,
-            3.5F, 1.4F, accent(), true);
-         return;
-      }
-
-      // Category buttons
-      float cy = this.sidebarY + 12.0F;
-      float btnH = 40.0F;
-      for (int i = 0; i < SIDEBAR_CATEGORIES.length; i++) {
-         Category cat = SIDEBAR_CATEGORIES[i];
-         boolean active = i == this.activeCategory;
-         boolean hov = this.hit(mx, my, this.sidebarX + 6.0F, cy, this.sidebarW - 12.0F, btnH);
-
-         // Active indicator bar
-         if (active) {
-            vg.rect(this.sidebarX, cy + 4.0F, 3.0F, btnH - 8.0F, 1.5F, accent());
-         }
-
-         // Button background
-         int btnCol = active ? Colors.withAlpha(accent(), 0.12F)
-            : (hov ? Colors.withAlpha(surfaceElev(), 0.4F) : Colors.withAlpha(surfaceElev(), 0.15F));
-         vg.rect(this.sidebarX + 6.0F, cy, this.sidebarW - 12.0F, btnH, 8.0F, btnCol);
-
-         // Category icon tile
-         vg.rect(this.sidebarX + 12.0F, cy + 8.0F, 24.0F, 24.0F, 6.0F,
-            Colors.withAlpha(accent(), active ? 0.3F : 0.15F));
-         vg.text(cat.getDisplayName().substring(0, 1).toUpperCase(Locale.ROOT),
-            this.sidebarX + 24.0F, cy + 22.0F, 11.0F, active ? accentBright() : text());
-
-         // Category name
-         vg.text(cat.getDisplayName().toUpperCase(Locale.ROOT),
-            this.sidebarX + 42.0F, cy + 18.0F, 10.0F, active ? 0xFFFFFFFF : text());
-
-         // Module count
-         int count = 0;
-         for (Module mod : this.modules.inCategory(cat)) {
-            if (this.matchesSearch(mod)) count++;
-         }
-         if (count > 0) {
-            String cnt = Integer.toString(count);
-            float cw = vg.textWidth(cnt, 8.0F) + 10.0F;
-            vg.rect(this.sidebarX + this.sidebarW - 12.0F - cw, cy + btnH * 0.5F - 8.0F, cw, 16.0F, 8.0F,
-               Colors.withAlpha(accent(), active ? 0.3F : 0.15F));
-            vg.text(cnt, this.sidebarX + this.sidebarW - 12.0F - cw + 5.0F, cy + btnH * 0.5F + 2.0F, 8.0F,
-               active ? 0xFFFFFFFF : textMuted());
-         }
-
-         this.catHits.add(new CatHit(i, this.sidebarX + 6.0F, cy, this.sidebarW - 12.0F, btnH));
-         cy += btnH + 4.0F;
-      }
-
-      // Collapse button at bottom
-      float cbY = this.sidebarY + this.sidebarH - 36.0F;
-      vg.rect(this.sidebarX + 6.0F, cbY, this.sidebarW - 12.0F, 30.0F, 8.0F,
-         Colors.withAlpha(surfaceElev(), 0.3F));
-      vg.chevron(this.sidebarX + this.sidebarW * 0.5F, cbY + 15.0F, 3.5F, 1.4F, accent(), true);
-      this.catHits.add(new CatHit(-1, this.sidebarX + 6.0F, cbY, this.sidebarW - 12.0F, 30.0F));
-   }
-
-   private void renderBody(NVGRenderer vg, float mx, float my) {
-      // Body background
-      vg.rect(this.bodyX, this.bodyY, this.bodyW, this.bodyH, 12.0F,
-         Colors.withAlpha(surface(), 0.55F));
-      vg.rectOutline(this.bodyX, this.bodyY, this.bodyW, this.bodyH, 12.0F, 1.0F,
-         Colors.withAlpha(accent(), 0.1F));
-
-      if (this.sidebarCollapsed || this.activeCategory < 0 || this.activeCategory >= SIDEBAR_CATEGORIES.length) {
-         // Empty state
-         float ecx = this.bodyX + this.bodyW * 0.5F;
-         float ecy = this.bodyY + this.bodyH * 0.5F;
-         vg.circleGlow(ecx, ecy, 25.0F, 50.0F, Colors.withAlpha(accent(), 0.1F));
-         vg.text("Select a category", ecx - vg.textWidth("Select a category", 12.0F) * 0.5F, ecy, 12.0F, textMuted());
-         return;
-      }
-
-      Category cat = SIDEBAR_CATEGORIES[this.activeCategory];
-
-      // Category title
-      vg.text(cat.getDisplayName().toUpperCase(Locale.ROOT), this.bodyX + 20.0F, this.bodyY + 24.0F, 13.0F, 0xFFFFFFFF);
-      vg.text("MODULES", this.bodyX + 20.0F, this.bodyY + 38.0F, 8.0F, textMuted());
-
-      // Scrollbar
-      float scrollbarX = this.bodyX + this.bodyW - 8.0F;
-      float scrollbarY = this.bodyContentY;
-      float scrollbarH = this.bodyContentH;
-      if (this.maxScroll > 0.0F) {
-         float thumbH = Math.max(20.0F, scrollbarH * (scrollbarH / (scrollbarH + this.maxScroll)));
-         float thumbY = scrollbarY + (scrollbarH - thumbH) * (this.scrollY / this.maxScroll);
-         vg.rect(scrollbarX, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(accent(), 0.3F));
-      }
-
-      // Module list with scissor clip
-      vg.save();
-      vg.scissor(this.bodyX + 4.0F, this.bodyY + 4.0F, this.bodyW - 8.0F, this.bodyH - 8.0F);
-
-      float ry = this.bodyContentY - this.scrollY;
-      float padX = 16.0F;
-      float cardW = this.bodyW - padX * 2.0F;
-
+   private float panelHeight(Category cat, float colW) {
       List<Module> inCat = this.modules.inCategory(cat);
-      for (Module module : inCat) {
-         if (!this.matchesSearch(module)) continue;
-
-         boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
-         float openAmt = exp ? 1.0F : 0.0F;
-         Float prev = this.openAnim.get(module);
-         if (prev == null) {
-            this.openAnim.put(module, openAmt);
-         } else {
-            float cur = prev;
-            float diff = openAmt - cur;
-            float step = Math.abs(diff) * 0.22F;
-            if (Math.abs(diff) < 0.01F) cur = openAmt;
-            else cur += Math.signum(diff) * step;
-            this.openAnim.put(module, cur);
-            openAmt = cur;
+      float h = 44.0F; // header
+      int visible = 0;
+      for (Module m : inCat) {
+         if (!this.matchesSearch(m)) {
+            continue;
          }
-
-         float rowH = 38.0F;
-         float settingsH = this.settingsHeight(this.widgetsFor(module), vg) * openAmt;
-         float totalH = rowH + settingsH + 6.0F;
-         if (ry + totalH > this.bodyY + this.bodyH - 8.0F) break;
-         if (ry + rowH < this.bodyContentY - this.scrollY - 200.0F) { ry += totalH; continue; }
-
-         boolean enabled = module.isEnabled();
-         boolean hov = this.hit(mx, my, this.bodyX + padX, ry, cardW, rowH);
-
-         // Card background with hover glow
-         int cardBg = enabled
-            ? Colors.withAlpha(accent(), hov ? 0.18F : 0.10F)
-            : Colors.withAlpha(surfaceElev(), hov ? 0.35F : 0.18F);
-         vg.rect(this.bodyX + padX, ry, cardW, rowH, 10.0F, cardBg);
-
-         // Left accent bar
-         vg.rect(this.bodyX + padX, ry + 6.0F, 3.0F, rowH - 12.0F, 1.5F,
-            enabled ? Colors.withAlpha(accentBright(), 0.8F) : Colors.withAlpha(textMuted(), 0.3F));
-
-         // Status dot
-         vg.circle(this.bodyX + padX + 20.0F, ry + rowH * 0.5F, 4.0F,
-            enabled ? Colors.withAlpha(accentBright(), 0.95F) : Colors.withAlpha(textMuted(), 0.3F));
-
-         // Module name
-         vg.text(module.getName(), this.bodyX + padX + 32.0F, ry + rowH * 0.5F + 4.0F, 12.0F,
-            enabled ? 0xFFFFFFFF : textMuted());
-
-         // Description (truncated)
-         if (!module.getDescription().isEmpty()) {
-            float dw = cardW - 32.0F - 100.0F;
-            if (dw > 20.0F) {
-               vg.textTruncated(module.getDescription(), this.bodyX + padX + 32.0F, ry + rowH * 0.5F + 18.0F, 8.0F,
-                  Colors.withAlpha(textMuted(), 0.65F), dw);
-            }
+         visible++;
+         boolean exp = Boolean.TRUE.equals(this.expanded.get(m));
+         h += 30.0F;
+         if (exp) {
+            h += this.settingsHeight(this.widgetsFor(m), null) + 4.0F;
          }
-
-         // Keybind pill
-         if (module.getKeybind().isBound()) {
-            String k = module.getKeybind().keyName();
-            float kw = vg.textWidth(k, 9.0F) + 14.0F;
-            vg.rect(this.bodyX + padX + cardW - kw - 50.0F, ry + 9.0F, kw, 20.0F, 10.0F,
-               Colors.withAlpha(surfaceElev2(), 0.5F));
-            vg.text(k, this.bodyX + padX + cardW - kw - 50.0F + 7.0F, ry + 21.0F, 9.0F, accent());
-         }
-
-         // Chevron
-         float chevCX = this.bodyX + padX + cardW - 26.0F;
-         float chevCY = ry + rowH * 0.5F;
-         float chevRot = exp ? (float)(Math.PI * 0.5) : 0.0F;
-         vg.save();
-         vg.translate(chevCX, chevCY);
-         vg.rotate(chevRot);
-         vg.chevron(0.0F, 0.0F, 4.0F, 1.6F, exp ? 0xFFFFFFFF : textMuted(), false);
-         vg.restore();
-
-         this.moduleHits.add(new ModuleHit(module, this.bodyX + padX, ry, cardW, rowH,
-            chevCX - 8.0F, chevCY - 8.0F, 16.0F, 16.0F, ry + rowH, ry + rowH + settingsH));
-
-         // Expanded settings
-         if (openAmt > 0.01F) {
-            vg.save();
-            vg.scissor(this.bodyX + padX, ry + rowH, cardW, settingsH);
-            float wy = ry + rowH + 8.0F;
-            vg.line(this.bodyX + padX + 12.0F, wy - 4.0F, this.bodyX + padX + cardW - 12.0F, wy - 4.0F, 1.0F,
-               Colors.withAlpha(accent(), 0.1F));
-            for (SettingWidget w2 : this.widgetsFor(module)) {
-               if (!w2.isVisible()) continue;
-               float wH = w2.height(vg);
-               float alpha = Math.min(1.0F, openAmt * 2.0F);
-               vg.alpha(alpha);
-               w2.setBounds(this.bodyX + padX + 12.0F, wy, cardW - 24.0F);
-               w2.render(vg, mx, my);
-               vg.alpha(1.0F);
-               this.activeWidgets.add(w2);
-               wy += wH + 4.0F;
-               if (wy > ry + rowH + settingsH) break;
-            }
-            vg.restore();
-         }
-         ry += totalH;
       }
-
-      // Empty state for category
-      if (ry == this.bodyContentY - this.scrollY) {
-         float ecx = this.bodyX + this.bodyW * 0.5F;
-         float ecy = this.bodyY + this.bodyH * 0.5F;
-         String msg = "No modules in this category";
-         if (!this.search.isEmpty()) msg = "No modules match your search";
-         vg.text(msg, ecx - vg.textWidth(msg, 11.0F) * 0.5F, ecy, 11.0F, textMuted());
-      }
-
-      // Update max scroll
-      this.maxScroll = Math.max(0.0F, ry - (this.bodyContentY - this.scrollY) - this.bodyContentH + 8.0F);
-
-      vg.restore();
+      return h + 8.0F;
    }
 
-   private void renderCorzPanel(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
-      this.corzHits.clear();
-      var provider = CorzPortBus.isAvailable() ? CorzPortBus.provider() : null;
-      if (provider == null) return;
-
-      float cw = Math.min(220.0F, uiW * 0.2F);
-      float cx = uiW - cw - 10.0F;
-      float cy = this.bodyTop;
-      float ch = uiH - this.bodyTop - 76.0F;
-
-      List<CorzModuleHandle> mods = this.corzModules();
-      int count = mods.size();
-      float headerH = 40.0F;
-      float rowH = 30.0F;
-      float contentH = headerH + count * (rowH + 4.0F) + 8.0F;
-      this.corzMaxScroll = Math.max(0.0F, contentH - ch);
-      this.corzScroll.setTarget(Math.clamp(this.corzScroll.getTarget(), 0.0F, this.corzMaxScroll));
-      this.corzX = cx;
-      this.corzY = cy;
-      this.corzW = cw;
-      this.corzH = ch;
-
-      vg.rect(cx, cy, cw, ch, 12.0F, Colors.withAlpha(surface(), 0.78F));
-      vg.rectOutline(cx, cy, cw, ch, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
-
-      // Header
-      float ix = cx + 14.0F;
-      float iy = cy + 10.0F;
-      vg.rect(ix, iy, 22.0F, 22.0F, 6.0F, Colors.withAlpha(accent(), 0.3F));
-      vg.text("C", ix + 15.0F, iy + 16.0F, 12.0F, accentBright());
-      vg.text("CORZ", ix + 30.0F, iy + 16.0F, 12.0F, text());
-      if (count > 0) {
-         String cnt = Integer.toString(count);
-         float cw2 = vg.textWidth(cnt, 9.0F) + 12.0F;
-         vg.rect(cx + cw - cw2 - 14.0F, iy + 4.0F, cw2, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.25F));
-         vg.text(cnt, cx + cw - cw2 - 14.0F + 6.0F, iy + 15.0F, 9.0F, accent());
-      }
-      vg.line(cx + 10.0F, cy + headerH, cx + cw - 10.0F, cy + headerH, 1.0F, Colors.withAlpha(accent(), 0.12F));
-
-      // Module rows
-      float scrollY = this.corzScroll.value();
-      vg.save();
-      vg.scissor(cx + 6.0F, cy + headerH, cw - 12.0F, ch - headerH - 6.0F);
-      float ry = cy + headerH + 6.0F - scrollY;
-      for (CorzModuleHandle mod : mods) {
-         if (ry + rowH < cy + headerH) { ry += rowH + 4.0F; continue; }
-         if (ry > cy + ch) break;
-
-         boolean enabled = mod.isEnabled();
-         boolean hov = this.hit(mx, my, cx + 6.0F, ry, cw - 12.0F, rowH);
-         int rowCol = enabled ? Colors.withAlpha(accent(), hov ? 0.28F : 0.18F)
-            : Colors.withAlpha(surfaceElev(), hov ? 0.45F : 0.3F);
-         vg.rect(cx + 6.0F, ry, cw - 12.0F, rowH, 7.0F, rowCol);
-         if (enabled) {
-            vg.rect(cx + 6.0F, ry + 5.0F, 3.0F, rowH - 10.0F, 1.5F, Colors.withAlpha(0xFFFFFF, 0.85F));
-         }
-         vg.textTruncated(mod.displayName().toUpperCase(Locale.ROOT), cx + 18.0F, ry + rowH * 0.5F + 4.0F, 10.0F,
-            enabled ? text() : textMuted(), cw - 24.0F);
-
-         // "corz" tag
-         float tagW = 34.0F;
-         float tagX = cx + cw - 6.0F - tagW;
-         float tagY = ry + rowH * 0.5F - 7.0F;
-         vg.rect(tagX, tagY, tagW, 14.0F, 7.0F, Colors.withAlpha(accent(), 0.2F));
-         vg.text("corz", tagX + tagW * 0.5F - vg.textWidth("corz", 8.0F) * 0.5F, tagY + 10.0F, 8.0F, accent());
-
-         this.corzHits.add(new CorzHit(mod, cx + 6.0F, ry, cw - 12.0F, rowH));
-         ry += rowH + 4.0F;
-      }
-      vg.restore();
-
-      // Scrollbar
-      if (this.corzMaxScroll > 1.0F) {
-         float trackH = ch - headerH - 12.0F;
-         float thumbH = Math.max(20.0F, trackH * (ch / contentH));
-         float thumbY = cy + headerH + 6.0F + (trackH - thumbH) * (scrollY / this.corzMaxScroll);
-         vg.rect(cx + cw - 6.0F, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(accent(), 0.4F));
-      }
-   }
+   // =========================================================================
+   // CORZ COLUMN (folded-in Corz feature set, tagged "corz")
+   // =========================================================================
 
    private List<CorzModuleHandle> corzModules() {
-      if (!CorzPortBus.isAvailable()) return List.of();
+      if (!CorzPortBus.isAvailable()) {
+         return List.of();
+      }
       var provider = CorzPortBus.provider();
-      if (provider == null) return List.of();
+      if (provider == null) {
+         return List.of();
+      }
       List<CorzModuleHandle> all = provider.allModules();
-      if (this.search.isEmpty()) return all;
+      // Filter by the active search term (matches display name).
+      if (this.search.isEmpty()) {
+         return all;
+      }
       List<CorzModuleHandle> out = new ArrayList<>();
       for (CorzModuleHandle m : all) {
          if (m.displayName().toLowerCase(Locale.ROOT).contains(this.search.toLowerCase(Locale.ROOT))) {
@@ -651,43 +422,241 @@ public final class LarpRecodeGui {
       return out;
    }
 
+   private void renderCorzColumn(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
+      this.corzHits.clear();
+      var provider = CorzPortBus.isAvailable() ? CorzPortBus.provider() : null;
+      if (provider == null) {
+         return;
+      }
+      float gap = 12.0F;
+      float sidePad = 14.0F;
+      float colW = (uiW - sidePad * 2.0F - gap * (COLUMNS.length - 1)) / (float) COLUMNS.length;
+      float dockH = 70.0F;
+      float availH = uiH - this.bodyTop - dockH - 16.0F;
+      float cx = sidePad + (COLUMNS.length - 1) * (colW + gap);
+      float cy = this.bodyTop;
+
+      List<CorzModuleHandle> mods = this.corzModules();
+      int count = mods.size();
+      float headerH = 44.0F;
+      float rowH = 30.0F;
+      float contentH = headerH + count * (rowH + 4.0F) + 8.0F;
+      this.corzMaxScroll = Math.max(0.0F, contentH - availH);
+      this.corzScroll.setTarget(Math.clamp(this.corzScroll.getTarget(), 0.0F, this.corzMaxScroll));
+      this.corzColX = cx;
+      this.corzColY = cy;
+      this.corzColW = colW;
+      this.corzColH = availH;
+
+      // Frosted-glass panel.
+      vg.rect(cx, cy, colW, availH, 12.0F, Colors.withAlpha(surface(), 0.78F));
+      vg.rectOutline(cx, cy, colW, availH, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
+
+      // Header: "CORZ" title + count pill.
+      float ix = cx + 12.0F;
+      float iy = cy + 10.0F;
+      vg.rect(ix, iy, 24.0F, 24.0F, 6.0F, Colors.withAlpha(accent(), 0.25F));
+      vg.text("C", ix + 16.0F, iy + 17.0F, 12.0F, accent());
+      vg.text("CORZ", ix + 32.0F, iy + 17.0F, 12.0F, text());
+      if (count > 0) {
+         String cnt = Integer.toString(count);
+         float cw = vg.textWidth(cnt, 9.0F) + 12.0F;
+         float cpx = cx + colW - cw - 30.0F;
+         vg.rect(cpx, iy + 4.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.2F));
+         vg.text(cnt, cpx + 6.0F, iy + 15.0F, 9.0F, accent());
+      }
+      vg.line(cx + 10.0F, cy + headerH, cx + colW - 10.0F, cy + headerH, 1.0F, Colors.withAlpha(accent(), 0.15F));
+
+      // Module rows (scrolled).
+      float scrollY = this.corzScroll.value();
+      vg.save();
+      vg.scissor(cx + 6.0F, cy + headerH, colW - 12.0F, availH - headerH - 6.0F);
+      float ry = cy + headerH + 6.0F - scrollY;
+      for (CorzModuleHandle mod : mods) {
+         if (ry + rowH < cy + headerH) {
+            ry += rowH + 4.0F;
+            continue;
+         }
+         if (ry > cy + availH) {
+            break;
+         }
+         boolean enabled = mod.isEnabled();
+         boolean hov = this.hit(mx, my, cx + 6.0F, ry, colW - 12.0F, rowH);
+         int rowCol = enabled ? Colors.withAlpha(accent(), hov ? 0.32F : 0.22F)
+            : Colors.withAlpha(surfaceElev(), hov ? 0.5F : 0.35F);
+         vg.rect(cx + 6.0F, ry, colW - 12.0F, rowH, 7.0F, rowCol);
+         if (enabled) {
+            vg.rect(cx + 6.0F, ry + 4.0F, 3.0F, rowH - 8.0F, 1.5F, Colors.withAlpha(0xFFFFFF, 0.85F));
+         }
+         // Truncate the display name to fit before the tag.
+         float textMaxW = colW - 12.0F - 56.0F;
+         vg.textTruncated(mod.displayName().toUpperCase(Locale.ROOT), cx + 18.0F, ry + rowH * 0.5F, 11.0F,
+            enabled ? text() : textMuted(), textMaxW);
+
+         // "corz" tag pill on the right.
+         float tagW = 38.0F;
+         float tagX = cx + colW - 6.0F - tagW;
+         float tagY = ry + rowH * 0.5F - 7.0F;
+         vg.rect(tagX, tagY, tagW, 14.0F, 7.0F, Colors.withAlpha(accent(), 0.22F));
+         vg.text("corz", tagX + tagW * 0.5F - vg.textWidth("corz", 8.0F) * 0.5F, tagY + 10.0F, 8.0F, accent());
+         this.corzHits.add(new CorzHit(mod, cx + 6.0F, ry, colW - 12.0F, rowH, tagX, tagY, tagW, 14.0F));
+
+         // Keybind letter on the far right.
+         if (mod.getBindKey() >= 0) {
+            String k = keyName(mod.getBindKey());
+            vg.text(k, cx + colW - 44.0F, ry + rowH * 0.5F, 10.0F, Colors.withAlpha(accent(), 0.8F));
+         }
+         ry += rowH + 4.0F;
+      }
+      vg.restore();
+
+      // Scrollbar thumb.
+      if (this.corzMaxScroll > 1.0F) {
+         float trackH = availH - headerH - 12.0F;
+         float thumbH = Math.max(20.0F, trackH * (availH / contentH));
+         float thumbY = cy + headerH + 6.0F + (trackH - thumbH) * (scrollY / this.corzMaxScroll);
+         vg.rect(cx + colW - 6.0F, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(accent(), 0.45F));
+      }
+   }
+
+   private static String keyName(int key) {
+      if (key < 0) {
+         return "";
+      }
+      if (key >= 290 && key <= 314) {
+         return "F" + (key - 290 + 1);
+      }
+      return Integer.toString(key);
+   }
+
+   private void renderPanel(NVGRenderer vg, float mx, float my, int col, float x, float y, float w, float h,
+                            Category cat, List<Module> inCat) {
+      // Frosted-glass panel.
+      vg.rect(x, y, w, h, 12.0F, Colors.withAlpha(surface(), 0.78F));
+      vg.rectOutline(x, y, w, h, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
+
+      // Header: icon tile + title + count pill + chevron.
+      float hh = 44.0F;
+      float ix = x + 12.0F;
+      float iy = y + 10.0F;
+      vg.rect(ix, iy, 24.0F, 24.0F, 6.0F, Colors.withAlpha(accent(), 0.25F));
+      vg.text(cat.getDisplayName().substring(0, 1), ix + 16.0F, iy + 17.0F, 12.0F, accent());
+      vg.text(cat.getDisplayName().toUpperCase(Locale.ROOT), ix + 32.0F, iy + 17.0F, 12.0F, text());
+
+      int count = 0;
+      for (Module m : inCat) {
+         if (this.matchesSearch(m)) {
+            count++;
+         }
+      }
+      if (count > 0) {
+         String cnt = Integer.toString(count);
+         float cw = vg.textWidth(cnt, 9.0F) + 12.0F;
+         float cpx = x + w - cw - 30.0F;
+         vg.rect(cpx, iy + 4.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.2F));
+         vg.text(cnt, cpx + 6.0F, iy + 15.0F, 9.0F, accent());
+      }
+      // Chevron (collapse) — right of header.
+      float chX = x + w - 18.0F;
+      float chY = y + hh * 0.5F;
+      vg.chevron(chX, chY, 4.0F, 1.6F, textMuted(), false);
+      vg.line(x + 10.0F, y + hh, x + w - 10.0F, y + hh, 1.0F, Colors.withAlpha(accent(), 0.15F));
+
+      this.panelHits.add(new PanelHit(col, x, y, w, hh));
+
+      // Module rows.
+      float ry = y + hh + 6.0F;
+      for (Module module : inCat) {
+         if (!this.matchesSearch(module)) {
+            continue;
+         }
+         boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
+         float rowH = 30.0F;
+         float settingsH = exp ? this.settingsHeight(this.widgetsFor(module), vg) + 4.0F : 0.0F;
+         float totalH = rowH + settingsH;
+         if (ry + totalH > y + h) {
+            break;
+         }
+         boolean enabled = module.isEnabled();
+         boolean hov = this.hit(mx, my, x + 6.0F, ry, w - 12.0F, rowH);
+
+         // Row: enabled = accent fill + white left bar; disabled = subtle.
+         int rowCol = enabled ? Colors.withAlpha(accent(), hov ? 0.32F : 0.22F)
+            : Colors.withAlpha(surfaceElev(), hov ? 0.5F : 0.35F);
+         vg.rect(x + 6.0F, ry, w - 12.0F, rowH, 7.0F, rowCol);
+         if (enabled) {
+            vg.rect(x + 6.0F, ry + 4.0F, 3.0F, rowH - 8.0F, 1.5F, Colors.withAlpha(0xFFFFFF, 0.85F));
+         }
+         vg.text(module.getName().toUpperCase(Locale.ROOT), x + 18.0F, ry + rowH * 0.5F, 11.0F,
+            enabled ? text() : textMuted());
+
+         // Chevron to expand settings.
+         float chevCX = x + w - 22.0F;
+         float chevCY = ry + rowH * 0.5F;
+         vg.save();
+         vg.translate(chevCX, chevCY);
+         vg.rotate(exp ? (float)(Math.PI * 0.5) : 0.0F);
+         vg.chevron(0.0F, 0.0F, 4.0F, 1.6F, exp ? text() : textMuted(), false);
+         vg.restore();
+         float chevX = chevCX - 8.0F;
+         float chevY = chevCY - 8.0F;
+
+         // Keybind letter on the right (if bound).
+         if (module.getKeybind().isBound()) {
+            String k = module.getKeybind().keyName();
+            vg.text(k, x + w - 34.0F, ry + rowH * 0.5F, 10.0F, Colors.withAlpha(accent(), 0.8F));
+         }
+
+         this.moduleHits.add(new ModuleHit(module, x + 6.0F, ry, w - 12.0F, rowH,
+            chevX, chevY, 16.0F, 16.0F, ry + rowH, ry + totalH));
+
+         // Expanded settings.
+         if (exp) {
+            vg.line(x + 10.0F, ry + rowH, x + w - 10.0F, ry + rowH, 1.0F, Colors.withAlpha(accent(), 0.12F));
+            float wy = ry + rowH + 6.0F;
+            float innerW = w - 24.0F;
+            for (SettingWidget w2 : this.widgetsFor(module)) {
+               if (!w2.isVisible()) {
+                  continue;
+               }
+               w2.setBounds(x + 12.0F, wy, innerW);
+               w2.render(vg, mx, my);
+               this.activeWidgets.add(w2);
+               wy += w2.height(vg) + 3.0F;
+            }
+         }
+         ry += totalH + 4.0F;
+      }
+   }
+
    private void renderThemeDock(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
       this.dockH = 56.0F;
       this.dockW = Math.min(560.0F, uiW - 80.0F);
       this.dockX = (uiW - this.dockW) * 0.5F;
-      this.dockY = uiH - this.dockH - 10.0F;
-      vg.rect(this.dockX, this.dockY, this.dockW, this.dockH, 14.0F, Colors.withAlpha(surface(), 0.82F));
-      vg.rectOutline(this.dockX, this.dockY, this.dockW, this.dockH, 14.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
+      this.dockY = uiH - this.dockH - 12.0F;
+      vg.rect(this.dockX, this.dockY, this.dockW, this.dockH, 28.0F, Colors.withAlpha(surface(), 0.8F));
+      vg.rectOutline(this.dockX, this.dockY, this.dockW, this.dockH, 28.0F, 1.0F, Colors.withAlpha(accent(), 0.25F));
 
       int n = THEME_NAMES.length;
-      float thumbW = (this.dockW - 28.0F - (n - 1) * 8.0F) / (float) n;
-      float thumbH = this.dockH - 18.0F;
-      float ty = this.dockY + 9.0F;
+      float thumbW = (this.dockW - 24.0F - (n - 1) * 10.0F) / (float) n;
+      float thumbH = this.dockH - 20.0F;
+      float ty = this.dockY + 10.0F;
       for (int i = 0; i < n; i++) {
-         float tx = this.dockX + 14.0F + i * (thumbW + 8.0F);
+         float tx = this.dockX + 12.0F + i * (thumbW + 10.0F);
          boolean sel = i == this.themeIndex;
          boolean hov = this.hit(mx, my, tx, ty, thumbW, thumbH);
          int[] tp = THEMES[i];
-         int swatch = rgb(tp, 5);
-         int headerCol = rgb(tp, 9);
-
-         vg.rect(tx, ty, thumbW, thumbH, 8.0F,
-            sel ? (headerCol | 0xFF000000) : Colors.withAlpha(swatch, 0.45F));
-         vg.rectOutline(tx, ty, thumbW, thumbH, 8.0F, 1.0F,
-            sel ? Colors.withAlpha(accentBright(), 0.7F) : Colors.withAlpha(accent(), 0.12F));
-
-         // Theme name
-         String name = THEME_NAMES[i];
-         vg.textTruncated(name, tx + (thumbW - vg.textWidth(name, 8.0F)) * 0.5F, ty + thumbH - 8.0F, 8.0F,
-            sel ? 0xFFFFFFFF : textMuted(), thumbW - 6.0F);
-
-         // Selection dot
+         vg.rect(tx, ty, thumbW, thumbH, 10.0F,
+            sel ? Colors.withAlpha(accent(), 0.25F) : Colors.withAlpha(rgb(tp, 3), 0.6F));
+         vg.rectOutline(tx, ty, thumbW, thumbH, 10.0F, 1.0F,
+            sel ? Colors.withAlpha(accent(), 0.7F) : Colors.withAlpha(accent(), 0.2F));
+         // Thumbnail swatch.
+         vg.rect(tx + 6.0F, ty + 6.0F, thumbW - 12.0F, thumbH * 0.55F, 6.0F, Colors.withAlpha(rgb(tp, 6), 0.8F));
+         vg.text(THEME_NAMES[i], tx + (thumbW - vg.textWidth(THEME_NAMES[i], 8.0F)) * 0.5F, ty + thumbH - 8.0F, 8.0F,
+            sel ? accent() : textMuted());
          if (sel) {
-            vg.circle(tx + thumbW * 0.5F, ty + thumbH + 3.0F, 2.4F, accentBright());
-         } else if (hov) {
-            vg.circle(tx + thumbW * 0.5F, ty + thumbH + 3.0F, 2.0F, accent());
+            vg.circle(tx + thumbW * 0.5F, ty + thumbH + 3.0F, 2.4F, accent());
          }
-
          this.themeHits.add(new ThemeHit(i, tx, ty, thumbW, thumbH));
       }
    }
@@ -698,7 +667,9 @@ public final class LarpRecodeGui {
 
    private List<SettingWidget> widgetsFor(Module m) {
       List<SettingWidget> ws = this.moduleWidgets.get(m);
-      if (ws != null) return ws;
+      if (ws != null) {
+         return ws;
+      }
       ws = new ArrayList<>();
       dev.aether.theme.ThemeManager flat = flatThemes();
       for (Setting<?> s : m.getSettings()) {
@@ -732,13 +703,17 @@ public final class LarpRecodeGui {
    private float settingsHeight(List<SettingWidget> ws, NVGRenderer vg) {
       float h = 6.0F;
       for (SettingWidget w : ws) {
-         if (w.isVisible()) h += w.height(vg) + 4.0F;
+         if (w.isVisible()) {
+            h += w.height(vg) + 3.0F;
+         }
       }
       return h;
    }
 
    private boolean matchesSearch(Module m) {
-      if (this.search.isEmpty()) return true;
+      if (this.search.isEmpty()) {
+         return true;
+      }
       return m.getName().toLowerCase(Locale.ROOT).contains(this.search.toLowerCase(Locale.ROOT));
    }
 
@@ -747,46 +722,10 @@ public final class LarpRecodeGui {
    // =========================================================================
 
    public boolean mouseClicked(float mx, float my, int btn) {
-      if (btn != 0) return false;
-
-      // Search bar
-      if (this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH)) {
-         if (!this.search.isEmpty() && mx >= this.searchX + this.searchW - 30.0F) {
-            this.search = "";
-         } else {
-            this.searchFocused = true;
-         }
-         return true;
+      if (btn != 0) {
+         return false;
       }
-      this.searchFocused = false;
-
-      // Theme dock
-      for (int i = this.themeHits.size() - 1; i >= 0; i--) {
-         ThemeHit th = this.themeHits.get(i);
-         if (this.hit(mx, my, th.x, th.y, th.w, th.h)) {
-            this.themeIndex = th.index;
-            UiSounds.select();
-            return true;
-         }
-      }
-
-      // Sidebar
-      for (int i = this.catHits.size() - 1; i >= 0; i--) {
-         CatHit ch = this.catHits.get(i);
-         if (this.hit(mx, my, ch.x, ch.y, ch.w, ch.h)) {
-            if (ch.index == -1) {
-               this.sidebarCollapsed = !this.sidebarCollapsed;
-               UiSounds.select();
-            } else {
-               this.activeCategory = ch.index;
-               this.scrollY = 0.0F;
-               UiSounds.select();
-            }
-            return true;
-         }
-      }
-
-      // Corz rows
+      // Corz column rows (toggle).
       for (int i = this.corzHits.size() - 1; i >= 0; i--) {
          CorzHit ch = this.corzHits.get(i);
          if (this.hit(mx, my, ch.x, ch.y, ch.w, ch.rowH)) {
@@ -795,8 +734,33 @@ public final class LarpRecodeGui {
             return true;
          }
       }
-
-      // Module rows
+      // Theme dock.
+      for (int i = this.themeHits.size() - 1; i >= 0; i--) {
+         ThemeHit th = this.themeHits.get(i);
+         if (this.hit(mx, my, th.x, th.y, th.w, th.h)) {
+            this.themeIndex = th.index;
+            UiSounds.select();
+            return true;
+         }
+      }
+      // Search bar.
+      if (this.hit(mx, my, this.searchX, this.searchY, this.searchW, this.searchH)) {
+         if (!this.search.isEmpty() && mx >= this.searchX + this.searchW - 22.0F) {
+            this.search = "";
+         } else {
+            this.searchFocused = true;
+         }
+         return true;
+      }
+      this.searchFocused = false;
+      // HUD / gear buttons (no-op placeholders for now).
+      if (this.hit(mx, my, this.hudBtnX - this.hudBtnR, this.hudBtnY - this.hudBtnR, this.hudBtnR * 2.0F, this.hudBtnR * 2.0F)) {
+         return true;
+      }
+      if (this.hit(mx, my, this.gearBtnX - this.gearBtnR, this.gearBtnY - this.gearBtnR, this.gearBtnR * 2.0F, this.gearBtnR * 2.0F)) {
+         return true;
+      }
+      // Module rows: chevron expands, body toggles, settings capture.
       for (int i = this.moduleHits.size() - 1; i >= 0; i--) {
          ModuleHit mh = this.moduleHits.get(i);
          if (this.hit(mx, my, mh.chevX, mh.chevY, mh.chevW, mh.chevH)) {
@@ -805,9 +769,11 @@ public final class LarpRecodeGui {
             UiSounds.select();
             return true;
          }
-         if (this.hit(mx, my, mx, mh.settingsTop, mh.w, mh.settingsBottom - mh.settingsTop)) {
+         if (this.hit(mx, my, mh.x, mh.settingsTop, mh.w, mh.settingsBottom - mh.settingsTop)) {
             for (SettingWidget w : this.widgetsFor(mh.module)) {
-               if (w.isVisible() && w.mouseClicked(mx, my, btn)) return true;
+               if (w.isVisible() && w.mouseClicked(mx, my, btn)) {
+                  return true;
+               }
             }
          }
          if (this.hit(mx, my, mh.x, mh.y, mh.w, mh.rowH)) {
@@ -820,27 +786,29 @@ public final class LarpRecodeGui {
    }
 
    public void mouseDragged(float mx, float my) {
-      for (SettingWidget w : this.activeWidgets) w.mouseDragged(mx, my);
+      for (SettingWidget w : this.activeWidgets) {
+         w.mouseDragged(mx, my);
+      }
    }
 
+   /** Handles mouse-wheel scrolling over the Corz column. */
    public void mouseScrolled(float mx, float my, float scrollY) {
-      // Body scroll
-      if (this.hit(mx, my, this.bodyX, this.bodyY, this.bodyW, this.bodyH) && this.maxScroll > 0.0F) {
-         this.scrollY = Math.clamp(this.scrollY + scrollY * 30.0F, 0.0F, this.maxScroll);
-      }
-      // Corz scroll
-      if (this.corzMaxScroll > 0.0F && this.hit(mx, my, this.corzX, this.corzY, this.corzW, this.corzH)) {
+      if (this.corzMaxScroll > 0.0F && this.hit(mx, my, this.corzColX, this.corzColY, this.corzColW, this.corzColH)) {
          this.corzScroll.setTarget(Math.clamp(this.corzScroll.getTarget() + scrollY * 22.0F, 0.0F, this.corzMaxScroll));
       }
    }
 
    public void mouseReleased() {
-      for (SettingWidget w : this.activeWidgets) w.mouseReleased();
+      for (SettingWidget w : this.activeWidgets) {
+         w.mouseReleased();
+      }
    }
 
    public boolean keyPressed(int keyCode) {
       for (SettingWidget w : this.activeWidgets) {
-         if (w.isListening() && w.keyPressed(keyCode)) return true;
+         if (w.isListening() && w.keyPressed(keyCode)) {
+            return true;
+         }
       }
       if (keyCode == 259 && !this.search.isEmpty()) {
          this.search = this.search.substring(0, this.search.length() - 1);
@@ -855,9 +823,13 @@ public final class LarpRecodeGui {
 
    public boolean charTyped(int codepoint) {
       for (SettingWidget w : this.activeWidgets) {
-         if (w.isListening() && w.charTyped(codepoint)) return true;
+         if (w.isListening() && w.charTyped(codepoint)) {
+            return true;
+         }
       }
-      if (!this.searchFocused) return false;
+      if (!this.searchFocused) {
+         return false;
+      }
       if (this.search.length() < 32) {
          this.search += Character.toLowerCase(codepoint);
       }
@@ -866,7 +838,9 @@ public final class LarpRecodeGui {
 
    public boolean isListening() {
       for (SettingWidget w : this.activeWidgets) {
-         if (w.isListening()) return true;
+         if (w.isListening()) {
+            return true;
+         }
       }
       return false;
    }
