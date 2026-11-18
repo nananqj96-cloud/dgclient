@@ -173,6 +173,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "=== Debug: pwd ===" && pwd
+          echo "=== Debug: ls gradle-build.log ===" && ls -la gradle-build.log 2>&1 || echo "FILE NOT FOUND"
+          echo "=== Debug: wc ===" && wc -c gradle-build.log 2>&1 || true
           {
             echo "## Gradle Build Log"
             echo ""
@@ -180,7 +183,7 @@ jobs:
             echo "SHA: ${{ github.sha }}"
             echo ""
             echo "```"
-            head -c 8000 gradle-build.log
+            cat gradle-build.log 2>&1 | head -c 8000
             echo "```"
           } > /tmp/issue-body.md
           gh issue create --title "CI Build Log - Run ${{ github.run_id }}" --body-file /tmp/issue-body.md
