@@ -21,7 +21,7 @@ public class FastUseModule extends Module {
    );
 
    public FastUseModule() {
-      super("FastUse", "Removes item use cooldowns", Category.MOVEMENT);
+      super("FastUse", "Removes item use cooldowns", Category.MISC);
    }
 
    @Override

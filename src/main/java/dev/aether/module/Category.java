@@ -5,10 +5,6 @@ public enum Category {
    MISC("Misc", "misc"),
    RENDER("Render", "render"),
    VISUALS("Visuals", "visuals"),
-   MOVEMENT("Movement", "movement"),
-   PLAYER("Player", "player"),
-   BASEFINDING("Basefinding", "basefinding"),
-   DONUT("Donut", "donut"),
    CLIENT("Client", "client");
 
    private final String displayName;

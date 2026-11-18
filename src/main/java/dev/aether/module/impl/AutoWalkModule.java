@@ -47,7 +47,7 @@ public class AutoWalkModule extends Module {
    );
 
    public AutoWalkModule() {
-      super("AutoWalk", "Automatically walks forward.", Category.MOVEMENT);
+      super("AutoWalk", "Automatically walks forward.", Category.MISC);
       this.direction.visibleWhen(() -> this.mode.is("Simple"));
       this.disableOnY.visibleWhen(() -> this.mode.is("Simple"));
       this.waitForChunks.visibleWhen(() -> this.mode.is("Simple"));

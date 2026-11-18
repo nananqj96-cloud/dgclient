@@ -98,9 +98,6 @@ public final class OverlayRenderer {
                            if (mc.screen == null) {
                               WorldNametagRenderer.render(vg);
                               NetheriteProbabilityRenderer.renderLabels(vg);
-                              if (AetherClient.modules().itemTrail != null && AetherClient.modules().itemTrail.isEnabled()) {
-                                 ItemTrailRenderer.render(vg, AetherClient.modules().itemTrail);
-                              }
                            }
 
                            hudManager.render(vg, uiW, uiH);

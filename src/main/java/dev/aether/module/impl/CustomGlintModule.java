@@ -3,7 +3,6 @@ package dev.aether.module.impl;
 import dev.aether.AetherClient;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
-import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
@@ -25,15 +24,7 @@ public class CustomGlintModule extends Module {
          "Cyber",
          "Solar",
          "Prismatic",
-         "Abyss",
-         "EndPortal"
-      )
-   );
-   public final BooleanSetting nonEnchanted = this.addSetting(
-      new BooleanSetting(
-         "Non-Enchanted",
-         "Show the glint on items that are NOT enchanted (the end-portal overlay applies to all)",
-         false
+         "Abyss"
       )
    );
    public final ModeSetting mode = this.addSetting(

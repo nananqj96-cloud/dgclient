@@ -23,6 +23,6 @@ public class PlayerEspModule extends Module {
    );
 
    public PlayerEspModule() {
-      super("PlayerESP", "Highlights players through walls", Category.PLAYER);
+      super("PlayerESP", "Highlights players through walls", Category.RENDER);
    }
 }

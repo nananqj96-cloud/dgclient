@@ -11,8 +11,7 @@
       "dev.aether.gametest.PortedModulesGameTest",
       "dev.aether.gametest.AutoCrystalGameTest",
       "dev.aether.gametest.CustomGlintGameTest",
-      "dev.aether.gametest.StringInputGameTest",
-      "dev.aether.gametest.LarpRecodeGuiGameTest"
+      "dev.aether.gametest.StringInputGameTest"
     ]
   },
   "depends": {

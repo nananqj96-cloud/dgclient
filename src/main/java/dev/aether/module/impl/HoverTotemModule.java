@@ -22,7 +22,7 @@ public class HoverTotemModule extends Module {
    private int tickCounter;
 
    public HoverTotemModule() {
-      super("Hover Totem", "Equip totem when hovering over one in inventory", Category.PLAYER);
+      super("Hover Totem", "Equip totem when hovering over one in inventory", Category.COMBAT);
    }
 
    @Override

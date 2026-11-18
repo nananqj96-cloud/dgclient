@@ -2,7 +2,6 @@ package dev.aether;
 
 import dev.aether.config.ConfigManager;
 import dev.aether.config.ConfigStore;
-import dev.aether.donut.DonutNetworking;
 import dev.aether.corz.CorzPortBus;
 import dev.aether.corz.CorzPortProvider;
 import dev.aether.chunkbypass.ChunkBypassLedger;
@@ -108,7 +107,6 @@ public class AetherClient implements ClientModInitializer {
          }
       });
       OverlayRenderer.init(hud, notifications);
-      DonutNetworking.register();
       ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
          if (screen instanceof TitleScreen && !startupSoundPlayed) {
             startupSoundPlayed = true;

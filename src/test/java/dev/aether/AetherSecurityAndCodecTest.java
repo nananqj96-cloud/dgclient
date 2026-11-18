@@ -61,6 +61,7 @@ class AetherSecurityAndCodecTest {
          for (Path f : files) {
             String content = Files.readString(f);
             String lower = content.toLowerCase(Locale.ROOT);
+            assertFalse(lower.contains("vulxts"), "Residual 'vulxts' found in " + f);
             assertFalse(lower.contains("sub5larp"), "Residual 'sub5larp' found in " + f);
             assertFalse(lower.contains("larpaddon"), "Residual 'larpaddon' found in " + f);
             assertFalse(content.contains("java.net.http.HttpClient"), "Outbound HttpClient found in " + f);

@@ -14,15 +14,14 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 /**
- * The two-choice warning shown before the 67Client GUI (ported from the 67port source) loads.
+ * The two-choice warning shown before the 67Port GUI loads.
  *
- * <p>Exactly two choices, with the required meanings:
- * <ol>
- *   <li><b>Load the 67 GUI WITH the Aether client GUI</b> — both together: the 67port GUI runs as a
- *       synced secondary window inside the main Aether client GUI ({@link SixSevenPortWindow}).</li>
- *   <li><b>Only load the 67</b> — the 67port runs alone, full-screen, without the main Aether GUI
- *       ({@link SixSevenPortScreen}).</li>
- * </ol>
+ * <p>Choice 1 — unload the main Aether client and load only the 67port (full-screen
+ * {@link SixSevenPortScreen}).
+ *
+ * <p>Choice 2 — keep both loaded and sync them (the 67port GUI runs as a synced secondary window
+ * inside the main Aether GUI). The user is warned that choosing 2 may produce UI bugs, because the
+ * 67client's GUI is being driven through Aether's renderer alongside the main GUI.
  */
 public class SixSevenPortWarningScreen extends Screen implements NvgDrawable {
    private static final float PANEL_W = 560.0F;
@@ -87,28 +86,24 @@ public class SixSevenPortWarningScreen extends Screen implements NvgDrawable {
       vg.text("You are about to load the 67Client GUI, ported from the", x, y, 13.0F, theme.textPrimary());
       y += 20.0F;
       vg.text("67port source. Choose how it should run:", x, y, 13.0F, theme.textPrimary());
-      y += 20.0F;
-      vg.text("Reopen anytime by pressing Right Alt.", x, y, 11.5F, theme.textMuted());
-      y += 24.0F;
+      y += 34.0F;
 
       vg.line(x, y, x + PANEL_W - 80.0F, y, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.8F));
       y += 20.0F;
 
-      // Choice 1 — load the 67 GUI WITH the Aether client GUI (both together).
       vg.text("1", x, y + 8.0F, 15.0F, theme.accentBright());
-      vg.text("Load the 67 GUI WITH the Aether client GUI (both together).", x + 26.0F, y + 8.0F, 13.5F, theme.textPrimary());
+      vg.text("Unload the main Aether client and load only the 67port.", x + 26.0F, y + 8.0F, 13.5F, theme.textPrimary());
       y += 34.0F;
 
-      // Choice 2 — only load the 67.
       vg.text("2", x, y + 8.0F, 15.0F, theme.accentBright());
-      vg.text("Only load the 67 (67port alone, without the Aether client GUI).", x + 26.0F, y + 8.0F, 13.5F, theme.textPrimary());
+      vg.text("Keep both loaded and sync them (67port runs inside the Aether GUI).", x + 26.0F, y + 8.0F, 13.5F, theme.textPrimary());
       y += 30.0F;
 
-      // UI-bug warning when both run together
-      float warnW = vg.textWidth("⚠  Choosing 1 runs both GUIs together and may cause some UI bugs.", 11.5F) + 18.0F;
-      vg.rect(x + 26.0F, y - 12.0F, Math.min(warnW, PANEL_W - 80.0F), 19.0F, 6.0F, Colors.withAlpha(0xFFFBBF24, 0.14F));
-      vg.rectOutline(x + 26.0F, y - 12.0F, Math.min(warnW, PANEL_W - 80.0F), 19.0F, 6.0F, 1.0F, Colors.withAlpha(0xFFFBBF24, 0.55F));
-      vg.text("⚠  Choosing 1 runs both GUIs together and may cause some UI bugs.", x + 35.0F, y, 11.5F, 0xFFFBBF24);
+      // UI-bug warning for choice 2
+      float warnW = vg.textWidth("⚠  Choosing 2 may cause some UI bugs.", 11.5F) + 18.0F;
+      vg.rect(x + 26.0F, y - 12.0F, warnW, 19.0F, 6.0F, Colors.withAlpha(0xFFFBBF24, 0.14F));
+      vg.rectOutline(x + 26.0F, y - 12.0F, warnW, 19.0F, 6.0F, 1.0F, Colors.withAlpha(0xFFFBBF24, 0.55F));
+      vg.text("⚠  Choosing 2 may cause some UI bugs.", x + 35.0F, y, 11.5F, 0xFFFBBF24);
       y += 30.0F;
 
       // Buttons
@@ -127,11 +122,11 @@ public class SixSevenPortWarningScreen extends Screen implements NvgDrawable {
 
       vg.rect(this.btn1X, this.btn1Y, this.btn1W, this.btn1H, 10.0F, Colors.withAlpha(theme.accent(), hov1 ? 0.30F : 0.18F));
       vg.rectOutline(this.btn1X, this.btn1Y, this.btn1W, this.btn1H, 10.0F, 1.1F, Colors.withAlpha(theme.accentBright(), hov1 ? 0.80F : 0.55F));
-      this.centerText("Load 67 + Aether (both)", this.btn1X, this.btn1Y, this.btn1W, this.btn1H, vg, theme.textPrimary());
+      this.centerText("Unload Aether · 67port only", this.btn1X, this.btn1Y, this.btn1W, this.btn1H, vg, theme.textPrimary());
 
       vg.rect(this.btn2X, this.btn2Y, this.btn2W, this.btn2H, 10.0F, Colors.withAlpha(0xFFFFFFFF, hov2 ? 0.14F : 0.07F));
       vg.rectOutline(this.btn2X, this.btn2Y, this.btn2W, this.btn2H, 10.0F, 1.1F, Colors.withAlpha(hov2 ? theme.accentBright() : theme.borderSubtle(), hov2 ? 0.70F : 0.9F));
-      this.centerText("Only load the 67", this.btn2X, this.btn2Y, this.btn2W, this.btn2H, vg, theme.textPrimary());
+      this.centerText("Keep both · sync", this.btn2X, this.btn2Y, this.btn2W, this.btn2H, vg, theme.textPrimary());
    }
 
    private void centerText(String text, float x, float y, float w, float h, NVGRenderer vg, int color) {
@@ -151,15 +146,15 @@ public class SixSevenPortWarningScreen extends Screen implements NvgDrawable {
          return false;
       }
       if (this.hit(mx, my, this.btn1X, this.btn1Y, this.btn1W, this.btn1H)) {
-         // Choice 1: load the 67 GUI WITH the Aether client GUI (both together).
-         ClickGuiState state = ClickGuiScreen.state();
-         state.setSixSevenPortOpen(true);
-         this.minecraft.setScreen(new ClickGuiScreen(this.minecraft.screen));
+         // Choice 1: unload main Aether GUI, load only the 67port.
+         this.minecraft.setScreen(new SixSevenPortScreen());
          return true;
       }
       if (this.hit(mx, my, this.btn2X, this.btn2Y, this.btn2W, this.btn2H)) {
-         // Choice 2: only load the 67 (67port alone, full-screen).
-         this.minecraft.setScreen(new SixSevenPortScreen());
+         // Choice 2: keep both loaded and sync — open the 67port window inside the main GUI.
+         ClickGuiState state = ClickGuiScreen.state();
+         state.setSixSevenPortOpen(true);
+         this.minecraft.setScreen(new ClickGuiScreen(this.minecraft.screen));
          return true;
       }
       return false;

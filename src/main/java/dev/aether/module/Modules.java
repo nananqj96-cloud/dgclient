@@ -3,7 +3,6 @@ package dev.aether.module;
 import dev.aether.render.SusChunkRenderer;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
-import dev.aether.settings.KeybindSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.Setting;
 import dev.aether.settings.SliderSetting;
@@ -60,23 +59,6 @@ public final class Modules {
       );
       public final ModeSetting font = this.addSetting(
          new ModeSetting("Font", "GUI font (Xuong TTF or vanilla-style)", "Xuong", "Xuong", "Vanilla")
-      );
-      public final BooleanSetting experimentalMinimalGui = this.addSetting(
-         new BooleanSetting(
-            "Experimental Minimal GUI",
-            "Flat Vape-style dark/white GUI with no glow. Replaces the Aether ClickGUI (panel & floating).",
-            false
-         )
-      );
-      public final BooleanSetting larpRecodeGui = this.addSetting(
-         new BooleanSetting(
-            "Larp Recode GUI",
-            "Larp Recode dashboard/clickgui: frosted-glass columns, themed background & theme dock.",
-            false
-         )
-      );
-      public final KeybindSetting larpRecodeKeybind = this.addSetting(
-         new KeybindSetting("Larp Recode Keybind", "Opens the Larp Recode GUI directly", 345)
       );
 
       public ClickGuiModule() {
@@ -260,7 +242,7 @@ public final class Modules {
       public final SusChunkScanner scanner = new SusChunkScanner(this);
 
       public SusChunkFinderModule() {
-         super("SusChunkFinder", "Finds long-loaded chunks — bases — via amethyst light & growth", Category.BASEFINDING);
+         super("SusChunkFinder", "Finds long-loaded chunks — bases — via amethyst light & growth", Category.RENDER);
          this.outlineOpacity.visibleWhen(this.outline::get);
       }
 

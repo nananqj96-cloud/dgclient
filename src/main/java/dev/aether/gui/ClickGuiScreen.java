@@ -42,7 +42,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
@@ -66,8 +65,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private final ConfigPanel configPanel = new ConfigPanel();
    private final CorzPortWindow corzPortWindow;
    private final SixSevenPortWindow sixSevenPortWindow;
-   private final AetherMinimalGui minimalGui;
-   private final LarpRecodeGui larpGui;
 
    // Themes & Audio studio widgets for Dashboard mode
    private final ColorSetting dashAccentProxy;
@@ -134,15 +131,13 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    }
 
    public ClickGuiScreen(Screen parent) {
-      super(Component.literal("VULXTS CLIENT"));
+      super(Component.literal("Aether Client"));
       this.parent = parent;
       STATE.ensureDefaultLayout(OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
       ModuleManager modules = AetherClient.modules();
       ThemeManager themes = AetherClient.themes();
       this.corzPortWindow = new CorzPortWindow(themes, STATE);
       this.sixSevenPortWindow = new SixSevenPortWindow(themes, STATE, modules);
-      this.minimalGui = new AetherMinimalGui(modules, themes);
-      this.larpGui = new LarpRecodeGui(modules);
 
       for (Category cat : Category.values()) {
          CategoryPanel cp = new CategoryPanel(cat, modules, themes, STATE);
@@ -201,16 +196,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return this.corzPortWindow;
    }
 
-   public LarpRecodeGui larpGui() {
-      return this.larpGui;
-   }
-
-   /** Opens the Larp Recode GUI (used by tests/screenshots). */
-   public void openLarpGui() {
-      this.guiModule().larpRecodeGui.set(true);
-      Minecraft.getInstance().setScreen(this);
-   }
-
    public void toggleCorzPort() {
       STATE.toggleCorzPort();
       if (STATE.isCorzPortOpen()) {
@@ -235,16 +220,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    public boolean isDashboardMode() {
       return !"Columns".equals(this.guiModule().layout.get());
-   }
-
-   /** True when the experimental minimalistic (Vape-style) Aether GUI override is enabled. */
-   public boolean isMinimal() {
-      return this.guiModule().experimentalMinimalGui.get();
-   }
-
-   /** True when the Larp Recode dashboard/clickgui override is enabled. */
-   public boolean isLarp() {
-      return this.guiModule().larpRecodeGui.get();
    }
 
    public void toggleLayoutMode() {
@@ -316,25 +291,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (!vg.hasFont()) {
          return;
       }
+      this.corzPortWindow.syncThemeToCorz();
       float anim = this.openAnim.value();
       if (anim <= 0.002F && this.closing) {
          return;
       }
-
-      // Experimental minimalistic (Vape-style) override: flat dark/white Aether GUI, no glow.
-      // Replaces both the Dashboard (panel) and Columns (floating) layouts when enabled.
-      if (this.isMinimal()) {
-         this.minimalGui.render(vg, mx, my, uiW, uiH);
-         return;
-      }
-
-      // Larp Recode dashboard/clickgui override: frosted-glass columns + themed background.
-      if (this.isLarp()) {
-         this.larpGui.render(vg, mx, my, uiW, uiH);
-         return;
-      }
-
-      this.corzPortWindow.syncThemeToCorz();
 
       Theme theme = AetherClient.themes().current();
       vg.save();
@@ -960,19 +921,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       NVGRenderer vg = NVGRenderer.get();
       float uiH = OverlayRenderer.uiHeight();
 
-      if (this.isMinimal()) {
-         this.minimalGui.mouseClicked(mx, my, btn);
-         if (this.minimalGui.hitClose(mx, my)) {
-            this.onClose();
-         }
-         return true;
-      }
-
-      if (this.isLarp()) {
-         this.larpGui.mouseClicked(mx, my, btn);
-         return true;
-      }
-
       if (this.configPanel.isOpen()) {
          this.configPanel.mouseClicked(mx, my, btn);
          return true;
@@ -1012,9 +960,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
-      // 67 Port subtab -> show the two-choice warning popup (load 67+Aether / only 67)
+      // 67 Port subtab toggle button (works in both Dashboard sidebar and Columns top dock)
       if (btn == 0 && this.hit(mx, my, this.sixSevenTabX, this.sixSevenTabY, this.sixSevenTabW, this.sixSevenTabH)) {
-         this.minecraft.setScreen(new dev.aether.port67.SixSevenPortWarningScreen());
+         this.toggleSixSevenPort();
          return true;
       }
 
@@ -1178,19 +1126,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    @Override
    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
-      float mx = this.uiX(event.x());
-      float my = this.uiY(event.y());
-      if (this.isMinimal()) {
-         this.minimalGui.mouseDragged(mx, my);
-         return true;
-      }
-      if (this.isLarp()) {
-         this.larpGui.mouseDragged(mx, my);
-         return true;
-      }
       if (this.configPanel.isOpen()) {
          return true;
       }
+      float mx = this.uiX(event.x());
+      float my = this.uiY(event.y());
       if (this.pressedInCorzPort) {
          this.corzPortWindow.mouseDragged(mx, my);
          return true;
@@ -1233,14 +1173,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    @Override
    public boolean mouseReleased(MouseButtonEvent event) {
-      if (this.isMinimal()) {
-         this.minimalGui.mouseReleased();
-         return true;
-      }
-      if (this.isLarp()) {
-         this.larpGui.mouseReleased();
-         return true;
-      }
       if (this.configPanel.isOpen()) {
          return true;
       }
@@ -1288,14 +1220,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float mx = this.uiX(mouseX);
       float my = this.uiY(mouseY);
-      if (this.isMinimal()) {
-         this.minimalGui.mouseScrolled(mx, my, scrollY, OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
-         return true;
-      }
-      if (this.isLarp()) {
-         this.larpGui.mouseScrolled(mx, my, (float) scrollY);
-         return true;
-      }
       if (this.corzPortWindow.mouseScrolled(mx, my, scrollY)) {
          return true;
       }
@@ -1323,24 +1247,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public boolean keyPressed(KeyEvent event) {
       if (this.configPanel.isOpen()) {
          this.configPanel.keyPressed(event.key());
-         return true;
-      }
-      if (this.isMinimal()) {
-         int k = event.key();
-         if (!this.minimalGui.keyPressed(k)) {
-            if (k == 256 || this.guiModule().getKeybind().matches(k)) {
-               this.onClose();
-            }
-         }
-         return true;
-      }
-      if (this.isLarp()) {
-         int k = event.key();
-         if (!this.larpGui.keyPressed(k)) {
-            if (k == 256 || this.guiModule().getKeybind().matches(k)) {
-               this.onClose();
-            }
-         }
          return true;
       }
       if (this.corzPortWindow.isListening() && this.corzPortWindow.keyPressed(event.key())) {
@@ -1387,14 +1293,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.configPanel.charTyped(event.codepoint());
          return true;
       }
-      if (this.isMinimal()) {
-         this.minimalGui.charTyped(event.codepoint());
-         return true;
-      }
-      if (this.isLarp()) {
-         this.larpGui.charTyped(event.codepoint());
-         return true;
-      }
       if (this.corzPortWindow.isListening() && this.corzPortWindow.charTyped(event.codepoint())) {
          return true;
       }
@@ -1431,7 +1329,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       BlockGridModel model = new BlockGridModel(setting, () -> {
          BlockEspModule mod = AetherClient.modules().blockEsp;
          return mod != null ? mod.lineColor.get() : 0xFFFF66C4;
-      }, "VULXTS CLIENT");
+      }, "Aether Client");
       this.minecraft.setScreen(new IconPickerScreen(this, model, AetherClient.themes()));
    }
 

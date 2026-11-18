@@ -33,6 +33,7 @@ public class SixSevenPortScreen extends Screen implements NvgDrawable {
       );
       this.window.setFullScreen(true);
       ClickGuiScreen.state().setSixSevenPortOpen(true);
+      this.window.setCategoryOpen(dev.aether.module.Category.COMBAT, true);
    }
 
    @Override
@@ -55,11 +56,7 @@ public class SixSevenPortScreen extends Screen implements NvgDrawable {
 
    @Override
    public void renderNvg(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
-      try {
-         this.window.render(vg, mx, my, uiW, uiH, 0.0F, 0.0F, uiH);
-      } catch (Throwable t) {
-         AetherClient.LOGGER.error("67Port full-screen render failed", t);
-      }
+      this.window.render(vg, mx, my, uiW, uiH, 0.0F, 0.0F, uiH);
    }
 
    @Override

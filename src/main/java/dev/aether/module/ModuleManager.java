@@ -19,10 +19,6 @@ import dev.aether.module.impl.CustomAccessoriesModule;
 import dev.aether.module.impl.CustomCrosshairModule;
 import dev.aether.module.impl.CustomFovModule;
 import dev.aether.module.impl.CustomGlintModule;
-import dev.aether.module.impl.DLActivityInspectorModule;
-import dev.aether.module.impl.DLChunkFinderModule;
-import dev.aether.module.impl.DLSusFinderModule;
-import dev.aether.module.impl.ItemTrailModule;
 import dev.aether.module.impl.DebugHoleEspModule;
 import dev.aether.module.impl.DoubleAnchorModule;
 import dev.aether.module.impl.ElytraSwapModule;
@@ -114,10 +110,6 @@ public class ModuleManager {
    public HitParticlesModule hitParticles;
    public MotionBlurModule motionBlur;
    public CustomGlintModule customGlint;
-   public ItemTrailModule itemTrail;
-   public DLChunkFinderModule dlChunkFinder;
-   public DLSusFinderModule dlSusFinder;
-   public DLActivityInspectorModule dlActivityInspector;
    public CustomAccessoriesModule customAccessories;
    public ChunkFinderModule chunkFinder;
    public ChunkBypassModule chunkBypass;
@@ -215,16 +207,6 @@ public class ModuleManager {
       this.register(this.staffList);
       this.customGlint = new CustomGlintModule();
       this.register(this.customGlint);
-      this.itemTrail = new ItemTrailModule();
-      this.register(this.itemTrail);
-      this.hitParticles = new HitParticlesModule();
-      this.register(this.hitParticles);
-      this.dlChunkFinder = new DLChunkFinderModule();
-      this.register(this.dlChunkFinder);
-      this.dlSusFinder = new DLSusFinderModule();
-      this.register(this.dlSusFinder);
-      this.dlActivityInspector = new DLActivityInspectorModule();
-      this.register(this.dlActivityInspector);
       this.customFov = new CustomFovModule();
       this.register(this.customFov);
       this.coordSnapper = new CoordSnapperModule();
@@ -300,10 +282,6 @@ public class ModuleManager {
 
    public boolean onKeyPressed(int i) {
       if (this.clickGui.getKeybind().matches(i)) {
-         this.openGuiAction.run();
-         return true;
-      } else if (this.clickGui.larpRecodeKeybind != null && this.clickGui.larpRecodeKeybind.matches(i)) {
-         this.clickGui.larpRecodeGui.set(true);
          this.openGuiAction.run();
          return true;
       } else {
