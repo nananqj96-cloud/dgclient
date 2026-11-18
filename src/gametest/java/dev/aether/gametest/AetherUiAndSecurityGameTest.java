@@ -189,16 +189,16 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
             require(!AetherClient.modules().autoTotem.getKeybind().isBound(), "Pressing ESCAPE while binding must clear keybind to None (-1)");
          });
 
-         // 3e. Switch to MISC, expand Skin Protect@MISC, and click ModeWidget ("Apply To") chip in Dashboard submenu!
+         // 3e. Switch to PLAYER, expand Skin Protect@PLAYER, and click ModeWidget ("Apply To") chip in Dashboard submenu!
          context.runOnClient(mc -> {
-            ClickGuiScreen.state().selectCategory(Category.MISC);
-            ClickGuiScreen.state().setExpanded("Skin Protect@MISC", true);
+            ClickGuiScreen.state().selectCategory(Category.PLAYER);
+            ClickGuiScreen.state().setExpanded("Skin Protect@PLAYER", true);
          });
          context.waitTicks(8);
          String beforeMode = context.computeOnClient(mc -> AetherClient.modules().skinProtect.applyTo.get());
          double[] modePt = computeUiPoint(context, mc -> {
             ClickGuiScreen cg = (ClickGuiScreen)mc.screen;
-            ModuleEntry entry = cg.findEntry("Skin Protect@MISC");
+            ModuleEntry entry = cg.findEntry("Skin Protect@PLAYER");
             SkinProtectModule sp = AetherClient.modules().skinProtect;
             SettingWidget w = findWidget(entry, sp.applyTo);
             require(w instanceof ModeWidget, "Apply To ModeWidget must exist");
@@ -211,7 +211,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
             String afterMode = AetherClient.modules().skinProtect.applyTo.get();
             require(!afterMode.equals(beforeMode), "Clicking ModeWidget chip in submenu must switch Apply To mode (was " + beforeMode + ")");
             AetherClient.modules().skinProtect.applyTo.set(beforeMode);
-            ClickGuiScreen.state().setExpanded("Skin Protect@MISC", false);
+            ClickGuiScreen.state().setExpanded("Skin Protect@PLAYER", false);
             ClickGuiScreen.state().selectCategory(Category.COMBAT);
          });
          context.waitTicks(4);
