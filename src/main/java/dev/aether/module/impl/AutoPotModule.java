@@ -38,7 +38,7 @@ public class AutoPotModule extends Module {
       }
       Minecraft mc = Minecraft.getInstance();
       LocalPlayer player = mc.player;
-      if (player == null || mc.screen != null || !mc.isWindowFocused()) {
+      if (player == null || mc.screen != null || !mc.isWindowActive()) {
          return;
       }
       long now = System.nanoTime();
@@ -59,7 +59,7 @@ public class AutoPotModule extends Module {
          slot = player.getInventory().getSelectedSlot();
       }
       int prevSlot = player.getInventory().getSelectedSlot();
-      float prevPitch = player.getPitch();
+      float prevPitch = player.getXRot();
       player.getInventory().setSelectedSlot(slot);
       player.setPitch((float) this.pitch.getFloat() - 1.0F + ThreadLocalRandom.current().nextFloat());
       mc.interactionManager.interactItem(player, InteractionHand.MAIN_HAND);

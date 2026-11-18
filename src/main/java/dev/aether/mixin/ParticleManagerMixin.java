@@ -3,7 +3,7 @@ package dev.aether.mixin;
 import dev.aether.AetherClient;
 import dev.aether.module.ModuleManager;
 import dev.aether.module.impl.NoExplosionsModule;
-import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * Lets No Explosions suppress explosion particle spawning and No Flame suppress fire particles.
  */
-@Mixin({ParticleManager.class})
+@Mixin({ParticleEngine.class})
 public class ParticleManagerMixin {
    @Inject(
       method = {"addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)Lnet/minecraft/client/particle/Particle;"},

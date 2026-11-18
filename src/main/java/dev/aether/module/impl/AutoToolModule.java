@@ -49,12 +49,12 @@ public class AutoToolModule extends Module {
       }
       Inventory inv = player.getInventory();
       int current = inv.getSelectedSlot();
-      float[] speeds = new float[Inventory.getHotbarSize()];
-      boolean[] suitable = new boolean[Inventory.getHotbarSize()];
+      float[] speeds = new float[Inventory.getSelectionSize()];
+      boolean[] suitable = new boolean[Inventory.getSelectionSize()];
       for (int i = 0; i < speeds.length; i++) {
-         ItemStack stack = inv.getStack(i);
-         speeds[i] = stack.getMiningSpeedMultiplier(state);
-         suitable[i] = stack.isSuitableFor(state);
+         ItemStack stack = inv.getItem(i);
+         speeds[i] = stack.getDestroySpeed(state);
+         suitable[i] = stack.isCorrectToolForDrops(state);
       }
       int best = selectBest(speeds, suitable, current);
       if (best != current) {
