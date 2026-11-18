@@ -393,7 +393,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             vg.rectOutline(rx, navY, rw, rh, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.52F));
             vg.rect(rx + 2.0F, navY + 6.5F, 3.0F, rh - 13.0F, 1.5F, theme.accentBright());
          } else if (hov) {
-            vg.rect(rx, navY, rw, rh, 7.0F, Colors.withAlpha(0xFFFFFFFF, 0.05F));
+            if (theme.isBloom()) {
+               vg.glow(rx, navY, rw, rh, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.14F));
+            }
+            vg.rect(rx, navY, rw, rh, 7.0F, Colors.withAlpha(theme.accent(), 0.12F));
+            vg.rectOutline(rx, navY, rw, rh, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.30F));
          }
 
          int icon = NVGIcons.get(cat);
@@ -432,7 +436,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          vg.rectOutline(tx, navY, tw, th, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.52F));
          vg.rect(tx + 2.0F, navY + 6.5F, 3.0F, th - 13.0F, 1.5F, theme.accentBright());
       } else if (tHov) {
-         vg.rect(tx, navY, tw, th, 7.0F, Colors.withAlpha(0xFFFFFFFF, 0.05F));
+         if (theme.isBloom()) {
+            vg.glow(tx, navY, tw, th, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         }
+         vg.rect(tx, navY, tw, th, 7.0F, Colors.withAlpha(theme.accent(), 0.12F));
+         vg.rectOutline(tx, navY, tw, th, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.30F));
       }
       vg.circle(tx + 18.0F, navY + th * 0.5F, 5.2F, theme.accent());
       vg.circleOutline(tx + 18.0F, navY + th * 0.5F, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
@@ -464,7 +472,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       } else {
          heading = STATE.selectedCategory().getDisplayName();
       }
-      float hw = vg.text(heading, mainX + 18.0F, cy, 15.0F, theme.textPrimary());
+      if (theme.isBloom()) {
+         vg.glow(mainX + 12.0F, cy, 3.0F, 22.0F, 1.5F, 8.0F, Colors.withAlpha(theme.accent(), 0.30F));
+      }
+      vg.rect(mainX + 12.0F, cy - 11.0F, 3.0F, 22.0F, 1.5F, theme.accent());
+      float hw = vg.text(heading, mainX + 25.0F, cy, 15.0F, theme.textPrimary());
 
       if (!STATE.isThemesTabSelected() || !this.search.isEmpty() || this.favouritesOnly) {
          String countPill = Integer.toString(vis.size());
@@ -537,8 +549,14 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          List<ModuleEntry> entries = this.collectDashboardEntries();
          if (entries.isEmpty()) {
             String emptyMsg = this.favouritesOnly ? "Star any module to pin it to Favourites." : "No modules match \"" + this.search + "\".";
+            float ey = by + bh * 0.42F;
+            if (theme.isBloom()) {
+               vg.circleGlow(bx + bw * 0.5F, ey - 14.0F, 9.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.22F));
+            }
+            vg.circleOutline(bx + bw * 0.5F, ey - 14.0F, 9.0F, 1.2F, Colors.withAlpha(theme.accentBright(), 0.55F));
+            vg.line(bx + bw * 0.5F - 3.5F, ey - 14.0F + 3.5F, bx + bw * 0.5F + 3.5F, ey - 14.0F - 3.5F, 1.3F, Colors.withAlpha(theme.accentBright(), 0.55F));
             float ew = vg.textWidth(emptyMsg, 13.0F);
-            vg.text(emptyMsg, bx + (bw - ew) * 0.5F, by + bh * 0.45F, 13.0F, theme.textDisabled());
+            vg.text(emptyMsg, bx + (bw - ew) * 0.5F, ey + 4.0F, 13.0F, theme.textDisabled());
             totalContentH = bh;
          } else {
             boolean showDesc = this.guiModule().descriptions.get();
@@ -736,6 +754,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    }
 
    private void renderSearchPill(NVGRenderer vg, Theme theme, float x, float y, float w, float h) {
+      if (this.searchFocused && theme.isBloom()) {
+         vg.glow(x, y, w, h, 7.0F, 7.0F, Colors.withAlpha(theme.accent(), 0.22F));
+      }
       vg.rect(x, y, w, h, 7.0F, Colors.withAlpha(0xFF07060D, 0.72F));
       vg.rectOutline(x, y, w, h, 7.0F, 1.0F, Colors.withAlpha(this.searchFocused ? theme.accentBright() : theme.borderSubtle(), this.searchFocused ? 0.85F : 0.9F));
       float cy = y + h * 0.5F;
