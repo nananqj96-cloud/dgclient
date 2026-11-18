@@ -439,7 +439,7 @@ public final class LarpRecodeGui {
          boolean exp = Boolean.TRUE.equals(this.expanded.get(module));
          // Animation values
          float openAmt = exp ? 1.0F : 0.0F;
-         Integer prev = this.openAnim.get(module);
+         Float prev = this.openAnim.get(module);
          if (prev == null) { this.openAnim.put(module, openAmt); }
          else {
             float cur = prev;
