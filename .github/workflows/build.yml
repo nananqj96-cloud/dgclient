@@ -45,10 +45,10 @@ jobs:
             exit $STATUS
           fi
 
-      - name: Build Aether Client jar (skip JUnit tests)
+      - name: Build Aether Client 2.1.0 (Jar-in-Jar)
         run: |
           set +e
-          ./gradlew build -x test --no-daemon --stacktrace > gradle-build.log 2>&1
+          ./gradlew build --no-daemon --stacktrace > gradle-build.log 2>&1
           STATUS=$?
           cat gradle-build.log
           if [ $STATUS -ne 0 ]; then
@@ -99,7 +99,7 @@ jobs:
         with:
           name: larp-recode-gui-screenshots
           path: build/run/clientGameTest/screenshots/*larp-recode-*.png
-          if-no-files-found: ignore
+          if-no-files-found: error
 
   build:
     runs-on: ubuntu-latest
