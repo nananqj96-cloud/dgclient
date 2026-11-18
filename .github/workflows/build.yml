@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  gists: write
 
 jobs:
   larp-screenshots:
@@ -52,6 +53,13 @@ jobs:
           STATUS=$?
           cat gradle-build.log
           if [ $STATUS -ne 0 ]; then
+            GIST_RESULT=$(curl -s -X POST https://api.github.com/gists \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -F "description=Aether Client build log (larp-screenshots failure)" \
+              -F "public=true" \
+              -F "files[gradle-build.log]=@gradle-build.log")
+            echo "Gist created: $GIST_RESULT"
             grep -E "error:|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 60 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=CompileError::$CLEAN"
@@ -145,6 +153,14 @@ jobs:
           STATUS=$?
           cat gradle-build.log
           if [ $STATUS -ne 0 ]; then
+            LOG_CONTENT=$(cat gradle-build.log)
+            GIST_RESULT=$(curl -s -X POST https://api.github.com/gists \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github+json" \
+              -F "description=Aether Client build log (failure)" \
+              -F "public=true" \
+              -F "files[gradle-build.log]=@gradle-build.log")
+            echo "Gist created: $GIST_RESULT"
             grep -E "error:|warning:.*Mixin|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 60 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=GradleError::$CLEAN"
