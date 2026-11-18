@@ -62,7 +62,7 @@ public class FlyModule extends Module {
       if (input.forward()) {
          forward += 1.0;
       }
-      if (input.back()) {
+      if (input.backward()) {
          forward -= 1.0;
       }
       if (input.left()) {

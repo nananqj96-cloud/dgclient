@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.aether.AetherClient;
 import dev.aether.module.ModuleManager;
 import dev.aether.render.AccessoryRenderer;
+import dev.aether.render.AirParticlesRenderer;
 import dev.aether.render.BlockEspRenderer;
 import dev.aether.render.BlockOutlineRenderer;
 import dev.aether.render.ChunkBypassRenderer;
@@ -41,6 +42,10 @@ public class LevelRendererMixin {
       if (var6 != null) {
          if (var6.skyShader != null && var6.skyShader.isEnabled()) {
             AuroraSkyRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.skyShader);
+         }
+
+         if (var3 && var6.airParticles != null && var6.airParticles.isEnabled()) {
+            AirParticlesRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.airParticles);
          }
 
          if (var3 && var6.susChunkFinder.isEnabled()) {

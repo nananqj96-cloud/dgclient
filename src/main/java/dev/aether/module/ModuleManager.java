@@ -2,6 +2,7 @@ package dev.aether.module;
 
 import dev.aether.module.impl.AimAssistModule;
 import dev.aether.module.impl.AnchorMacroModule;
+import dev.aether.module.impl.AirParticlesModule;
 import dev.aether.module.impl.ArmorTrimHiderModule;
 import dev.aether.module.impl.AutoClickerModule;
 import dev.aether.module.impl.AutoCrystalModule;
@@ -81,6 +82,7 @@ public class ModuleManager {
    public DLChunkFinderModule dlChunkFinder;
    public DLSusFinderModule dlSusFinder;
    public FlyModule fly;
+   public AirParticlesModule airParticles;
    public FullbrightModule fullbright;
    public AutoWalkModule autoWalk;
    public WeatherNotifierModule weatherNotifier;
@@ -246,6 +248,8 @@ public class ModuleManager {
       this.register(this.clusterEsp);
       this.storageEsp = new StorageEspModule();
       this.register(this.storageEsp);
+      this.airParticles = new AirParticlesModule();
+      this.register(this.airParticles);
       this.fullbright = new FullbrightModule();
       this.register(this.fullbright);
       this.playerEsp = new PlayerEspModule();
