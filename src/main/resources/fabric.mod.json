@@ -3,7 +3,7 @@
   "id": "aetherclient",
   "version": "${version}",
   "name": "Aether Client",
-  "description": "High-performance Minecraft 1.21.11 utility client featuring the PinkBloom aesthetic, zero-lag dual-mode NanoVG interface, synced Corz Port secondary UI, customizable HUD, and modular tools.",
+  "description": "Aether Client v2.2.0 — high-performance Minecraft 1.21.11 utility client with the Larp Recode v2 frosted-glass dashboard UI, full Vulxts + Corz Port feature set, DonutLarp basefinding port with enhanced SusChunk visualization, and a customizable HUD.",
   "authors": ["Aether Team"],
   "license": "MIT",
   "icon": "assets/aetherclient/icon.png",
