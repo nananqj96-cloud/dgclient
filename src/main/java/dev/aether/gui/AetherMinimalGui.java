@@ -45,7 +45,7 @@ import java.util.Map;
  * Columns chrome. It reuses Aether's real settings widgets (toggles, sliders, mode, color, keybind,
  * etc.) so every module — including the Aether Client module that holds the experimental toggle and
  * the GUI keybind — is fully editable here. A flat {@code Themes & Audio} tab mirrors the default
- * GUI's theme/audio studio. The 67port is left untouched and always uses its original GUI.
+ * GUI's theme/audio studio. The Port window is left untouched and always uses its original GUI.
  *
  * <p>The constructor is intentionally trivial (no widget construction) so opening the default GUI is
  * unaffected. Settings widgets and the themes studio are built lazily on first use.

@@ -21,6 +21,7 @@
     "GuiCrosshairMixin",
     "GuiNametagEquipmentMixin",
     "GuiSidebarMixin",
+    "ItemStackGlintMixin",
     "KeyboardInputFreecamMixin",
     "KeyboardHandlerMixin",
     "LevelRendererMixin",

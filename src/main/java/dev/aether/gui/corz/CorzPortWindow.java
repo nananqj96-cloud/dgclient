@@ -311,7 +311,7 @@ public final class CorzPortWindow {
 
       CorzPortProvider provider = CorzPortBus.provider();
       if (provider == null) {
-         String msg = "Corz Port engine initializing...";
+         String msg = "Port engine initializing...";
          vg.text(msg, bodyX + (bodyW - vg.textWidth(msg, 12.5F)) * 0.5F, bodyY + bodyH * 0.45F, 12.5F, theme.textMuted());
          vg.restore();
          return;

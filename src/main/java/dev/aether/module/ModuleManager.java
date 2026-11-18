@@ -67,7 +67,6 @@ public class ModuleManager {
    private final List<Module> modules = new ArrayList<>();
    private final Map<Category, List<Module>> byCategory = new LinkedHashMap<>();
    public final Modules.ClickGuiModule clickGui;
-   public final Modules.SixSevenPortModule sixSevenPort;
    public final Modules.HudModule hud;
    public final Modules.SpotifyModule spotify;
    public final Modules.BlockOutlineModule blockOutline;
@@ -154,8 +153,6 @@ public class ModuleManager {
       this.register(this.jumpCircles);
       this.clickGui = new Modules.ClickGuiModule();
       this.register(this.clickGui);
-      this.sixSevenPort = new Modules.SixSevenPortModule();
-      this.register(this.sixSevenPort);
    }
 
    private void registerPlaceholders() {
@@ -288,7 +285,7 @@ public class ModuleManager {
          boolean var2 = false;
 
          for (Module var4 : this.modules) {
-            if (var4 != this.clickGui && var4 != this.sixSevenPort && var4.getKeybind().matches(i)) {
+            if (var4 != this.clickGui && var4.getKeybind().matches(i)) {
                var4.toggle();
                var2 = true;
             }
