@@ -217,6 +217,8 @@ public class ModuleManager {
       this.register(this.customGlint);
       this.itemTrail = new ItemTrailModule();
       this.register(this.itemTrail);
+      this.hitParticles = new HitParticlesModule();
+      this.register(this.hitParticles);
       this.dlChunkFinder = new DLChunkFinderModule();
       this.register(this.dlChunkFinder);
       this.dlSusFinder = new DLSusFinderModule();
