@@ -67,6 +67,13 @@ public final class Modules {
             false
          )
       );
+      public final BooleanSetting larpRecodeGui = this.addSetting(
+         new BooleanSetting(
+            "Larp Recode GUI",
+            "Larp Recode dashboard/clickgui: frosted-glass columns, themed background & theme dock.",
+            false
+         )
+      );
 
       public ClickGuiModule() {
          super("Aether Client", "Opens the Aether Client control dashboard.", Category.CLIENT);
@@ -249,7 +256,7 @@ public final class Modules {
       public final SusChunkScanner scanner = new SusChunkScanner(this);
 
       public SusChunkFinderModule() {
-         super("SusChunkFinder", "Finds long-loaded chunks — bases — via amethyst light & growth", Category.RENDER);
+         super("SusChunkFinder", "Finds long-loaded chunks — bases — via amethyst light & growth", Category.BASEFINDING);
          this.outlineOpacity.visibleWhen(this.outline::get);
       }
 

@@ -46,7 +46,7 @@ public final class ChunkFinderModule extends Module {
       super(
          "Chunk Finder",
          "Highlights Donut SMP chunks that match a rare world signal worth checking.",
-         Category.RENDER
+         Category.BASEFINDING
       );
    }
 

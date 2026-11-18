@@ -19,6 +19,7 @@ import dev.aether.module.impl.CustomAccessoriesModule;
 import dev.aether.module.impl.CustomCrosshairModule;
 import dev.aether.module.impl.CustomFovModule;
 import dev.aether.module.impl.CustomGlintModule;
+import dev.aether.module.impl.ItemTrailModule;
 import dev.aether.module.impl.DebugHoleEspModule;
 import dev.aether.module.impl.DoubleAnchorModule;
 import dev.aether.module.impl.ElytraSwapModule;
@@ -110,6 +111,7 @@ public class ModuleManager {
    public HitParticlesModule hitParticles;
    public MotionBlurModule motionBlur;
    public CustomGlintModule customGlint;
+   public ItemTrailModule itemTrail;
    public CustomAccessoriesModule customAccessories;
    public ChunkFinderModule chunkFinder;
    public ChunkBypassModule chunkBypass;
@@ -207,6 +209,8 @@ public class ModuleManager {
       this.register(this.staffList);
       this.customGlint = new CustomGlintModule();
       this.register(this.customGlint);
+      this.itemTrail = new ItemTrailModule();
+      this.register(this.itemTrail);
       this.customFov = new CustomFovModule();
       this.register(this.customFov);
       this.coordSnapper = new CoordSnapperModule();

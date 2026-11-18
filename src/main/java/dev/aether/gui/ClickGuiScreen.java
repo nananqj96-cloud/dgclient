@@ -66,6 +66,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private final CorzPortWindow corzPortWindow;
    private final SixSevenPortWindow sixSevenPortWindow;
    private final AetherMinimalGui minimalGui;
+   private final LarpRecodeGui larpGui;
 
    // Themes & Audio studio widgets for Dashboard mode
    private final ColorSetting dashAccentProxy;
@@ -140,6 +141,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.corzPortWindow = new CorzPortWindow(themes, STATE);
       this.sixSevenPortWindow = new SixSevenPortWindow(themes, STATE, modules);
       this.minimalGui = new AetherMinimalGui(modules, themes);
+      this.larpGui = new LarpRecodeGui(modules);
 
       for (Category cat : Category.values()) {
          CategoryPanel cp = new CategoryPanel(cat, modules, themes, STATE);
@@ -229,6 +231,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return this.guiModule().experimentalMinimalGui.get();
    }
 
+   /** True when the Larp Recode dashboard/clickgui override is enabled. */
+   public boolean isLarp() {
+      return this.guiModule().larpRecodeGui.get();
+   }
+
    public void toggleLayoutMode() {
       this.guiModule().layout.set(this.isDashboardMode() ? "Columns" : "Dashboard");
       this.dashScroll.snapTo(0.0F);
@@ -307,6 +314,12 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       // Replaces both the Dashboard (panel) and Columns (floating) layouts when enabled.
       if (this.isMinimal()) {
          this.minimalGui.render(vg, mx, my, uiW, uiH);
+         return;
+      }
+
+      // Larp Recode dashboard/clickgui override: frosted-glass columns + themed background.
+      if (this.isLarp()) {
+         this.larpGui.render(vg, mx, my, uiW, uiH);
          return;
       }
 
@@ -944,6 +957,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
+      if (this.isLarp()) {
+         this.larpGui.mouseClicked(mx, my, btn);
+         return true;
+      }
+
       if (this.configPanel.isOpen()) {
          this.configPanel.mouseClicked(mx, my, btn);
          return true;
@@ -1155,6 +1173,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.minimalGui.mouseDragged(mx, my);
          return true;
       }
+      if (this.isLarp()) {
+         this.larpGui.mouseDragged(mx, my);
+         return true;
+      }
       if (this.configPanel.isOpen()) {
          return true;
       }
@@ -1202,6 +1224,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public boolean mouseReleased(MouseButtonEvent event) {
       if (this.isMinimal()) {
          this.minimalGui.mouseReleased();
+         return true;
+      }
+      if (this.isLarp()) {
+         this.larpGui.mouseReleased();
          return true;
       }
       if (this.configPanel.isOpen()) {
@@ -1255,6 +1281,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.minimalGui.mouseScrolled(mx, my, scrollY, OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
          return true;
       }
+      if (this.isLarp()) {
+         return true;
+      }
       if (this.corzPortWindow.mouseScrolled(mx, my, scrollY)) {
          return true;
       }
@@ -1287,6 +1316,15 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (this.isMinimal()) {
          int k = event.key();
          if (!this.minimalGui.keyPressed(k)) {
+            if (k == 256 || this.guiModule().getKeybind().matches(k)) {
+               this.onClose();
+            }
+         }
+         return true;
+      }
+      if (this.isLarp()) {
+         int k = event.key();
+         if (!this.larpGui.keyPressed(k)) {
             if (k == 256 || this.guiModule().getKeybind().matches(k)) {
                this.onClose();
             }
@@ -1339,6 +1377,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       if (this.isMinimal()) {
          this.minimalGui.charTyped(event.codepoint());
+         return true;
+      }
+      if (this.isLarp()) {
+         this.larpGui.charTyped(event.codepoint());
          return true;
       }
       if (this.corzPortWindow.isListening() && this.corzPortWindow.charTyped(event.codepoint())) {
