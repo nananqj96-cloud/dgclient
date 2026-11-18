@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.world.phys.Box;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.phys.Vec3;
@@ -41,7 +41,7 @@ public final class LootEspRenderer {
          if (!isLootBlock(be, module)) {
             continue;
          }
-         Box box = be.getBoundingBox();
+         AABB box = be.getBoundingBox();
          double cx = (box.minX + box.maxX) / 2.0;
          double cy = (box.minY + box.maxY) / 2.0;
          double cz = (box.minZ + box.maxZ) / 2.0;

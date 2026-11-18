@@ -7,7 +7,6 @@ import dev.aether.settings.SliderSetting;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.effect.StatusEffects;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.InteractionHand;
 

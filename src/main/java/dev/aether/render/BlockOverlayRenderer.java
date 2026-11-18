@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Box;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
@@ -29,9 +29,9 @@ public final class BlockOverlayRenderer {
       if (!(hit instanceof BlockHitResult blockHit)) {
          return;
       }
-      Box box = mc.level.getBlockState(blockHit.getBlockPos()).getOcclusionShape().toBoundingBox(blockHit.getBlockPos());
+      AABB box = mc.level.getBlockState(blockHit.getBlockPos()).getOcclusionShape().toBoundingBox(blockHit.getBlockPos());
       if (box == null || box.isEmpty()) {
-         box = new Box(blockHit.getBlockPos());
+         box = new AABB(blockHit.getBlockPos());
       }
 
       float ax = (float) (box.minX - cam.x());

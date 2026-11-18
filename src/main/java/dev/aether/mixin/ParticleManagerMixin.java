@@ -4,7 +4,7 @@ import dev.aether.AetherClient;
 import dev.aether.module.ModuleManager;
 import dev.aether.module.impl.NoExplosionsModule;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.core.particles.ParticleEffect;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin({ParticleManager.class})
 public class ParticleManagerMixin {
    @Inject(
-      method = {"addParticle(Lnet/minecraft/core/particles/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;"},
+      method = {"addParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)Lnet/minecraft/client/particle/Particle;"},
       at = {@At("HEAD")},
       cancellable = true
    )
    private void aetherclient$suppressParticles(
-      ParticleEffect effect,
+      ParticleOptions effect,
       double x,
       double y,
       double z,
@@ -51,7 +51,7 @@ public class ParticleManagerMixin {
       }
    }
 
-   private static boolean isFireParticle(ParticleEffect effect) {
+   private static boolean isFireParticle(ParticleOptions effect) {
       ParticleType<?> type = effect.getType();
       if (type == null) {
          return false;

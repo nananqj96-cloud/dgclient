@@ -7,7 +7,7 @@ import dev.aether.settings.ColorSetting;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 /**
  * Places coloured waypoints in the world that you can teleport to, with persistent storage. Right

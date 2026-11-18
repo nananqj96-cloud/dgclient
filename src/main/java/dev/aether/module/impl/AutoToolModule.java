@@ -6,7 +6,7 @@ import dev.aether.settings.BooleanSetting;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.inventory.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -47,10 +47,10 @@ public class AutoToolModule extends Module {
          this.updateSelectedSlot(player);
          return;
       }
-      PlayerInventory inv = player.getInventory();
+      Inventory inv = player.getInventory();
       int current = inv.getSelectedSlot();
-      float[] speeds = new float[PlayerInventory.getHotbarSize()];
-      boolean[] suitable = new boolean[PlayerInventory.getHotbarSize()];
+      float[] speeds = new float[Inventory.getHotbarSize()];
+      boolean[] suitable = new boolean[Inventory.getHotbarSize()];
       for (int i = 0; i < speeds.length; i++) {
          ItemStack stack = inv.getStack(i);
          speeds[i] = stack.getMiningSpeedMultiplier(state);

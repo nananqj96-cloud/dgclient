@@ -8,7 +8,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.inventory.SlotActionType;
+import net.minecraft.world.inventory.ClickType;
 
 /**
  * Automatically moves Instant Health potions from your inventory into empty hotbar slots, so your
@@ -60,7 +60,7 @@ public class PotionRefillModule extends Module {
          this.scheduleNext();
          return;
       }
-      mc.interactionManager.clickSlot(0, potionSlot, emptyHotbar, SlotActionType.QUICK_MOVE, player);
+      mc.interactionManager.clickSlot(0, potionSlot, emptyHotbar, ClickType.QUICK_MOVE, player);
       this.lastMoveNanos = now;
       this.scheduleNext();
    }
