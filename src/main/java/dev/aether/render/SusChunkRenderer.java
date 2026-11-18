@@ -84,7 +84,7 @@ public final class SusChunkRenderer {
       float pulse = 0.5F + 0.5F * (float)Math.sin(now * 0.001F * PULSE_SPEED);
 
       // ---- Zones (merged areas) ----
-      Iterator<Entry> zi = zoneFades.entrySet().iterator();
+      Iterator<Entry<Long, ZoneFade>> zi = zoneFades.entrySet().iterator();
       while (zi.hasNext()) {
          Entry entry = zi.next();
          ZoneFade zf = (ZoneFade)entry.getValue();
@@ -142,7 +142,7 @@ public final class SusChunkRenderer {
       }
 
       // ---- Individual chunk flags ----
-      Iterator<Entry> ci = chunkFades.entrySet().iterator();
+      Iterator<Entry<Long, ChunkFade>> ci = chunkFades.entrySet().iterator();
       while (ci.hasNext()) {
          Entry entry = ci.next();
          ChunkFade cf = (ChunkFade)entry.getValue();
