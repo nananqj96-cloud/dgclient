@@ -90,7 +90,13 @@ public class ThemesPanel extends Panel {
          }
          rowIndex++;
          if (selected || hovered) {
-            vg.rect(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 26.0F, 7.0F, Colors.withAlpha(this.theme().accent(), selected ? 0.16F : 0.08F));
+            if (this.theme().isBloom() && hovered) {
+               vg.glow(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 26.0F, 7.0F, 6.0F, Colors.withAlpha(this.theme().accent(), 0.16F));
+            }
+            vg.rect(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 26.0F, 7.0F, Colors.withAlpha(this.theme().accent(), selected ? 0.16F : 0.10F));
+            if (hovered) {
+               vg.rectOutline(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 26.0F, 7.0F, 1.0F, Colors.withAlpha(this.theme().accentBright(), 0.35F));
+            }
          }
 
          float sy = rowY + 13.0F;
@@ -118,7 +124,13 @@ public class ThemesPanel extends Panel {
       vg.save();
       vg.alpha(fadex);
       boolean hoveredx = my >= rowY && my <= rowY + 24.0F && mx >= this.ps.x + 6.0F && mx <= this.ps.x + WIDTH - 6.0F;
+      if (this.theme().isBloom() && hoveredx) {
+         vg.glow(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 24.0F, 7.0F, 6.0F, Colors.withAlpha(this.theme().accent(), 0.18F));
+      }
       vg.rect(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 24.0F, 7.0F, Colors.withAlpha(this.theme().accent(), hoveredx ? 0.22F : 0.12F));
+      if (hoveredx) {
+         vg.rectOutline(this.ps.x + 6.0F, rowY, WIDTH - 12.0F, 24.0F, 7.0F, 1.0F, Colors.withAlpha(this.theme().accentBright(), 0.40F));
+      }
       String label = "+  Add Custom";
       vg.text(
          label,
