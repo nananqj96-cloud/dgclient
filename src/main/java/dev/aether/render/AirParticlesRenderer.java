@@ -19,7 +19,7 @@ import org.joml.Vector3f;
  * a fading glowing trail behind them.
  */
 public final class AirParticlesRenderer {
-   private static final int MAX_AGE_NS = 8_000_000_000L; // ~8s lifetime
+   private static final long MAX_AGE_NS = 8_000_000_000L; // ~8s lifetime
 
    private AirParticlesRenderer() {
    }
@@ -66,8 +66,8 @@ public final class AirParticlesRenderer {
          alive.add(p);
       }
 
-      float windX = (float) Math.sin(now / 3.0E9) * wind * 0.4;
-      float windZ = (float) Math.cos(now / 2.5E9) * wind * 0.3;
+      float windX = (float) (Math.sin(now / 3.0E9) * wind * 0.4);
+      float windZ = (float) (Math.cos(now / 2.5E9) * wind * 0.3);
 
       for (AirParticlesModule.Particle p : alive) {
          long age = now - p.born();
@@ -81,9 +81,9 @@ public final class AirParticlesRenderer {
          float py = (float) (p.y() + p.vy() * age * 1.0E-9 * speed * 10.0 - age * 1.0E-9 * 0.6);
          float pz = (float) (p.z() + p.vz() * age * 1.0E-9 * speed * 10.0 + windZ * age * 1.0E-9);
 
-         float sx = px - cam.x();
-         float sy = py - cam.y();
-         float sz = pz - cam.z();
+         float sx = px - (float) cam.x();
+         float sy = py - (float) cam.y();
+         float sz = pz - (float) cam.z();
 
          if (p.kind() == AirParticlesModule.TYPE_FIREFLY && trails) {
             // Glowing trail behind the firefly.
@@ -138,12 +138,12 @@ public final class AirParticlesRenderer {
          case AirParticlesModule.TYPE_SNOW:
             return 0xFFE8F0FF;
          case AirParticlesModule.TYPE_FIREFLY:
-            float hue = (System.nanoTime() / 1.0E9 * 60.0F + t * 40.0F) % 360.0F;
+            float hue = (float) ((System.nanoTime() / 1.0E9 * 60.0F + t * 40.0F) % 360.0F);
             return Colors.hsvToRgb(60.0F + hue * 0.2F, 0.9F, 1.0F) & 16777215;
          case AirParticlesModule.TYPE_LEAVES:
             return 0xFF8BC34A;
          case AirParticlesModule.TYPE_EMBER:
-            float eh = (System.nanoTime() / 1.0E9 * 40.0F) % 60.0F;
+            float eh = (float) ((System.nanoTime() / 1.0E9 * 40.0F) % 60.0F);
             return Colors.hsvToRgb(10.0F + eh * 0.5F, 0.95F, 1.0F) & 16777215;
          case AirParticlesModule.TYPE_DUST:
             return 0xFFD7BB88;

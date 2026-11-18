@@ -110,14 +110,9 @@ public class AirParticlesModule extends Module {
       int type = this.typeId();
       int toSpawn = (int) (this.density.getFloat() / 4.0F);
       for (int i = 0; i < toSpawn; i++) {
-         Particle p = new Particle(player);
          // Assign a particle type, honouring the selected style (mixed cycles through all).
-         if (type == TYPE_MIXED) {
-            p.kind = (int) (Math.random() * 5);
-         } else {
-            p.kind = type;
-         }
-         this.particles.addLast(p);
+         int kind = (type == TYPE_MIXED) ? (int) (Math.random() * 5) : type;
+         this.particles.addLast(new Particle(player, kind));
       }
       int max = this.density.getInt();
       while (this.particles.size() > max) {
@@ -131,7 +126,7 @@ public class AirParticlesModule extends Module {
    }
 
    public record Particle(double x, double y, double z, double vx, double vy, double vz, int kind, long born) {
-      public Particle(LocalPlayer player) {
+      public Particle(LocalPlayer player, int kind) {
          this(
             player.getX() + (Math.random() - 0.5) * 8.0,
             player.getY() + Math.random() * 12.0,
@@ -139,7 +134,7 @@ public class AirParticlesModule extends Module {
             (Math.random() - 0.5) * 0.2,
             -0.1 - Math.random() * 0.1,
             (Math.random() - 0.5) * 0.2,
-            0,
+            kind,
             System.nanoTime()
          );
       }

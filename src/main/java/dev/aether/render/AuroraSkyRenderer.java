@@ -26,7 +26,7 @@ public final class AuroraSkyRenderer {
 
    public static void render(BufferSource bufferSource, PoseStack poseStack, Vec3 cam, SkyShaderModule module) {
       long now = System.nanoTime();
-      float time = now / 1.0E9;
+      float time = (float) (now / 1.0E9);
       float intensity = module.intensityUnit();
       float speed = module.speedUnit();
       float height = module.heightValue();
@@ -112,15 +112,15 @@ public final class AuroraSkyRenderer {
             float zl1 = vertsZ[i + 1];
 
             // Vertical ribbon quad: from base to a higher point, offset by the wave.
-            float baseY = cam.y() + 18.0F;
+            float baseY = (float) cam.y() + 18.0F;
             float topY = yl0 + 60.0F * intensity;
             float topY1 = yl1 + 60.0F * intensity;
 
             // Two vertical quads per segment (front face) using camera-relative coords.
-            float ax = xl0 - cam.x();
-            float az = zl0 - cam.z();
-            float bx = xl1 - cam.x();
-            float bz = zl1 - cam.z();
+            float ax = xl0 - (float) cam.x();
+            float az = zl0 - (float) cam.z();
+            float bx = xl1 - (float) cam.x();
+            float bz = zl1 - (float) cam.z();
             // Normalize direction for the ribbon width.
             float dx = bx - ax;
             float dz = bz - az;
@@ -166,9 +166,9 @@ public final class AuroraSkyRenderer {
             continue;
          }
          int col = Colors.withAlpha(0xFFDFE8FF, alpha);
-         float px = x - cam.x();
-         float py = y - cam.y();
-         float pz = z - cam.z();
+         float px = x - (float) cam.x();
+         float py = y - (float) cam.y();
+         float pz = z - (float) cam.z();
          float s = 0.8F + twinkle * 0.8F;
          line3(lines, pose, px - s, py, pz, px + s, py, pz, col, 1.2F);
          line3(lines, pose, px, py - s, pz, px, py + s, pz, col, 1.2F);

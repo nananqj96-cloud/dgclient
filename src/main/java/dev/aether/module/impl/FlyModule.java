@@ -52,10 +52,10 @@ public class FlyModule extends Module {
       }
 
       Input input = player.input.keyPresses;
-      // Horizontal facing direction (yaw only, Y zeroed).
-      Vec3 dir = player.getDirection();
-      double fx = dir.x();
-      double fz = dir.z();
+      // Horizontal facing direction from yaw (Y zeroed).
+      double yaw = player.getYRot() * (double) (Math.PI / 180.0);
+      double fx = -Math.sin(yaw);
+      double fz = -Math.cos(yaw);
 
       double forward = 0.0;
       double strafe = 0.0;
