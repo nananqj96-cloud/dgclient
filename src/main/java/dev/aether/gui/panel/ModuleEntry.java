@@ -188,8 +188,12 @@ public class ModuleEntry {
       vg.alpha(alphaMul);
 
       // Card surface + subtle border + PinkBloom active glow
-      if (en > 0.02F && theme.isBloom()) {
-         vg.glow(this.x, this.y, this.width, fullH, 7.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.20F * en));
+      if (theme.isBloom()) {
+         if (en > 0.02F) {
+            vg.glow(this.x, this.y, this.width, fullH, 7.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.20F * en));
+         } else if (hov > 0.02F) {
+            vg.glow(this.x, this.y, this.width, fullH, 7.0F, 7.0F, Colors.withAlpha(theme.accent(), 0.14F * hov));
+         }
       }
       int baseFill = Colors.lerp(theme.surface(), theme.moduleActiveFill(), en);
       if (hov > 0.01F) {
