@@ -592,8 +592,12 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          float trackH = bh - 16.0F;
          float thumbH = Math.max(28.0F, trackH * (bh / totalContentH));
          float thumbY = by + 8.0F + (trackH - thumbH) * (this.dashScroll.value() / this.dashMaxScroll);
-         vg.rect(bx + bw - 6.0F, by + 8.0F, 3.0F, trackH, 1.5F, Colors.withAlpha(theme.borderSubtle(), 0.5F));
-         vg.rect(bx + bw - 6.0F, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(theme.accentBright(), 0.75F));
+         float sx = bx + bw - 7.0F;
+         vg.rect(sx, by + 8.0F, 4.0F, trackH, 2.0F, Colors.withAlpha(theme.borderSubtle(), 0.45F));
+         if (theme.isBloom()) {
+            vg.glow(sx, thumbY, 4.0F, thumbH, 2.0F, 4.0F, Colors.withAlpha(theme.accent(), 0.30F));
+         }
+         vg.rect(sx, thumbY, 4.0F, thumbH, 2.0F, Colors.withAlpha(theme.accentBright(), 0.80F));
       }
 
       vg.restore();
