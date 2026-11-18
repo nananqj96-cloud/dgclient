@@ -20,7 +20,7 @@ public class ClickGuiState {
    private int favouritesRevision;
    private Category selectedCategory = Category.COMBAT;
    private boolean themesTabSelected;
-   private boolean corzPortOpen;
+   private boolean corzPortOpen = true;
    private String corzSelectedCategory = "All";
    private boolean laidOut;
    private boolean customized;

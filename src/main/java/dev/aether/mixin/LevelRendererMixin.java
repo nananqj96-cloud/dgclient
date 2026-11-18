@@ -16,6 +16,7 @@ import dev.aether.render.JumpCircleRenderer;
 import dev.aether.render.MiscBlockEspRenderer;
 import dev.aether.render.NetheriteFinderRenderer;
 import dev.aether.render.NetheriteProbabilityRenderer;
+import dev.aether.render.PlayerTrailRenderer;
 import dev.aether.render.StorageEspRenderer;
 import dev.aether.render.SusChunkRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -100,6 +101,10 @@ public class LevelRendererMixin {
 
          if (var3 && var6.hitParticles != null && var6.hitParticles.isEnabled()) {
             HitParticleRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.hitParticles);
+         }
+
+         if (var3 && var6.playerTrail != null && var6.playerTrail.isEnabled()) {
+            PlayerTrailRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.playerTrail);
          }
 
          if (var3 && var6.customAccessories != null && var6.customAccessories.isEnabled()) {
