@@ -6,7 +6,8 @@ import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -27,7 +28,6 @@ public class FlyModule extends Module {
    public final BooleanSetting warn = this.addSetting(
       new BooleanSetting("Show Ban Warning", "Remind that fly is bannable on most servers", true)
    );
-   private boolean warned;
 
    public FlyModule() {
       super("Fly", "Fly through the air (bannable on most servers)", Category.MISC);
@@ -37,7 +37,6 @@ public class FlyModule extends Module {
    protected void onEnable() {
       if (this.warn.get() && AetherClient.notifications() != null) {
          AetherClient.notifications().push("Fly is bannable — use at your own risk", true);
-         this.warned = true;
       }
    }
 
@@ -47,31 +46,37 @@ public class FlyModule extends Module {
          return;
       }
       Minecraft mc = Minecraft.getInstance();
-      Player player = mc.player;
+      LocalPlayer player = mc.player;
       if (player == null || mc.level == null) {
          return;
       }
 
-      Vec3 input = player.getDeltaMovement();
-      // Input direction from the player's movement input (normalized).
+      Input input = player.input.keyPresses;
+      // Horizontal facing direction (yaw only, Y zeroed).
       Vec3 dir = player.getDirection();
-      float forward = 0.0F;
-      float strafe = 0.0F;
-      if (player.input.leftPressed) {
-         strafe -= 1.0F;
+      double fx = dir.x();
+      double fz = dir.z();
+
+      double forward = 0.0;
+      double strafe = 0.0;
+      if (input.forward()) {
+         forward += 1.0;
       }
-      if (player.input.rightPressed) {
-         strafe += 1.0F;
+      if (input.back()) {
+         forward -= 1.0;
       }
-      if (player.input.forwardPressed) {
-         forward += 1.0F;
+      if (input.left()) {
+         strafe -= 1.0;
       }
-      if (player.input.backPressed) {
-         forward -= 1.0F;
+      if (input.right()) {
+         strafe += 1.0;
       }
 
-      double sx = dir.x() * forward - dir.z() * strafe;
-      double sz = dir.z() * forward + dir.x() * strafe;
+      // Right vector = forward rotated -90° around Y: (fz, 0, -fx)
+      double rx = fz;
+      double rz = -fx;
+      double sx = fx * forward + rx * strafe;
+      double sz = fz * forward + rz * strafe;
       double len = Math.sqrt(sx * sx + sz * sz);
       double speed = this.speed.getFloat();
       if (len > 0.001) {
@@ -83,9 +88,9 @@ public class FlyModule extends Module {
       }
 
       double vy = 0.0;
-      if (player.input.jumping) {
+      if (input.jump()) {
          vy = this.verticalSpeed.getFloat();
-      } else if (player.input.shiftPressed) {
+      } else if (input.shift()) {
          vy = -this.verticalSpeed.getFloat();
       }
 

@@ -52,6 +52,7 @@ import dev.aether.module.impl.PlayerTrailModule;
 import dev.aether.module.impl.RegionMapModule;
 import dev.aether.module.impl.ShieldBreakerModule;
 import dev.aether.module.impl.SkinProtectModule;
+import dev.aether.module.impl.SkyShaderModule;
 import dev.aether.module.impl.SpawnerNametagsModule;
 import dev.aether.module.impl.SpawnerProtectModule;
 import dev.aether.module.impl.SpeedMineModule;
@@ -134,6 +135,7 @@ public class ModuleManager {
    public StaffListModule staffList;
    public ArmorTrimHiderModule armorTrimHider;
    public SpawnerProtectModule spawnerProtect;
+   public SkyShaderModule skyShader;
    public SpeedMineModule speedMine;
    public HomeMethodModule homeMethod;
    public PanoramaModule panorama;
@@ -226,6 +228,8 @@ public class ModuleManager {
       this.register(this.freeLook);
       this.spawnerProtect = new SpawnerProtectModule();
       this.register(this.spawnerProtect);
+      this.skyShader = new SkyShaderModule();
+      this.register(this.skyShader);
       this.speedMine = new SpeedMineModule();
       this.register(this.speedMine);
       this.homeMethod = new HomeMethodModule();

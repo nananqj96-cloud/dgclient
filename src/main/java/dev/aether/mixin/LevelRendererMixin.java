@@ -16,6 +16,7 @@ import dev.aether.render.JumpCircleRenderer;
 import dev.aether.render.MiscBlockEspRenderer;
 import dev.aether.render.NetheriteFinderRenderer;
 import dev.aether.render.NetheriteProbabilityRenderer;
+import dev.aether.render.AuroraSkyRenderer;
 import dev.aether.render.PlayerTrailRenderer;
 import dev.aether.render.StorageEspRenderer;
 import dev.aether.render.SusChunkRenderer;
@@ -38,6 +39,10 @@ public class LevelRendererMixin {
    private void aetherclient$customBlockOutline(BufferSource var1, PoseStack var2, boolean var3, LevelRenderState var4, CallbackInfo var5) {
       ModuleManager var6 = AetherClient.modules();
       if (var6 != null) {
+         if (var6.skyShader != null && var6.skyShader.isEnabled()) {
+            AuroraSkyRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.skyShader);
+         }
+
          if (var3 && var6.susChunkFinder.isEnabled()) {
             SusChunkRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.susChunkFinder);
          }
