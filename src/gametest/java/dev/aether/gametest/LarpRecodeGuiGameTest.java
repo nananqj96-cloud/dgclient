@@ -9,6 +9,8 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 import net.minecraft.client.Minecraft;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Renders the Larp Recode GUI in all four themes (Ocean, Cherry Blossom, Green Forest, Charcoal)
  * plus one settings-expanded view, and captures PNG screenshots as CI artifacts.
@@ -32,11 +34,14 @@ public class LarpRecodeGuiGameTest implements FabricClientGameTest {
          context.waitForScreen(ClickGuiScreen.class);
          context.waitTicks(3);
 
-         ClickGuiScreen cg = null;
+         AtomicReference<ClickGuiScreen> cgRef = new AtomicReference<>();
          context.runOnClient(mc -> {
-            cg = (ClickGuiScreen) mc.screen;
+            if (mc.screen instanceof ClickGuiScreen cg) {
+               cgRef.set(cg);
+            }
          });
-         require(cg != null, "ClickGuiScreen must be open");
+         require(cgRef.get() != null, "ClickGuiScreen must be open");
+         ClickGuiScreen cg = cgRef.get();
 
          LarpRecodeGui larp = cg.larpGui();
          require(larp != null, "LarpRecodeGui must be accessible");
@@ -45,7 +50,8 @@ public class LarpRecodeGuiGameTest implements FabricClientGameTest {
          // Capture each theme.
          String[] themeNames = {"Ocean", "Cherry Blossom", "Green Forest", "Charcoal"};
          for (int t = 0; t < larp.themeCount(); t++) {
-            context.runOnClient(mc -> larp.setThemeIndex(t));
+            int theme = t;
+            context.runOnClient(mc -> larp.setThemeIndex(theme));
             context.waitTicks(2);
             context.takeScreenshot("larp-recode-" + (t + 1) + "-" + themeNames[t].replace(" ", "-"));
          }
