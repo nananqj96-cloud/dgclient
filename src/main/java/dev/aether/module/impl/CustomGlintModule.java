@@ -3,6 +3,7 @@ package dev.aether.module.impl;
 import dev.aether.AetherClient;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
+import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
