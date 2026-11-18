@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   larp-screenshots:
@@ -167,16 +168,20 @@ jobs:
           path: gradle-build.log
           if-no-files-found: ignore
 
-      - name: Commit build log to diag branch
+      - name: Post build log to diagnostic issue
         if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.email "ci@aetherclient.local"
-          git config user.name "CI Diagnostics"
-          git checkout -b diag-build-log 2>/dev/null || git checkout diag-build-log
-          cp gradle-build.log build-diag.log
-          git add build-diag.log
-          git commit -m "ci: build log from run ${{ github.run_id }}" || true
-          git push -f origin diag-build-log
+          BODY=$(cat gradle-build.log | head -c 8000)
+          gh issue create --title "CI Build Log - Run ${{ github.run_id }}" --body "## Gradle Build Log
+
+Run: ${{ github.run_id }}
+SHA: ${{ github.sha }}
+
+\`\`\`
+${BODY}
+\`\`\`"
 
       - name: Run real Minecraft 1.21.11 Client GameTests (PinkBloom + Synced Corz Port UI)
         run: |
