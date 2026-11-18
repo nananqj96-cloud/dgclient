@@ -6,6 +6,8 @@ import dev.aether.module.ModuleManager;
 import dev.aether.render.AccessoryRenderer;
 import dev.aether.render.AirParticlesRenderer;
 import dev.aether.render.BlockEspRenderer;
+import dev.aether.render.BlockHighlightRenderer;
+import dev.aether.render.BlockOverlayRenderer;
 import dev.aether.render.HeatColorRenderer;
 import dev.aether.render.LootEspRenderer;
 import dev.aether.render.TargetEspRenderer;
@@ -135,6 +137,14 @@ public class LevelRendererMixin {
 
          if (var3 && var6.lootEsp != null && var6.lootEsp.isEnabled()) {
             LootEspRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.lootEsp);
+         }
+
+         if (var3 && var6.blockHighlight != null && var6.blockHighlight.isEnabled()) {
+            BlockHighlightRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.blockHighlight);
+         }
+
+         if (var3 && var6.blockOverlay != null && var6.blockOverlay.isEnabled()) {
+            BlockOverlayRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.blockOverlay);
          }
 
          if (var3 && var6.customAccessories != null && var6.customAccessories.isEnabled()) {

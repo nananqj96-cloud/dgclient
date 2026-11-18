@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
 
 /**
  * Throws a potion automatically. In Auto mode it throws once health drops to the threshold; in
@@ -63,7 +63,7 @@ public class AutoPotModule extends Module {
       float prevPitch = player.getPitch();
       player.getInventory().setSelectedSlot(slot);
       player.setPitch((float) this.pitch.getFloat() - 1.0F + ThreadLocalRandom.current().nextFloat());
-      mc.interactionManager.interactItem(player, Hand.MAIN_HAND);
+      mc.interactionManager.interactItem(player, InteractionHand.MAIN_HAND);
       player.setPitch(prevPitch);
       player.getInventory().setSelectedSlot(prevSlot);
       this.lastThrowNanos = now;
