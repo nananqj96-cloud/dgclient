@@ -200,6 +200,16 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return this.corzPortWindow;
    }
 
+   public LarpRecodeGui larpGui() {
+      return this.larpGui;
+   }
+
+   /** Opens the Larp Recode GUI (used by tests/screenshots). */
+   public void openLarpGui() {
+      this.guiModule().larpRecodeGui.set(true);
+      Minecraft.getInstance().setScreen(this);
+   }
+
    public void toggleCorzPort() {
       STATE.toggleCorzPort();
       if (STATE.isCorzPortOpen()) {

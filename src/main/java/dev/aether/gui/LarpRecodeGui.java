@@ -141,6 +141,37 @@ public final class LarpRecodeGui {
       this.modules = modules;
    }
 
+   /** Sets the active theme index (used by tests / screenshots). */
+   public void setThemeIndex(int index) {
+      this.themeIndex = Math.max(0, Math.min(THEME_NAMES.length - 1, index));
+   }
+
+   /** Returns the active theme index. */
+   public int themeIndex() {
+      return this.themeIndex;
+   }
+
+   /** Returns the number of available themes. */
+   public int themeCount() {
+      return THEME_NAMES.length;
+   }
+
+   /** Returns the theme name at the given index. */
+   public String themeName(int index) {
+      return THEME_NAMES[index];
+   }
+
+   /** Toggles the expanded (settings-visible) state of a module (used by tests/screenshots). */
+   public void toggleExpanded(Module module) {
+      Boolean prev = this.expanded.get(module);
+      this.expanded.put(module, prev == null || !prev);
+   }
+
+   /** Returns whether a module's settings are expanded. */
+   public boolean isExpanded(Module module) {
+      return Boolean.TRUE.equals(this.expanded.get(module));
+   }
+
    // =========================================================================
    // THEME PALETTE
    // =========================================================================
