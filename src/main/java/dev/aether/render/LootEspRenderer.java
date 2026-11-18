@@ -38,7 +38,7 @@ public final class LootEspRenderer {
       Pose pose = poseStack.last();
       VertexConsumer lines = bufferSource.getBuffer(FlatOverlay.LINES);
 
-      for (BlockEntity be : ((ClientLevel) mc.level).getBlockEntities()) {
+      for (BlockEntity be : ((ClientLevel) mc.level).getGloballyRenderedBlockEntities()) {
          if (!isLootBlock(be, module)) {
             continue;
          }

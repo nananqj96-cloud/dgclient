@@ -52,7 +52,7 @@ public final class HeatColorRenderer {
          }
          AABB bb = living.getBoundingBox();
          Vec3 lerped = new Vec3((bb.minX + bb.maxX) / 2.0, (bb.minY + bb.maxY) / 2.0, (bb.minZ + bb.maxZ) / 2.0);
-         if (eyePos.distanceToSquared(lerped) > rangeSq) {
+         if (eyePos.distanceToSqr(lerped) > rangeSq) {
             continue;
          }
          float health = living.getMaxHealth() <= 0.0F ? 1.0F
