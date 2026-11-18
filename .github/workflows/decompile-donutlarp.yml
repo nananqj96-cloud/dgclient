@@ -1,6 +1,10 @@
 name: Decompile DonutLarp
 
 on:
+  push:
+    paths:
+      - 'reference/**'
+      - '.github/workflows/decompile-donutlarp.yml'
   workflow_dispatch:
 
 permissions:
