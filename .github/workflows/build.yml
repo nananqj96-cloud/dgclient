@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   larp-screenshots:
@@ -139,20 +140,37 @@ jobs:
           ls -lh corzport/build/libs/
 
       - name: Build Aether Client 2.1.0 (Jar-in-Jar) & run JUnit 5 suite
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          ./gradlew build --no-daemon --stacktrace > gradle-build.log 2>&1
+          OUTPUT=$(./gradlew build --no-daemon --stacktrace 2>&1)
           STATUS=$?
-          cat gradle-build.log
+          echo "$OUTPUT"
           if [ $STATUS -ne 0 ]; then
-            grep -E "error:|warning:.*Mixin|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 60 | while IFS= read -r line; do
-              CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
-              echo "::error title=GradleError::$CLEAN"
-            done
+            ERRORS=$(echo "$OUTPUT" | grep -E "error:|FAILED|Caused by:|What went wrong:" | head -n 40)
+            TAIL=$(echo "$OUTPUT" | tail -n 100)
+            {
+              echo "## Build Failed"
+              echo ""
+              echo "Run: ${{ github.run_id }}"
+              echo "SHA: ${{ github.sha }}"
+              echo ""
+              echo "### Error lines:"
+              echo '```'
+              echo "$ERRORS"
+              echo '```'
+              echo ""
+              echo "### Last 100 lines:"
+              echo '```'
+              echo "$TAIL"
+              echo '```'
+            } > /tmp/diag-body.md
+            gh issue create --title "CI Build Failure - Run ${{ github.run_id }}" --body-file /tmp/diag-body.md
             exit $STATUS
           fi
-          if grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target)" gradle-build.log; then
-            grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target)" gradle-build.log | head -n 30 | while IFS= read -r line; do
+          if echo "$OUTPUT" | grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target)"; then
+            echo "$OUTPUT" | grep -iE "warning:.*(Unable to locate|Cannot find method|Cannot find target)" | head -n 30 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=MixinWarning::$CLEAN"
             done
