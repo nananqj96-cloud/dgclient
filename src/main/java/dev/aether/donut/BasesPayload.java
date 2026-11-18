@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 public record BasesPayload(byte[] data) implements CustomPacketPayload {
    public static final Type<BasesPayload> ID = new Type<>(Identifier.fromNamespaceAndPath("donutlarp", "bases"));
    public static final StreamCodec<RegistryFriendlyByteBuf, BasesPayload> CODEC = StreamCodec.of(
-      (payload, buf) -> buf.writeByteArray(payload.data),
+      (buf, payload) -> buf.writeByteArray(payload.data),
       buf -> new BasesPayload(buf.readByteArray())
    );
 

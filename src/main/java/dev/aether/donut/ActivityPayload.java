@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 public record ActivityPayload(byte[] data) implements CustomPacketPayload {
    public static final Type<ActivityPayload> ID = new Type<>(Identifier.fromNamespaceAndPath("donutlarp", "activity"));
    public static final StreamCodec<RegistryFriendlyByteBuf, ActivityPayload> CODEC = StreamCodec.of(
-      (payload, buf) -> buf.writeByteArray(payload.data),
+      (buf, payload) -> buf.writeByteArray(payload.data),
       buf -> new ActivityPayload(buf.readByteArray())
    );
 

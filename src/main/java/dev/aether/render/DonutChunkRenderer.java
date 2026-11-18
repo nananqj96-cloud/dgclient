@@ -84,7 +84,7 @@ public final class DonutChunkRenderer {
                                        int color, float radius, float width) {
       double w = x1 - x0;
       double h = z1 - z0;
-      double r = Math.min(radius, w / 2.0, h / 2.0);
+      double r = Math.min(Math.min(radius, w / 2.0), h / 2.0);
       if (r <= 0.01) {
          FlatOverlay.edge(bufferSource, poseStack, camera, x0, z0, x1, z0, y, color, width);
          FlatOverlay.edge(bufferSource, poseStack, camera, x1, z0, x1, z1, y, color, width);
