@@ -146,25 +146,26 @@ jobs:
           set +e
           ./gradlew build --no-daemon --stacktrace > gradle-build.log 2>&1
           STATUS=$?
+          echo "=== LOG SIZE ==="
+          wc -l gradle-build.log
+          echo "=== LOG CONTENT ==="
           cat gradle-build.log
           if [ $STATUS -ne 0 ]; then
+            echo "=== CREATING DIAG ISSUE ==="
             {
               echo "## Build Failed"
               echo ""
               echo "Run: ${{ github.run_id }}"
               echo "SHA: ${{ github.sha }}"
               echo ""
-              echo "### Error lines:"
-              echo "```"
-              grep -E "error:|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 40
-              echo "```"
-              echo ""
-              echo "### Last 100 lines of log:"
-              echo "```"
-              tail -n 100 gradle-build.log
+              echo "```log"
+              cat gradle-build.log
               echo "```"
             } > /tmp/diag-body.md
-            gh issue create --title "CI Build Failure - Run ${{ github.run_id }}" --body-file /tmp/diag-body.md || true
+            echo "=== DIAG BODY SIZE ==="
+            wc -c /tmp/diag-body.md
+            gh issue create --title "CI Build Failure - Run ${{ github.run_id }}" --body-file /tmp/diag-body.md
+            echo "=== DIAG ISSUE CREATED ==="
             grep -E "error:|warning:.*Mixin|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 60 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=GradleError::$CLEAN"
