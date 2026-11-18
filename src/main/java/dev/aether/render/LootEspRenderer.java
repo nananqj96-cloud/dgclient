@@ -42,7 +42,7 @@ public final class LootEspRenderer {
          if (!isLootBlock(be, module)) {
             continue;
          }
-         AABB box = be.getBoundingBox();
+         AABB box = new AABB(be.getBlockPos());
          double cx = (box.minX + box.maxX) / 2.0;
          double cy = (box.minY + box.maxY) / 2.0;
          double cz = (box.minZ + box.maxZ) / 2.0;

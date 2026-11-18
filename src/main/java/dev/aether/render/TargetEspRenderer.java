@@ -33,7 +33,7 @@ public final class TargetEspRenderer {
       if (target == mc.player) {
          return;
       }
-      Vec3 pos = target.getPosition();
+      Vec3 pos = target.getPosition(0.0F);
       float dx = (float) (pos.x - cam.x());
       float dy = (float) (pos.y - cam.y());
       float dz = (float) (pos.z - cam.z());

@@ -24,6 +24,7 @@
     "ItemStackGlintMixin",
     "KeyboardInputFreecamMixin",
     "KeyboardHandlerMixin",
+    "LevelAccessor",
     "LevelRendererMixin",
     "LightPacketMixin",
     "LightTextureMixin",

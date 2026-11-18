@@ -3,6 +3,7 @@ package dev.aether.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
+import dev.aether.mixin.LevelAccessor;
 import dev.aether.module.impl.HeatColorModule;
 import dev.aether.util.Colors;
 import net.minecraft.client.Camera;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
@@ -38,7 +40,7 @@ public final class HeatColorRenderer {
       VertexConsumer lines = bufferSource.getBuffer(FlatOverlay.LINES);
 
       boolean drew = false;
-      for (Entity entity : mc.level.getEntities()) {
+      for (Entity entity : ((LevelAccessor) mc.level).aetherclient$getEntities().getAll()) {
          if (!(entity instanceof LivingEntity living) || !living.isAlive()) {
             continue;
          }
@@ -48,7 +50,7 @@ public final class HeatColorRenderer {
          if (module.playersOnly.get() && !(entity instanceof Player)) {
             continue;
          }
-         net.minecraft.util.math.Box bb = living.getBoundingBox();
+         AABB bb = living.getBoundingBox();
          Vec3 lerped = new Vec3((bb.minX + bb.maxX) / 2.0, (bb.minY + bb.maxY) / 2.0, (bb.minZ + bb.maxZ) / 2.0);
          if (eyePos.distanceToSquared(lerped) > rangeSq) {
             continue;
@@ -66,12 +68,12 @@ public final class HeatColorRenderer {
          float z1 = (float) bb.maxZ;
 
          // Camera-relative coordinates.
-         float ax = x0 - cam.x();
-         float ay = y0 - cam.y();
-         float az = z0 - cam.z();
-         float bx = x1 - cam.x();
-         float by = y1 - cam.y();
-         float bz = z1 - cam.z();
+         float ax = (float) (x0 - cam.x());
+         float ay = (float) (y0 - cam.y());
+         float az = (float) (z0 - cam.z());
+         float bx = (float) (x1 - cam.x());
+         float by = (float) (y1 - cam.y());
+         float bz = (float) (z1 - cam.z());
 
          if (module.filled.get()) {
             int fillColor = Colors.withAlpha(rgb, 0.5F);
