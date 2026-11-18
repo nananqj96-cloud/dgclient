@@ -62,6 +62,6 @@ public class NameTagsModule extends Module {
    );
 
    public NameTagsModule() {
-      super("NameTags", "HUD-styled nametags for players & items", Category.MISC);
+      super("NameTags", "HUD-styled nametags for players & items", Category.PLAYER);
    }
 }

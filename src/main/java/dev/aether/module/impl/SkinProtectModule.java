@@ -15,7 +15,7 @@ public class SkinProtectModule extends Module {
    private volatile PlayerSkin replacement;
 
    public SkinProtectModule() {
-      super("Skin Protect", "Uses a random built-in Minecraft skin locally while enabled.", Category.MISC);
+      super("Skin Protect", "Uses a random built-in Minecraft skin locally while enabled.", Category.PLAYER);
    }
 
    @Override

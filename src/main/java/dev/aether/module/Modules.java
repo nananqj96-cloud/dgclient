@@ -3,6 +3,7 @@ package dev.aether.module;
 import dev.aether.render.SusChunkRenderer;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
+import dev.aether.settings.KeybindSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.Setting;
 import dev.aether.settings.SliderSetting;
@@ -73,6 +74,9 @@ public final class Modules {
             "Larp Recode dashboard/clickgui: frosted-glass columns, themed background & theme dock.",
             false
          )
+      );
+      public final KeybindSetting larpRecodeKeybind = this.addSetting(
+         new KeybindSetting("Larp Recode Keybind", "Opens the Larp Recode GUI directly", 345)
       );
 
       public ClickGuiModule() {

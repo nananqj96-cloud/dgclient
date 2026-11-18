@@ -10,7 +10,7 @@ public final class SpeedMineModule extends Module {
    );
 
    public SpeedMineModule() {
-      super("Speed Mine", "Mines blocks faster while keeping normal mining behaviour.", Category.MISC);
+      super("Speed Mine", "Mines blocks faster while keeping normal mining behaviour.", Category.MOVEMENT);
    }
 
    public float apply(float f) {

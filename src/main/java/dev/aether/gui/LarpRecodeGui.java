@@ -1,5 +1,7 @@
 package dev.aether.gui;
 
+import dev.aether.corz.CorzModuleHandle;
+import dev.aether.corz.CorzPortBus;
 import dev.aether.gui.widget.BooleanWidget;
 import dev.aether.gui.widget.BlockListWidget;
 import dev.aether.gui.widget.ColorWidget;
@@ -13,6 +15,7 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.module.ModuleManager;
 import dev.aether.render.nanovg.NVGRenderer;
+import dev.aether.render.anim.Animation;
 import dev.aether.settings.BlockListSetting;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
@@ -59,12 +62,14 @@ public final class LarpRecodeGui {
    private boolean searchFocused;
 
    // Column definition: each column holds one or more categories.
+   // The last column is the Corz column (folded-in Corz/Vulxts features, tagged "corz").
    private static final Category[][] COLUMNS = {
       {Category.COMBAT, Category.RENDER},
       {Category.MOVEMENT, Category.PLAYER},
       {Category.VISUALS},
       {Category.BASEFINDING},
-      {Category.DONUT, Category.MISC, Category.CLIENT}
+      {Category.DONUT, Category.MISC, Category.CLIENT},
+      {}
    };
 
    // Lazy widget caches (built on first expand), keyed by module.
@@ -82,6 +87,12 @@ public final class LarpRecodeGui {
    private final List<ModuleHit> moduleHits = new ArrayList<>();
    private final List<ThemeHit> themeHits = new ArrayList<>();
    private final List<SettingWidget> activeWidgets = new ArrayList<>();
+
+   // Corz column scroll state.
+   private final Animation corzScroll = new Animation(120.0F, 0.0F);
+   private float corzMaxScroll;
+   private float corzColX, corzColY, corzColW, corzColH;
+   private final List<CorzHit> corzHits = new ArrayList<>();
 
    private static final class PanelHit {
       final int col;
@@ -111,6 +122,18 @@ public final class LarpRecodeGui {
       final float x, y, w, h;
       ThemeHit(int index, float x, float y, float w, float h) {
          this.index = index; this.x = x; this.y = y; this.w = w; this.h = h;
+      }
+   }
+
+   private static final class CorzHit {
+      final CorzModuleHandle module;
+      final float x, y, w, rowH;
+      final float tagX, tagY, tagW, tagH;
+      CorzHit(CorzModuleHandle module, float x, float y, float w, float rowH,
+              float tagX, float tagY, float tagW, float tagH) {
+         this.module = module;
+         this.x = x; this.y = y; this.w = w; this.rowH = rowH;
+         this.tagX = tagX; this.tagY = tagY; this.tagW = tagW; this.tagH = tagH;
       }
    }
 
@@ -149,6 +172,7 @@ public final class LarpRecodeGui {
          this.renderHeader(vg, mx, my, uiW);
          this.bodyTop = this.headerH + 12.0F;
          this.renderColumns(vg, mx, my, uiW, uiH);
+         this.renderCorzColumn(vg, mx, my, uiW, uiH);
          this.renderThemeDock(vg, mx, my, uiW, uiH);
       } catch (Throwable t) {
          dev.aether.AetherClient.LOGGER.error("Larp Recode GUI render failed", t);
@@ -339,6 +363,139 @@ public final class LarpRecodeGui {
          }
       }
       return h + 8.0F;
+   }
+
+   // =========================================================================
+   // CORZ COLUMN (folded-in Corz/Vulxts features, tagged "corz")
+   // =========================================================================
+
+   private List<CorzModuleHandle> corzModules() {
+      if (!CorzPortBus.isAvailable()) {
+         return List.of();
+      }
+      var provider = CorzPortBus.provider();
+      if (provider == null) {
+         return List.of();
+      }
+      List<CorzModuleHandle> all = provider.allModules();
+      // Filter by the active search term (matches display name).
+      if (this.search.isEmpty()) {
+         return all;
+      }
+      List<CorzModuleHandle> out = new ArrayList<>();
+      for (CorzModuleHandle m : all) {
+         if (m.displayName().toLowerCase(Locale.ROOT).contains(this.search.toLowerCase(Locale.ROOT))) {
+            out.add(m);
+         }
+      }
+      return out;
+   }
+
+   private void renderCorzColumn(NVGRenderer vg, float mx, float my, float uiW, float uiH) {
+      this.corzHits.clear();
+      var provider = CorzPortBus.isAvailable() ? CorzPortBus.provider() : null;
+      if (provider == null) {
+         return;
+      }
+      float gap = 12.0F;
+      float sidePad = 14.0F;
+      float colW = (uiW - sidePad * 2.0F - gap * (COLUMNS.length - 1)) / (float) COLUMNS.length;
+      float dockH = 70.0F;
+      float availH = uiH - this.bodyTop - dockH - 16.0F;
+      float cx = sidePad + (COLUMNS.length - 1) * (colW + gap);
+      float cy = this.bodyTop;
+
+      List<CorzModuleHandle> mods = this.corzModules();
+      int count = mods.size();
+      float headerH = 44.0F;
+      float rowH = 30.0F;
+      float contentH = headerH + count * (rowH + 4.0F) + 8.0F;
+      this.corzMaxScroll = Math.max(0.0F, contentH - availH);
+      this.corzScroll.setTarget(Math.clamp(this.corzScroll.getTarget(), 0.0F, this.corzMaxScroll));
+      this.corzColX = cx;
+      this.corzColY = cy;
+      this.corzColW = colW;
+      this.corzColH = availH;
+
+      // Frosted-glass panel.
+      vg.rect(cx, cy, colW, availH, 12.0F, Colors.withAlpha(surface(), 0.78F));
+      vg.rectOutline(cx, cy, colW, availH, 12.0F, 1.0F, Colors.withAlpha(accent(), 0.18F));
+
+      // Header: "CORZ" title + count pill.
+      float ix = cx + 12.0F;
+      float iy = cy + 10.0F;
+      vg.rect(ix, iy, 24.0F, 24.0F, 6.0F, Colors.withAlpha(accent(), 0.25F));
+      vg.text("C", ix + 16.0F, iy + 17.0F, 12.0F, accent());
+      vg.text("CORZ", ix + 32.0F, iy + 17.0F, 12.0F, text());
+      if (count > 0) {
+         String cnt = Integer.toString(count);
+         float cw = vg.textWidth(cnt, 9.0F) + 12.0F;
+         float cpx = cx + colW - cw - 30.0F;
+         vg.rect(cpx, iy + 4.0F, cw, 16.0F, 8.0F, Colors.withAlpha(accent(), 0.2F));
+         vg.text(cnt, cpx + 6.0F, iy + 15.0F, 9.0F, accent());
+      }
+      vg.line(cx + 10.0F, cy + headerH, cx + colW - 10.0F, cy + headerH, 1.0F, Colors.withAlpha(accent(), 0.15F));
+
+      // Module rows (scrolled).
+      float scrollY = this.corzScroll.value();
+      vg.save();
+      vg.scissor(cx + 6.0F, cy + headerH, colW - 12.0F, availH - headerH - 6.0F);
+      float ry = cy + headerH + 6.0F - scrollY;
+      for (CorzModuleHandle mod : mods) {
+         if (ry + rowH < cy + headerH) {
+            ry += rowH + 4.0F;
+            continue;
+         }
+         if (ry > cy + availH) {
+            break;
+         }
+         boolean enabled = mod.isEnabled();
+         boolean hov = this.hit(mx, my, cx + 6.0F, ry, colW - 12.0F, rowH);
+         int rowCol = enabled ? Colors.withAlpha(accent(), hov ? 0.32F : 0.22F)
+            : Colors.withAlpha(surfaceElev(), hov ? 0.5F : 0.35F);
+         vg.rect(cx + 6.0F, ry, colW - 12.0F, rowH, 7.0F, rowCol);
+         if (enabled) {
+            vg.rect(cx + 6.0F, ry + 4.0F, 3.0F, rowH - 8.0F, 1.5F, Colors.withAlpha(0xFFFFFF, 0.85F));
+         }
+         // Truncate the display name to fit before the tag.
+         float textMaxW = colW - 12.0F - 56.0F;
+         vg.textTruncated(mod.displayName().toUpperCase(Locale.ROOT), cx + 18.0F, ry + rowH * 0.5F, 11.0F,
+            enabled ? text() : textMuted(), textMaxW);
+
+         // "corz" tag pill on the right.
+         float tagW = 38.0F;
+         float tagX = cx + colW - 6.0F - tagW;
+         float tagY = ry + rowH * 0.5F - 7.0F;
+         vg.rect(tagX, tagY, tagW, 14.0F, 7.0F, Colors.withAlpha(accent(), 0.22F));
+         vg.text("corz", tagX + tagW * 0.5F - vg.textWidth("corz", 8.0F) * 0.5F, tagY + 10.0F, 8.0F, accent());
+         this.corzHits.add(new CorzHit(mod, cx + 6.0F, ry, colW - 12.0F, rowH, tagX, tagY, tagW, 14.0F));
+
+         // Keybind letter on the far right.
+         if (mod.getBindKey() >= 0) {
+            String k = keyName(mod.getBindKey());
+            vg.text(k, cx + colW - 44.0F, ry + rowH * 0.5F, 10.0F, Colors.withAlpha(accent(), 0.8F));
+         }
+         ry += rowH + 4.0F;
+      }
+      vg.restore();
+
+      // Scrollbar thumb.
+      if (this.corzMaxScroll > 1.0F) {
+         float trackH = availH - headerH - 12.0F;
+         float thumbH = Math.max(20.0F, trackH * (availH / contentH));
+         float thumbY = cy + headerH + 6.0F + (trackH - thumbH) * (scrollY / this.corzMaxScroll);
+         vg.rect(cx + colW - 6.0F, thumbY, 3.0F, thumbH, 1.5F, Colors.withAlpha(accent(), 0.45F));
+      }
+   }
+
+   private static String keyName(int key) {
+      if (key < 0) {
+         return "";
+      }
+      if (key >= 290 && key <= 314) {
+         return "F" + (key - 290 + 1);
+      }
+      return Integer.toString(key);
    }
 
    private void renderPanel(NVGRenderer vg, float mx, float my, int col, float x, float y, float w, float h,
@@ -537,6 +694,15 @@ public final class LarpRecodeGui {
       if (btn != 0) {
          return false;
       }
+      // Corz column rows (toggle).
+      for (int i = this.corzHits.size() - 1; i >= 0; i--) {
+         CorzHit ch = this.corzHits.get(i);
+         if (this.hit(mx, my, ch.x, ch.y, ch.w, ch.rowH)) {
+            ch.module.toggle();
+            UiSounds.toggle(ch.module.isEnabled());
+            return true;
+         }
+      }
       // Theme dock.
       for (int i = this.themeHits.size() - 1; i >= 0; i--) {
          ThemeHit th = this.themeHits.get(i);
@@ -591,6 +757,13 @@ public final class LarpRecodeGui {
    public void mouseDragged(float mx, float my) {
       for (SettingWidget w : this.activeWidgets) {
          w.mouseDragged(mx, my);
+      }
+   }
+
+   /** Handles mouse-wheel scrolling over the Corz column. */
+   public void mouseScrolled(float mx, float my, float scrollY) {
+      if (this.corzMaxScroll > 0.0F && this.hit(mx, my, this.corzColX, this.corzColY, this.corzColW, this.corzColH)) {
+         this.corzScroll.setTarget(Math.clamp(this.corzScroll.getTarget() + scrollY * 22.0F, 0.0F, this.corzMaxScroll));
       }
    }
 

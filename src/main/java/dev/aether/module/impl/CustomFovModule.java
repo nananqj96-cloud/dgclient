@@ -33,7 +33,7 @@ public class CustomFovModule extends Module {
    private long lastNanos = 0L;
 
    public CustomFovModule() {
-      super("CustomFOV", "Overrides the field of view", Category.MISC);
+      super("CustomFOV", "Overrides the field of view", Category.MOVEMENT);
       this.speedStrength.visibleWhen(this.speedFov::get);
    }
 

@@ -300,6 +300,10 @@ public class ModuleManager {
       if (this.clickGui.getKeybind().matches(i)) {
          this.openGuiAction.run();
          return true;
+      } else if (this.clickGui.larpRecodeKeybind != null && this.clickGui.larpRecodeKeybind.matches(i)) {
+         this.clickGui.larpRecodeGui.set(true);
+         this.openGuiAction.run();
+         return true;
       } else {
          boolean var2 = false;
 

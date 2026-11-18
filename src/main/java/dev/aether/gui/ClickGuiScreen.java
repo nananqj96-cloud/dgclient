@@ -1282,6 +1282,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
       if (this.isLarp()) {
+         this.larpGui.mouseScrolled(mx, my, (float) scrollY);
          return true;
       }
       if (this.corzPortWindow.mouseScrolled(mx, my, scrollY)) {
