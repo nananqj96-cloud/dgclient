@@ -71,4 +71,10 @@ public class LarpRecodeGuiGameTest implements FabricClientGameTest {
          world.close();
       }
    }
+
+   private static void require(boolean condition, String what) {
+      if (!condition) {
+         throw new AssertionError("FAILED: " + what);
+      }
+   }
 }
