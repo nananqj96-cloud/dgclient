@@ -3,7 +3,7 @@
   "id": "aetherclient",
   "version": "${version}",
   "name": "Aether Client",
-  "description": "Aether Client v2.2.0 — high-performance Minecraft 1.21.11 utility client with the Larp Recode v2 frosted-glass dashboard UI, full Vulxts + Corz Port feature set, DonutLarp basefinding port with enhanced SusChunk visualization, and a customizable HUD.",
+  "description": "Aether Client v2.2.0 — high-performance Minecraft 1.21.11 utility client with the Larp Recode v2 frosted-glass dashboard UI, a full feature set with Corz Port integration, DonutLarp basefinding port with enhanced SusChunk visualization, and a customizable HUD.",
   "authors": ["Aether Team"],
   "license": "MIT",
   "icon": "assets/aetherclient/icon.png",
