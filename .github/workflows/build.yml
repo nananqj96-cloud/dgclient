@@ -84,11 +84,19 @@ jobs:
           if [ $GT_STATUS -ne 0 ]; then
             python3 - << 'PY'
           from pathlib import Path
-          lines = [
-              l for l in Path("gametest.log").read_text(errors="replace").splitlines()
-              if "World loading finished:" not in l
-          ]
-          tail = "\n".join(lines[-120:])
+          log = Path("gametest.log").read_text(errors="replace")
+          # Extract lines with actual test failure indicators
+          fail_lines = []
+          for l in log.splitlines():
+              low = l.lower()
+              if any(k in low for k in ["failed", "assertionerror", "exception", "error:", "cannot", "caused by:", "fatal", "test failed"]):
+                  if "world loading finished:" not in low:
+                      fail_lines.append(l)
+          if fail_lines:
+              tail = "\n".join(fail_lines[-80:])
+          else:
+              lines = [l for l in log.splitlines() if "World loading finished:" not in l]
+              tail = "\n".join(lines[-120:])
           esc = tail.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
           print(f"::error title=GameTestLogTail::{esc}")
           PY
