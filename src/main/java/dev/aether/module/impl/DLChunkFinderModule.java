@@ -76,7 +76,7 @@ public class DLChunkFinderModule extends Module {
          mc.player.displayClientMessage(Component.literal("Golden chunk found at X " + bx + "  Z " + bz), false);
       }
       if (this.sound.get() && mc.player != null) {
-         mc.player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP.value(), 0.6F, 1.2F);
+         mc.player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6F, 1.2F);
       }
    }
 
@@ -97,8 +97,8 @@ public class DLChunkFinderModule extends Module {
       if (mc.player == null) {
          return;
       }
-      int pcx = (int) (mc.player.getX() >> 4);
-      int pcz = (int) (mc.player.getZ() >> 4);
+      int pcx = (int) (mc.player.getX() / 16.0);
+      int pcz = (int) (mc.player.getZ() / 16.0);
       int max = this.maxDistance.getInt();
       double y = this.yLevel.getFloat();
       double h = this.height.getFloat();

@@ -111,8 +111,8 @@ public class DLSusFinderModule extends Module {
       if (mc.player == null) {
          return;
       }
-      int pcx = (int) (mc.player.getX() >> 4);
-      int pcz = (int) (mc.player.getZ() >> 4);
+      int pcx = (int) (mc.player.getX() / 16.0);
+      int pcz = (int) (mc.player.getZ() / 16.0);
       int max = this.maxDistance.getInt();
       int r = this.areaRadius.getInt();
       double y = this.yLevel.getFloat();
