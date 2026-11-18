@@ -5,6 +5,7 @@ import dev.aether.config.ConfigStore;
 import dev.aether.corz.CorzPortBus;
 import dev.aether.corz.CorzPortProvider;
 import dev.aether.chunkbypass.ChunkBypassLedger;
+import dev.aether.donut.DonutNetworking;
 import dev.aether.gui.ClickGuiScreen;
 import dev.aether.hud.HudManager;
 import dev.aether.module.Category;
@@ -88,6 +89,7 @@ public class AetherClient implements ClientModInitializer {
       themes = new ThemeManager();
       soundSettings = new SoundSettings();
       modules = new ModuleManager();
+      DonutNetworking.register();
       spotify = new SpotifyService();
       notifications = new NotificationManager(themes, modules.hud);
       hud = new HudManager(modules, themes, spotify, notifications);

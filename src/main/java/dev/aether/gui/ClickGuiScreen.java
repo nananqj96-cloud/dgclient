@@ -99,6 +99,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float corzTabY;
    private float corzTabW;
    private float corzTabH;
+   private float themesTabX;
+   private float themesTabY;
+   private float themesTabW;
+   private float themesTabH;
 
    // Window drag (Dashboard header) & Column panel drag
    private boolean draggingWindow;
@@ -445,6 +449,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circle(tx + 18.0F, navY + th * 0.5F, 5.2F, theme.accent());
       vg.circleOutline(tx + 18.0F, navY + th * 0.5F, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Themes & Audio", tx + 32.0F, navY + th * 0.5F, 12.2F, themesActive ? theme.textPrimary() : (tHov ? theme.textPrimary() : theme.textMuted()));
+      this.themesTabX = tx;
+      this.themesTabY = navY;
+      this.themesTabW = tw;
+      this.themesTabH = th;
 
       // Bottom Config Profiles button
       this.cfgBtnW = SIDEBAR_W - 24.0F;
@@ -958,9 +966,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             }
             navY += 33.0F;
          }
-         // Advance past SUBTABS header (21) + Port row (37) + CUSTOMIZE header (15)
-         navY += 21.0F + 37.0F + 15.0F;
-         if (my >= navY && my <= navY + 30.0F) {
+         // Themes & Audio row — use the bounds captured during renderSidebar
+         if (btn == 0 && this.hit(mx, my, this.themesTabX, this.themesTabY, this.themesTabW, this.themesTabH)) {
             STATE.selectThemesTab();
             this.favouritesOnly = false;
             this.search.setLength(0);

@@ -45,6 +45,18 @@ public class LevelRendererMixin {
             ChunkFinderRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.chunkFinder);
          }
 
+         if (var3 && var6.dlSusFinder != null && var6.dlSusFinder.isEnabled()) {
+            var6.dlSusFinder.render(var1, var2, var4.cameraRenderState.pos);
+         }
+
+         if (var3 && var6.dlChunkFinder != null && var6.dlChunkFinder.isEnabled()) {
+            var6.dlChunkFinder.render(var1, var2, var4.cameraRenderState.pos);
+         }
+
+         if (var3 && var6.dlActivityInspector != null && var6.dlActivityInspector.isEnabled()) {
+            var6.dlActivityInspector.render(var1, var2, var4.cameraRenderState.pos);
+         }
+
          if (var3 && var6.chunkBypass != null && var6.chunkBypass.isEnabled()) {
             ChunkBypassRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.chunkBypass);
          }
