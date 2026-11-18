@@ -35,7 +35,9 @@
     "MouseHandlerMixin",
     "MultiPlayerGameModeAttackMixin",
     "PlayerTabOverlayMixin",
-    "PlayerEntityRendererMixin"
+    "PlayerEntityRendererMixin",
+    "ParticleManagerMixin",
+    "WorldWeatherMixin"
   ],
   "injectors": {
     "defaultRequire": 1
