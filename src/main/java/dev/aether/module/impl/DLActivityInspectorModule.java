@@ -81,7 +81,7 @@ public class DLActivityInspectorModule extends Module {
                   + " (" + a.players() + " " + plural + ")"), false);
          }
          if (this.sound.get() && mc.player != null) {
-            mc.player.playSound(SoundEvents.EXPERIENCE_BOTTLE_POP, 0.8F, 0.6F);
+            mc.player.playSound(SoundEvents.EXPERIENCE_BOTTLE_POP.value(), 0.8F, 0.6F);
          }
       }
       this.seen.clear();

@@ -76,7 +76,7 @@ public class DLChunkFinderModule extends Module {
          mc.player.displayClientMessage(Component.literal("Golden chunk found at X " + bx + "  Z " + bz), false);
       }
       if (this.sound.get() && mc.player != null) {
-         mc.player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.6F, 1.2F);
+         mc.player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP.value(), 0.6F, 1.2F);
       }
    }
 
