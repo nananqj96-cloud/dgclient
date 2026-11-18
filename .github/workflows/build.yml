@@ -173,15 +173,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BODY=$(cat gradle-build.log | head -c 8000)
-          gh issue create --title "CI Build Log - Run ${{ github.run_id }}" --body "## Gradle Build Log
-
-Run: ${{ github.run_id }}
-SHA: ${{ github.sha }}
-
-\`\`\`
-${BODY}
-\`\`\`"
+          {
+            echo "## Gradle Build Log"
+            echo ""
+            echo "Run: ${{ github.run_id }}"
+            echo "SHA: ${{ github.sha }}"
+            echo ""
+            echo "```"
+            head -c 8000 gradle-build.log
+            echo "```"
+          } > /tmp/issue-body.md
+          gh issue create --title "CI Build Log - Run ${{ github.run_id }}" --body-file /tmp/issue-body.md
 
       - name: Run real Minecraft 1.21.11 Client GameTests (PinkBloom + Synced Corz Port UI)
         run: |
