@@ -61,16 +61,16 @@ public class AutoPotModule extends Module {
       int prevSlot = player.getInventory().getSelectedSlot();
       float prevPitch = player.getXRot();
       player.getInventory().setSelectedSlot(slot);
-      player.setPitch((float) this.pitch.getFloat() - 1.0F + ThreadLocalRandom.current().nextFloat());
-      mc.interactionManager.interactItem(player, InteractionHand.MAIN_HAND);
-      player.setPitch(prevPitch);
+      player.setXRot((float) this.pitch.getFloat() - 1.0F + ThreadLocalRandom.current().nextFloat());
+      mc.gameMode.useItem(player, InteractionHand.MAIN_HAND);
+      player.setXRot(prevPitch);
       player.getInventory().setSelectedSlot(prevSlot);
       this.lastThrowNanos = now;
    }
 
    private static int findPotionSlot(LocalPlayer player) {
       for (int i = 0; i < 9; i++) {
-         if (player.getInventory().getStack(i).getItem() == Items.SPLASH_POTION) {
+         if (player.getInventory().getItem(i).getItem() == Items.SPLASH_POTION) {
             return i;
          }
       }

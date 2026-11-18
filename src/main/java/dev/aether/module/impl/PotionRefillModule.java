@@ -16,7 +16,7 @@ import net.minecraft.world.inventory.ClickType;
  */
 public class PotionRefillModule extends Module {
    public final SliderSetting delay = this.addSetting(
-      new SliderSetting("Delay", "Random milliseconds between each potion move", 30.0, 50.0, 0.0, 300.0, 1.0)
+      new SliderSetting("Delay", "Random milliseconds between each potion move", 30.0, 0.0, 300.0, 1.0)
    );
    public final BooleanSetting healthPotOnly = this.addSetting(
       new BooleanSetting("Health Pot Only", "Only refill Instant Health potions", false)
@@ -46,7 +46,7 @@ public class PotionRefillModule extends Module {
       }
       int emptyHotbar = -1;
       for (int i = 0; i < 9; i++) {
-         if (player.getInventory().getStack(i).getItem() == Items.AIR) {
+         if (player.getInventory().getItem(i).getItem() == Items.AIR) {
             emptyHotbar = i;
             break;
          }
@@ -60,7 +60,7 @@ public class PotionRefillModule extends Module {
          this.scheduleNext();
          return;
       }
-      mc.interactionManager.clickSlot(0, potionSlot, emptyHotbar, ClickType.QUICK_MOVE, player);
+      mc.gameMode.handleInventoryMouseClick(0, potionSlot, emptyHotbar, ClickType.QUICK_MOVE, player);
       this.lastMoveNanos = now;
       this.scheduleNext();
    }
@@ -72,8 +72,8 @@ public class PotionRefillModule extends Module {
    }
 
    private int findPotionSlot(LocalPlayer player) {
-      for (int i = 9; i < player.getInventory().size(); i++) {
-         if (player.getInventory().getStack(i).getItem() == Items.SPLASH_POTION) {
+      for (int i = 9; i < player.getInventory().getContainerSize(); i++) {
+         if (player.getInventory().getItem(i).getItem() == Items.SPLASH_POTION) {
             return i;
          }
       }

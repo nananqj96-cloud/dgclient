@@ -4,6 +4,7 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.ModeSetting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 
 /**
  * Client-side time of day. Lets you force day, noon, sunset, night or midnight regardless of the
@@ -36,7 +37,7 @@ public class TimeChangerModule extends Module {
       }
       Minecraft mc = Minecraft.getInstance();
       if (mc.level != null) {
-         mc.level.setDayTime(this.timeOfDay());
+         ((ClientLevel) mc.level).setDayTime(this.timeOfDay());
       }
    }
 }
