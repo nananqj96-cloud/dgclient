@@ -17,11 +17,11 @@ public final class DonutNetworking {
    }
 
    public static void register() {
-      PayloadTypeRegistry.clientboundPlay().register(BasesPayload.ID, BasesPayload.CODEC);
+      PayloadTypeRegistry.playS2C().register(BasesPayload.ID, BasesPayload.CODEC);
       ClientPlayNetworking.registerGlobalReceiver(BasesPayload.ID,
          (payload, context) -> context.client().execute(() -> BaseStore.handle(payload.data())));
 
-      PayloadTypeRegistry.clientboundPlay().register(ActivityPayload.ID, ActivityPayload.CODEC);
+      PayloadTypeRegistry.playS2C().register(ActivityPayload.ID, ActivityPayload.CODEC);
       ClientPlayNetworking.registerGlobalReceiver(ActivityPayload.ID,
          (payload, context) -> context.client().execute(() -> ActivityStore.handle(payload.data())));
 
