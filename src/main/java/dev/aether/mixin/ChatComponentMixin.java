@@ -30,6 +30,10 @@ public class ChatComponentMixin {
             result = modules.nameProtect.censorChat(result);
          }
 
+         if (modules.fakeCoordinates != null && modules.fakeCoordinates.isEnabled()) {
+            result = modules.fakeCoordinates.spoof(result);
+         }
+
          return result;
       }
    }

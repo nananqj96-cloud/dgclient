@@ -6,6 +6,10 @@ import dev.aether.module.ModuleManager;
 import dev.aether.render.AccessoryRenderer;
 import dev.aether.render.AirParticlesRenderer;
 import dev.aether.render.BlockEspRenderer;
+import dev.aether.render.HeatColorRenderer;
+import dev.aether.render.LootEspRenderer;
+import dev.aether.render.TargetEspRenderer;
+import dev.aether.render.WaypointsRenderer;
 import dev.aether.render.BlockOutlineRenderer;
 import dev.aether.render.ChunkBypassRenderer;
 import dev.aether.render.ChunkFinderRenderer;
@@ -115,6 +119,22 @@ public class LevelRendererMixin {
 
          if (var3 && var6.playerTrail != null && var6.playerTrail.isEnabled()) {
             PlayerTrailRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.playerTrail);
+         }
+
+         if (var3 && var6.heatColor != null && var6.heatColor.isEnabled()) {
+            HeatColorRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.heatColor);
+         }
+
+         if (var3 && var6.waypoints != null && var6.waypoints.isEnabled()) {
+            WaypointsRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.waypoints);
+         }
+
+         if (var3 && var6.targetEsp != null && var6.targetEsp.isEnabled()) {
+            TargetEspRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.targetEsp);
+         }
+
+         if (var3 && var6.lootEsp != null && var6.lootEsp.isEnabled()) {
+            LootEspRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.lootEsp);
          }
 
          if (var3 && var6.customAccessories != null && var6.customAccessories.isEnabled()) {
