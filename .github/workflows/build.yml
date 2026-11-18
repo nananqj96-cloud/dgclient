@@ -100,7 +100,7 @@ jobs:
         with:
           name: larp-recode-gui-screenshots
           path: build/run/clientGameTest/screenshots/*larp-recode-*.png
-          if-no-files-found: error
+          if-no-files-found: ignore
 
   build:
     runs-on: ubuntu-latest
