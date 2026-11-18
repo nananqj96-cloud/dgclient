@@ -32,7 +32,7 @@ public class FastPlaceModule extends Module {
    }
 
    public int cooldownValue() {
-      int c = (int) this.cooldown.get();
+      int c = this.cooldown.getInt();
       if (this.anticheatSafe.get() && c < 2) {
          // Randomize between 2-4 to look less suspicious.
          c = java.util.concurrent.ThreadLocalRandom.current().nextInt(2, 5);

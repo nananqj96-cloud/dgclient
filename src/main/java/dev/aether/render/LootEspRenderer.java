@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import dev.aether.module.impl.LootESPModule;
 import dev.aether.util.Colors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -37,7 +38,7 @@ public final class LootEspRenderer {
       Pose pose = poseStack.last();
       VertexConsumer lines = bufferSource.getBuffer(FlatOverlay.LINES);
 
-      for (BlockEntity be : mc.level.getBlockEntities()) {
+      for (BlockEntity be : ((ClientLevel) mc.level).getBlockEntities()) {
          if (!isLootBlock(be, module)) {
             continue;
          }

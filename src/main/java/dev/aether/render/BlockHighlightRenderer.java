@@ -30,8 +30,8 @@ public final class BlockHighlightRenderer {
       if (!(hit instanceof BlockHitResult blockHit)) {
          return;
       }
-      AABB box = mc.level.getBlockState(blockHit.getBlockPos()).getOcclusionShape().toBoundingBox(blockHit.getBlockPos());
-      if (box == null || box.isEmpty()) {
+      AABB box = mc.level.getBlockState(blockHit.getBlockPos()).getOcclusionShape().bounds();
+      if (box == null || box.getSize() == 0.0) {
          box = new AABB(blockHit.getBlockPos());
       }
 

@@ -56,9 +56,12 @@ public class ParticleManagerMixin {
       if (type == null) {
          return false;
       }
-      String id = type.id().getPath();
-      return id.equals("fire") || id.equals("flame") || id.equals("smoke")
-         || id.equals("large_smoke") || id.equals("campfire_cosy_smoke")
-         || id.equals("campfire_signal_smoke");
+      return type == ParticleTypes.FLAME
+         || type == ParticleTypes.SMOKE
+         || type == ParticleTypes.LARGE_SMOKE
+         || type == ParticleTypes.CAMPFIRE_COSY_SMOKE
+         || type == ParticleTypes.CAMPFIRE_SIGNAL_SMOKE
+         || type == ParticleTypes.COPPER_FIRE_FLAME
+         || type == ParticleTypes.SOUL_FIRE_FLAME;
    }
 }

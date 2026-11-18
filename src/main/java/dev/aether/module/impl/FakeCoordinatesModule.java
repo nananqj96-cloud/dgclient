@@ -66,7 +66,7 @@ public class FakeCoordinatesModule extends Module {
       }
       String s = text.getString();
       String fake = this.spoof(s);
-      return net.minecraft.network.chat.Text.literal(fake);
+      return net.minecraft.network.chat.Component.literal(fake);
    }
 
    private static double parseDouble(String s) {

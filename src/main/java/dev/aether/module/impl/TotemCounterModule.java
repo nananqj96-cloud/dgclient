@@ -29,9 +29,9 @@ public class TotemCounterModule extends Module {
          return 0;
       }
       int count = 0;
-      net.minecraft.entity.player.PlayerInventory inv = mc.player.getInventory();
-      for (int i = 0; i < inv.size(); i++) {
-         if (inv.getStack(i).getItem() == net.minecraft.item.Items.TOTEM_OF_UNDYING) {
+      net.minecraft.world.entity.player.Inventory inv = mc.player.getInventory();
+      for (int i = 0; i < inv.getContainerSize(); i++) {
+         if (inv.getItem(i).getItem() == net.minecraft.world.item.Items.TOTEM_OF_UNDYING) {
             count++;
          }
       }

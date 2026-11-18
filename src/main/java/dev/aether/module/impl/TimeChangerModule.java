@@ -37,7 +37,7 @@ public class TimeChangerModule extends Module {
       }
       Minecraft mc = Minecraft.getInstance();
       if (mc.level != null) {
-         ((ClientLevel) mc.level).setDayTime(this.timeOfDay());
+         ((ClientLevel) mc.level).getLevelData().setDayTime(this.timeOfDay());
       }
    }
 }

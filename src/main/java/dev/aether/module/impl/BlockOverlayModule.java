@@ -66,7 +66,7 @@ public class BlockOverlayModule extends Module {
    }
 
    private static int rainbowColor() {
-      float hue = (System.nanoTime() / 1.0E9 * 60.0F) % 360.0F;
+      float hue = (float) ((System.nanoTime() / 1.0E9 * 60.0F) % 360.0F);
       return dev.aether.util.Colors.hsvToRgb(hue, 1.0F, 1.0F) & 16777215;
    }
 }
