@@ -134,7 +134,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    }
 
    public ClickGuiScreen(Screen parent) {
-      super(Component.literal("LARP RECODE"));
+      super(Component.literal("VULXTS CLIENT"));
       this.parent = parent;
       STATE.ensureDefaultLayout(OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
       ModuleManager modules = AetherClient.modules();
@@ -1431,7 +1431,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       BlockGridModel model = new BlockGridModel(setting, () -> {
          BlockEspModule mod = AetherClient.modules().blockEsp;
          return mod != null ? mod.lineColor.get() : 0xFFFF66C4;
-      }, "LARP RECODE");
+      }, "VULXTS CLIENT");
       this.minecraft.setScreen(new IconPickerScreen(this, model, AetherClient.themes()));
    }
 
