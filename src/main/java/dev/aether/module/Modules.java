@@ -60,6 +60,9 @@ public final class Modules {
       public final ModeSetting font = this.addSetting(
          new ModeSetting("Font", "GUI font (Xuong TTF or vanilla-style)", "Xuong", "Xuong", "Vanilla")
       );
+      public final BooleanSetting experimentalMinimalGui = this.addSetting(
+         new BooleanSetting("Experimental Minimal GUI", "Show the minimal experimental GUI instead of the full dashboard", false)
+      );
 
       public ClickGuiModule() {
          super("Aether Client", "Opens the Aether Client control dashboard.", Category.CLIENT);

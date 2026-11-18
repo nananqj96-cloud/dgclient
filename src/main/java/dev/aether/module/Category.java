@@ -5,7 +5,8 @@ public enum Category {
    MISC("Misc", "misc"),
    RENDER("Render", "render"),
    VISUALS("Visuals", "visuals"),
-   CLIENT("Client", "client");
+   CLIENT("Client", "client"),
+   DONUT("Donut", "donut");
 
    private final String displayName;
    private final String iconId;

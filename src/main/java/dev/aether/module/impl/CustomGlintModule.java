@@ -44,6 +44,9 @@ public class CustomGlintModule extends Module {
    public final SliderSetting speed = this.addSetting(
       new SliderSetting("Speed", "Rainbow cycle speed", 100.0, 10.0, 300.0, 10.0, "%")
    );
+   public final BooleanSetting nonEnchanted = this.addSetting(
+      new BooleanSetting("Non-Enchanted Glint", "Apply the glint effect to items without enchantments", false)
+   );
 
    public CustomGlintModule() {
       super("CustomGlint", "Recolors or restyles the enchantment glint", Category.MISC);
