@@ -7,9 +7,9 @@ import dev.aether.module.impl.BlockOverlayModule;
 import dev.aether.util.Colors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Box;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Box;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 

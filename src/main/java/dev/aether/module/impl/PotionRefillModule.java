@@ -7,8 +7,8 @@ import dev.aether.settings.SliderSetting;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.inventory.SlotActionType;
 
 /**
  * Automatically moves Instant Health potions from your inventory into empty hotbar slots, so your

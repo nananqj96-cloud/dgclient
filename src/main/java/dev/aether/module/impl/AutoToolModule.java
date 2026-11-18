@@ -3,14 +3,14 @@ package dev.aether.module.impl;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.inventory.PlayerInventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.core.BlockPos;
 
 /**
  * Automatically swaps to the best tool in your hotbar for the block you are mining, then (optionally)
