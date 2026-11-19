@@ -1,8 +1,6 @@
 package dev.aether.render;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.aether.module.impl.SkyLyricsModule;
@@ -27,7 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.NativeImageBackedTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
@@ -97,7 +95,7 @@ public final class WorldTextRenderer {
       float radius = module.distance.getFloat();
       float height = module.height.getFloat();
       float tilt = (float)Math.toRadians(module.maxRotation.getInt());
-      float rotation = (float)module.rotationSpeed.get();
+      float rotation = module.rotationSpeed.getFloat();
       boolean glow = module.glow.get();
       int gray = module.grayColor.get();
       int white = module.whiteColor.get();
@@ -130,9 +128,9 @@ public final class WorldTextRenderer {
          float sa = (float)Math.sin(a);
 
          Vector3f pos = new Vector3f(
-            camera.x + ca * radius,
-            camera.y + height,
-            camera.z + sa * radius
+            (float)camera.x + ca * radius,
+            (float)camera.y + height,
+            (float)camera.z + sa * radius
          );
          Vector3f right = new Vector3f(-sa, 0.0F, ca);
          Vector3f norm = new Vector3f(-ca, 0.0F, -sa);
@@ -263,27 +261,10 @@ public final class WorldTextRenderer {
             nativeImage.setPixel(i % ATLAS_SIZE, i / ATLAS_SIZE, rgb[i]);
          }
          TextureManager texMgr = mc.getTextureManager();
-         texMgr.register(ATLAS_ID, new AtlasTexture(nativeImage));
+         texMgr.register(ATLAS_ID, new NativeImageBackedTexture(() -> "aetherclient:sky_lyrics_atlas", nativeImage));
          atlasReady = true;
       } catch (Throwable t) {
          // Font/AWT failure — leave the atlas unbuilt; render() simply returns.
-      }
-   }
-
-   /** Dynamic texture that uploads a rasterized glyph atlas to the GPU. */
-   private static final class AtlasTexture extends AbstractTexture {
-      private final NativeImage image;
-
-      AtlasTexture(NativeImage image) {
-         this.image = image;
-      }
-
-      @Override
-      public void upload() {
-         GpuTexture gpu = getTexture();
-         if (gpu != null) {
-            RenderSystem.getDevice().createCommandEncoder().writeToTexture(gpu, image);
-         }
       }
    }
 
