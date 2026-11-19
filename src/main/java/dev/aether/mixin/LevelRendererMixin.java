@@ -151,6 +151,10 @@ public class LevelRendererMixin {
             AccessoryRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.customAccessories);
          }
 
+         if (var6.accessories != null && var6.accessories.equippedCount() > 0) {
+            AccessoryRenderer.renderEquipped(var1, var2, var4.cameraRenderState.pos, var6.accessories);
+         }
+
          if (var6.freecam != null && var6.freecam.isActive()) {
             var5.cancel();
          } else if (var6.blockOutline.isEnabled()) {

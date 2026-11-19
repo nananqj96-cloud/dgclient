@@ -6,6 +6,9 @@ import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
+import dev.aether.accessory.AccessoriesModule;
+import dev.aether.accessory.Accessory;
+import dev.aether.accessory.AccessoryType;
 import dev.aether.module.impl.CustomAccessoriesModule;
 import dev.aether.util.Colors;
 import java.util.Deque;
@@ -455,6 +458,341 @@ public final class AccessoryRenderer {
          prevX = x;
          prevZ = z;
       }
+   }
+
+   /**
+    * Renders the accessories equipped through the Accessories popup on the real player: crown &
+    * halo above the head, horns on the head, mask across the face, wings & cape & backpack on the
+    * back and drifting feathers around the body. Everything follows the player's body rotation,
+    * animates (wing flap, cape sway, halo spin) and is drawn with no depth test so it stays visible
+    * in first person, F5 and third person. Every accessory carries the Aether mark glyph.
+    */
+   public static void renderEquipped(BufferSource bufferSource, PoseStack poseStack, Vec3 cam, AccessoriesModule module) {
+      Minecraft mc = Minecraft.getInstance();
+      LocalPlayer player = mc.player;
+      if (player == null || mc.level == null) {
+         return;
+      }
+      float pt = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+      double px = Mth.lerp((double)pt, player.xo, player.getX());
+      double py = Mth.lerp((double)pt, player.yo, player.getY());
+      double pz = Mth.lerp((double)pt, player.zo, player.getZ());
+      float bodyYaw = Mth.rotLerp(pt, player.yBodyRotO, player.yBodyRot);
+      float height = player.getBbHeight();
+      long now = System.nanoTime();
+      float time = (float)(now % 1000000000000L) / 1.0E9F;
+      Camera camera = mc.gameRenderer.getMainCamera();
+      Vector3f fwd = new Vector3f(camera.forwardVector());
+      Vector3f bRight = new Vector3f();
+      fwd.cross(new Vector3f(0.0F, 1.0F, 0.0F), bRight);
+      if (bRight.lengthSquared() < 1.0E-6F) {
+         bRight.set(1.0F, 0.0F, 0.0F);
+      }
+
+      bRight.normalize();
+      Vector3f bUp = new Vector3f();
+      bRight.cross(fwd, bUp);
+      bUp.normalize();
+      Pose pose = poseStack.last();
+
+      // World-space player axes from body yaw.
+      float yawRad = bodyYaw * (float)(Math.PI / 180.0);
+      float fx = -Mth.sin((double)yawRad);
+      float fz = Mth.cos((double)yawRad);
+      float rx = fz;
+      float rz = -fx;
+      float backX = -fx;
+      float backZ = -fz;
+
+      Accessory crown = module.equippedAccessory(AccessoryType.CROWN);
+      Accessory halo = module.equippedAccessory(AccessoryType.HALOS);
+      Accessory horns = module.equippedAccessory(AccessoryType.HORNS);
+      Accessory mask = module.equippedAccessory(AccessoryType.MASKS);
+      Accessory wings = module.equippedAccessory(AccessoryType.WINGS);
+      Accessory feathers = module.equippedAccessory(AccessoryType.FEATHERS);
+      Accessory cape = module.equippedAccessory(AccessoryType.CAPE);
+      Accessory pack = module.equippedAccessory(AccessoryType.BACKPACKS);
+
+      VertexConsumer fill = bufferSource.getBuffer(FlatOverlay.FILL);
+      VertexConsumer glyphs = bufferSource.getBuffer(RenderTypes.entityTranslucentEmissive(TEXTURE_AETHER));
+
+      if (wings != null) {
+         renderWings(fill, glyphs, pose, cam, px, py, pz, height, rx, rz, backX, backZ, time, wings);
+      }
+      if (cape != null) {
+         renderEquippedCape(fill, glyphs, pose, cam, px, py, pz, height, rx, rz, backX, backZ, time, cape);
+      }
+      if (pack != null) {
+         renderBackpack(fill, glyphs, pose, cam, px, py, pz, height, rx, rz, backX, backZ, time, pack);
+      }
+      if (feathers != null) {
+         renderFeathers(fill, glyphs, pose, cam, px, py, pz, height, rx, rz, time, feathers);
+      }
+      if (crown != null) {
+         renderEquippedCrown(glyphs, pose, cam, bRight, bUp, px, py, pz, height, time, crown);
+      }
+      if (halo != null) {
+         renderEquippedHalo(glyphs, pose, cam, bRight, bUp, px, py, pz, height, time, halo);
+      }
+      if (horns != null) {
+         renderHorns(fill, glyphs, pose, cam, px, py, pz, height, rx, rz, fx, fz, time, horns);
+      }
+      if (mask != null) {
+         renderMask(fill, glyphs, pose, cam, px, py, pz, height, rx, rz, fx, fz, time, mask);
+      }
+
+      FlatOverlay.flush(bufferSource);
+   }
+
+   private static void renderWings(
+      VertexConsumer fill, VertexConsumer glyphs, Pose pose, Vec3 cam,
+      double px, double py, double pz, float height,
+      float rx, float rz, float backX, float backZ, float time, Accessory wings
+   ) {
+      float flap = 1.0F + 0.16F * Mth.sin((double)(time * 3.0F));
+      float shoulderY = (float)py + height * 0.76F;
+      float cxr = (float)(px - cam.x);
+      float czr = (float)(pz - cam.z);
+      int primary = wings.primary();
+      int secondary = wings.secondary();
+
+      for (int side = -1; side <= 1; side += 2) {
+         // Four feather quads fanning out from the shoulder, each with an Aether mark at its base.
+         for (int i = 0; i < 4; i++) {
+            float spread = (float)(i + 1) * 0.34F;
+            float len = (0.55F + i * 0.22F) * flap;
+            float dx = rx * spread * side;
+            float dz = rz * spread * side;
+            float dy = -spread * 0.42F;
+            float x0 = cxr + backX * 0.12F + dx;
+            float y0 = shoulderY + dy;
+            float z0 = czr + backZ * 0.12F + dz;
+            float x1 = cxr + backX * 0.12F + dx + rx * len * 0.75F * side;
+            float y1 = shoulderY + dy - len * 0.30F;
+            float z1 = czr + backZ * 0.12F + dz + rz * len * 0.75F * side;
+            int col = lerpRgb(primary, secondary, i / 4.0F);
+            int argb = withA(col, 0.9F);
+            v(fill, pose, x0, y0, z0, argb);
+            v(fill, pose, x0 + rz * 0.10F * side, y0, z0 - rx * 0.10F * side, withA(col, 0.75F));
+            v(fill, pose, x1 + rz * 0.10F * side, y1, z1 - rx * 0.10F * side, withA(col, 0.75F));
+            v(fill, pose, x1, y1, z1, argb);
+            // Aether mark glyph on the wing root.
+            diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), x0, y0 + 0.03F, z0, 0.05F, withA(secondary, 0.95F));
+         }
+      }
+   }
+
+   private static void renderEquippedCape(
+      VertexConsumer fill, VertexConsumer glyphs, Pose pose, Vec3 cam,
+      double px, double py, double pz, float height,
+      float rx, float rz, float backX, float backZ, float time, Accessory cape
+   ) {
+      float sway = Mth.sin((double)(time * 1.3F)) * 0.05F;
+      float shoulderY = (float)py + height * 0.78F;
+      float cxr = (float)(px - cam.x);
+      float czr = (float)(pz - cam.z);
+      int top = cape.primary();
+      int bottom = darkenRgb(cape.secondary(), 0.25F);
+      int rows = 8;
+      int cols = 6;
+
+      for (int r = 0; r < rows; r++) {
+         float fr0 = (float)r / (float)rows;
+         float fr1 = (float)(r + 1) / (float)rows;
+         float droop = fr0 * fr0 * 0.22F + sway * fr0;
+         for (int c = 0; c < cols; c++) {
+            float u0 = (float)c / (float)cols - 0.5F;
+            float u1 = (float)(c + 1) / (float)cols - 0.5F;
+            float wave = Mth.sin((double)(time * 5.0F - fr0 * 4.0F + (float)c * 0.6F)) * 0.04F * fr0;
+            float x0 = cxr + backX * (0.12F + droop + wave) + rx * u0 * 0.62F;
+            float x1 = cxr + backX * (0.12F + droop + wave) + rx * u1 * 0.62F;
+            float y0 = shoulderY - fr0 * 1.0F;
+            float y1 = shoulderY - fr1 * 1.0F;
+            float z0 = czr + backZ * (0.12F + droop + wave) + rz * u0 * 0.62F;
+            float z1 = czr + backZ * (0.12F + droop + wave) + rz * u1 * 0.62F;
+            int c0 = lerpRgb(top, bottom, fr0);
+            int c1 = lerpRgb(top, bottom, fr1);
+            int a0 = withA(c0, 0.88F - 0.06F * fr0);
+            int a1 = withA(c1, 0.88F - 0.06F * fr1);
+            v(fill, pose, x0, y0, z0, a0);
+            v(fill, pose, x1, y0, z1, a0);
+            v(fill, pose, x1, y1, z1, a1);
+            v(fill, pose, x0, y1, z0, a1);
+         }
+      }
+      // Aether mark on the cape's upper center.
+      float markY = shoulderY - 0.16F;
+      float markX = cxr + backX * 0.14F;
+      float markZ = czr + backZ * 0.14F;
+      diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), markX, markY, markZ, 0.07F, withA(cape.secondary(), 0.95F));
+   }
+
+   private static void renderBackpack(
+      VertexConsumer fill, VertexConsumer glyphs, Pose pose, Vec3 cam,
+      double px, double py, double pz, float height,
+      float rx, float rz, float backX, float backZ, float time, Accessory pack
+   ) {
+      float bob = Mth.sin((double)(time * 2.0F)) * 0.02F;
+      float topY = (float)py + height * 0.62F + bob;
+      float botY = (float)py + height * 0.34F + bob;
+      float cxr = (float)(px - cam.x);
+      float czr = (float)(pz - cam.z);
+      float halfW = 0.24F;
+      float depth = 0.12F;
+      int col = pack.primary();
+      int colDark = darkenRgb(pack.secondary(), 0.3F);
+
+      // Front face
+      int f00 = withA(col, 0.95F);
+      int f11 = withA(colDark, 0.95F);
+      float fx0 = cxr + backX * (0.14F + depth) + rx * -halfW;
+      float fx1 = cxr + backX * (0.14F + depth) + rx * halfW;
+      float fz0 = czr + backZ * (0.14F + depth) + rz * -halfW;
+      float fz1 = czr + backZ * (0.14F + depth) + rz * halfW;
+      v(fill, pose, fx0, topY, fz0, f00);
+      v(fill, pose, fx1, topY, fz1, f00);
+      v(fill, pose, fx1, botY, fz1, f11);
+      v(fill, pose, fx0, botY, fz0, f11);
+      // Straps over the shoulders
+      line(fill, pose, cxr + rx * -0.16F, topY + 0.02F, czr + rz * -0.16F,
+         cxr + rx * -0.16F, (float)py + height * 0.80F, czr + rz * -0.16F, withA(colDark, 0.9F), 2.0F);
+      line(fill, pose, cxr + rx * 0.16F, topY + 0.02F, czr + rz * 0.16F,
+         cxr + rx * 0.16F, (float)py + height * 0.80F, czr + rz * 0.16F, withA(colDark, 0.9F), 2.0F);
+      // Aether mark on the pack front
+      diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F),
+         cxr + backX * (0.14F + depth), (topY + botY) * 0.5F, czr + backZ * (0.14F + depth), 0.06F, withA(pack.secondary(), 0.95F));
+   }
+
+   private static void renderFeathers(
+      VertexConsumer fill, VertexConsumer glyphs, Pose pose, Vec3 cam,
+      double px, double py, double pz, float height,
+      float rx, float rz, float time, Accessory feathers
+   ) {
+      float baseY = (float)py + height * 0.55F;
+      float cxr = (float)(px - cam.x);
+      float czr = (float)(pz - cam.z);
+      int col = feathers.primary();
+      int colBright = feathers.secondary();
+
+      for (int i = 0; i < 7; i++) {
+         float a = time * 0.6F + (float)i * ((float)(Math.PI * 2) / 7.0F);
+         float radius = 0.55F + 0.18F * Mth.sin((double)(time * 1.2F + i));
+         float ox = Mth.cos((double)a) * radius;
+         float oz = Mth.sin((double)a) * radius;
+         float oy = baseY + 0.25F + Mth.sin((double)(time * 1.5F + i * 1.3F)) * 0.16F;
+         float bx = cxr + ox;
+         float bz = czr + oz;
+         float s = 0.07F;
+         float sB = s * 1.6F;
+         int core = withA(colBright, 0.9F);
+         int glow = withA(col, 0.3F);
+         v(fill, pose, bx, oy - sB, bz, core);
+         v(fill, pose, bx + s, oy, bz, core);
+         v(fill, pose, bx, oy + sB, bz, core);
+         v(fill, pose, bx - s, oy, bz, core);
+         diamond(glyphs, pose, new Vector3f(1.0F, 0.0F, 0.0F), new Vector3f(0.0F, 1.0F, 0.0F), bx, oy, bz, s * 0.9F, glow);
+      }
+   }
+
+   private static void renderEquippedCrown(
+      VertexConsumer glyphs, Pose pose, Vec3 cam, Vector3f right, Vector3f up,
+      double px, double py, double pz, float height, float time, Accessory crown
+   ) {
+      float bob = Mth.sin((double)(time * 2.0F)) * 0.04F;
+      float bx = (float)(px - cam.x);
+      float by = (float)(py - cam.y) + height + 0.52F + bob;
+      float bz = (float)(pz - cam.z);
+      float half = 0.30F;
+      float angle = time * 1.2F;
+      float ca = Mth.cos((double)angle);
+      float sa = Mth.sin((double)angle);
+      Vector3f rAx = axis(right, up, ca * half, sa * half);
+      Vector3f uAx = axis(right, up, -sa * half, ca * half);
+      int argb = withA(crown.secondary(), 0.98F);
+      tex(glyphs, pose, bx - rAx.x - uAx.x, by - rAx.y - uAx.y, bz - rAx.z - uAx.z, 0.0F, 0.0F, argb, 0.0F, 0.0F, -1.0F);
+      tex(glyphs, pose, bx - rAx.x + uAx.x, by - rAx.y + uAx.y, bz - rAx.z + uAx.z, 0.0F, 1.0F, argb, 0.0F, 0.0F, -1.0F);
+      tex(glyphs, pose, bx + rAx.x + uAx.x, by + rAx.y + uAx.y, bz + rAx.z + uAx.z, 1.0F, 1.0F, argb, 0.0F, 0.0F, -1.0F);
+      tex(glyphs, pose, bx + rAx.x - uAx.x, by + rAx.y - uAx.y, bz + rAx.z - uAx.z, 1.0F, 0.0F, argb, 0.0F, 0.0F, -1.0F);
+   }
+
+   private static void renderEquippedHalo(
+      VertexConsumer glyphs, Pose pose, Vec3 cam, Vector3f right, Vector3f up,
+      double px, double py, double pz, float height, float time, Accessory halo
+   ) {
+      float bob = Mth.sin((double)(time * 1.6F)) * 0.05F;
+      float bx = (float)(px - cam.x);
+      float by = (float)(py - cam.y) + height + 0.78F + bob;
+      float bz = (float)(pz - cam.z);
+      float angle = time * 0.9F;
+      float ca = Mth.cos((double)angle);
+      float sa = Mth.sin((double)angle);
+      float r = 0.38F;
+      Vector3f rAx = axis(right, up, ca * r, sa * r);
+      Vector3f uAx = axis(right, up, -sa * r, ca * r);
+      int argb = withA(halo.secondary(), 0.95F);
+      tex(glyphs, pose, bx - rAx.x - uAx.x, by - rAx.y - uAx.y, bz - rAx.z - uAx.z, 0.0F, 0.0F, argb, 0.0F, 1.0F, 0.0F);
+      tex(glyphs, pose, bx - rAx.x + uAx.x, by - rAx.y + uAx.y, bz - rAx.z + uAx.z, 0.0F, 1.0F, argb, 0.0F, 1.0F, 0.0F);
+      tex(glyphs, pose, bx + rAx.x + uAx.x, by + rAx.y + uAx.y, bz + rAx.z + uAx.z, 1.0F, 1.0F, argb, 0.0F, 1.0F, 0.0F);
+      tex(glyphs, pose, bx + rAx.x - uAx.x, by + rAx.y - uAx.y, bz + rAx.z - uAx.z, 1.0F, 0.0F, argb, 0.0F, 1.0F, 0.0F);
+      // Aether mark hovering in the halo's center.
+      diamond(glyphs, pose, right, up, bx, by, bz, 0.07F, withA(halo.primary(), 0.95F));
+   }
+
+   private static void renderHorns(
+      VertexConsumer fill, VertexConsumer glyphs, Pose pose, Vec3 cam,
+      double px, double py, double pz, float height,
+      float rx, float rz, float fx, float fz, float time, Accessory horns
+   ) {
+      float bob = Mth.sin((double)(time * 2.2F)) * 0.03F;
+      float headY = (float)py + height + 0.42F + bob;
+      float cxr = (float)(px - cam.x);
+      float czr = (float)(pz - cam.z);
+      int col = horns.primary();
+      int colBright = horns.secondary();
+
+      for (int side = -1; side <= 1; side += 2) {
+         // Horn curves outward and upward from the temple.
+         float baseX = cxr + rx * side * 0.16F;
+         float baseZ = czr + rz * side * 0.16F;
+         float tipX = cxr + rx * side * 0.42F + fx * 0.10F;
+         float tipY = headY + 0.30F;
+         float tipZ = czr + rz * side * 0.42F + fz * 0.10F;
+         line(fill, pose, baseX, headY, baseZ, tipX, tipY, tipZ, withA(col, 0.95F), 3.2F);
+         line(fill, pose, baseX, headY - 0.04F, baseZ, baseX + rx * side * 0.06F, headY + 0.06F, baseZ + rz * side * 0.06F, withA(colBright, 0.9F), 1.8F);
+         // Aether mark at the horn base.
+         diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), baseX, headY + 0.02F, baseZ, 0.045F, withA(colBright, 0.95F));
+      }
+   }
+
+   private static void renderMask(
+      VertexConsumer fill, VertexConsumer glyphs, Pose pose, Vec3 cam,
+      double px, double py, double pz, float height,
+      float rx, float rz, float fx, float fz, float time, Accessory mask
+   ) {
+      float bob = Mth.sin((double)(time * 2.6F)) * 0.02F;
+      float faceY = (float)py + height * 0.86F + bob;
+      float cxr = (float)(px - cam.x);
+      float czr = (float)(pz - cam.z);
+      float halfW = 0.20F;
+      float halfH = 0.13F;
+      int col = mask.primary();
+      int colBright = mask.secondary();
+
+      float x0 = cxr + fx * 0.14F + rx * -halfW;
+      float x1 = cxr + fx * 0.14F + rx * halfW;
+      float y0 = faceY - halfH;
+      float y1 = faceY + halfH;
+      float z0 = czr + fz * 0.14F + rz * -halfW;
+      float z1 = czr + fz * 0.14F + rz * halfW;
+      v(fill, pose, x0, y0, z0, withA(col, 0.92F));
+      v(fill, pose, x1, y0, z1, withA(col, 0.92F));
+      v(fill, pose, x1, y1, z1, withA(darkenRgb(col, 0.2F), 0.92F));
+      v(fill, pose, x0, y1, z0, withA(darkenRgb(col, 0.2F), 0.92F));
+      // Glowing visor line + Aether mark on the mask.
+      line(fill, pose, x0 + rx * halfW * 0.1F, y0 + 0.03F, z0 + rz * halfW * 0.1F,
+         x1 - rx * halfW * 0.1F, y0 + 0.03F, z1 - rz * halfW * 0.1F, withA(colBright, 0.95F), 1.6F);
+      diamond(glyphs, pose, new Vector3f(fz, 0.0F, -fx), new Vector3f(0.0F, 1.0F, 0.0F),
+         cxr + fx * 0.14F, faceY, czr + fz * 0.14F, 0.05F, withA(colBright, 0.95F));
    }
 
    private static void v(VertexConsumer buf, Pose pose, float x, float y, float z, int argb) {

@@ -1,28 +1,48 @@
 package dev.aether.module.impl;
 
-import dev.aether.corz.CorzPortBus;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dev.aether.AetherClient;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.SliderSetting;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import dev.aether.spotify.SpotifyState;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Sky Lyrics — renders the lyrics the Corz Spotify HUD already fetches as large, gently rotated
- * text floating in the sky ahead of the player. It reuses the exact data the Corz Spotify HUD
- * uses (its cached lyrics document + current track position) through a small reflection bridge,
- * so no Spotify/API/lyrics-fetching code is duplicated here.
+ * Sky Lyrics — reads the current track from the client's own Spotify stack (SpotifyService,
+ * backed by SpotifyMediaBridge / SpotifyWindowTitle / WindowsSpotify), fetches and caches the
+ * synced lyrics for that track itself, and exposes them as a snapshot the SkyLyricsRenderer
+ * draws as large, gently rotated text floating in the sky ahead of the player.
  *
  * <p>Each word is its own element with a slight random rotation (clamped to ±15°), a small
- * random vertical offset and slight size variation, so the lines look hand-placed rather than
- * machine-straight. Unsung words are gray; the moment the song reaches a word's timestamp the
- * word fades to white, picks a fresh random rotation and does a short 1.1x ease-out bump.
+ * random vertical offset and slight size variation. Unsung words are gray; the moment the song
+ * reaches a word's timestamp the word fades to white, picks a fresh random rotation and does a
+ * short 1.1x ease-out bump.
  */
 public class SkyLyricsModule extends Module {
+   private static final Pattern LINE_TS = Pattern.compile("\\[(\\d{1,3}):(\\d{1,2})(?:[.:](\\d{1,3}))?\\]");
+   private static final Pattern WORD_TS = Pattern.compile("<(\\d{1,3}):(\\d{1,2})(?:[.:](\\d{1,3}))?>");
+   private static final int MAX_CACHE = 24;
+
    public final SliderSetting textScale = this.addSetting(
       new SliderSetting("Text Scale", "Size of the sky lyrics", 1.0, 0.4, 2.5, 0.1)
    );
@@ -51,122 +71,249 @@ public class SkyLyricsModule extends Module {
       new SliderSetting("Time Offset", "Shift the lyrics timing", 0.0, -2000.0, 2000.0, 50.0, " ms")
    );
 
-   private static final String CORE_CLASS = "com.corz.client.categories.visuals.SpotifyHUD";
-   private static final String LYRICS_CLASS = CORE_CLASS + "$Lyrics";
-   private static final long LOOKAHEAD_MS = 120L;
-
-   private Class<?> corzClass;
-   private Field trackField;
-   private Class<?> lyricsClass;
-   private Method getDocMethod;
-   private boolean bridgeReady;
+   private final HttpClient http = HttpClient.newBuilder()
+      .connectTimeout(Duration.ofSeconds(8))
+      .followRedirects(HttpClient.Redirect.NORMAL)
+      .build();
+   private final ExecutorService fetcher = Executors.newSingleThreadExecutor(r -> {
+      Thread t = new Thread(r, "Aether-SkyLyrics");
+      t.setDaemon(true);
+      return t;
+   });
+   private final Map<String, List<Line>> cache = new LinkedHashMap<>(16, 0.75F, true) {
+      protected boolean removeEldestEntry(Map.Entry<String, List<Line>> eldest) {
+         return this.size() > MAX_CACHE;
+      }
+   };
+   private volatile String pendingKey;
+   private volatile String activeKey;
 
    public SkyLyricsModule() {
-      super("Sky Lyrics", "Float the Corz Spotify HUD's synced lyrics in the sky, word by word.", Category.VISUALS);
+      super("Sky Lyrics", "Float the current Spotify track's synced lyrics in the sky, word by word.", Category.VISUALS);
       this.setEnabled(true);
    }
 
-   private void initBridge() {
-      if (this.bridgeReady) {
-         return;
+   /** Status line shown while there is nothing (or no lyrics) to render. */
+   public String statusText() {
+      SpotifyState state = currentState();
+      if (state == null || !state.active()) {
+         return "Waiting for Spotify";
       }
-      this.bridgeReady = true;
-      // corzport is bundled as a nested-jar mod loaded by a child classloader, so its classes
-      // are invisible to this mod's own classloader. Load them through the classloader of the
-      // registered CorzPortProvider implementation (which lives in the corzport loader).
-      ClassLoader loader = null;
+      String key = cacheKey(state);
+      if (this.cache.containsKey(key)) {
+         return null;
+      }
+      return this.pendingKey != null && this.pendingKey.equals(key) ? "Loading lyrics…" : "Waiting for Spotify";
+   }
+
+   private SpotifyState currentState() {
       try {
-         Object provider = CorzPortBus.provider();
-         if (provider != null) {
-            loader = provider.getClass().getClassLoader();
-         }
-      } catch (Throwable ignored) {
-      }
-      if (loader == null) {
-         loader = SkyLyricsModule.class.getClassLoader();
-      }
-      try {
-         this.corzClass = Class.forName(CORE_CLASS, false, loader);
-         this.trackField = this.corzClass.getDeclaredField("track");
-         this.trackField.setAccessible(true);
-         this.lyricsClass = Class.forName(LYRICS_CLASS, false, loader);
-         this.getDocMethod = this.lyricsClass.getDeclaredMethod("getDoc", String.class);
-         this.getDocMethod.setAccessible(true);
+         return AetherClient.spotify() == null ? null : AetherClient.spotify().state();
       } catch (Throwable t) {
-         // Corz port not present — Sky Lyrics simply has no data and renders nothing.
-         this.corzClass = null;
+         return null;
       }
+   }
+
+   private static String cacheKey(SpotifyState state) {
+      return (state.artist() + "|" + state.title() + "|" + state.durMs()).toLowerCase(Locale.ROOT);
    }
 
    /** Current lyric snapshot, or {@code null} when there is nothing to show. */
    public SkyLyricsModule.Snapshot snapshot() {
-      this.initBridge();
-      if (this.corzClass == null) {
+      SpotifyState state = currentState();
+      if (state == null || !state.active() || state.title().isEmpty()) {
          return null;
       }
-      try {
-         Object track = this.trackField.get(null);
-         if (track == null) {
-            return null;
-         }
-         String lyricKey = (String) call(track, "lyricKey");
-         if (lyricKey == null || lyricKey.isEmpty()) {
-            return null;
-         }
-         Boolean playingObj = (Boolean) call(track, "playing");
-         boolean playing = playingObj != null && playingObj;
-         Long baseElapsed = (Long) call(track, "baseElapsedMs");
-         Long stateMs = (Long) call(track, "stateMs");
-         Long durationSec = (Long) call(track, "durationSec");
-         if (baseElapsed == null) {
-            return null;
-         }
-         long durationMs = (durationSec == null ? 0L : durationSec) * 1000L;
-         long livePos = baseElapsed;
-         if (playing && stateMs != null) {
-            livePos = baseElapsed + Math.max(0L, System.currentTimeMillis() - stateMs);
-         }
-         if (durationMs > 0L) {
-            livePos = Math.min(livePos, durationMs);
-         }
-         livePos = Math.max(0L, livePos);
-
-         Object doc = this.getDocMethod.invoke(null, lyricKey);
-         if (doc == null) {
-            return null;
-         }
-         Object linesObj = call(doc, "lines");
-         if (!(linesObj instanceof Object[] rawLines) || rawLines.length == 0) {
-            return null;
-         }
-         List<Line> lines = new ArrayList<>(rawLines.length);
-         for (Object raw : rawLines) {
-            Long start = (Long) call(raw, "start");
-            Long end = (Long) call(raw, "end");
-            String text = (String) call(raw, "text");
-            Object wordsObj = call(raw, "words");
-            Object wsObj = call(raw, "ws");
-            Object weObj = call(raw, "we");
-            String[] words = wordsObj instanceof String[] w ? w : new String[0];
-            long[] ws = wsObj instanceof long[] a ? a : new long[0];
-            long[] we = weObj instanceof long[] a ? a : new long[0];
-            if (words.length != ws.length || words.length != we.length) {
-               ws = new long[words.length];
-               we = new long[words.length];
-            }
-            if (words.length > 0 && ws.length == 0) {
-               synthTimings(start == null ? 0L : start, end == null ? 0L : end, words, ws, we);
-            }
-            lines.add(new Line(start == null ? 0L : start, end == null ? 0L : end, text == null ? "" : text, words, ws, we));
-         }
-
-         long pos = livePos + (long)this.timeOffset.getInt();
-         int currentLine = indexOfLine(lines, pos);
-         int currentWord = currentLine >= 0 ? indexOfWord(lines.get(currentLine), pos) : -1;
-         return new SkyLyricsModule.Snapshot(playing, pos, lines, currentLine, currentWord);
-      } catch (Throwable t) {
+      String key = cacheKey(state);
+      this.activeKey = key;
+      List<Line> lines = this.cache.get(key);
+      if (lines == null) {
+         this.requestFetch(key, state);
          return null;
       }
+      if (lines.isEmpty()) {
+         return null;
+      }
+      long pos = state.livePosMs() + (long)this.timeOffset.getInt();
+      int currentLine = indexOfLine(lines, pos);
+      int currentWord = currentLine >= 0 ? indexOfWord(lines.get(currentLine), pos) : -1;
+      return new SkyLyricsModule.Snapshot(state.playing(), pos, lines, currentLine, currentWord);
+   }
+
+   private void requestFetch(String key, SpotifyState state) {
+      if (this.pendingKey != null && this.pendingKey.equals(key)) {
+         return;
+      }
+      this.pendingKey = key;
+      this.fetcher.execute(() -> {
+         try {
+            List<Line> fetched = fetchLyrics(state);
+            if (fetched != null && !fetched.isEmpty()) {
+               this.cache.put(key, fetched);
+            }
+         } catch (Throwable ignored) {
+         } finally {
+            if (this.pendingKey != null && this.pendingKey.equals(key)) {
+               this.pendingKey = null;
+            }
+         }
+      });
+   }
+
+   /** Fetches synced lyrics (LRC) for the track from the public LRCLib API. */
+   private List<Line> fetchLyrics(SpotifyState state) throws Exception {
+      String artist = enc(state.artist());
+      String track = enc(state.title());
+      String duration = Long.toString(state.durMs() / 1000L);
+      JsonObject json = getJson("https://lrclib.net/api/get?artist_name=" + artist + "&track_name=" + track + "&duration=" + duration);
+      if (json == null) {
+         json = searchFirst(track, artist);
+      }
+      if (json == null) {
+         return List.of();
+      }
+      String lrc = json.has("syncedLyrics") && !json.get("syncedLyrics").isJsonNull()
+         ? json.get("syncedLyrics").getAsString()
+         : (json.has("plainLyrics") && !json.get("plainLyrics").isJsonNull() ? json.get("plainLyrics").getAsString() : null);
+      if (lrc == null || lrc.isBlank()) {
+         return List.of();
+      }
+      return parseLrc(lrc);
+   }
+
+   private JsonObject getJson(String url) throws Exception {
+      HttpRequest req = HttpRequest.newBuilder(URI.create(url))
+         .timeout(Duration.ofSeconds(10))
+         .header("Accept", "application/json")
+         .GET()
+         .build();
+      HttpResponse<String> res = this.http.send(req, HttpResponse.BodyHandlers.ofString());
+      if (res.statusCode() != 200) {
+         return null;
+      }
+      return JsonParser.parseString(res.body()).getAsJsonObject();
+   }
+
+   private JsonObject searchFirst(String track, String artist) throws Exception {
+      HttpRequest req = HttpRequest.newBuilder(URI.create(
+         "https://lrclib.net/api/search?track_name=" + track + "&artist_name=" + artist
+      ))
+         .timeout(Duration.ofSeconds(10))
+         .header("Accept", "application/json")
+         .GET()
+         .build();
+      HttpResponse<String> res = this.http.send(req, HttpResponse.BodyHandlers.ofString());
+      if (res.statusCode() != 200) {
+         return null;
+      }
+      JsonArray arr = JsonParser.parseString(res.body()).getAsJsonArray();
+      for (int i = 0; i < arr.size(); i++) {
+         JsonObject obj = arr.get(i).getAsJsonObject();
+         if (obj.has("syncedLyrics") && !obj.get("syncedLyrics").isJsonNull()) {
+            return obj;
+         }
+      }
+      return null;
+   }
+
+   private static String enc(String s) {
+      return URLEncoder.encode(s, StandardCharsets.UTF_8);
+   }
+
+   /** Parses LRC text (line timestamps + optional word-level tags) into lyric lines. */
+   static List<Line> parseLrc(String lrc) {
+      List<Line> out = new ArrayList<>();
+      // State for the line currently being built.
+      long lineStart = -1L;
+      StringBuilder text = new StringBuilder();
+      List<String> words = new ArrayList<>();
+      List<Long> wordStamps = new ArrayList<>();
+      StringBuilder currentWord = new StringBuilder();
+      boolean hasWordTags = false;
+
+      Runnable flush = () -> {
+         String raw = text.toString().trim();
+         if (lineStart >= 0 || !raw.isEmpty()) {
+            if (currentWord.length() > 0) {
+               words.add(currentWord.toString());
+            }
+            String[] wordArr = words.toArray(new String[0]);
+            long[] ws = new long[wordArr.length];
+            long[] we = new long[wordArr.length];
+            long start = lineStart >= 0 ? lineStart : 0L;
+            long end = start + 4000L;
+            if (wordArr.length > 0) {
+               if (hasWordTags && wordStamps.size() == wordArr.length) {
+                  for (int i = 0; i < wordArr.length; i++) {
+                     ws[i] = wordStamps.get(i);
+                     we[i] = i + 1 < wordArr.length ? wordStamps.get(i + 1) : end;
+                  }
+               } else {
+                  synthTimings(start, end, wordArr, ws, we);
+               }
+            }
+            out.add(new Line(start, end, raw, wordArr, ws, we));
+         }
+         text.setLength(0);
+         words.clear();
+         wordStamps.clear();
+         currentWord.setLength(0);
+         hasWordTags = false;
+         lineStart = -1L;
+      };
+
+      Matcher lineMatcher = LINE_TS.matcher(lrc);
+      Matcher wordMatcher = WORD_TS.matcher(lrc);
+      int i = 0;
+      while (i < lrc.length()) {
+         char c = lrc.charAt(i);
+         if (c == '\n' || c == '\r') {
+            flush.run();
+            i++;
+            continue;
+         }
+         if (c == '[') {
+            lineMatcher.find(i);
+            if (lineMatcher.start() == i) {
+               flush.run();
+               lineStart = toMs(lineMatcher);
+               i = lineMatcher.end();
+               continue;
+            }
+         }
+         if (c == '<') {
+            wordMatcher.find(i);
+            if (wordMatcher.start() == i) {
+               if (currentWord.length() > 0) {
+                  words.add(currentWord.toString());
+                  currentWord.setLength(0);
+               }
+               wordStamps.add(toMs(wordMatcher));
+               hasWordTags = true;
+               i = wordMatcher.end();
+               continue;
+            }
+         }
+         if (!hasWordTags) {
+            text.append(c);
+         } else {
+            currentWord.append(c);
+         }
+         i++;
+      }
+      if (currentWord.length() > 0) {
+         words.add(currentWord.toString());
+      }
+      flush.run();
+      return out;
+   }
+
+   private static long toMs(Matcher m) {
+      int min = Integer.parseInt(m.group(1));
+      int sec = Integer.parseInt(m.group(2));
+      int frac = m.group(3) == null ? 0 : Integer.parseInt(m.group(3));
+      int decimals = m.group(3) == null ? 0 : m.group(3).length();
+      return ((long)min * 60L + sec) * 1000L + frac * (long)Math.pow(10, 3 - decimals);
    }
 
    /** Splits a line's duration across its words proportionally to word length. */
@@ -210,16 +357,6 @@ public class SkyLyricsModule extends Module {
          }
       }
       return last;
-   }
-
-   private static Object call(Object target, String name) {
-      try {
-         Method m = target.getClass().getMethod(name);
-         m.setAccessible(true);
-         return m.invoke(target);
-      } catch (Throwable t) {
-         return null;
-      }
    }
 
    public record Line(long start, long end, String text, String[] words, long[] ws, long[] we) {

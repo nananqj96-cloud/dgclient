@@ -62,10 +62,6 @@ public final class SkyLyricsRenderer {
       if (!module.isEnabled()) {
          return;
       }
-      SkyLyricsModule.Snapshot snap = module.snapshot();
-      if (snap == null || snap.lines().isEmpty()) {
-         return;
-      }
       Minecraft mc = Minecraft.getInstance();
       LocalPlayer player = mc.player;
       Camera camera = mc.gameRenderer.getMainCamera();
@@ -87,6 +83,23 @@ public final class SkyLyricsRenderer {
       double az = eye.z + fwd.z * distance;
       float[] anchor = WorldProjection.project(ax, ay, az);
       if (anchor == null) {
+         return;
+      }
+
+      SkyLyricsModule.Snapshot snap = module.snapshot();
+      if (snap == null || snap.lines().isEmpty()) {
+         // Nothing playing / no lyrics yet: show a status line so the feature is visibly running.
+         String status = module.statusText();
+         if (status != null && !status.isEmpty()) {
+            float statusW = vg.textWidth(status, size);
+            vg.save();
+            vg.translate(anchor[0], anchor[1] + size * 0.35F);
+            if (module.glow.get()) {
+               vg.glow(-statusW * 0.5F - 6.0F, -size * 0.5F - 6.0F, statusW + 12.0F, size + 12.0F, 5.0F, 7.0F, Colors.withAlpha(0xFF3D7AFF, 0.3F));
+            }
+            vg.text(status, -statusW * 0.5F, 0.0F, size, 0xFFB8C8E8);
+            vg.restore();
+         }
          return;
       }
 
@@ -113,7 +126,7 @@ public final class SkyLyricsRenderer {
             continue;
          }
          int rel = idx - current;
-         float lineAlpha = (float)Math.pow(0.62F, Math.abs(rel));
+         float lineAlpha = 1.0F;
          float lineY = anchor[1] + rel * lineHeight;
 
          if (line.words().length == 0) {

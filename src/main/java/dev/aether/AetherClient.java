@@ -97,6 +97,7 @@ public class AetherClient implements ClientModInitializer {
       config.addSection("hud", hud::toJson, hud::fromJson);
       config.addSection("panels", ClickGuiScreen.state()::toJson, ClickGuiScreen.state()::fromJson);
       config.addSection("sounds", soundSettings::toJson, soundSettings::fromJson);
+      config.addSection("accessories", modules.accessories::toJson, modules.accessories::fromJson);
       config.load();
       configStore = new ConfigStore(config);
       configStore.loadAll();

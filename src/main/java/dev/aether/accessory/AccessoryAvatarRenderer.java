@@ -17,6 +17,188 @@ public final class AccessoryAvatarRenderer {
    private AccessoryAvatarRenderer() {
    }
 
+   /**
+    * Draws the equipped accessories as a 2D overlay on top of the real Minecraft player rendered by
+    * {@code InventoryScreen.renderEntityInInventoryFollowsMouse}. The entity is drawn inside the
+    * {@code (x1, y1) - (x2, y2)} box at a given pixel scale; the accessory overlays are positioned
+    * relative to that box and rotate with the entity's yaw/pitch so they stay aligned with the model.
+    * When a {@code preview} accessory is supplied it is drawn on top of (or replacing) the equipped
+    * accessory of the same type.
+    */
+   public static void renderEquippedOnPlayer(
+      NVGRenderer vg,
+      float x1, float y1, float x2, float y2, float scale,
+      AccessoriesModule module, Accessory preview, float yawDeg, float pitchDeg
+   ) {
+      float boxW = x2 - x1;
+      float boxH = y2 - y1;
+      float unit = Math.min(boxW, boxH) / 2.0F;
+      float cx = (x1 + x2) * 0.5F;
+      float headCy = (y1 + y2) * 0.5F - unit * 0.55F;
+      float shoulderY = (y1 + y2) * 0.5F - unit * 0.12F;
+      float feetY = y2 - 8.0F;
+      float headR = unit * 0.20F;
+      long t = System.nanoTime();
+      float tt = (float)(t / 1.0E9);
+      float yaw = (float)(yawDeg * (Math.PI / 180.0));
+      float cosY = (float)Math.cos(yaw);
+      float sinY = (float)Math.sin(yaw);
+
+      Accessory crown = pick(module, preview, AccessoryType.CROWN);
+      Accessory halo = pick(module, preview, AccessoryType.HALOS);
+      Accessory horns = pick(module, preview, AccessoryType.HORNS);
+      Accessory mask = pick(module, preview, AccessoryType.MASKS);
+      Accessory wings = pick(module, preview, AccessoryType.WINGS);
+      Accessory feathers = pick(module, preview, AccessoryType.FEATHERS);
+      Accessory cape = pick(module, preview, AccessoryType.CAPE);
+      Accessory pack = pick(module, preview, AccessoryType.BACKPACKS);
+
+      if (wings != null) {
+         drawPlayerWings(vg, cx, shoulderY, unit, wings, tt, cosY, sinY);
+      }
+      if (cape != null) {
+         drawPlayerCape(vg, cx, shoulderY, feetY, unit, cape, tt);
+      }
+      if (pack != null) {
+         drawPlayerPack(vg, cx, shoulderY, feetY, unit, pack, tt);
+      }
+      if (feathers != null) {
+         drawPlayerFeathers(vg, cx, (shoulderY + feetY) * 0.5F, unit, feathers, tt);
+      }
+      if (crown != null) {
+         drawPlayerCrown(vg, cx, headCy, headR, unit, crown, tt);
+      }
+      if (halo != null) {
+         drawPlayerHalo(vg, cx, headCy, headR, unit, halo, tt);
+      }
+      if (horns != null) {
+         drawPlayerHorns(vg, cx, headCy, headR, unit, horns, tt);
+      }
+      if (mask != null) {
+         drawPlayerMask(vg, cx, headCy, headR, unit, mask, tt);
+      }
+   }
+
+   private static Accessory pick(AccessoriesModule module, Accessory preview, AccessoryType type) {
+      if (preview != null && preview.type() == type) {
+         return preview;
+      }
+      return module.equippedAccessory(type);
+   }
+
+   private static void drawPlayerWings(NVGRenderer vg, float cx, float shoulderY, float unit, Accessory wings, float tt, float cosY, float sinY) {
+      float flap = (float)(1.0F + 0.10F * Math.sin(tt * 3.0F));
+      for (int side = -1; side <= 1; side += 2) {
+         float sx = cx + side * unit * 0.18F;
+         vg.circleGlow(sx, shoulderY - unit * 0.02F, unit * 0.40F, unit * 0.18F, Colors.withAlpha(wings.secondary(), 0.4F));
+         for (int i = 0; i < 4; i++) {
+            float spread = (float)(i + 1) * 0.42F;
+            float len = (unit * 0.55F + i * unit * 0.16F) * flap;
+            float dx = side * spread * unit * 0.5F;
+            float dy = -spread * unit * 0.20F;
+            int col = Colors.lerp(wings.primary(), wings.secondary(), i / 4.0F);
+            vg.triangle(
+               sx, shoulderY - unit * 0.02F,
+               sx + dx * 0.55F, shoulderY - unit * 0.02F - len * 0.35F + dy,
+               sx + dx, shoulderY - unit * 0.02F + len * 0.05F + dy,
+               Colors.withAlpha(col, 0.92F)
+            );
+            vg.aetherMark(sx + dx * 0.55F, shoulderY - unit * 0.05F + dy, unit * 0.06F, wings.secondary(), 0xFFFFFFFF);
+         }
+      }
+   }
+
+   private static void drawPlayerCape(NVGRenderer vg, float cx, float shoulderY, float feetY, float unit, Accessory cape, float tt) {
+      float sway = (float)(Math.sin(tt * 1.2F) * unit * 0.03F);
+      float topW = unit * 0.52F;
+      float botW = unit * 0.26F;
+      float h = feetY - shoulderY;
+      vg.glow(cx - topW + sway, shoulderY - unit * 0.04F, topW * 2.0F, h + unit * 0.08F, unit * 0.10F, unit * 0.10F, Colors.withAlpha(cape.secondary(), 0.30F));
+      vg.rectVaryingGradient(
+         cx - topW + sway, shoulderY,
+         topW * 2.0F, h,
+         topW, topW, botW, botW,
+         cape.primary(), cape.secondary()
+      );
+      vg.aetherMark(cx + sway, shoulderY + h * 0.30F, unit * 0.09F, cape.secondary(), 0xFFFFFFFF);
+   }
+
+   private static void drawPlayerPack(NVGRenderer vg, float cx, float shoulderY, float feetY, float unit, Accessory pack, float tt) {
+      float topY = shoulderY + unit * 0.10F;
+      float botY = feetY - unit * 0.30F;
+      float halfW = unit * 0.22F;
+      float bob = (float)(Math.sin(tt * 2.0F) * unit * 0.02F);
+      vg.glow(cx - halfW, topY + bob, halfW * 2.0F, (botY - topY) + unit * 0.08F, unit * 0.08F, unit * 0.08F, Colors.withAlpha(pack.secondary(), 0.28F));
+      vg.rectGradient(cx - halfW, topY + bob, halfW * 2.0F, botY - topY, unit * 0.10F, pack.primary(), Colors.darken(pack.secondary(), 0.3F), true);
+      vg.rectOutline(cx - halfW, topY + bob, halfW * 2.0F, botY - topY, unit * 0.10F, 1.0F, pack.secondary());
+      vg.rect(cx - halfW * 0.5F - unit * 0.03F, topY - unit * 0.04F, unit * 0.06F, unit * 0.12F, unit * 0.03F, Colors.withAlpha(pack.secondary(), 0.8F));
+      vg.rect(cx + halfW * 0.5F - unit * 0.03F, topY - unit * 0.04F, unit * 0.06F, unit * 0.12F, unit * 0.03F, Colors.withAlpha(pack.secondary(), 0.8F));
+      vg.aetherMark(cx, (topY + botY) * 0.5F + bob, unit * 0.10F, pack.secondary(), 0xFFFFFFFF);
+   }
+
+   private static void drawPlayerFeathers(NVGRenderer vg, float cx, float midY, float unit, Accessory feathers, float tt) {
+      for (int i = 0; i < 7; i++) {
+         float a = tt * 0.6F + i * ((float)Math.PI * 2 / 7.0F);
+         float r = unit * (0.60F + 0.20F * Math.sin(tt * 1.2F + i));
+         float dx = (float)(Math.cos(a) * r * unit * 0.6F);
+         float dy = (float)(Math.sin(a) * r * unit * 0.8F) - unit * 0.10F;
+         float s = unit * 0.07F;
+         vg.circleGlow(cx + dx, midY + dy, s * 2.2F, s * 1.4F, Colors.withAlpha(feathers.secondary(), 0.45F));
+         vg.triangle(cx + dx, midY + dy - s * 2.0F, cx + dx - s, midY + dy + s, cx + dx + s, midY + dy + s, Colors.lerp(feathers.primary(), feathers.secondary(), 0.5F));
+      }
+   }
+
+   private static void drawPlayerCrown(NVGRenderer vg, float cx, float headCy, float headR, float unit, Accessory crown, float tt) {
+      float baseY = headCy - headR + unit * 0.02F;
+      float baseW = headR * 1.6F;
+      float pulse = (float)(1.0F + 0.05F * Math.sin(tt * 3.0F));
+      vg.glow(cx - baseW, baseY - unit * 0.24F, baseW * 2.0F, unit * 0.28F, unit * 0.06F, unit * 0.08F, Colors.withAlpha(crown.secondary(), 0.45F));
+      vg.rectGradient(cx - baseW, baseY, baseW * 2.0F, unit * 0.09F, unit * 0.03F, crown.primary(), crown.secondary(), true);
+      float[] heights = {unit * 0.18F, unit * 0.26F, unit * 0.18F};
+      for (int i = 0; i < 3; i++) {
+         float px = cx - baseW + baseW * (i + 0.5F) / 3.0F;
+         float py = baseY - heights[i] * pulse;
+         vg.triangle(px - unit * 0.06F, baseY, px + unit * 0.06F, baseY, px, py, Colors.lerp(crown.primary(), crown.secondary(), 0.4F));
+      }
+      vg.circleGlow(cx, baseY - unit * 0.06F, unit * 0.07F * pulse, unit * 0.04F, Colors.withAlpha(crown.secondary(), 0.7F));
+      vg.circle(cx, baseY - unit * 0.06F, unit * 0.045F * pulse, crown.secondary());
+      vg.aetherMark(cx, baseY - unit * 0.06F, unit * 0.026F * pulse, crown.primary(), 0xFFFFFFFF);
+   }
+
+   private static void drawPlayerHalo(NVGRenderer vg, float cx, float headCy, float headR, float unit, Accessory halo, float tt) {
+      float bob = (float)(Math.sin(tt * 1.6F) * unit * 0.03F);
+      float hy = headCy - headR - unit * 0.16F + bob;
+      float r = headR * 1.7F;
+      vg.glow(cx - r, hy - r, r * 2.0F, r * 2.0F, unit * 0.05F, unit * 0.08F, Colors.withAlpha(halo.secondary(), 0.4F));
+      vg.circleGlow(cx, hy, r + unit * 0.03F, unit * 0.04F, Colors.withAlpha(halo.secondary(), 0.35F));
+      vg.circleOutline(cx, hy, r, unit * 0.035F, halo.secondary());
+      vg.aetherMark(cx, hy, unit * 0.07F, halo.primary(), 0xFFFFFFFF);
+   }
+
+   private static void drawPlayerHorns(NVGRenderer vg, float cx, float headCy, float headR, float unit, Accessory horns, float tt) {
+      float baseY = headCy - unit * 0.04F;
+      for (int side = -1; side <= 1; side += 2) {
+         float bx = cx + side * headR * 0.70F;
+         float tipX = cx + side * headR * 1.50F;
+         float tipY = baseY - unit * 0.30F;
+         int col = Colors.lerp(horns.primary(), horns.secondary(), 0.4F);
+         vg.triangle(bx, baseY, bx + side * headR * 0.10F, baseY - unit * 0.06F, tipX, tipY, col);
+         vg.triangle(bx, baseY + unit * 0.02F, bx - side * headR * 0.10F, baseY - unit * 0.04F, tipX - side * headR * 0.10F, tipY + unit * 0.04F, Colors.withAlpha(horns.secondary(), 0.8F));
+         vg.aetherMark(bx, baseY + unit * 0.02F, unit * 0.045F, horns.secondary(), 0xFFFFFFFF);
+      }
+   }
+
+   private static void drawPlayerMask(NVGRenderer vg, float cx, float headCy, float headR, float unit, Accessory mask, float tt) {
+      float mY = headCy + unit * 0.02F;
+      float halfW = headR * 0.85F;
+      float halfH = headR * 0.55F;
+      vg.glow(cx - halfW, mY - halfH, halfW * 2.0F, halfH * 2.0F, unit * 0.04F, unit * 0.05F, Colors.withAlpha(mask.secondary(), 0.35F));
+      vg.rectGradient(cx - halfW, mY - halfH, halfW * 2.0F, halfH * 2.0F, unit * 0.04F, mask.primary(), Colors.darken(mask.primary(), 0.2F), true);
+      vg.rectOutline(cx - halfW, mY - halfH, halfW * 2.0F, halfH * 2.0F, unit * 0.04F, 1.2F, mask.secondary());
+      vg.rect(cx - halfW * 0.5F, mY - halfH * 0.35F, halfW, unit * 0.02F, unit * 0.01F, mask.secondary());
+      vg.aetherMark(cx, mY, unit * 0.05F, mask.secondary(), 0xFFFFFFFF);
+   }
+
    public static void render(NVGRenderer vg, float cx, float cy, float scale, AccessoriesModule module, long timeNanos) {
       float t = (float)(timeNanos / 1.0E9);
       Accessory wings = module.equippedAccessory(AccessoryType.WINGS);
