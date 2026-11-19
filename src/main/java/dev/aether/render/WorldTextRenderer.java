@@ -9,11 +9,9 @@ import dev.aether.module.impl.SkyLyricsModule.Snapshot;
 import dev.aether.util.Colors;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontRenderContext;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.GlyphVector;
 import java.awt.RenderingHints;
-import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -291,12 +289,12 @@ public final class WorldTextRenderer {
          g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
          g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
          g.setColor(Color.WHITE);
-         FontRenderContext frc = g.getFontRenderContext();
+         FontMetrics fm = g.getFontMetrics(font);
          for (int c = 0x20; c <= 0x7E; c++) {
-            addGlyph(g, frc, font, (char)c);
+            addGlyph(g, fm, font, (char)c);
          }
          for (int c = 0xA0; c <= 0xFF; c++) {
-            addGlyph(g, frc, font, (char)c);
+            addGlyph(g, fm, font, (char)c);
          }
       } finally {
          g.dispose();
@@ -304,7 +302,7 @@ public final class WorldTextRenderer {
       return image;
    }
 
-   private static void addGlyph(Graphics2D g, FontRenderContext frc, Font font, char c) {
+   private static void addGlyph(Graphics2D g, FontMetrics fm, Font font, char c) {
       if (GLYPHS.containsKey(c) || nextCell >= CELLS * CELLS) {
          return;
       }
@@ -312,18 +310,17 @@ public final class WorldTextRenderer {
       int row = nextCell / CELLS;
       nextCell++;
 
-      GlyphVector gv = frc.getGlyphVector(font, String.valueOf(c));
-      Shape outline = gv.getOutline();
-      Rectangle2D bounds = gv.getBounds2D();
+      String str = String.valueOf(c);
+      Rectangle2D bounds = fm.getStringBounds(str, g);
       float pad = 3.0F;
       AffineTransform at = new AffineTransform();
       at.translate(
          col * CELL + pad - (float)bounds.getX(),
          row * CELL + pad - (float)bounds.getY()
       );
-      g.fill(at.createTransformedShape(outline));
+      g.drawString(str, at);
 
-      float advance = (float)Math.ceil(font.getStringWidth(String.valueOf(c)));
+      float advance = (float)Math.ceil(fm.stringWidth(str));
       float u0 = col / (float)CELLS;
       float u1 = (col + 1) / (float)CELLS;
       float v0 = row / (float)CELLS;
