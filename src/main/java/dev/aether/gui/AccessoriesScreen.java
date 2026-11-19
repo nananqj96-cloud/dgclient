@@ -177,8 +177,8 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
          float swS = 34.0F;
          vg.rectGradient(swX, swY, swS, swS, 8.0F, acc.primary(), acc.secondary(), true);
          vg.aetherMark(swX + swS * 0.5F, swY + swS * 0.5F, 9.0F, acc.primary(), acc.secondary());
-         vg.text(acc.name, cellX + 12.0F, cellY + CELL_H - 26.0F, 12.0F, selected ? acc.secondary() : theme.textPrimary());
-         vg.text(acc.description, cellX + 12.0F, cellY + CELL_H - 12.0F, 9.5F, theme.textMuted());
+         vg.text(acc.name(), cellX + 12.0F, cellY + CELL_H - 26.0F, 12.0F, selected ? acc.secondary() : theme.textPrimary());
+         vg.text(acc.description(), cellX + 12.0F, cellY + CELL_H - 12.0F, 9.5F, theme.textMuted());
       }
 
       // Unequip button for the selected category
@@ -197,10 +197,14 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
       }
    }
 
+   private float ux(double guiCoord) {
+      return OverlayRenderer.guiToUi(guiCoord);
+   }
+
    @Override
-   public boolean mouseClicked(MouseButtonEvent event, double mouseX, double mouseY) {
-      float mx = (float)mouseX;
-      float my = (float)mouseY;
+   public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+      float mx = this.ux(event.x());
+      float my = this.ux(event.y());
       if (this.inRect(this.closeRect, mx, my)) {
          this.close();
          return true;
@@ -229,11 +233,11 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
    }
 
    @Override
-   public boolean mouseReleased(MouseButtonEvent event, double mouseX, double mouseY) {
+   public boolean mouseReleased(MouseButtonEvent event) {
       // Right-click on a cell unequips the selected category.
       if (event.button() == 1) {
-         float mx = (float)mouseX;
-         float my = (float)mouseY;
+         float mx = this.ux(event.x());
+         float my = this.ux(event.y());
          List<Accessory> variants = AccessoryRegistry.forType(this.selectedType);
          for (int i = 0; i < variants.size(); i++) {
             if (this.inRect(this.cellRects[i], mx, my)) {
@@ -246,11 +250,12 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
    }
 
    @Override
-   public void keyPressed(net.minecraft.client.input.KeyEvent event) {
+   public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
       if (event.key() == 256) {
          this.close();
+         return true;
       }
-      super.keyPressed(event);
+      return super.keyPressed(event);
    }
 
    private static boolean inRect(float[] r, float mx, float my) {

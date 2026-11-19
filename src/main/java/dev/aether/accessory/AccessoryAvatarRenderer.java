@@ -30,7 +30,7 @@ public final class AccessoryAvatarRenderer {
       float shoulderY = cy - 22.0F * scale;
       float hipY = cy + 18.0F * scale;
       float feetY = cy + 72.0F * scale;
-      float wingFlap = 1.0F + 0.06F * Math.sin(t * 2.0F);
+      float wingFlap = (float)(1.0F + 0.06F * Math.sin(t * 2.0F));
 
       if (wings != null) {
          drawWings(vg, cx, shoulderY, scale, wings, wingFlap);
@@ -87,7 +87,7 @@ public final class AccessoryAvatarRenderer {
    }
 
    private static void drawCape(NVGRenderer vg, float cx, float shoulderY, float hipY, float feetY, float scale, Accessory cape, float t) {
-      float sway = Math.sin(t * 1.2F) * 3.0F * scale;
+      float sway = (float)(Math.sin(t * 1.2F) * 3.0F * scale);
       float topW = 52.0F * scale;
       float botW = 26.0F * scale;
       float h = feetY - shoulderY;
@@ -109,7 +109,7 @@ public final class AccessoryAvatarRenderer {
    private static void drawCrown(NVGRenderer vg, float cx, float headCy, float headR, float scale, Accessory crown, float t) {
       float baseY = headCy - headR + 2.0F * scale;
       float baseW = headR * 1.7F;
-      float pulse = 1.0F + 0.05F * Math.sin(t * 3.0F);
+      float pulse = (float)(1.0F + 0.05F * Math.sin(t * 3.0F));
       vg.glow(cx - baseW, baseY - 20.0F * scale, baseW * 2.0F, 24.0F * scale, 6.0F * scale, 8.0F * scale, Colors.withAlpha(crown.secondary(), 0.4F));
       // Crown band
       vg.rectGradient(cx - baseW, baseY, baseW * 2.0F, 9.0F * scale, 3.0F * scale, crown.primary(), crown.secondary(), true);
@@ -136,8 +136,8 @@ public final class AccessoryAvatarRenderer {
          {60.0F, -110.0F, 0.95F}
       };
       for (float[] o : offsets) {
-         float dx = o[0] * scale + Math.sin(t * 0.8F + o[0]) * 5.0F * scale;
-         float dy = o[1] * scale + Math.cos(t * 0.7F + o[1]) * 4.0F * scale;
+         float dx = (float)(o[0] * scale + Math.sin(t * 0.8F + o[0]) * 5.0F * scale);
+         float dy = (float)(o[1] * scale + Math.cos(t * 0.7F + o[1]) * 4.0F * scale);
          float s = o[2] * scale;
          vg.circleGlow(cx + dx, cy + dy, 8.0F * s, 5.0F * s, Colors.withAlpha(feathers.secondary(), 0.45F));
          vg.triangle(cx + dx, cy + dy - 12.0F * s, cx + dx - 4.0F * s, cy + dy + 6.0F * s, cx + dx + 4.0F * s, cy + dy + 6.0F * s, Colors.lerp(feathers.primary(), feathers.secondary(), 0.5F));
