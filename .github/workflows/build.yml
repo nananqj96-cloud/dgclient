@@ -194,38 +194,51 @@ jobs:
           GT_STATUS=$?
           cat gametest.log
           if [ $GT_STATUS -ne 0 ]; then
-            ERRORS=$(grep -aE "failed:|assertionerror|test failed|exception|error:|caused by:|at dev\.aether|at net\.minecraft|mixin|unable to|cannot find|classnotfound|nosuchmethod|illegalstate|nullpointer|outofmemory|could not|failed to" gametest.log \
-              | grep -avE "flite|alsoft|pipewire|realms|narrator|unsatisfiedlinkerror|libflite|signedjwt|could not authorize|world loading finished" \
-              | tail -n 150)
-            if [ -z "$ERRORS" ]; then
-              ERRORS=$(grep -avE "flite|alsoft|pipewire|realms|narrator|unsatisfiedlinkerror|libflite|signedjwt|could not authorize|world loading finished" gametest.log | tail -n 200)
-            fi
-            # Emit workflow annotations with the failure tail (visible in the job page)
-            if [ -n "$ERRORS" ]; then
-              count=0
+            # Crash context: overlay crash, Corz render failures, JVM/native crash, gradle summary
+            CRASH=$(grep -aE "AetherClient overlay renderer crashed|Corz Port render failed|Corz Port theme sync failed|AssertionError|FAILED|What went wrong|non-zero exit value|SIGSEGV|SIGABRT|hs_err_pid|OutOfMemoryError|JVM crashed|Fatal" gametest.log \
+              | grep -avE "flite|alsoft|pipewire|realms|narrator|unsatisfiedlinkerror|libflite|signedjwt|could not authorize" \
+              | tail -n 40)
+            # Raw tail of the log (gradle failure summary is always at the very end)
+            RAWTAIL=$(tail -n 120 gametest.log)
+            # Emit annotations: crash context first, then the raw tail (visible on the job page)
+            emit_annotations() {
+              local title="$1"; local data="$2"; local max="$3"
+              local count=0
               while IFS= read -r line; do
                 [ -z "$line" ] && continue
-                printf '::error title=GameTestLog::%s\n' "$line"
+                local CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
+                printf '::error title=%s::%s\n' "$title" "$CLEAN"
                 count=$((count+1))
-                [ "$count" -ge 60 ] && break
-              done <<< "$ERRORS"
+                [ "$count" -ge "$max" ] && break
+              done <<< "$data"
+            }
+            if [ -n "$CRASH" ]; then
+              emit_annotations "CrashTrace" "$CRASH" 40
             fi
-            # Create a GitHub issue with the failure tail + full log for readability
+            if [ -n "$RAWTAIL" ]; then
+              emit_annotations "GameTestLogTail" "$RAWTAIL" 60
+            fi
+            # Create a GitHub issue with the failure tail + full log for readability (body capped to avoid 422)
             {
               echo "## GameTest Failure - Run ${{ github.run_id }}"
               echo ""
               echo "SHA: ${{ github.sha }}"
               echo ""
-              echo "### Failure log tail:"
+              echo "### Crash context:"
               echo '```'
-              echo "$ERRORS"
+              echo "$CRASH"
               echo '```'
               echo ""
-              echo "### Full gametest.log (last 500 lines):"
+              echo "### Last 120 log lines:"
               echo '```'
-              tail -n 500 gametest.log
+              echo "$RAWTAIL"
               echo '```'
-            } > /tmp/gametest-diag-body.md
+              echo ""
+              echo "### Full gametest.log (last 300 lines):"
+              echo '```'
+              tail -n 300 gametest.log
+              echo '```'
+            } | head -c 40000 > /tmp/gametest-diag-body.md
             gh issue create --title "CI GameTest Failure - Run ${{ github.run_id }}" --body-file /tmp/gametest-diag-body.md
             exit $GT_STATUS
           fi
