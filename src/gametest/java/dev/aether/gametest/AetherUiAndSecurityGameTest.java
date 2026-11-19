@@ -248,6 +248,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
                         cg.corzPortWindow().expandModule(m.id());
                      });
                }
+               ClickGuiScreen.state().setCorzPortOpen(false);
                cg.toggleCorzPort();
                require(ClickGuiScreen.state().isCorzPortOpen(), "Corz Port subtab must open secondary UI");
             }
