@@ -29,6 +29,7 @@ public final class OverlayRenderer {
    private static int cachedHeight = -1;
    private static boolean fboValid;
    private static boolean crashed;
+   private static Throwable lastCrash;
 
    private OverlayRenderer() {
    }
@@ -41,6 +42,11 @@ public final class OverlayRenderer {
    /** True once the overlay renderer has crashed and been permanently disabled. */
    public static boolean isCrashed() {
       return crashed;
+   }
+
+   /** The throwable that crashed the overlay renderer (for diagnostics). */
+   public static Throwable lastCrash() {
+      return lastCrash;
    }
 
    public static float uiScale() {
@@ -128,6 +134,7 @@ public final class OverlayRenderer {
                   }
                } catch (Throwable t) {
                   crashed = true;
+                  lastCrash = t;
                   AetherClient.LOGGER.error("AetherClient overlay renderer crashed; disabling overlay", t);
                }
             }

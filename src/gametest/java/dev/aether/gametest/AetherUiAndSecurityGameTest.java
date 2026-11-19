@@ -101,7 +101,18 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
          });
          context.waitForScreen(ClickGuiScreen.class);
          context.waitTicks(8);
-         context.runOnClient(mc -> require(!OverlayRenderer.isCrashed(), "OverlayRenderer crashed while rendering the GUI (purple tint symptom)"));
+         context.runOnClient(mc -> {
+            Throwable crash = OverlayRenderer.lastCrash();
+            if (crash != null) {
+               StringBuilder sb = new StringBuilder("OverlayRenderer crashed while rendering the GUI (purple tint symptom): ");
+               sb.append(crash).append('\n');
+               for (StackTraceElement el : crash.getStackTrace()) {
+                  sb.append("\tat ").append(el).append('\n');
+               }
+               require(false, sb.toString());
+            }
+            require(!OverlayRenderer.isCrashed(), "OverlayRenderer crashed while rendering the GUI (purple tint symptom)");
+         });
 
          // 3a. Right-click Auto Totem header via real cursor + mouse button to expand submenu
          double[] headerPt = computeUiPoint(context, mc -> {
