@@ -278,7 +278,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (!vg.hasFont()) {
          return;
       }
-      this.corzPortWindow.syncThemeToCorz();
+      try {
+         this.corzPortWindow.syncThemeToCorz();
+      } catch (Throwable t) {
+         AetherClient.LOGGER.error("Corz Port theme sync failed; continuing GUI render", t);
+      }
       float anim = this.openAnim.value();
       if (anim <= 0.002F && this.closing) {
          return;
@@ -358,7 +362,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       // Render Synced Second UI ("Port") alongside the main window
       if (this.corzPortWindow.isVisible()) {
          float corzDefaultX = this.winX + this.winW + 14.0F;
-         this.corzPortWindow.render(vg, mx, my, uiW, uiH, corzDefaultX, this.winY, this.winH);
+         try {
+            this.corzPortWindow.render(vg, mx, my, uiW, uiH, corzDefaultX, this.winY, this.winH);
+         } catch (Throwable t) {
+            AetherClient.LOGGER.error("Corz Port render failed (dashboard mode); skipping this frame", t);
+         }
       }
    }
 
@@ -761,7 +769,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (this.corzPortWindow.isVisible()) {
          float cw = this.corzPortWindow.preferredWidth(uiW);
          float ch = Math.clamp(uiH - 96.0F, 380.0F, 540.0F);
-         this.corzPortWindow.render(vg, mx, my, uiW, uiH, uiW - cw - 18.0F, 68.0F, ch);
+         try {
+            this.corzPortWindow.render(vg, mx, my, uiW, uiH, uiW - cw - 18.0F, 68.0F, ch);
+         } catch (Throwable t) {
+            AetherClient.LOGGER.error("Corz Port render failed (columns mode); skipping this frame", t);
+         }
       }
    }
 
