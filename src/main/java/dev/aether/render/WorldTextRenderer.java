@@ -260,10 +260,10 @@ public final class WorldTextRenderer {
          NativeImage nativeImage = new NativeImage(ATLAS_SIZE, ATLAS_SIZE, false);
          int[] rgb = image.getRGB(0, 0, ATLAS_SIZE, ATLAS_SIZE, null, 0, ATLAS_SIZE);
          for (int i = 0; i < rgb.length; i++) {
-            nativeImage.setColorArgb(i % ATLAS_SIZE, i / ATLAS_SIZE, rgb[i]);
+            nativeImage.setPixel(i % ATLAS_SIZE, i / ATLAS_SIZE, rgb[i]);
          }
          TextureManager texMgr = mc.getTextureManager();
-         texMgr.registerTexture(ATLAS_ID, new AtlasTexture(nativeImage));
+         texMgr.register(ATLAS_ID, new AtlasTexture(nativeImage));
          atlasReady = true;
       } catch (Throwable t) {
          // Font/AWT failure — leave the atlas unbuilt; render() simply returns.
