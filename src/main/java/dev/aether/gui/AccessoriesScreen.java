@@ -359,7 +359,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
 
    /** Hover tracking: preview the accessory under the cursor. */
    @Override
-   public boolean mouseMoved(double mouseX, double mouseY) {
+   public void mouseMoved(double mouseX, double mouseY) {
       float mx = this.ux(mouseX);
       float my = this.ux(mouseY);
       boolean overCell = false;
@@ -374,7 +374,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
       if (!overCell && this.previewAccessory != null && this.previewAccessory.type() != this.selectedType) {
          this.previewAccessory = null;
       }
-      return super.mouseMoved(mouseX, mouseY);
+      super.mouseMoved(mouseX, mouseY);
    }
 
    @Override
