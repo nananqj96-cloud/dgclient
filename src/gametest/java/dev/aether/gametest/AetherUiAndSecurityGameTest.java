@@ -89,8 +89,11 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
          });
 
          // 3. Open PinkBloom Unified Sidebar Dashboard and test REAL mouse/slider/keybind submenu interactions!
+         // The Corz Port secondary UI is enabled by default, so opening the GUI here also
+         // exercises the Corz window render path (the user-reported crash when opening
+         // the GUI with right-shift). If the overlay renderer crashes, the GUI screen
+         // tints purple and the isCrashed assertion below fails with the crash indicator.
          context.runOnClient(mc -> {
-            ClickGuiScreen.state().setCorzPortOpen(false);
             ClickGuiScreen.state().selectCategory(Category.COMBAT);
             ClickGuiScreen.state().setExpanded("Auto Totem@COMBAT", false);
             ClickGuiScreen.state().setExpanded("AimAssist@COMBAT", false);
@@ -98,6 +101,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
          });
          context.waitForScreen(ClickGuiScreen.class);
          context.waitTicks(8);
+         context.runOnClient(mc -> require(!OverlayRenderer.isCrashed(), "OverlayRenderer crashed while rendering the GUI (purple tint symptom)"));
 
          // 3a. Right-click Auto Totem header via real cursor + mouse button to expand submenu
          double[] headerPt = computeUiPoint(context, mc -> {

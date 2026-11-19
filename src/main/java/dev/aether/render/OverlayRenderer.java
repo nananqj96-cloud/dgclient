@@ -38,6 +38,11 @@ public final class OverlayRenderer {
       notifications = notif;
    }
 
+   /** True once the overlay renderer has crashed and been permanently disabled. */
+   public static boolean isCrashed() {
+      return crashed;
+   }
+
    public static float uiScale() {
       Minecraft mc = Minecraft.getInstance();
       return Math.max(1.0F, (float)mc.getWindow().getHeight() / 1080.0F);
