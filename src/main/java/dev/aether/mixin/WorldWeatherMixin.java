@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin({Level.class})
 public class WorldWeatherMixin {
    @Inject(
-      method = {"getRainGradient(F)F"},
+      method = {"getRainLevel(F)F"},
       at = {@At("HEAD")},
       cancellable = true
    )
@@ -31,7 +31,7 @@ public class WorldWeatherMixin {
    }
 
    @Inject(
-      method = {"getThunderGradient(F)F"},
+      method = {"getThunderLevel(F)F"},
       at = {@At("HEAD")},
       cancellable = true
    )
