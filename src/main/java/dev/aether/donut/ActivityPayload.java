@@ -11,7 +11,11 @@ public record ActivityPayload(byte[] data) implements CustomPacketPayload {
    public static final Type<ActivityPayload> ID = new Type<>(Identifier.fromNamespaceAndPath("donutlarp", "activity"));
    public static final StreamCodec<RegistryFriendlyByteBuf, ActivityPayload> CODEC = StreamCodec.of(
       (buf, payload) -> buf.writeBytes(payload.data),
-      buf -> new ActivityPayload(buf.readBytes(buf.readableBytes()))
+      buf -> {
+         byte[] bytes = new byte[buf.readableBytes()];
+         buf.readBytes(bytes);
+         return new ActivityPayload(bytes);
+      }
    );
 
    @Override

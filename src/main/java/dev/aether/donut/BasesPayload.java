@@ -11,7 +11,11 @@ public record BasesPayload(byte[] data) implements CustomPacketPayload {
    public static final Type<BasesPayload> ID = new Type<>(Identifier.fromNamespaceAndPath("donutlarp", "bases"));
    public static final StreamCodec<RegistryFriendlyByteBuf, BasesPayload> CODEC = StreamCodec.of(
       (buf, payload) -> buf.writeBytes(payload.data),
-      buf -> new BasesPayload(buf.readBytes(buf.readableBytes()))
+      buf -> {
+         byte[] bytes = new byte[buf.readableBytes()];
+         buf.readBytes(bytes);
+         return new BasesPayload(bytes);
+      }
    );
 
    @Override
