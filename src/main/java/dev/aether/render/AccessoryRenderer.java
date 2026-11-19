@@ -446,6 +446,18 @@ public final class AccessoryRenderer {
       v(buf, pose, bx - b.x, by - b.y, bz - b.z, argb);
    }
 
+   /** Diamond quad for buffers that require UV0/UV1/UV2/Normal (e.g. entityTranslucentEmissive). */
+   private static void diamondTex(VertexConsumer buf, Pose pose, Vector3f right, Vector3f up, float bx, float by, float bz, float r, int argb) {
+      Vector3f a = axis(right, up, r, r);
+      Vector3f b = axis(right, up, -r, r);
+      Vector3f nrm = new Vector3f();
+      right.cross(up, nrm);
+      tex(buf, pose, bx - a.x, by - a.y, bz - a.z, 0.5F, 0.5F, argb, nrm.x, nrm.y, nrm.z);
+      tex(buf, pose, bx + b.x, by + b.y, bz + b.z, 0.5F, 0.5F, argb, nrm.x, nrm.y, nrm.z);
+      tex(buf, pose, bx + a.x, by + a.y, bz + a.z, 0.5F, 0.5F, argb, nrm.x, nrm.y, nrm.z);
+      tex(buf, pose, bx - b.x, by - b.y, bz - b.z, 0.5F, 0.5F, argb, nrm.x, nrm.y, nrm.z);
+   }
+
    private static void ring(VertexConsumer buf, Pose pose, float cx, float fy, float cz, float radius, int segments, int color, float width) {
       float prevX = cx + radius;
       float prevZ = cz;
@@ -577,7 +589,7 @@ public final class AccessoryRenderer {
             v(fill, pose, x1 + rz * 0.10F * side, y1, z1 - rx * 0.10F * side, withA(col, 0.75F));
             v(fill, pose, x1, y1, z1, argb);
             // Aether mark glyph on the wing root.
-            diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), x0, y0 + 0.03F, z0, 0.05F, withA(secondary, 0.95F));
+            diamondTex(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), x0, y0 + 0.03F, z0, 0.05F, withA(secondary, 0.95F));
          }
       }
    }
@@ -624,7 +636,7 @@ public final class AccessoryRenderer {
       float markY = shoulderY - 0.16F;
       float markX = cxr + backX * 0.14F;
       float markZ = czr + backZ * 0.14F;
-      diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), markX, markY, markZ, 0.07F, withA(cape.secondary(), 0.95F));
+      diamondTex(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), markX, markY, markZ, 0.07F, withA(cape.secondary(), 0.95F));
    }
 
    private static void renderBackpack(
@@ -659,7 +671,7 @@ public final class AccessoryRenderer {
       line(fill, pose, cxr + rx * 0.16F, topY + 0.02F, czr + rz * 0.16F,
          cxr + rx * 0.16F, (float)py + height * 0.80F, czr + rz * 0.16F, withA(colDark, 0.9F), 2.0F);
       // Aether mark on the pack front
-      diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F),
+      diamondTex(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F),
          cxr + backX * (0.14F + depth), (topY + botY) * 0.5F, czr + backZ * (0.14F + depth), 0.06F, withA(pack.secondary(), 0.95F));
    }
 
@@ -690,7 +702,7 @@ public final class AccessoryRenderer {
          v(fill, pose, bx + s, oy, bz, core);
          v(fill, pose, bx, oy + sB, bz, core);
          v(fill, pose, bx - s, oy, bz, core);
-         diamond(glyphs, pose, new Vector3f(1.0F, 0.0F, 0.0F), new Vector3f(0.0F, 1.0F, 0.0F), bx, oy, bz, s * 0.9F, glow);
+         diamondTex(glyphs, pose, new Vector3f(1.0F, 0.0F, 0.0F), new Vector3f(0.0F, 1.0F, 0.0F), bx, oy, bz, s * 0.9F, glow);
       }
    }
 
@@ -735,7 +747,7 @@ public final class AccessoryRenderer {
       tex(glyphs, pose, bx + rAx.x + uAx.x, by + rAx.y + uAx.y, bz + rAx.z + uAx.z, 1.0F, 1.0F, argb, 0.0F, 1.0F, 0.0F);
       tex(glyphs, pose, bx + rAx.x - uAx.x, by + rAx.y - uAx.y, bz + rAx.z - uAx.z, 1.0F, 0.0F, argb, 0.0F, 1.0F, 0.0F);
       // Aether mark hovering in the halo's center.
-      diamond(glyphs, pose, right, up, bx, by, bz, 0.07F, withA(halo.primary(), 0.95F));
+      diamondTex(glyphs, pose, right, up, bx, by, bz, 0.07F, withA(halo.primary(), 0.95F));
    }
 
    private static void renderHorns(
@@ -760,7 +772,7 @@ public final class AccessoryRenderer {
          line(fill, pose, baseX, headY, baseZ, tipX, tipY, tipZ, withA(col, 0.95F), 3.2F);
          line(fill, pose, baseX, headY - 0.04F, baseZ, baseX + rx * side * 0.06F, headY + 0.06F, baseZ + rz * side * 0.06F, withA(colBright, 0.9F), 1.8F);
          // Aether mark at the horn base.
-         diamond(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), baseX, headY + 0.02F, baseZ, 0.045F, withA(colBright, 0.95F));
+         diamondTex(glyphs, pose, new Vector3f(rz, 0.0F, -rx), new Vector3f(0.0F, 1.0F, 0.0F), baseX, headY + 0.02F, baseZ, 0.045F, withA(colBright, 0.95F));
       }
    }
 
@@ -791,7 +803,7 @@ public final class AccessoryRenderer {
       // Glowing visor line + Aether mark on the mask.
       line(fill, pose, x0 + rx * halfW * 0.1F, y0 + 0.03F, z0 + rz * halfW * 0.1F,
          x1 - rx * halfW * 0.1F, y0 + 0.03F, z1 - rz * halfW * 0.1F, withA(colBright, 0.95F), 1.6F);
-      diamond(glyphs, pose, new Vector3f(fz, 0.0F, -fx), new Vector3f(0.0F, 1.0F, 0.0F),
+      diamondTex(glyphs, pose, new Vector3f(fz, 0.0F, -fx), new Vector3f(0.0F, 1.0F, 0.0F),
          cxr + fx * 0.14F, faceY, czr + fz * 0.14F, 0.05F, withA(colBright, 0.95F));
    }
 
