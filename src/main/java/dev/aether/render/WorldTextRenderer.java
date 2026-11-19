@@ -1,15 +1,10 @@
 package dev.aether.render;
 
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderPipeline.Snippet;
-import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.NativeImage;
-import net.minecraft.client.renderer.texture.NativeImageBackedTexture;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.VertexFormats;
 import dev.aether.module.impl.SkyLyricsModule;
 import dev.aether.module.impl.SkyLyricsModule.Line;
 import dev.aether.module.impl.SkyLyricsModule.Snapshot;
@@ -18,21 +13,23 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontRenderContext;
 import java.awt.Graphics2D;
+import java.awt.GlyphVector;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.GlyphVector;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -43,9 +40,9 @@ import org.joml.Vector3f;
  *
  * <p>Each glyph is rasterized once with AWT into a 512×512 atlas (using the client's bundled
  * Xuong-Regular font — the same face the HUD uses), uploaded as a dynamic texture, and drawn as
- * textured quads through a depth-tested render type. Because the quads live in the world render
- * pass ({@code LevelRendererMixin.renderBlockOutline}), blocks and geometry between the camera
- * and the lyrics occlude them naturally — no draw-order hacks.
+ * textured quads through the stock emissive-translucent render type. Because the quads live in
+ * the world render pass ({@code LevelRendererMixin.renderBlockOutline}), blocks and geometry
+ * between the camera and the lyrics occlude them naturally — no draw-order hacks.
  *
  * <p>Lines are arranged on a ring around the player at a configurable distance and height. The
  * ring rotates continuously, and each line is tilted slightly out of vertical. Words turn from
@@ -59,20 +56,13 @@ public final class WorldTextRenderer {
    private static final float LINE_HEIGHT = 38.0F;
    private static final float LINE_GAP = 0.62F;
    private static final float MAX_LINE_CHARS = 140.0F;
-
-   private static final RenderPipeline SKY_LYRICS_PIPELINE = RenderPipeline.builder(new Snippet[]{RenderPipelines.POSITION_TEX_COLOR_SNIPPET})
-      .withLocation("aetherclient/pipeline/sky_lyrics")
-      .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
-      .withCull(false)
-      .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-      .withDepthWrite(false)
-      .withBlend(BlendFunction.TRANSLUCENT)
-      .build();
+   private static final int LIGHT = 15728880;
 
    private static final Identifier ATLAS_ID = Identifier.fromNamespaceAndPath("aetherclient", "textures/sky_lyrics/atlas");
+   private static final RenderType SKY_LYRICS = RenderTypes.entityTranslucentEmissive(ATLAS_ID);
+
    private static final Map<Character, Glyph> GLYPHS = new HashMap<>();
-   private static volatile RenderType skyLyricsType;
-   private static volatile Identifier atlasId;
+   private static volatile boolean atlasReady;
    private static int nextCell;
    private static float ringAngle;
    private static long lastNano;
@@ -83,8 +73,7 @@ public final class WorldTextRenderer {
    /** Renders the current lyric snapshot as depth-tested world-space glyph quads. */
    public static void render(BufferSource buffers, PoseStack poseStack, Vec3 camera, SkyLyricsModule module) {
       ensureAtlas();
-      RenderType type = skyLyricsType;
-      if (type == null) {
+      if (!atlasReady) {
          return;
       }
       Snapshot snapshot = module.snapshot();
@@ -123,7 +112,7 @@ public final class WorldTextRenderer {
       }
       lastNano = now;
 
-      VertexConsumer vc = buffers.getBuffer(type);
+      VertexConsumer vc = buffers.getBuffer(SKY_LYRICS);
       for (int i = start; i <= end; i++) {
          int offset = i - currentLine;
          float fade = lineFade(offset, visible);
@@ -141,9 +130,9 @@ public final class WorldTextRenderer {
          float sa = (float)Math.sin(a);
 
          Vector3f pos = new Vector3f(
-            camera.x() + ca * radius,
-            camera.y() + height,
-            camera.z() + sa * radius
+            camera.x + ca * radius,
+            camera.y + height,
+            camera.z + sa * radius
          );
          Vector3f right = new Vector3f(-sa, 0.0F, ca);
          Vector3f norm = new Vector3f(-ca, 0.0F, -sa);
@@ -231,11 +220,21 @@ public final class WorldTextRenderer {
          cursor += g.advance() * scale;
          float x0 = cx - w * 0.5F;
          float x1 = cx + w * 0.5F;
-         vc.addVertex(pose, x0, h0, 0.0F).setColor(argb).setUv(g.u0(), g.v1());
-         vc.addVertex(pose, x1, h0, 0.0F).setColor(argb).setUv(g.u1(), g.v1());
-         vc.addVertex(pose, x1, h1, 0.0F).setColor(argb).setUv(g.u1(), g.v0());
-         vc.addVertex(pose, x0, h1, 0.0F).setColor(argb).setUv(g.u0(), g.v0());
+         tex(vc, pose, x0, h0, 0.0F, g.u0(), g.v1(), argb);
+         tex(vc, pose, x1, h0, 0.0F, g.u1(), g.v1(), argb);
+         tex(vc, pose, x1, h1, 0.0F, g.u1(), g.v0(), argb);
+         tex(vc, pose, x0, h1, 0.0F, g.u0(), g.v0(), argb);
       }
+   }
+
+   /** Full vertex element set required by the emissive-translucent render type. */
+   private static void tex(VertexConsumer vc, PoseStack.Pose pose, float x, float y, float z, float u, float v, int argb) {
+      vc.addVertex(pose, x, y, z)
+         .setColor(argb)
+         .setUv(u, v)
+         .setOverlay(OverlayTexture.NO_OVERLAY)
+         .setLight(LIGHT)
+         .setNormal(pose, 0.0F, 0.0F, 1.0F);
    }
 
    private static float textWidth(String s, float scale) {
@@ -248,7 +247,7 @@ public final class WorldTextRenderer {
 
    /** Builds the glyph atlas (once) and uploads it as a dynamic texture. */
    private static synchronized void ensureAtlas() {
-      if (atlasId != null) {
+      if (atlasReady) {
          return;
       }
       try {
@@ -263,19 +262,28 @@ public final class WorldTextRenderer {
          for (int i = 0; i < rgb.length; i++) {
             nativeImage.setColorArgb(i % ATLAS_SIZE, i / ATLAS_SIZE, rgb[i]);
          }
-         atlasId = ATLAS_ID;
-         mc.getTextureManager().registerTexture(
-            ATLAS_ID, new NativeImageBackedTexture(() -> "aetherclient_sky_lyrics_atlas", nativeImage)
-         );
-         skyLyricsType = RenderType.create(
-            "aetherclient:sky_lyrics",
-            RenderSetup.builder(SKY_LYRICS_PIPELINE)
-               .withTexture("Sampler0", atlasId)
-               .sortOnUpload()
-               .createRenderSetup()
-         );
+         TextureManager texMgr = mc.getTextureManager();
+         texMgr.registerTexture(ATLAS_ID, new AtlasTexture(nativeImage));
+         atlasReady = true;
       } catch (Throwable t) {
          // Font/AWT failure — leave the atlas unbuilt; render() simply returns.
+      }
+   }
+
+   /** Dynamic texture that uploads a rasterized glyph atlas to the GPU. */
+   private static final class AtlasTexture extends AbstractTexture {
+      private final NativeImage image;
+
+      AtlasTexture(NativeImage image) {
+         this.image = image;
+      }
+
+      @Override
+      public void upload() {
+         GpuTexture gpu = getTexture();
+         if (gpu != null) {
+            RenderSystem.getDevice().createCommandEncoder().writeToTexture(gpu, image);
+         }
       }
    }
 
