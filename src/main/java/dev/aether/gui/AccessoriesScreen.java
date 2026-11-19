@@ -262,7 +262,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
       return mx >= r[0] && mx <= r[2] && my >= r[1] && my <= r[3];
    }
 
-   private void onClose() {
+   public void onClose() {
       if (this.parent != null) {
          this.minecraft.setScreen(this.parent);
       } else {
