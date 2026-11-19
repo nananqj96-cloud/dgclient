@@ -139,7 +139,7 @@ public final class AccessoryAvatarRenderer {
    private static void drawPlayerFeathers(NVGRenderer vg, float cx, float midY, float unit, Accessory feathers, float tt) {
       for (int i = 0; i < 7; i++) {
          float a = tt * 0.6F + i * ((float)Math.PI * 2 / 7.0F);
-         float r = unit * (0.60F + 0.20F * Math.sin(tt * 1.2F + i));
+         float r = (float)(unit * (0.60F + 0.20F * Math.sin(tt * 1.2F + i)));
          float dx = (float)(Math.cos(a) * r * unit * 0.6F);
          float dy = (float)(Math.sin(a) * r * unit * 0.8F) - unit * 0.10F;
          float s = unit * 0.07F;

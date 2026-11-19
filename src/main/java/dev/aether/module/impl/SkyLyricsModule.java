@@ -223,27 +223,28 @@ public class SkyLyricsModule extends Module {
    /** Parses LRC text (line timestamps + optional word-level tags) into lyric lines. */
    static List<Line> parseLrc(String lrc) {
       List<Line> out = new ArrayList<>();
-      // State for the line currently being built.
-      long lineStart = -1L;
+      // State for the line currently being built. Scalar state lives in single-element arrays so
+      // the flush helper can mutate it (lambdas cannot reassign captured locals).
+      long[] lineStart = {-1L};
       StringBuilder text = new StringBuilder();
       List<String> words = new ArrayList<>();
       List<Long> wordStamps = new ArrayList<>();
       StringBuilder currentWord = new StringBuilder();
-      boolean hasWordTags = false;
+      boolean[] hasWordTags = {false};
 
       Runnable flush = () -> {
          String raw = text.toString().trim();
-         if (lineStart >= 0 || !raw.isEmpty()) {
+         if (lineStart[0] >= 0 || !raw.isEmpty()) {
             if (currentWord.length() > 0) {
                words.add(currentWord.toString());
             }
             String[] wordArr = words.toArray(new String[0]);
             long[] ws = new long[wordArr.length];
             long[] we = new long[wordArr.length];
-            long start = lineStart >= 0 ? lineStart : 0L;
+            long start = lineStart[0] >= 0 ? lineStart[0] : 0L;
             long end = start + 4000L;
             if (wordArr.length > 0) {
-               if (hasWordTags && wordStamps.size() == wordArr.length) {
+               if (hasWordTags[0] && wordStamps.size() == wordArr.length) {
                   for (int i = 0; i < wordArr.length; i++) {
                      ws[i] = wordStamps.get(i);
                      we[i] = i + 1 < wordArr.length ? wordStamps.get(i + 1) : end;
@@ -258,8 +259,8 @@ public class SkyLyricsModule extends Module {
          words.clear();
          wordStamps.clear();
          currentWord.setLength(0);
-         hasWordTags = false;
-         lineStart = -1L;
+         hasWordTags[0] = false;
+         lineStart[0] = -1L;
       };
 
       Matcher lineMatcher = LINE_TS.matcher(lrc);
@@ -276,7 +277,7 @@ public class SkyLyricsModule extends Module {
             lineMatcher.find(i);
             if (lineMatcher.start() == i) {
                flush.run();
-               lineStart = toMs(lineMatcher);
+               lineStart[0] = toMs(lineMatcher);
                i = lineMatcher.end();
                continue;
             }
@@ -289,12 +290,12 @@ public class SkyLyricsModule extends Module {
                   currentWord.setLength(0);
                }
                wordStamps.add(toMs(wordMatcher));
-               hasWordTags = true;
+               hasWordTags[0] = true;
                i = wordMatcher.end();
                continue;
             }
          }
-         if (!hasWordTags) {
+         if (!hasWordTags[0]) {
             text.append(c);
          } else {
             currentWord.append(c);

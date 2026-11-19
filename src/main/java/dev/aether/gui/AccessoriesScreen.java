@@ -223,7 +223,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
          vg.rectGradient(swX, swY, swS, swS, 8.0F, acc.primary(), acc.secondary(), true);
          vg.aetherMark(swX + swS * 0.5F, swY + swS * 0.5F, 9.0F, acc.primary(), acc.secondary());
          vg.text(acc.name(), cellX + 12.0F, cellY + CELL_H - 26.0F, 12.0F, (previewing || selected) ? acc.secondary() : theme.textPrimary());
-         vg.text(acc.description, cellX + 12.0F, cellY + CELL_H - 12.0F, 9.5F, theme.textMuted());
+         vg.text(acc.description(), cellX + 12.0F, cellY + CELL_H - 12.0F, 9.5F, theme.textMuted());
          if (previewing) {
             float pw2 = vg.textWidth("PREVIEW", 8.5F) + 10.0F;
             vg.rect(cellX + CELL_W - pw2 - 8.0F, cellY + 8.0F, pw2, 14.0F, 7.0F, Colors.withAlpha(acc.secondary(), 0.85F));
@@ -246,7 +246,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
          if (shown != null) {
             vg.text("PREVIEW PANEL", panelX + 12.0F, panelY + 16.0F, 10.0F, theme.textDisabled());
             vg.text(shown.name(), panelX + 12.0F, panelY + 34.0F, 13.0F, theme.textPrimary());
-            vg.text(shown.description, panelX + 12.0F, panelY + 50.0F, 10.0F, theme.textMuted());
+            vg.text(shown.description(), panelX + 12.0F, panelY + 50.0F, 10.0F, theme.textMuted());
             String state = this.previewAccessory != null ? "PREVIEW — click to equip" : "EQUIPPED";
             vg.text(state, panelX + 12.0F, panelY + 70.0F, 10.0F, this.previewAccessory != null ? shown.secondary() : theme.accentBright());
          } else {
@@ -359,7 +359,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
 
    /** Hover tracking: preview the accessory under the cursor. */
    @Override
-   public boolean mouseMoved(MouseButtonEvent event, double mouseX, double mouseY) {
+   public boolean mouseMoved(double mouseX, double mouseY) {
       float mx = this.ux(mouseX);
       float my = this.ux(mouseY);
       boolean overCell = false;
@@ -374,7 +374,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
       if (!overCell && this.previewAccessory != null && this.previewAccessory.type() != this.selectedType) {
          this.previewAccessory = null;
       }
-      return super.mouseMoved(event, mouseX, mouseY);
+      return super.mouseMoved(mouseX, mouseY);
    }
 
    @Override
