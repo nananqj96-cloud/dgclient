@@ -27,6 +27,7 @@ import dev.aether.render.AuroraSkyRenderer;
 import dev.aether.render.PlayerTrailRenderer;
 import dev.aether.render.StorageEspRenderer;
 import dev.aether.render.SusChunkRenderer;
+import dev.aether.render.WorldTextRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.state.BlockOutlineRenderState;
@@ -153,6 +154,10 @@ public class LevelRendererMixin {
 
          if (var6.accessories != null && var6.accessories.equippedCount() > 0) {
             AccessoryRenderer.renderEquipped(var1, var2, var4.cameraRenderState.pos, var6.accessories);
+         }
+
+         if (var6.skyLyrics != null && var6.skyLyrics.isEnabled()) {
+            WorldTextRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.skyLyrics);
          }
 
          if (var6.freecam != null && var6.freecam.isActive()) {

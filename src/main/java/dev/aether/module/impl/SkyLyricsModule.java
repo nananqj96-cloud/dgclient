@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -24,19 +23,21 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Sky Lyrics — reads the current track from the client's own Spotify stack (SpotifyService,
  * backed by SpotifyMediaBridge / SpotifyWindowTitle / WindowsSpotify), fetches and caches the
- * synced lyrics for that track itself, and exposes them as a snapshot the SkyLyricsRenderer
- * draws as large, gently rotated text floating in the sky ahead of the player.
+ * synced lyrics for that track itself (LRCLib, multi-URL strategy), and exposes them as a
+ * snapshot that {@link dev.aether.render.WorldTextRenderer} draws as real 3D glyph quads on a
+ * rotating ring in world space — depth-tested, so blocks occlude the lyrics naturally.
  *
- * <p>Each word is its own element with a slight random rotation (clamped to ±15°), a small
- * random vertical offset and slight size variation. Unsung words are gray; the moment the song
- * reaches a word's timestamp the word fades to white, picks a fresh random rotation and does a
- * short 1.1x ease-out bump.
+ * <p>Words are gray until the song reaches their timestamp, then they turn white exactly when
+ * sung. Lines are laid out around the player on a configurable ring with a configurable rotation
+ * speed and line tilt.
  */
 public class SkyLyricsModule extends Module {
    private static final Pattern LINE_TS = Pattern.compile("\\[(\\d{1,3}):(\\d{1,2})(?:[.:](\\d{1,3}))?\\]");
@@ -53,7 +54,10 @@ public class SkyLyricsModule extends Module {
       new SliderSetting("Height", "Height of the lyrics above the player", 40.0, 10.0, 120.0, 5.0, " b")
    );
    public final SliderSetting maxRotation = this.addSetting(
-      new SliderSetting("Max Rotation", "Maximum per-word tilt (clamped to 15°)", 12.0, 0.0, 15.0, 1.0, "°")
+      new SliderSetting("Line Tilt", "Tilt of the lyric ring (max line tilt)", 12.0, 0.0, 45.0, 1.0, "°")
+   );
+   public final SliderSetting rotationSpeed = this.addSetting(
+      new SliderSetting("Rotation Speed", "Spin speed of the lyric ring", 0.25, 0.0, 2.0, 0.05)
    );
    public final ColorSetting grayColor = this.addSetting(
       new ColorSetting("Gray Color", "Color of unsung words", -5263198)
@@ -71,7 +75,7 @@ public class SkyLyricsModule extends Module {
       new SliderSetting("Time Offset", "Shift the lyrics timing", 0.0, -2000.0, 2000.0, 50.0, " ms")
    );
 
-   private final ExecutorService fetcher = Executors.newSingleThreadExecutor(r -> {
+   private final ExecutorService fetcher = Executors.newCachedThreadPool(r -> {
       Thread t = new Thread(r, "Aether-SkyLyrics");
       t.setDaemon(true);
       return t;
@@ -156,32 +160,65 @@ public class SkyLyricsModule extends Module {
       });
    }
 
-   /** Fetches synced lyrics (LRC) for the track from the public LRCLib API. */
+   /**
+    * Fetches synced lyrics (LRC) for the track from the public LRCLib API, mirroring the
+    * multi-URL strategy of the Corz Port: exact get, cached get, track/artist search, a
+    * qualifier-stripped search (feat/ft/remaster/live/...) and a free-text query — all fired
+    * in parallel, with the first duration-matching result winning.
+    */
    private List<Line> fetchLyrics(SpotifyState state) throws Exception {
+      long expected = state.durMs();
       String artist = enc(state.artist());
       String track = enc(state.title());
-      String duration = Long.toString(state.durMs() / 1000L);
-      JsonObject json = getJson("https://lrclib.net/api/get?artist_name=" + artist + "&track_name=" + track + "&duration=" + duration);
-      if (json == null) {
-         json = searchFirst(track, artist);
+      String duration = Long.toString(expected / 1000L);
+      String strippedTrack = enc(stripQualifiers(state.title()));
+      String strippedArtist = enc(stripQualifiers(state.artist()));
+      String[] urls = {
+         "https://lrclib.net/api/get?artist_name=" + artist + "&track_name=" + track + "&duration=" + duration,
+         "https://lrclib.net/api/get-cached?artist_name=" + artist + "&track_name=" + track + "&duration=" + duration,
+         "https://lrclib.net/api/search?track_name=" + track + "&artist_name=" + artist,
+         "https://lrclib.net/api/search?track_name=" + strippedTrack + "&artist_name=" + strippedArtist,
+         "https://lrclib.net/api/search?q=" + enc(state.title() + " " + state.artist())
+      };
+      List<Future<JsonElement>> futures = new ArrayList<>();
+      for (String url : urls) {
+         futures.add(this.fetcher.submit(() -> getJson(url)));
       }
-      if (json == null) {
+      JsonElement best = null;
+      for (Future<JsonElement> future : futures) {
+         JsonElement el;
+         try {
+            el = future.get(8L, TimeUnit.SECONDS);
+         } catch (Exception ignored) {
+            continue;
+         }
+         if (el == null) {
+            continue;
+         }
+         if (extractLrc(el) != null && durationMatches(el, expected)) {
+            best = el;
+            break;
+         }
+         if (best == null && extractLrc(el) != null) {
+            best = el;
+         }
+      }
+      if (best == null) {
          return List.of();
       }
-      String lrc = json.has("syncedLyrics") && !json.get("syncedLyrics").isJsonNull()
-         ? json.get("syncedLyrics").getAsString()
-         : (json.has("plainLyrics") && !json.get("plainLyrics").isJsonNull() ? json.get("plainLyrics").getAsString() : null);
+      String lrc = extractLrc(best);
       if (lrc == null || lrc.isBlank()) {
          return List.of();
       }
       return parseLrc(lrc);
    }
 
-   private JsonObject getJson(String url) throws Exception {
+   private JsonElement getJson(String url) throws Exception {
       HttpURLConnection conn = (HttpURLConnection) new URI(url).toURL().openConnection();
-      conn.setConnectTimeout(10000);
-      conn.setReadTimeout(10000);
+      conn.setConnectTimeout(7000);
+      conn.setReadTimeout(7000);
       conn.setRequestProperty("Accept", "application/json");
+      conn.setRequestProperty("User-Agent", "AetherClient/1.0");
       conn.setRequestMethod("GET");
       conn.setInstanceFollowRedirects(true);
       if (conn.getResponseCode() != 200) {
@@ -194,36 +231,72 @@ public class SkyLyricsModule extends Module {
             body.append(line);
          }
       }
-      return JsonParser.parseString(body.toString()).getAsJsonObject();
+      return JsonParser.parseString(body.toString());
    }
 
-   private JsonObject searchFirst(String track, String artist) throws Exception {
-      HttpURLConnection conn = (HttpURLConnection) new URI(
-         "https://lrclib.net/api/search?track_name=" + track + "&artist_name=" + artist
-      ).toURL().openConnection();
-      conn.setConnectTimeout(10000);
-      conn.setReadTimeout(10000);
-      conn.setRequestProperty("Accept", "application/json");
-      conn.setRequestMethod("GET");
-      conn.setInstanceFollowRedirects(true);
-      if (conn.getResponseCode() != 200) {
+   /** Extracts synced (preferred) or plain lyrics text from a get/search response. */
+   private static String extractLrc(JsonElement el) {
+      if (el == null) {
          return null;
       }
-      StringBuilder body = new StringBuilder();
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-         String line;
-         while ((line = reader.readLine()) != null) {
-            body.append(line);
+      if (el.isJsonArray()) {
+         JsonArray arr = el.getAsJsonArray();
+         for (int i = 0; i < arr.size(); i++) {
+            String lrc = lrcOf(arr.get(i).getAsJsonObject());
+            if (lrc != null) {
+               return lrc;
+            }
          }
+         return null;
       }
-      JsonArray arr = JsonParser.parseString(body.toString()).getAsJsonArray();
-      for (int i = 0; i < arr.size(); i++) {
-         JsonObject obj = arr.get(i).getAsJsonObject();
-         if (obj.has("syncedLyrics") && !obj.get("syncedLyrics").isJsonNull()) {
-            return obj;
-         }
+      if (el.isJsonObject()) {
+         return lrcOf(el.getAsJsonObject());
       }
       return null;
+   }
+
+   private static String lrcOf(JsonObject obj) {
+      if (obj.has("syncedLyrics") && !obj.get("syncedLyrics").isJsonNull()) {
+         return obj.get("syncedLyrics").getAsString();
+      }
+      if (obj.has("plainLyrics") && !obj.get("plainLyrics").isJsonNull()) {
+         return obj.get("plainLyrics").getAsString();
+      }
+      return null;
+   }
+
+   /** True when the response carries a duration within the tolerance of the Spotify track. */
+   private static boolean durationMatches(JsonElement el, long expected) {
+      if (el == null) {
+         return false;
+      }
+      if (el.isJsonArray()) {
+         JsonArray arr = el.getAsJsonArray();
+         for (int i = 0; i < arr.size(); i++) {
+            long dur = durationOf(arr.get(i).getAsJsonObject());
+            if (dur != -1L && Math.abs(dur - expected) <= 6000L) {
+               return true;
+            }
+         }
+         return false;
+      }
+      long dur = durationOf(el.getAsJsonObject());
+      return dur != -1L && Math.abs(dur - expected) <= 3500L;
+   }
+
+   private static long durationOf(JsonObject obj) {
+      if (obj != null && obj.has("duration") && obj.get("duration").isJsonPrimitive()
+         && obj.get("duration").getAsJsonPrimitive().isNumber()) {
+         return obj.get("duration").getAsLong() * 1000L;
+      }
+      return -1L;
+   }
+
+   /** Strips parenthetical groups and feat/ft/remaster/live/cover/version qualifiers. */
+   private static String stripQualifiers(String s) {
+      String out = s.replaceAll("\\([^)]*\\)", " ");
+      out = out.replaceAll("(?i)\\b(feat|ft|featuring|remaster|live|cover|version)\\b", " ");
+      return out.trim();
    }
 
    private static String enc(String s) {
@@ -316,6 +389,15 @@ public class SkyLyricsModule extends Module {
          words.add(currentWord.toString());
       }
       flush.run();
+      // Extend each line's end to the next line's start (minimum 1200 ms) so the current line
+      // stays highlighted until the next one actually begins.
+      for (int i = 0; i < out.size(); i++) {
+         Line l = out.get(i);
+         long end = i + 1 < out.size()
+            ? Math.max(l.start + 1200L, out.get(i + 1).start)
+            : l.end;
+         out.set(i, new Line(l.start, end, l.text, l.words, l.ws, l.we));
+      }
       return out;
    }
 
