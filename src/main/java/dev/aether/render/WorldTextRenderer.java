@@ -30,8 +30,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 /**
  * Renders Sky Lyrics as real 3D glyph quads in world space.
@@ -111,6 +109,7 @@ public final class WorldTextRenderer {
       lastNano = now;
 
       VertexConsumer vc = buffers.getBuffer(SKY_LYRICS);
+      PoseStack.Pose pose = poseStack.last();
       for (int i = start; i <= end; i++) {
          int offset = i - currentLine;
          float fade = lineFade(offset, visible);
@@ -127,28 +126,21 @@ public final class WorldTextRenderer {
          float ca = (float)Math.cos(a);
          float sa = (float)Math.sin(a);
 
-         Vector3f pos = new Vector3f(
-            (float)camera.x + ca * radius,
-            (float)camera.y + height,
-            (float)camera.z + sa * radius
-         );
-         Vector3f right = new Vector3f(-sa, 0.0F, ca);
-         Vector3f norm = new Vector3f(-ca, 0.0F, -sa);
+         // World-space position of this line on the ring around the camera.
+         float px = (float)camera.x + ca * radius;
+         float py = (float)camera.y + height;
+         float pz = (float)camera.z + sa * radius;
+         // Local axes: right (tangent), up (tilted), front (facing camera).
+         float rx = -sa, ry = 0.0F, rz = ca;
+         float nx = -ca, ny = 0.0F, nz = -sa;
          float ct = (float)Math.cos(tilt);
          float st = (float)Math.sin(tilt);
-         Vector3f up = new Vector3f(norm.x * st, ct, norm.z * st);
-         Vector3f front = new Vector3f(norm.x * ct, -st, norm.z * ct);
-
-         Quaternionf q = new Quaternionf().setFromNormalizedBasis(right, up, front);
-         poseStack.push();
-         // Nudge slightly deeper so block surfaces win depth ties (blocks always render on top).
-         poseStack.translate(
-            pos.x - front.x * 0.02F,
-            pos.y - front.y * 0.02F,
-            pos.z - front.z * 0.02F
-         );
-         poseStack.mulPose(q);
-         PoseStack.Pose pose = poseStack.last();
+         float ux = nx * st, uy = ct, uz = nz * st;
+         float fx = nx * ct, fy = -st, fz = nz * ct;
+         // Nudge slightly deeper so block surfaces win depth ties.
+         float ox = px - fx * 0.02F;
+         float oy = py - fy * 0.02F;
+         float oz = pz - fz * 0.02F;
 
          boolean isCurrent = i == currentLine;
          int currentWord = isCurrent ? snapshot.currentWord() : -1;
@@ -175,24 +167,17 @@ public final class WorldTextRenderer {
             }
             int argb = Colors.withAlpha(color, alpha * fade);
             if (glow) {
-               renderWord(vc, pose, word, cursor, -halfH, halfH, scale, Colors.withAlpha(color, 0.22F * fade), 1.08F);
+               renderWordWorld(vc, pose, word, cursor, -halfH, halfH, scale, ox, oy, oz, rx, ry, rz, ux, uy, uz, fx, fy, fz, Colors.withAlpha(color, 0.22F * fade), 1.08F);
             }
-            renderWord(vc, pose, word, cursor, -halfH, halfH, scale, argb, 1.0F);
+            renderWordWorld(vc, pose, word, cursor, -halfH, halfH, scale, ox, oy, oz, rx, ry, rz, ux, uy, uz, fx, fy, fz, argb, 1.0F);
             cursor += wordW + textWidth(" ", scale);
             wi++;
          }
-         poseStack.pop();
       }
    }
 
-   private static float lineFade(int offset, int visible) {
-      float max = visible * 0.6F;
-      float t = Math.abs(offset) / max;
-      return (float)Math.clamp(1.0 - 0.22F * t, 0.35F, 1.0F);
-   }
-
-   /** Emits one glyph quad per character of the word, laid out along the local X axis. */
-   private static void renderWord(
+   /** Emits one glyph quad per character, positions computed in world space via the line's basis. */
+   private static void renderWordWorld(
       VertexConsumer vc,
       PoseStack.Pose pose,
       String word,
@@ -200,6 +185,10 @@ public final class WorldTextRenderer {
       float y0,
       float y1,
       float scale,
+      float ox, float oy, float oz,
+      float rx, float ry, float rz,
+      float ux, float uy, float uz,
+      float fx, float fy, float fz,
       int argb,
       float sizeScale
    ) {
@@ -218,11 +207,25 @@ public final class WorldTextRenderer {
          cursor += g.advance() * scale;
          float x0 = cx - w * 0.5F;
          float x1 = cx + w * 0.5F;
-         tex(vc, pose, x0, h0, 0.0F, g.u0(), g.v1(), argb);
-         tex(vc, pose, x1, h0, 0.0F, g.u1(), g.v1(), argb);
-         tex(vc, pose, x1, h1, 0.0F, g.u1(), g.v0(), argb);
-         tex(vc, pose, x0, h1, 0.0F, g.u0(), g.v0(), argb);
+         // Quad corners in local space (x right, y up, z front=0), transformed to world.
+         float[][] local = {
+            {x0, h0, 0.0F}, {x1, h0, 0.0F}, {x1, h1, 0.0F}, {x0, h1, 0.0F}
+         };
+         float[] uv = {g.u0(), g.v1(), g.u1(), g.v1(), g.u1(), g.v0(), g.u0(), g.v0()};
+         for (int v = 0; v < 4; v++) {
+            float lx = local[v][0], ly = local[v][1], lz = local[v][2];
+            float wx = ox + lx * rx + ly * ux + lz * fx;
+            float wy = oy + lx * ry + ly * uy + lz * fy;
+            float wz = oz + lx * rz + ly * uz + lz * fz;
+            tex(vc, pose, wx, wy, wz, uv[v * 2], uv[v * 2 + 1], argb);
+         }
       }
+   }
+
+   private static float lineFade(int offset, int visible) {
+      float max = visible * 0.6F;
+      float t = Math.abs(offset) / max;
+      return (float)Math.clamp(1.0 - 0.22F * t, 0.35F, 1.0F);
    }
 
    /** Full vertex element set required by the emissive-translucent render type. */
