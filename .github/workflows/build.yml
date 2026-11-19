@@ -186,6 +186,8 @@ jobs:
           if-no-files-found: ignore
 
       - name: Run real Minecraft 1.21.11 Client GameTests (PinkBloom + Synced Corz Port UI)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
           LP_NUM_THREADS=1 xvfb-run -a -s "-screen 0 1600x900x24" ./gradlew runClientGameTest -Dorg.gradle.jvmargs="-Xmx1024M" --no-daemon --stacktrace > gametest.log 2>&1
