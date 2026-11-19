@@ -10,13 +10,13 @@ import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.SliderSetting;
 import dev.aether.spotify.SpotifyState;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,10 +71,6 @@ public class SkyLyricsModule extends Module {
       new SliderSetting("Time Offset", "Shift the lyrics timing", 0.0, -2000.0, 2000.0, 50.0, " ms")
    );
 
-   private final HttpClient http = HttpClient.newBuilder()
-      .connectTimeout(Duration.ofSeconds(8))
-      .followRedirects(HttpClient.Redirect.NORMAL)
-      .build();
    private final ExecutorService fetcher = Executors.newSingleThreadExecutor(r -> {
       Thread t = new Thread(r, "Aether-SkyLyrics");
       t.setDaemon(true);
@@ -182,31 +178,49 @@ public class SkyLyricsModule extends Module {
    }
 
    private JsonObject getJson(String url) throws Exception {
-      HttpRequest req = HttpRequest.newBuilder(URI.create(url))
-         .timeout(Duration.ofSeconds(10))
-         .header("Accept", "application/json")
-         .GET()
-         .build();
-      HttpResponse<String> res = this.http.send(req, HttpResponse.BodyHandlers.ofString());
-      if (res.statusCode() != 200) {
+      URLConnection conn = new URI(url).toURL().openConnection();
+      conn.setConnectTimeout(10000);
+      conn.setReadTimeout(10000);
+      conn.setRequestProperty("Accept", "application/json");
+      if (conn instanceof HttpURLConnection http) {
+         http.setRequestMethod("GET");
+         http.setInstanceFollowRedirects(true);
+      }
+      if (conn.getResponseCode() != 200) {
          return null;
       }
-      return JsonParser.parseString(res.body()).getAsJsonObject();
+      StringBuilder body = new StringBuilder();
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+         String line;
+         while ((line = reader.readLine()) != null) {
+            body.append(line);
+         }
+      }
+      return JsonParser.parseString(body.toString()).getAsJsonObject();
    }
 
    private JsonObject searchFirst(String track, String artist) throws Exception {
-      HttpRequest req = HttpRequest.newBuilder(URI.create(
+      URLConnection conn = new URI(
          "https://lrclib.net/api/search?track_name=" + track + "&artist_name=" + artist
-      ))
-         .timeout(Duration.ofSeconds(10))
-         .header("Accept", "application/json")
-         .GET()
-         .build();
-      HttpResponse<String> res = this.http.send(req, HttpResponse.BodyHandlers.ofString());
-      if (res.statusCode() != 200) {
+      ).toURL().openConnection();
+      conn.setConnectTimeout(10000);
+      conn.setReadTimeout(10000);
+      conn.setRequestProperty("Accept", "application/json");
+      if (conn instanceof HttpURLConnection http) {
+         http.setRequestMethod("GET");
+         http.setInstanceFollowRedirects(true);
+      }
+      if (conn.getResponseCode() != 200) {
          return null;
       }
-      JsonArray arr = JsonParser.parseString(res.body()).getAsJsonArray();
+      StringBuilder body = new StringBuilder();
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+         String line;
+         while ((line = reader.readLine()) != null) {
+            body.append(line);
+         }
+      }
+      JsonArray arr = JsonParser.parseString(body.toString()).getAsJsonArray();
       for (int i = 0; i < arr.size(); i++) {
          JsonObject obj = arr.get(i).getAsJsonObject();
          if (obj.has("syncedLyrics") && !obj.get("syncedLyrics").isJsonNull()) {
