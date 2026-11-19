@@ -200,6 +200,16 @@ jobs:
             if [ -z "$ERRORS" ]; then
               ERRORS=$(grep -avE "flite|alsoft|pipewire|realms|narrator|unsatisfiedlinkerror|libflite|signedjwt|could not authorize|world loading finished" gametest.log | tail -n 200)
             fi
+            # Emit workflow annotations with the failure tail (visible in the job page)
+            if [ -n "$ERRORS" ]; then
+              count=0
+              while IFS= read -r line; do
+                [ -z "$line" ] && continue
+                printf '::error title=GameTestLog::%s\n' "$line"
+                count=$((count+1))
+                [ "$count" -ge 60 ] && break
+              done <<< "$ERRORS"
+            fi
             # Create a GitHub issue with the failure tail + full log for readability
             {
               echo "## GameTest Failure - Run ${{ github.run_id }}"
