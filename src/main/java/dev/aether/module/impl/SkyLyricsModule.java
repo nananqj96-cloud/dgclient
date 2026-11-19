@@ -178,14 +178,12 @@ public class SkyLyricsModule extends Module {
    }
 
    private JsonObject getJson(String url) throws Exception {
-      URLConnection conn = new URI(url).toURL().openConnection();
+      HttpURLConnection conn = (HttpURLConnection) new URI(url).toURL().openConnection();
       conn.setConnectTimeout(10000);
       conn.setReadTimeout(10000);
       conn.setRequestProperty("Accept", "application/json");
-      if (conn instanceof HttpURLConnection http) {
-         http.setRequestMethod("GET");
-         http.setInstanceFollowRedirects(true);
-      }
+      conn.setRequestMethod("GET");
+      conn.setInstanceFollowRedirects(true);
       if (conn.getResponseCode() != 200) {
          return null;
       }
@@ -200,16 +198,14 @@ public class SkyLyricsModule extends Module {
    }
 
    private JsonObject searchFirst(String track, String artist) throws Exception {
-      URLConnection conn = new URI(
+      HttpURLConnection conn = (HttpURLConnection) new URI(
          "https://lrclib.net/api/search?track_name=" + track + "&artist_name=" + artist
       ).toURL().openConnection();
       conn.setConnectTimeout(10000);
       conn.setReadTimeout(10000);
       conn.setRequestProperty("Accept", "application/json");
-      if (conn instanceof HttpURLConnection http) {
-         http.setRequestMethod("GET");
-         http.setInstanceFollowRedirects(true);
-      }
+      conn.setRequestMethod("GET");
+      conn.setInstanceFollowRedirects(true);
       if (conn.getResponseCode() != 200) {
          return null;
       }
