@@ -1,5 +1,6 @@
 package dev.aether.module.impl;
 
+import dev.aether.corz.CorzPortBus;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
@@ -62,6 +63,7 @@ public class SkyLyricsModule extends Module {
 
    public SkyLyricsModule() {
       super("Sky Lyrics", "Float the Corz Spotify HUD's synced lyrics in the sky, word by word.", Category.VISUALS);
+      this.setEnabled(true);
    }
 
    private void initBridge() {
@@ -69,11 +71,25 @@ public class SkyLyricsModule extends Module {
          return;
       }
       this.bridgeReady = true;
+      // corzport is bundled as a nested-jar mod loaded by a child classloader, so its classes
+      // are invisible to this mod's own classloader. Load them through the classloader of the
+      // registered CorzPortProvider implementation (which lives in the corzport loader).
+      ClassLoader loader = null;
       try {
-         this.corzClass = Class.forName(CORE_CLASS);
+         Object provider = CorzPortBus.provider();
+         if (provider != null) {
+            loader = provider.getClass().getClassLoader();
+         }
+      } catch (Throwable ignored) {
+      }
+      if (loader == null) {
+         loader = SkyLyricsModule.class.getClassLoader();
+      }
+      try {
+         this.corzClass = Class.forName(CORE_CLASS, false, loader);
          this.trackField = this.corzClass.getDeclaredField("track");
          this.trackField.setAccessible(true);
-         this.lyricsClass = Class.forName(LYRICS_CLASS);
+         this.lyricsClass = Class.forName(LYRICS_CLASS, false, loader);
          this.getDocMethod = this.lyricsClass.getDeclaredMethod("getDoc", String.class);
          this.getDocMethod.setAccessible(true);
       } catch (Throwable t) {

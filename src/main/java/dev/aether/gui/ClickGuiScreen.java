@@ -99,6 +99,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float corzTabY;
    private float corzTabW;
    private float corzTabH;
+   private float accTabX;
+   private float accTabY;
+   private float accTabW;
+   private float accTabH;
    private float themesTabX;
    private float themesTabY;
    private float themesTabW;
@@ -469,6 +473,33 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.rect(sbx, ccy - 6.5F, sbw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), corzOpen ? 0.38F : 0.18F));
       vg.text(stateBadge, sbx + 4.5F, ccy, 8.5F, theme.accentBright());
       navY += this.corzTabH + 6.0F;
+
+      // Accessories popup launcher
+      this.accTabX = this.winX + 10.0F;
+      this.accTabY = navY;
+      this.accTabW = SIDEBAR_W - 20.0F;
+      this.accTabH = 30.0F;
+      int accCount = AetherClient.modules().accessories.equippedCount();
+      boolean accHov = this.hit(mx, my, this.accTabX, this.accTabY, this.accTabW, this.accTabH);
+      if (accHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.accTabX, this.accTabY, this.accTabW, this.accTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
+         }
+         vg.rect(this.accTabX, this.accTabY, this.accTabW, this.accTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         vg.rectOutline(this.accTabX, this.accTabY, this.accTabW, this.accTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
+      }
+      float acy = this.accTabY + this.accTabH * 0.5F;
+      vg.circle(this.accTabX + 18.0F, acy, 5.4F, theme.accent());
+      vg.circleOutline(this.accTabX + 18.0F, acy, 7.6F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Accessories", this.accTabX + 32.0F, acy, 12.2F, accHov ? theme.textPrimary() : theme.textMuted());
+      if (accCount > 0) {
+         String accBadge = Integer.toString(accCount) + " ON";
+         float abw = vg.textWidth(accBadge, 8.5F) + 9.0F;
+         float abx = this.accTabX + this.accTabW - abw - 6.0F;
+         vg.rect(abx, acy - 6.5F, abw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), 0.38F));
+         vg.text(accBadge, abx + 4.5F, acy, 8.5F, theme.accentBright());
+      }
+      navY += this.accTabH + 6.0F;
 
       // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
@@ -939,6 +970,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       // Port subtab toggle button (works in both Dashboard sidebar and Columns top dock)
       if (btn == 0 && this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH)) {
          this.toggleCorzPort();
+         return true;
+      }
+
+      if (btn == 0 && this.hit(mx, my, this.accTabX, this.accTabY, this.accTabW, this.accTabH)) {
+         AetherClient.modules().accessories.open();
          return true;
       }
 

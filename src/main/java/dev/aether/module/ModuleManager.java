@@ -1,5 +1,6 @@
 package dev.aether.module;
 
+import dev.aether.accessory.AccessoriesModule;
 import dev.aether.module.impl.AimAssistModule;
 import dev.aether.module.impl.AnchorMacroModule;
 import dev.aether.module.impl.AirParticlesModule;
@@ -172,6 +173,7 @@ public class ModuleManager {
    public SpawnerProtectModule spawnerProtect;
    public SkyShaderModule skyShader;
    public SkyLyricsModule skyLyrics;
+   public AccessoriesModule accessories;
    public SpeedMineModule speedMine;
    public HomeMethodModule homeMethod;
    public PanoramaModule panorama;
@@ -300,6 +302,8 @@ public class ModuleManager {
       this.register(this.skyShader);
       this.skyLyrics = new SkyLyricsModule();
       this.register(this.skyLyrics);
+      this.accessories = new AccessoriesModule();
+      this.register(this.accessories);
       this.speedMine = new SpeedMineModule();
       this.register(this.speedMine);
       this.homeMethod = new HomeMethodModule();
