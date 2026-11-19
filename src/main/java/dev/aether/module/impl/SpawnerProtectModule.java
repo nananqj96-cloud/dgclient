@@ -123,6 +123,13 @@ public class SpawnerProtectModule extends Module {
          "https://discord.com/api/webhooks/..."
       )
    );
+   public final BooleanSetting autoDisconnect = this.addSetting(
+      new BooleanSetting(
+         "Auto Disconnect",
+         "Disconnect from the server after the salvage routine completes. Off = stay connected.",
+         false
+      )
+   );
    private final Minecraft mc = Minecraft.getInstance();
    private SpawnerProtectModule.State currentState = SpawnerProtectModule.State.WAITING_FOR_STRANGER;
    private BlockPos targetBlock = null;
@@ -141,7 +148,7 @@ public class SpawnerProtectModule extends Module {
    public SpawnerProtectModule() {
       super(
          "SpawnerProtect",
-         "Auto-salvages your spawners when a stranger approaches, then logs out.",
+         "Auto-salvages your spawners when a stranger approaches. Auto-disconnect is optional (off by default).",
          Category.MISC
       );
       this.doubleCheckWindow.visibleWhen(this.doubleCheck::get);
@@ -708,14 +715,20 @@ public class SpawnerProtectModule extends Module {
    private void handleFinalExit() {
       if (this.lagWaitTicks == 0) {
          this.sendWebhook("\ud83c\udfc1 **DONE.** Waiting for items to save...");
-         this.say("Task done — waiting 2s for the server to save, then disconnecting...");
+         if (this.autoDisconnect.get()) {
+            this.say("Task done — waiting 2s for the server to save, then disconnecting...");
+         } else {
+            this.say("Salvage complete — staying online (Auto Disconnect is off).");
+         }
       }
 
       this.lagWaitTicks++;
       if (this.lagWaitTicks > 40) {
-         ClientPacketListener conn = this.mc.getConnection();
-         if (conn != null) {
-            conn.getConnection().disconnect(Component.literal("[SpawnerProtect] Task complete, safe disconnect."));
+         if (this.autoDisconnect.get()) {
+            ClientPacketListener conn = this.mc.getConnection();
+            if (conn != null) {
+               conn.getConnection().disconnect(Component.literal("[SpawnerProtect] Task complete, safe disconnect."));
+            }
          }
 
          this.resetModule();
