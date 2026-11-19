@@ -392,12 +392,12 @@ public class SkyLyricsModule extends Module {
       flush.run();
       // Extend each line's end to the next line's start (minimum 1200 ms) so the current line
       // stays highlighted until the next one actually begins.
-      for (int i = 0; i < out.size(); i++) {
-         Line l = out.get(i);
-         long end = i + 1 < out.size()
-            ? Math.max(l.start + 1200L, out.get(i + 1).start)
+      for (int li = 0; li < out.size(); li++) {
+         Line l = out.get(li);
+         long end = li + 1 < out.size()
+            ? Math.max(l.start + 1200L, out.get(li + 1).start)
             : l.end;
-         out.set(i, new Line(l.start, end, l.text, l.words, l.ws, l.we));
+         out.set(li, new Line(l.start, end, l.text, l.words, l.ws, l.we));
       }
       return out;
    }
