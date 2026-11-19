@@ -53,7 +53,7 @@ jobs:
           STATUS=$?
           cat gradle-build.log
           if [ $STATUS -ne 0 ]; then
-            grep -E "error:|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 60 | while IFS= read -r line; do
+            grep -E "error:|symbol:|location:|FAILED|Caused by:|What went wrong:" gradle-build.log | head -n 120 | while IFS= read -r line; do
               CLEAN=$(echo "$line" | tr -d '\r' | sed 's/%/%25/g')
               echo "::error title=CompileError::$CLEAN"
             done
