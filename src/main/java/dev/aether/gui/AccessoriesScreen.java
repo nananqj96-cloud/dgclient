@@ -206,7 +206,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
       float mx = this.ux(event.x());
       float my = this.ux(event.y());
       if (this.inRect(this.closeRect, mx, my)) {
-         this.close();
+         this.onClose();
          return true;
       }
       AccessoryType[] types = AccessoryType.values();
@@ -229,7 +229,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
             return true;
          }
       }
-      return super.mouseClicked(event, mouseX, mouseY);
+      return super.mouseClicked(event, doubleClick);
    }
 
    @Override
@@ -246,13 +246,13 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
             }
          }
       }
-      return super.mouseReleased(event, mouseX, mouseY);
+      return super.mouseReleased(event);
    }
 
    @Override
    public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
       if (event.key() == 256) {
-         this.close();
+         this.onClose();
          return true;
       }
       return super.keyPressed(event);
@@ -262,8 +262,7 @@ public class AccessoriesScreen extends Screen implements NvgDrawable {
       return mx >= r[0] && mx <= r[2] && my >= r[1] && my <= r[3];
    }
 
-   @Override
-   public void close() {
+   private void onClose() {
       if (this.parent != null) {
          this.minecraft.setScreen(this.parent);
       } else {
