@@ -65,6 +65,7 @@ import dev.aether.module.impl.RegionMapModule;
 import dev.aether.module.impl.ShieldBreakerModule;
 import dev.aether.module.impl.SkinProtectModule;
 import dev.aether.module.impl.SkyShaderModule;
+import dev.aether.module.impl.SkyLyricsModule;
 import dev.aether.module.impl.TargetESPModule;
 import dev.aether.module.impl.TotemCounterModule;
 import dev.aether.module.impl.WaypointsModule;
@@ -170,6 +171,7 @@ public class ModuleManager {
    public ArmorTrimHiderModule armorTrimHider;
    public SpawnerProtectModule spawnerProtect;
    public SkyShaderModule skyShader;
+   public SkyLyricsModule skyLyrics;
    public SpeedMineModule speedMine;
    public HomeMethodModule homeMethod;
    public PanoramaModule panorama;
@@ -296,6 +298,8 @@ public class ModuleManager {
       this.register(this.spawnerProtect);
       this.skyShader = new SkyShaderModule();
       this.register(this.skyShader);
+      this.skyLyrics = new SkyLyricsModule();
+      this.register(this.skyLyrics);
       this.speedMine = new SpeedMineModule();
       this.register(this.speedMine);
       this.homeMethod = new HomeMethodModule();

@@ -109,6 +109,7 @@ public final class OverlayRenderer {
                            if (mc.screen == null) {
                               WorldNametagRenderer.render(vg);
                               NetheriteProbabilityRenderer.renderLabels(vg);
+                              SkyLyricsRenderer.render(vg, AetherClient.modules().skyLyrics);
                            }
 
                            hudManager.render(vg, uiW, uiH);
