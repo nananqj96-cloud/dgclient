@@ -25,7 +25,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.NativeImageBackedTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
@@ -261,7 +261,7 @@ public final class WorldTextRenderer {
             nativeImage.setPixel(i % ATLAS_SIZE, i / ATLAS_SIZE, rgb[i]);
          }
          TextureManager texMgr = mc.getTextureManager();
-         texMgr.register(ATLAS_ID, new NativeImageBackedTexture(() -> "aetherclient:sky_lyrics_atlas", nativeImage));
+         texMgr.register(ATLAS_ID, new DynamicTexture(() -> "aetherclient:sky_lyrics_atlas", nativeImage));
          atlasReady = true;
       } catch (Throwable t) {
          // Font/AWT failure — leave the atlas unbuilt; render() simply returns.
