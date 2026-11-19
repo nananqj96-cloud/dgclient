@@ -436,6 +436,40 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          navY += rh + 3.0F;
       }
 
+      // SUBTABS section -> "Corz Port" synced secondary UI launcher!
+      navY += 6.0F;
+      vg.text("SUBTABS", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
+      navY += 15.0F;
+      this.corzTabX = this.winX + 10.0F;
+      this.corzTabY = navY;
+      this.corzTabW = SIDEBAR_W - 20.0F;
+      this.corzTabH = 30.0F;
+      boolean corzOpen = STATE.isCorzPortOpen();
+      boolean corzHov = this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH);
+      if (corzOpen) {
+         if (theme.isBloom()) {
+            vg.glow(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.0F, 7.0F, Colors.withAlpha(theme.accent(), 0.22F));
+         }
+         vg.rect(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.20F));
+         vg.rectOutline(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.52F));
+         vg.rect(this.corzTabX + 2.0F, this.corzTabY + 6.5F, 3.0F, this.corzTabH - 13.0F, 1.5F, theme.accentBright());
+      } else if (corzHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         }
+         vg.rect(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.12F));
+         vg.rectOutline(this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.30F));
+      }
+      float ccy = this.corzTabY + this.corzTabH * 0.5F;
+      vg.aetherMark(this.corzTabX + 18.0F, ccy, 6.2F, theme.accent(), theme.accentBright());
+      vg.text("Corz Port", this.corzTabX + 32.0F, ccy, 12.2F, corzOpen || corzHov ? theme.textPrimary() : theme.textMuted());
+      String stateBadge = corzOpen ? "OPEN" : "2ND UI";
+      float sbw = vg.textWidth(stateBadge, 8.5F) + 9.0F;
+      float sbx = this.corzTabX + this.corzTabW - sbw - 6.0F;
+      vg.rect(sbx, ccy - 6.5F, sbw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), corzOpen ? 0.38F : 0.18F));
+      vg.text(stateBadge, sbx + 4.5F, ccy, 8.5F, theme.accentBright());
+      navY += this.corzTabH + 6.0F;
+
       // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
       navY += 15.0F;
