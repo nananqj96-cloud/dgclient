@@ -5,11 +5,11 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderPipeline.Snippet;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.platform.NativeImageBackedTexture;
+import net.minecraft.client.texture.NativeImageBackedTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormats;
+import net.minecraft.client.render.VertexFormats;
 import dev.aether.module.impl.SkyLyricsModule;
 import dev.aether.module.impl.SkyLyricsModule.Line;
 import dev.aether.module.impl.SkyLyricsModule.Snapshot;
@@ -69,6 +69,7 @@ public final class WorldTextRenderer {
       .withBlend(BlendFunction.TRANSLUCENT)
       .build();
 
+   private static final Identifier ATLAS_ID = Identifier.fromNamespaceAndPath("aetherclient", "textures/sky_lyrics/atlas");
    private static final Map<Character, Glyph> GLYPHS = new HashMap<>();
    private static volatile RenderType skyLyricsType;
    private static volatile Identifier atlasId;
@@ -258,13 +259,13 @@ public final class WorldTextRenderer {
          Font font = loadFont();
          BufferedImage image = rasterize(font);
          NativeImage nativeImage = new NativeImage(ATLAS_SIZE, ATLAS_SIZE, false);
-         nativeImage.setPixels(
-            0, 0, ATLAS_SIZE, ATLAS_SIZE,
-            image.getRGB(0, 0, ATLAS_SIZE, ATLAS_SIZE, null, 0, ATLAS_SIZE),
-            0, ATLAS_SIZE
-         );
-         atlasId = mc.getTextureManager().registerDynamicTexture(
-            "aetherclient/sky_lyrics_atlas", new NativeImageBackedTexture(nativeImage)
+         int[] rgb = image.getRGB(0, 0, ATLAS_SIZE, ATLAS_SIZE, null, 0, ATLAS_SIZE);
+         for (int i = 0; i < rgb.length; i++) {
+            nativeImage.setColorArgb(i % ATLAS_SIZE, i / ATLAS_SIZE, rgb[i]);
+         }
+         atlasId = ATLAS_ID;
+         mc.getTextureManager().registerTexture(
+            ATLAS_ID, new NativeImageBackedTexture(() -> "aetherclient_sky_lyrics_atlas", nativeImage)
          );
          skyLyricsType = RenderType.create(
             "aetherclient:sky_lyrics",
