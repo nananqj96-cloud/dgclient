@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "fakeclient",
+  "version": "1.0.0",
+  "name": "Fake Client",
+  "description": "Client-side module framework: ClickGUI, keybinds, settings and named config profiles. Ships with Fake Pay, Fake Scoreboard, Fake Item Count, Fake Spawner and Fake Media. Integrated into Aether Client.",
+  "authors": [
+    "Daddy Mittkee"
+  ],
+  "icon": "assets/fakeclient/icon.png",
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.fakeclient.FakeClient"
+    ]
+  },
+  "mixins": [
+    "fakeclient.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": ["library"],
+      "parent": "aetherclient"
+    }
+  }
+}

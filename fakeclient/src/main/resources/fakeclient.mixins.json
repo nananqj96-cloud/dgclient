@@ -1,0 +1,30 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.fakeclient.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "fakeclient-refmap.json",
+  "client": [
+    "AbstractBlockMixin",
+    "ArmorStandEntityRendererMixin",
+    "BlockModelsMixin",
+    "BlockRenderLayersMixin",
+    "BlockSoundGroupMixin",
+    "ChatInputSuggestorMixin",
+    "ClientConnectionMixin",
+    "ClientPlayerInteractionManagerMixin",
+    "ClientPlayNetworkHandlerMixin",
+    "DrawContextMixin",
+    "InGameHudMixin",
+    "ItemModelManagerMixin",
+    "ItemStackMixin",
+    "MessageHandlerMixin",
+    "PlayerListAccessor",
+    "PlayerListHudMixin",
+    "PlayerEntityRendererMixin",
+    "ScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "cakeclient",
+  "version": "6.9.8+1.21.11",
+  "name": "Cake Client",
+  "description": "Premium visual client: imported animated wings, capes, Realis + 256x textures, CS knives with materials, blade trails, crosshairs, hit colors and death effects. Integrated into Aether Client.",
+  "authors": [
+    "Cake",
+    "PROSOP"
+  ],
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "fr.cake.client.CakeClient"
+    ]
+  },
+  "mixins": [
+    "cakeclient.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.1",
+    "minecraft": "1.21.11",
+    "java": ">=21",
+    "fabric-resource-loader-v1": "*",
+    "fabric-networking-api-v1": "*"
+  },
+  "license": "MIT",
+  "icon": "assets/cakeclient/icon.png",
+  "custom": {
+    "modmenu": {
+      "badges": ["library"],
+      "parent": "aetherclient"
+    }
+  }
+}

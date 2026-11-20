@@ -39,7 +39,9 @@ fabricApi {
 }
 
 def nanovgJars = fileTree(dir: 'src/main/resources/META-INF/jars', include: ['*.jar'])
-def corzRemappedJar = file('corzport/build/libs/corzport-2.1.0.jar')
+def corzRemappedJar = file('corz/build/libs/corz-2.1.0.jar')
+def cakeRemappedJar = file('cakeclient/build/libs/cakeclient-6.9.8+1.21.11.jar')
+def fakeRemappedJar = file('fakeclient/build/libs/fakeclient-1.0.0.jar')
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -47,17 +49,27 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    // Shared pure-Java Corz bridge API + bundled remapped CorzPort mod (Jar-in-Jar)
+    // Shared pure-Java Corz bridge API + bundled remapped Corz mod (Jar-in-Jar)
     implementation project(':corz-api')
     gametestImplementation project(':corz-api')
     gametestRuntimeOnly project(':corz-api')
     testImplementation project(':corz-api')
     include project(':corz-api')
-    include project(':corzport')
+    include project(':corz')
 
-    // Load remapped CorzPort mod in dev / headless Client GameTests when built
+    // Bundled remapped Cake Client and Fake Client mods (Jar-in-Jar)
+    include project(':cakeclient')
+    include project(':fakeclient')
+
+    // Load remapped sub-mods in dev / headless Client GameTests when built
     if (corzRemappedJar.exists()) {
         modRuntimeOnly files(corzRemappedJar)
+    }
+    if (cakeRemappedJar.exists()) {
+        modRuntimeOnly files(cakeRemappedJar)
+    }
+    if (fakeRemappedJar.exists()) {
+        modRuntimeOnly files(fakeRemappedJar)
     }
 
     implementation nanovgJars
