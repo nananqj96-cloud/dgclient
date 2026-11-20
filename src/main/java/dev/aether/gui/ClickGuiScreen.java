@@ -801,7 +801,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.drawPillButton(vg, theme, this.modeBtnX, this.modeBtnY, this.modeBtnW, this.modeBtnH, modeLbl, true, this.hit(mx, my, this.modeBtnX, this.modeBtnY, this.modeBtnW, this.modeBtnH), false);
 
       this.corzTabH = 28.0F;
-      String corzLbl = "Port";
+      String corzLbl = "Corz";
       this.corzTabW = vg.textWidth(corzLbl, 11.5F) + 24.0F;
       this.corzTabX = this.modeBtnX - 6.0F - this.corzTabW;
       this.corzTabY = cy - this.corzTabH * 0.5F;
