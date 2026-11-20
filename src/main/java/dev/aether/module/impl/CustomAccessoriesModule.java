@@ -23,7 +23,7 @@ public class CustomAccessoriesModule extends Module {
       new SliderSetting("Glow", "Soft outer-halo intensity", 70.0, 0.0, 100.0, 5.0, "%")
    );
    public final BooleanSetting firstPerson = this.addSetting(
-      new BooleanSetting("First Person", "Also show your accessories in first-person view", false)
+      new BooleanSetting("First Person", "Also show your accessories in first-person view", true)
    );
    public final BooleanSetting cape = this.addSetting(
       new BooleanSetting("Cape", "A flowing cloth cape down your back", true)
