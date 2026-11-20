@@ -107,6 +107,18 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float themesTabY;
    private float themesTabW;
    private float themesTabH;
+   private float fakeTabX;
+   private float fakeTabY;
+   private float fakeTabW;
+   private float fakeTabH;
+   private float cakeTabX;
+   private float cakeTabY;
+   private float cakeTabW;
+   private float cakeTabH;
+   private float creditsTabX;
+   private float creditsTabY;
+   private float creditsTabW;
+   private float creditsTabH;
 
    // Window drag (Dashboard header) & Column panel drag
    private boolean draggingWindow;
@@ -501,6 +513,44 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       navY += this.accTabH + 6.0F;
 
+      // Fake Client tab — opens Fake Client's own ClickGuiScreen
+      this.fakeTabX = this.winX + 10.0F;
+      this.fakeTabY = navY;
+      this.fakeTabW = SIDEBAR_W - 20.0F;
+      this.fakeTabH = 30.0F;
+      boolean fakeHov = this.hit(mx, my, this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH);
+      if (fakeHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
+         }
+         vg.rect(this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         vg.rectOutline(this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
+      }
+      float fcy = this.fakeTabY + this.fakeTabH * 0.5F;
+      vg.circle(this.fakeTabX + 18.0F, fcy, 5.2F, theme.accent());
+      vg.circleOutline(this.fakeTabX + 18.0F, fcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Fake", this.fakeTabX + 32.0F, fcy, 12.2F, fakeHov ? theme.textPrimary() : theme.textMuted());
+      navY += this.fakeTabH + 6.0F;
+
+      // Cake Client tab — opens Cake Client's dashboard menu
+      this.cakeTabX = this.winX + 10.0F;
+      this.cakeTabY = navY;
+      this.cakeTabW = SIDEBAR_W - 20.0F;
+      this.cakeTabH = 30.0F;
+      boolean cakeHov = this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH);
+      if (cakeHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
+         }
+         vg.rect(this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         vg.rectOutline(this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
+      }
+      float kcy = this.cakeTabY + this.cakeTabH * 0.5F;
+      vg.circle(this.cakeTabX + 18.0F, kcy, 5.2F, theme.accent());
+      vg.circleOutline(this.cakeTabX + 18.0F, kcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Cake", this.cakeTabX + 32.0F, kcy, 12.2F, cakeHov ? theme.textPrimary() : theme.textMuted());
+      navY += this.cakeTabH + 6.0F;
+
       // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
       navY += 15.0F;
@@ -526,6 +576,29 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.themesTabY = navY;
       this.themesTabW = tw;
       this.themesTabH = th;
+      navY += th + 6.0F;
+
+      // Credits tab
+      this.creditsTabX = tx;
+      this.creditsTabY = navY;
+      this.creditsTabW = tw;
+      this.creditsTabH = 30.0F;
+      boolean crHov = this.hit(mx, my, this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH);
+      if (STATE.isCreditsTabSelected()) {
+         vg.rect(this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.20F));
+         vg.rectOutline(this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.52F));
+         vg.rect(this.creditsTabX + 2.0F, this.creditsTabY + 6.5F, 3.0F, this.creditsTabH - 13.0F, 1.5F, theme.accentBright());
+      } else if (crHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         }
+         vg.rect(this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.12F));
+         vg.rectOutline(this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.30F));
+      }
+      float crcy = this.creditsTabY + this.creditsTabH * 0.5F;
+      vg.circle(this.creditsTabX + 18.0F, crcy, 5.2F, theme.accent());
+      vg.circleOutline(this.creditsTabX + 18.0F, crcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Credits", this.creditsTabX + 32.0F, crcy, 12.2F, STATE.isCreditsTabSelected() ? theme.textPrimary() : (crHov ? theme.textPrimary() : theme.textMuted()));
 
       // Bottom Config Profiles button
       this.cfgBtnW = SIDEBAR_W - 24.0F;
@@ -548,6 +621,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          heading = "Search Results";
       } else if (this.favouritesOnly) {
          heading = "Favourites";
+      } else if (STATE.isCreditsTabSelected()) {
+         heading = "Credits";
       } else if (STATE.isThemesTabSelected()) {
          heading = "Themes & Audio";
       } else {
@@ -559,7 +634,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.rect(mainX + 12.0F, cy - 11.0F, 3.0F, 22.0F, 1.5F, theme.accent());
       float hw = vg.text(heading, mainX + 25.0F, cy, 15.0F, theme.textPrimary());
 
-      if (!STATE.isThemesTabSelected() || !this.search.isEmpty() || this.favouritesOnly) {
+      if (!STATE.isThemesTabSelected() && !STATE.isCreditsTabSelected() || !this.search.isEmpty() || this.favouritesOnly) {
          String countPill = Integer.toString(vis.size());
          float cpw = vg.textWidth(countPill, 10.5F) + 12.0F;
          vg.rect(mainX + 24.0F + hw, cy - 8.0F, cpw, 16.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.16F));
@@ -617,6 +692,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    private void renderDashboardBody(NVGRenderer vg, Theme theme, float mx, float my, float bx, float by, float bw, float bh) {
       boolean showThemes = STATE.isThemesTabSelected() && this.search.isEmpty() && !this.favouritesOnly;
+      boolean showCredits = STATE.isCreditsTabSelected() && this.search.isEmpty() && !this.favouritesOnly;
       vg.save();
       vg.scissor(bx, by, bw, bh);
 
@@ -624,7 +700,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       float contentTop = by + pad - this.dashScroll.value();
       float totalContentH;
 
-      if (showThemes) {
+      if (showCredits) {
+         totalContentH = this.renderCreditsPanel(vg, theme, bx + pad, contentTop, bw - pad * 2.0F);
+      } else if (showThemes) {
          totalContentH = this.renderThemesStudio(vg, theme, mx, my, bx + pad, contentTop, bw - pad * 2.0F);
       } else {
          List<ModuleEntry> entries = this.collectDashboardEntries();
@@ -759,6 +837,67 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return y - startY + 24.0F;
    }
 
+   private float renderCreditsPanel(NVGRenderer vg, Theme theme, float x, float startY, float w) {
+      float y = startY;
+      float cardH = 90.0F;
+      float gap = 12.0F;
+
+      // Title
+      if (theme.isBloom()) {
+         vg.circleGlow(x + 12.0F, y + 4.0F, 10.0F, 8.0F, Colors.withAlpha(theme.accent(), 0.25F));
+      }
+      vg.aetherMark(x + 12.0F, y + 10.0F, 8.0F, theme.accent(), theme.accentBright());
+      vg.textGradient("CREDITS", x + 28.0F, y + 6.0F, 16.0F, theme.accentBright(), theme.accent());
+      y += 28.0F;
+
+      // Cake Client credit card
+      vg.rect(x, y, w, cardH, 10.0F, Colors.withAlpha(theme.background(), 0.65F));
+      vg.rectOutline(x, y, w, cardH, 10.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.35F));
+      if (theme.isBloom()) {
+         vg.glow(x, y, w, cardH, 10.0F, 10.0F, Colors.withAlpha(theme.accent(), 0.12F));
+      }
+
+      float cy = y + 28.0F;
+      vg.circle(x + 26.0F, cy, 7.0F, theme.accent());
+      vg.circleOutline(x + 26.0F, cy, 10.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Cake Client", x + 44.0F, cy - 4.0F, 14.0F, theme.textPrimary());
+      vg.text("Cosmetics, accessories & avatar system", x + 44.0F, cy + 10.0F, 11.0F, theme.textMuted());
+
+      float creditY = y + 56.0F;
+      vg.text("Source provided by:", x + 24.0F, creditY, 11.5F, theme.textDisabled());
+      float cw = vg.textWidth("PROSOP", 14.0F);
+      vg.rect(x + 24.0F + vg.textWidth("Source provided by:  ", 11.5F) + 2.0F, creditY - 9.0F, cw + 16.0F, 20.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.25F));
+      vg.rectOutline(x + 24.0F + vg.textWidth("Source provided by:  ", 11.5F) + 2.0F, creditY - 9.0F, cw + 16.0F, 20.0F, 6.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.60F));
+      vg.text("PROSOP", x + 24.0F + vg.textWidth("Source provided by:  ", 11.5F) + 10.0F, creditY, 14.0F, theme.accentBright());
+
+      y += cardH + gap;
+
+      // Fake Client credit card
+      vg.rect(x, y, w, cardH, 10.0F, Colors.withAlpha(theme.background(), 0.65F));
+      vg.rectOutline(x, y, w, cardH, 10.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.35F));
+      if (theme.isBloom()) {
+         vg.glow(x, y, w, cardH, 10.0F, 10.0F, Colors.withAlpha(theme.accent(), 0.12F));
+      }
+
+      cy = y + 28.0F;
+      vg.circle(x + 26.0F, cy, 7.0F, theme.accent());
+      vg.circleOutline(x + 26.0F, cy, 10.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Fake Client", x + 44.0F, cy - 4.0F, 14.0F, theme.textPrimary());
+      vg.text("Integrated GUI module", x + 44.0F, cy + 10.0F, 11.0F, theme.textMuted());
+
+      creditY = y + 56.0F;
+      vg.text("Integrated into Aether Client", x + 24.0F, creditY, 11.5F, theme.textDisabled());
+      vg.text("v2.3.0", x + 24.0F, creditY + 18.0F, 11.5F, theme.textMuted());
+
+      y += cardH + gap;
+
+      // Footer
+      vg.text("Thank you to everyone who made these clients possible.", x, y + 4.0F, 11.0F, theme.textDisabled());
+      y += 24.0F;
+
+      return y - startY + 16.0F;
+   }
+
    // =========================================================================
    // MODE 2: REDESIGNED DRAGGABLE CATEGORY COLUMNS (+ SYNCED CORZ PORT)
    // =========================================================================
@@ -807,10 +946,24 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.corzTabY = cy - this.corzTabH * 0.5F;
       this.drawPillButton(vg, theme, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, corzLbl, STATE.isCorzOpen(), this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH), false);
 
+      this.fakeTabH = 28.0F;
+      String fakeLbl = "Fake";
+      this.fakeTabW = vg.textWidth(fakeLbl, 11.5F) + 24.0F;
+      this.fakeTabX = this.corzTabX - 6.0F - this.fakeTabW;
+      this.fakeTabY = cy - this.fakeTabH * 0.5F;
+      this.drawPillButton(vg, theme, this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH, fakeLbl, false, this.hit(mx, my, this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH), false);
+
+      this.cakeTabH = 28.0F;
+      String cakeLbl = "Cake";
+      this.cakeTabW = vg.textWidth(cakeLbl, 11.5F) + 24.0F;
+      this.cakeTabX = this.fakeTabX - 6.0F - this.cakeTabW;
+      this.cakeTabY = cy - this.cakeTabH * 0.5F;
+      this.drawPillButton(vg, theme, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, cakeLbl, false, this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH), false);
+
       this.cfgBtnH = 28.0F;
       String cfgLbl = "Configs";
       this.cfgBtnW = vg.textWidth(cfgLbl, 11.5F) + 20.0F;
-      this.cfgBtnX = this.corzTabX - 6.0F - this.cfgBtnW;
+      this.cfgBtnX = this.cakeTabX - 6.0F - this.cfgBtnW;
       this.cfgBtnY = cy - this.cfgBtnH * 0.5F;
       this.drawPillButton(vg, theme, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, cfgLbl, false, this.hit(mx, my, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH), false);
 
@@ -978,6 +1131,35 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
+      if (btn == 0 && this.hit(mx, my, this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH)) {
+         // Open Fake Client's own ClickGuiScreen
+         try {
+            net.minecraft.client.Minecraft.getInstance().setScreen(new com.fakeclient.gui.ClickGuiScreen());
+         } catch (Throwable t) {
+            AetherClient.LOGGER.error("Failed to open Fake Client GUI", t);
+         }
+         return true;
+      }
+
+      if (btn == 0 && this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH)) {
+         // Open/close Cake Client's dashboard menu
+         try {
+            fr.cake.client.CakeClient.toggleMenu();
+         } catch (Throwable t) {
+            AetherClient.LOGGER.error("Failed to toggle Cake Client menu", t);
+         }
+         return true;
+      }
+
+      if (btn == 0 && this.hit(mx, my, this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH)) {
+         STATE.selectCreditsTab();
+         this.favouritesOnly = false;
+         this.search.setLength(0);
+         this.dashScroll.snapTo(0.0F);
+         UiSounds.select();
+         return true;
+      }
+
       if (btn == 0 && this.hit(mx, my, this.modeBtnX, this.modeBtnY, this.modeBtnW, this.modeBtnH)) {
          this.toggleLayoutMode();
          return true;
@@ -1057,6 +1239,14 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             UiSounds.select();
             return true;
          }
+         if (btn == 0 && this.hit(mx, my, this.creditsTabX, this.creditsTabY, this.creditsTabW, this.creditsTabH)) {
+            STATE.selectCreditsTab();
+            this.favouritesOnly = false;
+            this.search.setLength(0);
+            this.dashScroll.snapTo(0.0F);
+            UiSounds.select();
+            return true;
+         }
          return true;
       }
 
@@ -1073,9 +1263,13 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       float bodyH = this.winH - TOPBAR_H;
       if (this.hit(mx, my, bodyX, bodyY, bodyW, bodyH)) {
          boolean showThemes = STATE.isThemesTabSelected() && this.search.isEmpty() && !this.favouritesOnly;
+         boolean showCredits = STATE.isCreditsTabSelected() && this.search.isEmpty() && !this.favouritesOnly;
          if (showThemes) {
             this.pressedInThemesStudio = true;
             this.clickThemesStudio(mx, my, btn, bodyX + 14.0F, bodyY + 14.0F - this.dashScroll.value(), bodyW - 28.0F);
+            return true;
+         }
+         if (showCredits) {
             return true;
          }
          for (ModuleEntry entry : this.collectDashboardEntries()) {

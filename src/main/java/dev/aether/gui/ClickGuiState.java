@@ -22,6 +22,7 @@ public class ClickGuiState {
    private boolean themesTabSelected;
    private boolean corzOpen = true;
    private String corzSelectedCategory = "All";
+   private boolean creditsTabSelected;
    private boolean laidOut;
    private boolean customized;
    private float lastLayoutWidth = -1.0F;
@@ -71,6 +72,7 @@ public class ClickGuiState {
       if (category != null) {
          this.selectedCategory = category;
          this.themesTabSelected = false;
+         this.creditsTabSelected = false;
       }
    }
 
@@ -80,6 +82,16 @@ public class ClickGuiState {
 
    public void selectThemesTab() {
       this.themesTabSelected = true;
+      this.creditsTabSelected = false;
+   }
+
+   public boolean isCreditsTabSelected() {
+      return this.creditsTabSelected;
+   }
+
+   public void selectCreditsTab() {
+      this.creditsTabSelected = true;
+      this.themesTabSelected = false;
    }
 
    public boolean isCorzOpen() {
@@ -171,6 +183,7 @@ public class ClickGuiState {
       root.addProperty("selectedCategory", this.selectedCategory.name());
       root.addProperty("corzOpen", this.corzOpen);
       root.addProperty("corzCategory", this.corzSelectedCategory);
+      root.addProperty("creditsTab", this.creditsTabSelected);
       root.addProperty("v", LAYOUT_VERSION);
       root.addProperty("custom", this.customized);
 
@@ -208,6 +221,9 @@ public class ClickGuiState {
       }
       if (root.has("corzCategory") && root.get("corzCategory").isJsonPrimitive()) {
          this.corzSelectedCategory = root.get("corzCategory").getAsString();
+      }
+      if (root.has("creditsTab") && root.get("creditsTab").isJsonPrimitive()) {
+         this.creditsTabSelected = root.get("creditsTab").getAsBoolean();
       }
 
       if (root.has("v")
