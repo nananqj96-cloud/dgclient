@@ -2,7 +2,7 @@ package dev.aether.corz;
 
 import java.util.List;
 
-public interface CorzPortProvider {
+public interface CorzProvider {
    List<String> categories();
 
    List<CorzModuleHandle> allModules();

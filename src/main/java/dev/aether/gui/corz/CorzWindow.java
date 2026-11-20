@@ -2,8 +2,8 @@ package dev.aether.gui.corz;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.aether.corz.CorzModuleHandle;
-import dev.aether.corz.CorzPortBus;
-import dev.aether.corz.CorzPortProvider;
+import dev.aether.corz.CorzBus;
+import dev.aether.corz.CorzProvider;
 import dev.aether.corz.CorzSettingHandle;
 import dev.aether.gui.ClickGuiState;
 import dev.aether.render.anim.Animation;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public final class CorzPortWindow {
+public final class CorzWindow {
    private static final float RADIUS = 13.0F;
    private static final float HEADER_H = 50.0F;
    private static final float TABS_H = 34.0F;
@@ -66,19 +66,19 @@ public final class CorzPortWindow {
    private CorzModuleHandle listeningModuleKey;
    private CorzSettingHandle focusedStringSetting;
 
-   public CorzPortWindow(ThemeManager themes, ClickGuiState state) {
+   public CorzWindow(ThemeManager themes, ClickGuiState state) {
       this.themes = themes;
       this.state = state;
-      this.subOpenAnim.snapTo(state.isCorzPortOpen() ? 1.0F : 0.0F);
+      this.subOpenAnim.snapTo(state.isCorzOpen() ? 1.0F : 0.0F);
    }
 
    public boolean isVisible() {
-      this.subOpenAnim.setTarget(this.state.isCorzPortOpen() ? 1.0F : 0.0F);
-      return this.subOpenAnim.value() > 0.005F || this.state.isCorzPortOpen();
+      this.subOpenAnim.setTarget(this.state.isCorzOpen() ? 1.0F : 0.0F);
+      return this.subOpenAnim.value() > 0.005F || this.state.isCorzOpen();
    }
 
    public float openProgress() {
-      this.subOpenAnim.setTarget(this.state.isCorzPortOpen() ? 1.0F : 0.0F);
+      this.subOpenAnim.setTarget(this.state.isCorzOpen() ? 1.0F : 0.0F);
       return this.subOpenAnim.value();
    }
 
@@ -146,7 +146,7 @@ public final class CorzPortWindow {
    }
 
    public void syncThemeToCorz() {
-      CorzPortProvider provider = CorzPortBus.provider();
+      CorzProvider provider = CorzBus.provider();
       if (provider != null) {
          Theme t = this.themes.current();
          provider.syncTheme(t.accent(), t.accentBright(), t.background());
@@ -202,7 +202,7 @@ public final class CorzPortWindow {
       vg.aetherMark(this.x + 20.0F, cy, 8.2F, theme.accent(), theme.accentBright());
       float tw = vg.textGradient("CORZ PORT", this.x + 34.0F, cy, 13.5F, theme.accentBright(), theme.accent());
 
-      CorzPortProvider provider = CorzPortBus.provider();
+      CorzProvider provider = CorzBus.provider();
       int totalCount = provider != null ? provider.allModules().size() : 0;
       String badge = Integer.toString(totalCount);
       float bw = vg.textWidth(badge, 9.5F) + 10.0F;
@@ -240,7 +240,7 @@ public final class CorzPortWindow {
    }
 
    private List<String> tabNames() {
-      CorzPortProvider p = CorzPortBus.provider();
+      CorzProvider p = CorzBus.provider();
       if (p == null) {
          return List.of("All");
       }
@@ -280,7 +280,7 @@ public final class CorzPortWindow {
 
    private List<CorzModuleHandle> collectVisible() {
       this.visibleScratch.clear();
-      CorzPortProvider p = CorzPortBus.provider();
+      CorzProvider p = CorzBus.provider();
       if (p == null) {
          return this.visibleScratch;
       }
@@ -309,7 +309,7 @@ public final class CorzPortWindow {
       vg.save();
       vg.scissor(bodyX + 1.0F, bodyY, bodyW - 2.0F, bodyH - 1.0F);
 
-      CorzPortProvider provider = CorzPortBus.provider();
+      CorzProvider provider = CorzBus.provider();
       if (provider == null) {
          String msg = "Port engine initializing...";
          vg.text(msg, bodyX + (bodyW - vg.textWidth(msg, 12.5F)) * 0.5F, bodyY + bodyH * 0.45F, 12.5F, theme.textMuted());
@@ -567,7 +567,7 @@ public final class CorzPortWindow {
       if (this.hasPendingKeybind()) {
          return this.handlePendingKeybindMouse(btn);
       }
-      if (!this.state.isCorzPortOpen() || !this.hit(mx, my, this.x, this.y, this.w, this.h)) {
+      if (!this.state.isCorzOpen() || !this.hit(mx, my, this.x, this.y, this.w, this.h)) {
          this.searchFocused = false;
          this.focusedStringSetting = null;
          return false;
@@ -575,7 +575,7 @@ public final class CorzPortWindow {
 
       // Close button
       if (btn == 0 && this.hit(mx, my, this.closeX, this.closeY, this.closeSize, this.closeSize)) {
-         this.state.setCorzPortOpen(false);
+         this.state.setCorzOpen(false);
          UiSounds.guiClose();
          return true;
       }
@@ -735,7 +735,7 @@ public final class CorzPortWindow {
       sy += 24.0F;
 
       if (mod.hasCustomStudio() && this.hit(mx, my, sx, sy, sw, 26.0F)) {
-         CorzPortProvider p = CorzPortBus.provider();
+         CorzProvider p = CorzBus.provider();
          if (p != null) {
             p.openNativeStudio(mod.id());
          }
@@ -793,7 +793,7 @@ public final class CorzPortWindow {
    }
 
    public boolean mouseScrolled(float mx, float my, double scrollY) {
-      if (!this.state.isCorzPortOpen() || !this.hit(mx, my, this.x, this.y, this.w, this.h)) {
+      if (!this.state.isCorzOpen() || !this.hit(mx, my, this.x, this.y, this.w, this.h)) {
          return false;
       }
       if (this.maxScroll > 0.0F) {

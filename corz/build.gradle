@@ -14,7 +14,7 @@ version = '2.1.0'
 group = 'com.corz'
 
 base {
-    archivesName = 'corzport'
+    archivesName = 'corz'
 }
 
 repositories {

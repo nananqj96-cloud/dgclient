@@ -2,8 +2,8 @@ package dev.aether;
 
 import dev.aether.config.ConfigManager;
 import dev.aether.config.ConfigStore;
-import dev.aether.corz.CorzPortBus;
-import dev.aether.corz.CorzPortProvider;
+import dev.aether.corz.CorzBus;
+import dev.aether.corz.CorzProvider;
 import dev.aether.chunkbypass.ChunkBypassLedger;
 import dev.aether.donut.DonutNetworking;
 import dev.aether.gui.ClickGuiScreen;
@@ -129,7 +129,7 @@ public class AetherClient implements ClientModInitializer {
       });
       ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
          config.save();
-         CorzPortProvider corz = CorzPortBus.provider();
+         CorzProvider corz = CorzBus.provider();
          if (corz != null) {
             corz.saveConfig();
          }

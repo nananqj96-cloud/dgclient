@@ -1,10 +1,10 @@
 package dev.aether.gui;
 
 import dev.aether.AetherClient;
-import dev.aether.corz.CorzPortBus;
-import dev.aether.corz.CorzPortProvider;
+import dev.aether.corz.CorzBus;
+import dev.aether.corz.CorzProvider;
 import dev.aether.gui.config.ConfigPanel;
-import dev.aether.gui.corz.CorzPortWindow;
+import dev.aether.gui.corz.CorzWindow;
 import dev.aether.gui.panel.CategoryPanel;
 import dev.aether.gui.panel.ModuleEntry;
 import dev.aether.gui.panel.Panel;
@@ -62,7 +62,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float dashMaxScroll;
    private boolean closing;
    private final ConfigPanel configPanel = new ConfigPanel();
-   private final CorzPortWindow corzPortWindow;
+   private final CorzWindow corzWindow;
 
    // Themes & Audio studio widgets for Dashboard mode
    private final ColorSetting dashAccentProxy;
@@ -124,7 +124,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private Panel pressedContentPanel;
    private ModuleEntry pressedDashEntry;
    private boolean pressedInThemesStudio;
-   private boolean pressedInCorzPort;
+   private boolean pressedInCorz;
    private final Screen parent;
 
    public ClickGuiScreen() {
@@ -137,7 +137,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       STATE.ensureDefaultLayout(OverlayRenderer.uiWidth(), OverlayRenderer.uiHeight());
       ModuleManager modules = AetherClient.modules();
       ThemeManager themes = AetherClient.themes();
-      this.corzPortWindow = new CorzPortWindow(themes, STATE);
+      this.corzWindow = new CorzWindow(themes, STATE);
 
       for (Category cat : Category.values()) {
          CategoryPanel cp = new CategoryPanel(cat, modules, themes, STATE);
@@ -192,13 +192,13 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       return STATE;
    }
 
-   public CorzPortWindow corzPortWindow() {
-      return this.corzPortWindow;
+   public CorzWindow corzWindow() {
+      return this.corzWindow;
    }
 
-   public void toggleCorzPort() {
-      STATE.toggleCorzPort();
-      if (STATE.isCorzPortOpen()) {
+   public void toggleCorz() {
+      STATE.toggleCorz();
+      if (STATE.isCorzOpen()) {
          UiSounds.guiOpen();
       } else {
          UiSounds.guiClose();
@@ -237,7 +237,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public void removed() {
       BlurHook.clear();
       AetherClient.config().save();
-      CorzPortProvider corz = CorzPortBus.provider();
+      CorzProvider corz = CorzBus.provider();
       if (corz != null) {
          corz.saveConfig();
       }
@@ -283,9 +283,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return;
       }
       try {
-         this.corzPortWindow.syncThemeToCorz();
+         this.corzWindow.syncThemeToCorz();
       } catch (Throwable t) {
-         AetherClient.LOGGER.error("Corz Port theme sync failed; continuing GUI render", t);
+         AetherClient.LOGGER.error("Corz theme sync failed; continuing GUI render", t);
       }
       float anim = this.openAnim.value();
       if (anim <= 0.002F && this.closing) {
@@ -313,8 +313,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    private void renderDashboardMode(NVGRenderer vg, float mx, float my, float uiW, float uiH, float anim) {
       Theme theme = AetherClient.themes().current();
-      float corzProg = this.corzPortWindow.openProgress();
-      float corzW = this.corzPortWindow.preferredWidth(uiW);
+      float corzProg = this.corzWindow.openProgress();
+      float corzW = this.corzWindow.preferredWidth(uiW);
       float gap = 14.0F * corzProg;
 
       float maxDashW = uiW - 40.0F - (corzW + 14.0F) * corzProg;
@@ -364,12 +364,12 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.restore();
 
       // Render Synced Second UI ("Port") alongside the main window
-      if (this.corzPortWindow.isVisible()) {
+      if (this.corzWindow.isVisible()) {
          float corzDefaultX = this.winX + this.winW + 14.0F;
          try {
-            this.corzPortWindow.render(vg, mx, my, uiW, uiH, corzDefaultX, this.winY, this.winH);
+            this.corzWindow.render(vg, mx, my, uiW, uiH, corzDefaultX, this.winY, this.winH);
          } catch (Throwable t) {
-            AetherClient.LOGGER.error("Corz Port render failed (dashboard mode); skipping this frame", t);
+            AetherClient.LOGGER.error("Corz render failed (dashboard mode); skipping this frame", t);
          }
       }
    }
@@ -440,7 +440,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          navY += rh + 3.0F;
       }
 
-      // SUBTABS section -> "Corz Port" synced secondary UI launcher!
+      // SUBTABS section -> "Corz" synced secondary UI launcher!
       navY += 6.0F;
       vg.text("SUBTABS", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
       navY += 15.0F;
@@ -448,7 +448,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.corzTabY = navY;
       this.corzTabW = SIDEBAR_W - 20.0F;
       this.corzTabH = 30.0F;
-      boolean corzOpen = STATE.isCorzPortOpen();
+      boolean corzOpen = STATE.isCorzOpen();
       boolean corzHov = this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH);
       if (corzOpen) {
          if (theme.isBloom()) {
@@ -466,7 +466,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float ccy = this.corzTabY + this.corzTabH * 0.5F;
       vg.aetherMark(this.corzTabX + 18.0F, ccy, 6.2F, theme.accent(), theme.accentBright());
-      vg.text("Corz Port", this.corzTabX + 32.0F, ccy, 12.2F, corzOpen || corzHov ? theme.textPrimary() : theme.textMuted());
+      vg.text("Corz", this.corzTabX + 32.0F, ccy, 12.2F, corzOpen || corzHov ? theme.textPrimary() : theme.textMuted());
       String stateBadge = corzOpen ? "OPEN" : "2ND UI";
       float sbw = vg.textWidth(stateBadge, 8.5F) + 9.0F;
       float sbx = this.corzTabX + this.corzTabW - sbw - 6.0F;
@@ -805,7 +805,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.corzTabW = vg.textWidth(corzLbl, 11.5F) + 24.0F;
       this.corzTabX = this.modeBtnX - 6.0F - this.corzTabW;
       this.corzTabY = cy - this.corzTabH * 0.5F;
-      this.drawPillButton(vg, theme, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, corzLbl, STATE.isCorzPortOpen(), this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH), false);
+      this.drawPillButton(vg, theme, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, corzLbl, STATE.isCorzOpen(), this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH), false);
 
       this.cfgBtnH = 28.0F;
       String cfgLbl = "Configs";
@@ -831,13 +831,13 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.searchBoxY = cy - this.searchBoxH * 0.5F;
       this.renderSearchPill(vg, theme, this.searchBoxX, this.searchBoxY, this.searchBoxW, this.searchBoxH);
 
-      if (this.corzPortWindow.isVisible()) {
-         float cw = this.corzPortWindow.preferredWidth(uiW);
+      if (this.corzWindow.isVisible()) {
+         float cw = this.corzWindow.preferredWidth(uiW);
          float ch = Math.clamp(uiH - 96.0F, 380.0F, 540.0F);
          try {
-            this.corzPortWindow.render(vg, mx, my, uiW, uiH, uiW - cw - 18.0F, 68.0F, ch);
+            this.corzWindow.render(vg, mx, my, uiW, uiH, uiW - cw - 18.0F, 68.0F, ch);
          } catch (Throwable t) {
-            AetherClient.LOGGER.error("Corz Port render failed (columns mode); skipping this frame", t);
+            AetherClient.LOGGER.error("Corz render failed (columns mode); skipping this frame", t);
          }
       }
    }
@@ -947,8 +947,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
 
       // If any KeybindWidget or Corz keybind is waiting for input, route mouse button directly to it
-      if (this.corzPortWindow.hasPendingKeybind()) {
-         this.corzPortWindow.handlePendingKeybindMouse(btn);
+      if (this.corzWindow.hasPendingKeybind()) {
+         this.corzWindow.handlePendingKeybindMouse(btn);
          return true;
       }
       for (Panel p : this.panels) {
@@ -961,15 +961,15 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.unfocusAllTextInputs();
 
       // Route clicks inside synced Port secondary UI first when open
-      if (this.corzPortWindow.mouseClicked(vg, mx, my, btn)) {
-         this.pressedInCorzPort = true;
+      if (this.corzWindow.mouseClicked(vg, mx, my, btn)) {
+         this.pressedInCorz = true;
          this.searchFocused = false;
          return true;
       }
 
       // Port subtab toggle button (works in both Dashboard sidebar and Columns top dock)
       if (btn == 0 && this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH)) {
-         this.toggleCorzPort();
+         this.toggleCorz();
          return true;
       }
 
@@ -1142,8 +1142,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float mx = this.uiX(event.x());
       float my = this.uiY(event.y());
-      if (this.pressedInCorzPort) {
-         this.corzPortWindow.mouseDragged(mx, my);
+      if (this.pressedInCorz) {
+         this.corzWindow.mouseDragged(mx, my);
          return true;
       }
       if (this.draggingWindow) {
@@ -1183,9 +1183,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       if (this.configPanel.isOpen()) {
          return true;
       }
-      if (this.pressedInCorzPort) {
-         this.pressedInCorzPort = false;
-         this.corzPortWindow.mouseReleased();
+      if (this.pressedInCorz) {
+         this.pressedInCorz = false;
+         this.corzWindow.mouseReleased();
       }
       this.draggingWindow = false;
       if (this.pressedInThemesStudio) {
@@ -1223,7 +1223,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
       float mx = this.uiX(mouseX);
       float my = this.uiY(mouseY);
-      if (this.corzPortWindow.mouseScrolled(mx, my, scrollY)) {
+      if (this.corzWindow.mouseScrolled(mx, my, scrollY)) {
          return true;
       }
       if (this.isDashboardMode()) {
@@ -1249,7 +1249,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.configPanel.keyPressed(event.key());
          return true;
       }
-      if (this.corzPortWindow.isListening() && this.corzPortWindow.keyPressed(event.key())) {
+      if (this.corzWindow.isListening() && this.corzWindow.keyPressed(event.key())) {
          return true;
       }
       if (this.dashAccentWidget.isListening()) {
@@ -1290,7 +1290,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          this.configPanel.charTyped(event.codepoint());
          return true;
       }
-      if (this.corzPortWindow.isListening() && this.corzPortWindow.charTyped(event.codepoint())) {
+      if (this.corzWindow.isListening() && this.corzWindow.charTyped(event.codepoint())) {
          return true;
       }
       if (this.dashAccentWidget.isListening()) {

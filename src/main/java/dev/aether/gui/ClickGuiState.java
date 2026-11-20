@@ -20,7 +20,7 @@ public class ClickGuiState {
    private int favouritesRevision;
    private Category selectedCategory = Category.COMBAT;
    private boolean themesTabSelected;
-   private boolean corzPortOpen = true;
+   private boolean corzOpen = true;
    private String corzSelectedCategory = "All";
    private boolean laidOut;
    private boolean customized;
@@ -82,16 +82,16 @@ public class ClickGuiState {
       this.themesTabSelected = true;
    }
 
-   public boolean isCorzPortOpen() {
-      return this.corzPortOpen;
+   public boolean isCorzOpen() {
+      return this.corzOpen;
    }
 
-   public void setCorzPortOpen(boolean open) {
-      this.corzPortOpen = open;
+   public void setCorzOpen(boolean open) {
+      this.corzOpen = open;
    }
 
-   public void toggleCorzPort() {
-      this.corzPortOpen = !this.corzPortOpen;
+   public void toggleCorz() {
+      this.corzOpen = !this.corzOpen;
    }
 
    public String corzSelectedCategory() {
@@ -169,7 +169,7 @@ public class ClickGuiState {
       this.favourites.stream().sorted().forEach(favArr::add);
       root.add("favourites", favArr);
       root.addProperty("selectedCategory", this.selectedCategory.name());
-      root.addProperty("corzPortOpen", this.corzPortOpen);
+      root.addProperty("corzOpen", this.corzOpen);
       root.addProperty("corzCategory", this.corzSelectedCategory);
       root.addProperty("v", LAYOUT_VERSION);
       root.addProperty("custom", this.customized);
@@ -203,8 +203,8 @@ public class ClickGuiState {
          } catch (IllegalArgumentException ignored) {
          }
       }
-      if (root.has("corzPortOpen") && root.get("corzPortOpen").isJsonPrimitive()) {
-         this.corzPortOpen = root.get("corzPortOpen").getAsBoolean();
+      if (root.has("corzOpen") && root.get("corzOpen").isJsonPrimitive()) {
+         this.corzOpen = root.get("corzOpen").getAsBoolean();
       }
       if (root.has("corzCategory") && root.get("corzCategory").isJsonPrimitive()) {
          this.corzSelectedCategory = root.get("corzCategory").getAsString();

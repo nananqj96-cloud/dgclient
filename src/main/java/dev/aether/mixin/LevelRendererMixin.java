@@ -27,7 +27,6 @@ import dev.aether.render.AuroraSkyRenderer;
 import dev.aether.render.PlayerTrailRenderer;
 import dev.aether.render.StorageEspRenderer;
 import dev.aether.render.SusChunkRenderer;
-import dev.aether.render.WorldTextRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource.BufferSource;
 import net.minecraft.client.renderer.state.BlockOutlineRenderState;
@@ -63,16 +62,16 @@ public class LevelRendererMixin {
             ChunkFinderRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.chunkFinder);
          }
 
-         if (var3 && var6.dlSusFinder != null && var6.dlSusFinder.isEnabled()) {
-            var6.dlSusFinder.render(var1, var2, var4.cameraRenderState.pos);
+         if (var3 && var6.susFinder != null && var6.susFinder.isEnabled()) {
+            var6.susFinder.render(var1, var2, var4.cameraRenderState.pos);
          }
 
-         if (var3 && var6.dlChunkFinder != null && var6.dlChunkFinder.isEnabled()) {
-            var6.dlChunkFinder.render(var1, var2, var4.cameraRenderState.pos);
+         if (var3 && var6.baseChunkFinder != null && var6.baseChunkFinder.isEnabled()) {
+            var6.baseChunkFinder.render(var1, var2, var4.cameraRenderState.pos);
          }
 
-         if (var3 && var6.dlActivityInspector != null && var6.dlActivityInspector.isEnabled()) {
-            var6.dlActivityInspector.render(var1, var2, var4.cameraRenderState.pos);
+         if (var3 && var6.activityInspector != null && var6.activityInspector.isEnabled()) {
+            var6.activityInspector.render(var1, var2, var4.cameraRenderState.pos);
          }
 
          if (var3 && var6.chunkBypass != null && var6.chunkBypass.isEnabled()) {
@@ -154,10 +153,6 @@ public class LevelRendererMixin {
 
          if (var6.accessories != null && var6.accessories.equippedCount() > 0) {
             AccessoryRenderer.renderEquipped(var1, var2, var4.cameraRenderState.pos, var6.accessories);
-         }
-
-         if (var6.skyLyrics != null && var6.skyLyrics.isEnabled()) {
-            WorldTextRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.skyLyrics);
          }
 
          if (var6.freecam != null && var6.freecam.isActive()) {

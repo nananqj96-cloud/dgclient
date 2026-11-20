@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
  * minimalistic rounded/glow design in a gold/amber palette so it reads differently from the sus
  * area (purple).
  */
-public class DLChunkFinderModule extends Module {
+public class BaseChunkFinderModule extends Module {
    public final BooleanSetting toast = this.addSetting(
       new BooleanSetting("Toast", "Show a notification when a base chunk is found", true)
    );
@@ -56,8 +56,8 @@ public class DLChunkFinderModule extends Module {
       new SliderSetting("Opacity", "Fill opacity", 0.5, 0.0, 1.0, 0.05)
    );
 
-   public DLChunkFinderModule() {
-      super("DL Chunk Finder", "Marks a golden chunk above every base on DonutLarp.", Category.DONUT);
+   public BaseChunkFinderModule() {
+      super("Base Chunk Finder", "Marks a golden chunk above every base on DonutLarp.", Category.DONUT);
       BaseStore.onNewBase(b -> {
          if (this.isEnabled()) {
             this.announce(b);

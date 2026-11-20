@@ -116,7 +116,7 @@ public class CorzClient implements ClientModInitializer {
       LicenseRuntime.initialize();
       fontManager = new ClientFonts();
       ModuleRegistry.registerAllModules();
-      dev.aether.corz.CorzPortBus.register(new com.corz.client.bridge.CorzPortProviderImpl());
+      dev.aether.corz.CorzBus.register(new com.corz.client.bridge.CorzProviderImpl());
       com.corz.client.config.ModuleConfigAutosave.loadModuleConfig();
       DiscordRichPresence.startPresenceUpdates();
       ClientLifecycleEvents.CLIENT_STOPPING.register((ClientStopping)client -> DiscordRichPresence.shutdownPresence());

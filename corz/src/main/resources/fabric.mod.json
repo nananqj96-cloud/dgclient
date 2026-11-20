@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "corzclient",
   "version": "2.1.0",
-  "name": "Aether Corz Port",
-  "description": "Corz Port feature suite integrated into Aether Client.",
+  "name": "Aether Corz",
+  "description": "Corz feature suite integrated into Aether Client.",
   "authors": [
     "Aether"
   ],

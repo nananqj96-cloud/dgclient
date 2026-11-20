@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
  * data. Detection logic (area radius + fuzzed centre) is ported from the original DLSusFinder;
  * the rendering is the shared minimalistic purple rounded/glow design.
  */
-public class DLSusFinderModule extends Module {
+public class SusFinderModule extends Module {
    public final SliderSetting areaRadius = this.addSetting(
       new SliderSetting("Area Radius", "Size of the sus area in chunks around its centre (2 = 5x5)", 2.0, 1.0, 8.0, 1.0)
    );
@@ -61,8 +61,8 @@ public class DLSusFinderModule extends Module {
       new SliderSetting("Opacity", "Fill opacity", 0.5, 0.0, 1.0, 0.05)
    );
 
-   public DLSusFinderModule() {
-      super("DL Sus Finder", "Marks the rough area where a base is on DonutLarp.", Category.DONUT);
+   public SusFinderModule() {
+      super("Sus Finder", "Marks the rough area where a base is on DonutLarp.", Category.DONUT);
       BaseStore.onNewBase(b -> {
          if (this.isEnabled()) {
             this.announce(b);

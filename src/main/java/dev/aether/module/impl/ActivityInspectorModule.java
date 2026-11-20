@@ -24,7 +24,7 @@ import java.util.Set;
  * shared minimalistic rounded/glow design in a red palette so it reads differently from the sus
  * area (purple) and base chunk (gold).
  */
-public class DLActivityInspectorModule extends Module {
+public class ActivityInspectorModule extends Module {
    public final BooleanSetting chat = this.addSetting(
       new BooleanSetting("Chat Message", "Write into the chat when new activity shows up", true)
    );
@@ -55,8 +55,8 @@ public class DLActivityInspectorModule extends Module {
 
    private final Set<Long> seen = new HashSet<>();
 
-   public DLActivityInspectorModule() {
-      super("DL Activity Inspector", "Marks a chunk where a player is underground on DonutLarp.", Category.DONUT);
+   public ActivityInspectorModule() {
+      super("Activity Inspector", "Marks a chunk where a player is underground on DonutLarp.", Category.DONUT);
    }
 
    @Override

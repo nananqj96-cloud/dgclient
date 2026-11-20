@@ -1,16 +1,16 @@
 package dev.aether.corz;
 
-public final class CorzPortBus {
-   private static volatile CorzPortProvider provider;
+public final class CorzBus {
+   private static volatile CorzProvider provider;
 
-   private CorzPortBus() {
+   private CorzBus() {
    }
 
-   public static void register(CorzPortProvider impl) {
+   public static void register(CorzProvider impl) {
       provider = impl;
    }
 
-   public static CorzPortProvider provider() {
+   public static CorzProvider provider() {
       return provider;
    }
 

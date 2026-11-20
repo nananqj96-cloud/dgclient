@@ -26,7 +26,7 @@ import com.corz.client.utils.FriendListBase;
 import com.corz.client.utils.IconsPngType;
 import com.corz.client.utils.PaletteBase;
 import dev.aether.corz.CorzModuleHandle;
-import dev.aether.corz.CorzPortProvider;
+import dev.aether.corz.CorzProvider;
 import dev.aether.corz.CorzSettingHandle;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,7 +35,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.client.MinecraftClient;
 
-public final class CorzPortProviderImpl implements CorzPortProvider {
+public final class CorzProviderImpl implements CorzProvider {
    private static final List<String> ORDERED_CATEGORIES = List.of(
       "Bots", "DonutSMP", "Combat", "Movement", "Network", "Misc", "Visuals", "Socials"
    );
@@ -45,7 +45,7 @@ public final class CorzPortProviderImpl implements CorzPortProvider {
    private final Map<String, Module> rawById = new LinkedHashMap<>();
    private int lastSyncedAccent = 0;
 
-   public CorzPortProviderImpl() {
+   public CorzProviderImpl() {
       for (String cat : ORDERED_CATEGORIES) {
          this.byCategory.put(cat, new ArrayList<>());
       }
@@ -170,7 +170,7 @@ public final class CorzPortProviderImpl implements CorzPortProvider {
 
                @Override
                public void pressButton() {
-                  CorzPortProviderImpl.this.openNativeStudio(id);
+                  CorzProviderImpl.this.openNativeStudio(id);
                }
             });
             continue;

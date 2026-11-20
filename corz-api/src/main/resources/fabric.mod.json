@@ -3,7 +3,7 @@
   "id": "aether_corz_api",
   "version": "2.1.0",
   "name": "Aether Corz Bridge API",
-  "description": "Shared runtime bridge interfaces connecting Aether Client and the Aether Corz Port module suite.",
+  "description": "Shared runtime bridge interfaces connecting Aether Client and the Aether Corz module suite.",
   "authors": ["Aether Team"],
   "license": "MIT",
   "environment": "*",
