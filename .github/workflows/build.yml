@@ -198,6 +198,8 @@ jobs:
             CRASH=$(grep -aE "AetherClient overlay renderer crashed|Corz render failed|Corz theme sync failed|AssertionError|FAILED|What went wrong|non-zero exit value|SIGSEGV|SIGABRT|hs_err_pid|OutOfMemoryError|JVM crashed|Fatal" gametest.log \
               | grep -avE "flite|alsoft|pipewire|realms|narrator|unsatisfiedlinkerror|libflite|signedjwt|could not authorize" \
               | tail -n 40)
+            # Also extract the actual exception from the crash report file (root cause is above the log tail)
+            CRASHREPORT=$(cat build/run/clientGameTest/crash-reports/crash-*-client.txt 2>/dev/null | head -n 80)
             # Raw tail of the log (gradle failure summary is always at the very end)
             RAWTAIL=$(tail -n 120 gametest.log)
             # Emit annotations: crash context first, then the raw tail (visible on the job page)
@@ -215,6 +217,9 @@ jobs:
             if [ -n "$CRASH" ]; then
               emit_annotations "CrashTrace" "$CRASH" 40
             fi
+            if [ -n "$CRASHREPORT" ]; then
+              emit_annotations "CrashReport" "$CRASHREPORT" 80
+            fi
             if [ -n "$RAWTAIL" ]; then
               emit_annotations "GameTestLogTail" "$RAWTAIL" 60
             fi
@@ -227,6 +232,11 @@ jobs:
               echo "### Crash context:"
               echo '```'
               echo "$CRASH"
+              echo '```'
+              echo ""
+              echo "### Crash report (root cause):"
+              echo '```'
+              echo "$CRASHREPORT"
               echo '```'
               echo ""
               echo "### Last 120 log lines:"
