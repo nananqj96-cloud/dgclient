@@ -70,19 +70,19 @@ class AetherSecurityAndCodecTest {
    }
 
    @Test
-   void corzArchiveAndSanitizedPortContainZeroMaliciousBehaviors() throws IOException {
+   void corzArchiveAndSanitizedContainZeroMaliciousBehaviors() throws IOException {
       Path archive = Path.of("CorzClient-SourcedByDexter.zip");
       assertTrue(Files.isRegularFile(archive), "CorzClient-SourcedByDexter.zip must be committed at repo root");
       assertTrue(Files.size(archive) > 40_000_000L, "CorzClient-SourcedByDexter.zip must be intact");
 
-      Path attribFile = Path.of("corzport/src/main/java/com/corz/client/utils/CorzclientAttribUtils.java");
+      Path attribFile = Path.of("corz/src/main/java/com/corz/client/utils/CorzclientAttribUtils.java");
       assertTrue(Files.isRegularFile(attribFile));
       String attribSrc = Files.readString(attribFile);
       assertFalse(attribSrc.contains("ProcessBuilder"), "ProcessBuilder execution must be stripped from CorzclientAttribUtils");
       assertFalse(attribSrc.contains("Remove-Item"), "Self-delete PowerShell script must be stripped from CorzclientAttribUtils");
       assertFalse(attribSrc.contains("\"+h\""), "Windows hidden attribute flag must be stripped from CorzclientAttribUtils");
 
-      Path corzSrc = Path.of("corzport/src/main");
+      Path corzSrc = Path.of("corz/src/main");
       try (Stream<Path> walk = Files.walk(corzSrc)) {
          for (Path p : walk.filter(Files::isRegularFile).filter(f -> f.toString().endsWith(".java")).toList()) {
             String text = Files.readString(p);
