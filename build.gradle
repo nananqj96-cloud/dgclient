@@ -58,12 +58,7 @@ dependencies {
     include project(':corz')
 
     // Bundled remapped Cake Client and Fake Client mods (Jar-in-Jar)
-    implementation project(':cakeclient')
-    implementation project(':fakeclient')
-    gametestImplementation project(':cakeclient')
-    gametestImplementation project(':fakeclient')
-    testImplementation project(':cakeclient')
-    testImplementation project(':fakeclient')
+    // GUI tabs open these via reflection to avoid mapping-namespace conflicts
     include project(':cakeclient')
     include project(':fakeclient')
 

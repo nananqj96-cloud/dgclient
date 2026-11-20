@@ -1136,7 +1136,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          try {
             Class<?> guiClass = Class.forName("com.fakeclient.gui.ClickGuiScreen");
             Object guiInstance = guiClass.getDeclaredConstructor().newInstance();
-            net.minecraft.client.Minecraft.getInstance().setScreen((net.minecraft.client.gui.screen.Screen) guiInstance);
+            net.minecraft.client.Minecraft.getInstance().getClass().getMethod("setScreen", Class.forName("net.minecraft.client.gui.screen.Screen")).invoke(net.minecraft.client.Minecraft.getInstance(), guiInstance);
          } catch (Throwable t) {
             AetherClient.LOGGER.error("Failed to open Fake Client GUI", t);
          }
@@ -1144,9 +1144,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
 
       if (btn == 0 && this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH)) {
-         // Open/close Cake Client's dashboard menu
+         // Open/close Cake Client's dashboard menu (via reflection — avoids mapping conflicts)
          try {
-            fr.cake.client.CakeClient.toggleMenu();
+            Class<?> cakeClass = Class.forName("fr.cake.client.CakeClient");
+            cakeClass.getMethod("toggleMenu").invoke(null);
          } catch (Throwable t) {
             AetherClient.LOGGER.error("Failed to toggle Cake Client menu", t);
          }
