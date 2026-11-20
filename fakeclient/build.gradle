@@ -47,7 +47,7 @@ java {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 21
-    options.compilerArgs.addAll(['-proc:none', '-nowarn'])
+    options.compilerArgs.addAll(['-nowarn'])
 }
 
 tasks.named('jar') {
