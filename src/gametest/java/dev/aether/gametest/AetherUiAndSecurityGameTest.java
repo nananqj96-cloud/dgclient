@@ -5,8 +5,8 @@ import dev.aether.AetherClient;
 import dev.aether.config.ConfigShareService;
 import dev.aether.config.ConfigStore;
 import dev.aether.corz.CorzModuleHandle;
-import dev.aether.corz.CorzPortBus;
-import dev.aether.corz.CorzPortProvider;
+import dev.aether.corz.CorzBus;
+import dev.aether.corz.CorzProvider;
 import dev.aether.gui.ClickGuiScreen;
 import dev.aether.gui.panel.ModuleEntry;
 import dev.aether.gui.widget.BooleanWidget;
@@ -40,7 +40,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
          server.runCommand("time set day");
          server.runCommand("weather clear");
 
-         // 1. Verify Aether 2.1.0 identity, PinkBloom default theme, and live CorzPortBus bridge
+         // 1. Verify Aether 2.1.0 identity, PinkBloom default theme, and live CorzBus bridge
          context.runOnClient(mc -> {
             require("aetherclient".equals(AetherClient.MOD_ID), "MOD_ID must be aetherclient");
             require("Aether Client".equals(AetherClient.NAME), "NAME must be Aether Client");
@@ -50,8 +50,8 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
             require("PinkBloom".equals(AetherClient.themes().current().getName()), "Default theme must be PinkBloom");
             require(AetherClient.themes().current().isBloom(), "PinkBloom theme must have bloom enabled");
 
-            require(CorzPortBus.isAvailable(), "CorzPortBus must be registered by bundled corzport mod");
-            CorzPortProvider corz = CorzPortBus.provider();
+            require(CorzBus.isAvailable(), "CorzBus must be registered by bundled corz mod");
+            CorzProvider corz = CorzBus.provider();
             List<CorzModuleHandle> corzMods = corz.modules();
             require(corzMods.size() == 139, "Expected all 139 gameplay Corz modules bridged, got " + corzMods.size());
             require(corz.categories().contains("Bots") && corz.categories().contains("DonutSMP"), "Corz categories must include Bots and DonutSMP");
@@ -89,7 +89,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
          });
 
          // 3. Open PinkBloom Unified Sidebar Dashboard and test REAL mouse/slider/keybind submenu interactions!
-         // The Corz Port secondary UI is enabled by default, so opening the GUI here also
+         // The Corz secondary UI is enabled by default, so opening the GUI here also
          // exercises the Corz window render path (the user-reported crash when opening
          // the GUI with right-shift). If the overlay renderer crashes, the GUI screen
          // tints purple and the isCrashed assertion below fails with the crash indicator.
@@ -232,31 +232,31 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
          context.waitTicks(4);
          context.takeScreenshot("aether-02-pinkbloom-dashboard");
 
-         // 4. Launch Synced "Corz Port" Secondary UI via the "Corz Port" subtab & test Corz submenu interaction
+         // 4. Launch Synced "Corz" Secondary UI via the "Corz" subtab & test Corz submenu interaction
          AtomicReference<CorzModuleHandle> expandedCorzMod = new AtomicReference<>();
          context.runOnClient(mc -> {
             ClickGuiScreen.state().setExpanded("AutoCrystal@COMBAT", true);
             if (mc.screen instanceof ClickGuiScreen cg) {
                ClickGuiScreen.state().setCorzSelectedCategory("Bots");
-               CorzPortProvider corz = CorzPortBus.provider();
+               CorzProvider corz = CorzBus.provider();
                if (corz != null) {
                   corz.modules().stream()
                      .filter(m -> "Bots".equals(m.category()) && !m.settings().isEmpty())
                      .findFirst()
                      .ifPresent(m -> {
                         expandedCorzMod.set(m);
-                        cg.corzPortWindow().expandModule(m.id());
+                        cg.corzWindow().expandModule(m.id());
                      });
                }
-               ClickGuiScreen.state().setCorzPortOpen(false);
-               cg.toggleCorzPort();
-               require(ClickGuiScreen.state().isCorzPortOpen(), "Corz Port subtab must open secondary UI");
+               ClickGuiScreen.state().setCorzOpen(false);
+               cg.toggleCorz();
+               require(ClickGuiScreen.state().isCorzOpen(), "Corz subtab must open secondary UI");
             }
          });
          context.waitTicks(10);
          context.takeScreenshot("aether-03-corz-port-synced-ui");
 
-         // 5. Switch to Themes & Audio Studio while Corz Port stays synced in PinkBloom
+         // 5. Switch to Themes & Audio Studio while Corz stays synced in PinkBloom
          context.runOnClient(mc -> {
             ClickGuiScreen.state().setExpanded("AutoCrystal@COMBAT", false);
             ClickGuiScreen.state().setExpanded("Auto Totem@COMBAT", false);
@@ -270,7 +270,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
             if (mc.screen instanceof ClickGuiScreen cg) {
                cg.toggleLayoutMode();
                require(!cg.isDashboardMode(), "toggleLayoutMode must switch to Columns mode");
-               require(cg.corzPortWindow().isVisible(), "Corz Port secondary UI must remain synced across layout modes");
+               require(cg.corzWindow().isVisible(), "Corz secondary UI must remain synced across layout modes");
                ClickGuiScreen.state().setExpanded("HitBox@COMBAT", true);
             }
          });
@@ -339,7 +339,7 @@ public class AetherUiAndSecurityGameTest implements FabricClientGameTest {
 
          context.takeScreenshot("aether-05-columns-with-corz-port");
 
-         // 7. Close ClickGuiScreen and verify BOTH main UI and Corz Port close together
+         // 7. Close ClickGuiScreen and verify BOTH main UI and Corz close together
          context.runOnClient(mc -> {
             ClickGuiScreen.state().setExpanded("HitBox@COMBAT", false);
             if (mc.screen instanceof ClickGuiScreen cg) {

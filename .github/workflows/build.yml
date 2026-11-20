@@ -195,7 +195,7 @@ jobs:
           cat gametest.log
           if [ $GT_STATUS -ne 0 ]; then
             # Crash context: overlay crash, Corz render failures, JVM/native crash, gradle summary
-            CRASH=$(grep -aE "AetherClient overlay renderer crashed|Corz Port render failed|Corz Port theme sync failed|AssertionError|FAILED|What went wrong|non-zero exit value|SIGSEGV|SIGABRT|hs_err_pid|OutOfMemoryError|JVM crashed|Fatal" gametest.log \
+            CRASH=$(grep -aE "AetherClient overlay renderer crashed|Corz render failed|Corz theme sync failed|AssertionError|FAILED|What went wrong|non-zero exit value|SIGSEGV|SIGABRT|hs_err_pid|OutOfMemoryError|JVM crashed|Fatal" gametest.log \
               | grep -avE "flite|alsoft|pipewire|realms|narrator|unsatisfiedlinkerror|libflite|signedjwt|could not authorize" \
               | tail -n 40)
             # Raw tail of the log (gradle failure summary is always at the very end)
