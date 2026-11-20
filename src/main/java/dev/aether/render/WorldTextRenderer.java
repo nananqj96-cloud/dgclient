@@ -313,12 +313,15 @@ public final class WorldTextRenderer {
       String str = String.valueOf(c);
       Rectangle2D bounds = fm.getStringBounds(str, g);
       float pad = 3.0F;
+      AffineTransform saved = g.getTransform();
       AffineTransform at = new AffineTransform();
       at.translate(
          col * CELL + pad - (float)bounds.getX(),
          row * CELL + pad - (float)bounds.getY()
       );
-      g.drawString(str, at);
+      g.transform(at);
+      g.drawString(str, 0, 0);
+      g.setTransform(saved);
 
       float advance = (float)Math.ceil(fm.stringWidth(str));
       float u0 = col / (float)CELLS;
