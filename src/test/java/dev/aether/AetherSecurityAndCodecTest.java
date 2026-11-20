@@ -3,7 +3,7 @@ package dev.aether;
 import static org.junit.jupiter.api.Assertions.*;
 
 import dev.aether.config.ConfigShareService;
-import dev.aether.corz.CorzPortBus;
+import dev.aether.corz.CorzBus;
 import dev.aether.theme.Theme;
 import dev.aether.theme.ThemeManager;
 import java.io.IOException;
@@ -92,6 +92,6 @@ class AetherSecurityAndCodecTest {
          }
       }
 
-      assertNull(CorzPortBus.provider(), "CorzPortBus starts unregistered outside Minecraft runtime");
+      assertNull(CorzBus.provider(), "CorzBus starts unregistered outside Minecraft runtime");
    }
 }
