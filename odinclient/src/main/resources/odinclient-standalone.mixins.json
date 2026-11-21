@@ -5,7 +5,6 @@
   "client": [
     "accessor.MinecraftClientAccessor",
     "accessor.SettingGroupAccessor",
-    "accessor.VanillaAttackInvoker",
     "client.MinecraftClientMixin",
     "fake.FakeElytraItemMixin",
     "fake.FakeSpawnerGlassMixin",
@@ -22,8 +21,6 @@
     "scanner.BlockNotifierUnifiedScannerMixin",
     "scanner.LightFinderUnifiedScannerMixin",
     "scanner.SuspiciousEspUnifiedScannerMixin",
-    "screen.ClientLegacyScreenScaleMixin",
-    "shader.ShaderTracerMixin",
     "skyart.SkyArtNoPersonRenderMixin",
     "skyart.SkyArtNoPersonSettingMixin"
   ],

@@ -1,6 +1,6 @@
 package odinclient.util.input;
 
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.input.KeyBinding;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

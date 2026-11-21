@@ -2,7 +2,7 @@ package odinclient.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.input.KeyBinding;
 
 @Environment(EnvType.CLIENT)
 public final class KeyBindingUtil {

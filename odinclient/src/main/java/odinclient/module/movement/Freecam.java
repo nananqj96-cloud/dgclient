@@ -2,7 +2,7 @@ package odinclient.module.movement;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.option.Perspective;
+import net.minecraft.client.input.Perspective;
 import net.minecraft.util.PlayerInput;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
