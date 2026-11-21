@@ -74,10 +74,9 @@ dependencies {
     if (fakeRemappedJar.exists()) {
         modRuntimeOnly files(fakeRemappedJar)
     }
-    // TEMP: Purxiy disabled to test VerifyError source
-    // if (purxiyRemappedJar.exists()) {
-    //     modRuntimeOnly files(purxiyRemappedJar)
-    // }
+    // Purxiy is pre-obfuscated — jar-in-jar remapping corrupts its bytecode.
+    // Bundled in final jar via `include project(':purxiyclient')` but excluded
+    // from dev runtime classpath so the game test doesn't load the remapped jar.
 
     implementation nanovgJars
     gametestImplementation nanovgJars
