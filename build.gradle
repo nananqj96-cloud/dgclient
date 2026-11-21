@@ -74,9 +74,10 @@ dependencies {
     if (fakeRemappedJar.exists()) {
         modRuntimeOnly files(fakeRemappedJar)
     }
-    if (purxiyRemappedJar.exists()) {
-        modRuntimeOnly files(purxiyRemappedJar)
-    }
+    // TEMP: Purxiy disabled to test VerifyError source
+    // if (purxiyRemappedJar.exists()) {
+    //     modRuntimeOnly files(purxiyRemappedJar)
+    // }
 
     implementation nanovgJars
     gametestImplementation nanovgJars
