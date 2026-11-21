@@ -6,7 +6,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.consume.UseAction;
-import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.protocol.c2s.play.HandSwingC2SPacket;
 import net.minecraft.util.Hand;
 
 import odinclient.core.Categories;

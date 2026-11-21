@@ -2,9 +2,9 @@ package odinclient.module.privacy;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.core.text.OrderedText;
-import net.minecraft.core.text.StringVisitable;
-import net.minecraft.core.text.Style;
+import net.minecraft.network.chat.OrderedText;
+import net.minecraft.network.chat.StringVisitable;
+import net.minecraft.network.chat.Style;
 
 import odinclient.module.Category;
 import odinclient.module.Module;

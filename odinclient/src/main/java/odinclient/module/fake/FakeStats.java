@@ -9,10 +9,10 @@ import net.minecraft.scoreboard.ScoreboardEntry;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.scoreboard.number.BlankNumberFormat;
-import net.minecraft.core.text.MutableText;
-import net.minecraft.core.text.Style;
-import net.minecraft.core.text.Text;
-import net.minecraft.core.text.TextColor;
+import net.minecraft.network.chat.MutableText;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Text;
+import net.minecraft.network.chat.TextColor;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

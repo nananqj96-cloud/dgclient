@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.core.text.Text;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Text;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.module.render.sky.NoPersonSetting;

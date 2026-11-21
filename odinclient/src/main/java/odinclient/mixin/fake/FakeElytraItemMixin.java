@@ -6,7 +6,7 @@ import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.tooltip.TooltipType;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.Text;
 import net.minecraft.util.Rarity;
 
 import odinclient.module.fake.FakeElytra;

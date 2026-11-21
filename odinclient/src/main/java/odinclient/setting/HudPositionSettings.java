@@ -1,7 +1,7 @@
 package odinclient.setting;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 
 import odinclient.module.Module;
 import odinclient.setting.type.EnumSetting;

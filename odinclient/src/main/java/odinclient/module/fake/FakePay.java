@@ -3,8 +3,8 @@ package odinclient.module.fake;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.text.MutableText;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.MutableText;
+import net.minecraft.network.chat.Text;
 import net.minecraft.util.Formatting;
 
 import odinclient.module.Category;

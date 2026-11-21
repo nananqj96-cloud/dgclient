@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.network.protocol.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.world.inventory.SlotActionType;
 
 import java.util.function.Predicate;
 

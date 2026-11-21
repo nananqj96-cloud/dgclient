@@ -3,7 +3,7 @@ package odinclient.module.combat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.item.Items;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.world.inventory.SlotActionType;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

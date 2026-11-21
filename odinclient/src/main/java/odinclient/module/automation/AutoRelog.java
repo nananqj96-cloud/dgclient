@@ -2,12 +2,12 @@ package odinclient.module.automation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.multiplayer.ConnectScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.multiplayer.ConnectScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.Text;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

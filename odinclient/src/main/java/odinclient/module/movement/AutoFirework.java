@@ -1,11 +1,11 @@
 package odinclient.module.movement;
 
-import net.minecraft.client.input.KeyBinding;
+import net.minecraft.client.input.KeyMapping;
 import net.minecraft.client.util.InputUtil.Key;
 import net.minecraft.world.entity.player.PlayerInventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.Text;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;
@@ -106,11 +106,11 @@ public final class AutoFirework extends Module {
                 && this.nextUseNanos != Long.MAX_VALUE) {
             long now = System.nanoTime();
             if (now >= this.nextUseNanos) {
-                KeyBinding useKey = this.mc.options.useKey;
+                KeyMapping useKey = this.mc.options.useKey;
                 if (!useKey.isPressed() && this.ensureFireworkHeld()) {
                     this.pressedKey = useKey.getDefaultKey();
-                    KeyBinding.setKeyPressed(this.pressedKey, true);
-                    KeyBinding.onKeyPressed(this.pressedKey);
+                    KeyMapping.setKeyPressed(this.pressedKey, true);
+                    KeyMapping.onKeyPressed(this.pressedKey);
                 }
 
                 this.nextUseNanos = this.nextUseTime(now);
@@ -160,7 +160,7 @@ public final class AutoFirework extends Module {
 
     private void releaseUseKey() {
         if (this.pressedKey != null) {
-            KeyBinding.setKeyPressed(this.pressedKey, false);
+            KeyMapping.setKeyPressed(this.pressedKey, false);
             this.pressedKey = null;
         }
     }

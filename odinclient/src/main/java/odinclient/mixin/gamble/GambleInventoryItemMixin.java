@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.PlayerEntity;
 import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.tooltip.TooltipType;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.Text;
 
 import odinclient.module.gamble.GambleRigger;
 

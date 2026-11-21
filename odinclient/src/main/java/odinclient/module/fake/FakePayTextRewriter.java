@@ -2,9 +2,9 @@ package odinclient.module.fake;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.core.text.MutableText;
-import net.minecraft.core.text.Style;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.MutableText;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Text;
 
 import java.util.ArrayList;
 import java.util.List;

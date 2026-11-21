@@ -3,11 +3,11 @@ package odinclient.ui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.Text;
 
 import odinclient.module.Module;
 import odinclient.module.hud.ThemeModule;

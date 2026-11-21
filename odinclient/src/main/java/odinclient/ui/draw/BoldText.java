@@ -2,11 +2,11 @@ package odinclient.ui.draw;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.core.text.MutableText;
-import net.minecraft.core.text.Style;
-import net.minecraft.core.text.StyleSpriteSource;
-import net.minecraft.core.text.StyleSpriteSource.Font;
-import net.minecraft.core.text.Text;
+import net.minecraft.network.chat.MutableText;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.StyleSpriteSource;
+import net.minecraft.network.chat.StyleSpriteSource.Font;
+import net.minecraft.network.chat.Text;
 import net.minecraft.util.Identifier;
 
 import java.util.LinkedHashMap;

@@ -2,8 +2,8 @@ package odinclient.module.playerchunk;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.core.text.Text;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.debug.gizmo.GizmoDrawer;

@@ -5,9 +5,9 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.world.entity.player.SkinTextures;
-import net.minecraft.core.text.Style;
-import net.minecraft.core.text.Text;
-import net.minecraft.core.text.TextColor;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Text;
+import net.minecraft.network.chat.TextColor;
 
 import odinclient.event.EventHandler;
 import odinclient.event.Render2DEvent;
