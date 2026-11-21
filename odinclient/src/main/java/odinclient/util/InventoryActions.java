@@ -5,9 +5,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.inventory.SlotActionType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.AABB;
 
 import org.lwjgl.glfw.GLFW;
 

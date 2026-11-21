@@ -10,7 +10,7 @@ import net.minecraft.world.entity.ItemEntity;
 import net.minecraft.world.entity.player.PlayerEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.phys.BlockPos;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.core.Categories;

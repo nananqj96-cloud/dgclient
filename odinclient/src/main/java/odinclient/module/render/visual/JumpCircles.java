@@ -2,7 +2,7 @@ package odinclient.module.render.visual;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

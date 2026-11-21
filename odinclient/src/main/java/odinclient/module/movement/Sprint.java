@@ -1,6 +1,6 @@
 package odinclient.module.movement;
 
-import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.phys.Vec2f;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

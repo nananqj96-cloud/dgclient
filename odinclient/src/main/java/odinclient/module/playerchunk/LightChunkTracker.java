@@ -3,7 +3,7 @@ package odinclient.module.playerchunk;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.protocol.s2c.play.LightData;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.phys.ChunkPos;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

@@ -20,7 +20,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.mixin.accessor.ShaderPipelineInvoker;
 import odinclient.module.hud.regionmap.RegionBorderBuilder;

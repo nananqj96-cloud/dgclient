@@ -5,8 +5,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DrawStyle;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.world.debug.gizmo.GizmoDrawer;
 import net.minecraft.world.debug.gizmo.GizmoDrawing;
 
@@ -96,7 +96,7 @@ public final class GizmoRenderer {
     }
 
     private void drawBox(
-            Box box,
+            AABB box,
             int fillColor,
             int lineColor,
             BoxRenderMode mode,

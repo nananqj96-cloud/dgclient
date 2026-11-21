@@ -7,8 +7,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.event.EventHandler;

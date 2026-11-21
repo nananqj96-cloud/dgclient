@@ -25,9 +25,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.SlotActionType;
 import net.minecraft.network.chat.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.Direction;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

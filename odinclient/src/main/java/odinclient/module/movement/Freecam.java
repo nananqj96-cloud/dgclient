@@ -4,9 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.input.Perspective;
 import net.minecraft.util.PlayerInput;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.MathHelper;
+import net.minecraft.world.phys.Vec2f;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

@@ -8,8 +8,8 @@ import net.minecraft.network.protocol.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.protocol.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

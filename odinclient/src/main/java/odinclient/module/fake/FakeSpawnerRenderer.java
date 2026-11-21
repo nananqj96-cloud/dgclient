@@ -11,10 +11,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SpawnReason;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.MathHelper;
+import net.minecraft.world.phys.RotationAxis;
+import net.minecraft.world.phys.Vec3d;
 
 import java.util.ArrayList;
 import java.util.HashSet;

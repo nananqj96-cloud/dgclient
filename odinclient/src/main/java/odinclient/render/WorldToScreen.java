@@ -3,7 +3,7 @@ package odinclient.render;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.Pair;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

@@ -2,7 +2,7 @@ package odinclient.render.world;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.render.projection.WorldToScreen;
 import odinclient.ui.draw.SdfShapeRenderer;

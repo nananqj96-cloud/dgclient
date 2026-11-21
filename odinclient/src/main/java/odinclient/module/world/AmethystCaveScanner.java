@@ -2,9 +2,9 @@ package odinclient.module.world;
 
 import net.minecraft.world.level.block.BlockState;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockPos.Mutable;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.BlockPos.Mutable;
+import net.minecraft.world.phys.ChunkPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;

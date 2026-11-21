@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.thrown.EnderPearlEntity;
-import net.minecraft.util.math.Box;
+import net.minecraft.world.phys.AABB;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;
@@ -57,7 +57,7 @@ public final class PearlESP extends Module {
 
             for (Entity entity : this.mc.world.getEntities()) {
                 if (entity instanceof EnderPearlEntity && entity.isAlive()) {
-                    Box box = entity.getBoundingBox().expand(0.035);
+                    AABB box = entity.getBoundingBox().expand(0.035);
                     event.renderer.stableBox(
                             box.minX,
                             box.minY,

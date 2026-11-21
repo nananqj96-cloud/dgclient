@@ -6,7 +6,7 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.multiplayer.ClientPlayNetworkHandler;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.multiplayer.ServerInfo;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.module.privacy.NameProtect;

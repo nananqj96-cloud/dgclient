@@ -3,7 +3,7 @@ package odinclient.event;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.world.level.block.BlockState;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.phys.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public final class BlockUpdateEvent {

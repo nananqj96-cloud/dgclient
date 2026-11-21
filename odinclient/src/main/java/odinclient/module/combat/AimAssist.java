@@ -6,10 +6,10 @@ import net.minecraft.world.entity.player.PlayerEntity;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.MathHelper;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.event.EventHandler;
 import odinclient.event.Render2DEvent;

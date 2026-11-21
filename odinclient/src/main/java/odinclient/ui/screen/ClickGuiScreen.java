@@ -19,7 +19,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.manager.ConfigProfileManager;
 import odinclient.manager.ModuleManager;

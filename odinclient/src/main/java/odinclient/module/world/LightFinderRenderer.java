@@ -19,7 +19,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.fog.FogRenderer;
 import net.minecraft.client.render.fog.FogRenderer.FogType;
 import net.minecraft.client.util.BufferAllocator;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.mixin.accessor.GameRendererAccessor;
 import odinclient.render.world.WorldShapeRenderer;

@@ -4,7 +4,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.phys.BlockPos;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.core.Categories;

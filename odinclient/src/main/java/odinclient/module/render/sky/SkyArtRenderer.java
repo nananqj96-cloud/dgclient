@@ -18,7 +18,7 @@ import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.world.phys.RotationAxis;
 
 import odinclient.mixin.accessor.RenderPipelinesAccessor;
 

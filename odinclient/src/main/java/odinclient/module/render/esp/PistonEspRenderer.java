@@ -5,9 +5,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.PistonBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.event.WorldRenderEvent;

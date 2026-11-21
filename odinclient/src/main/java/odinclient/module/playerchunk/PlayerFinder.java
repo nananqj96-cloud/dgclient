@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Text;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.world.debug.gizmo.GizmoDrawer;
 import net.minecraft.world.debug.gizmo.GizmoDrawing;
 

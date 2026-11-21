@@ -2,7 +2,7 @@ package odinclient.mixin.scanner;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.phys.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.module.world.AmethystESP;

@@ -33,9 +33,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.network.chat.Text;
 import net.minecraft.network.chat.TranslatableTextContent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.Direction;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 

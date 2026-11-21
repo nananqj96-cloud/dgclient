@@ -6,10 +6,10 @@ import net.minecraft.world.entity.mob.PillagerEntity;
 import net.minecraft.world.entity.passive.LlamaEntity;
 import net.minecraft.world.entity.passive.VillagerEntity;
 import net.minecraft.world.entity.passive.WanderingTraderEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.core.Categories;
@@ -236,7 +236,7 @@ public final class SuspiciousESP extends Module {
     }
 
     private void renderEntity(WorldRenderEvent event, Entity entity, Color fill, Color line) {
-        Box box = entity.getBoundingBox().expand(0.04);
+        AABB box = entity.getBoundingBox().expand(0.04);
         event.renderer.stableBox(
                 box.minX,
                 box.minY,

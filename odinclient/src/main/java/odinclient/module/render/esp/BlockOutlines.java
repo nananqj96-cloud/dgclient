@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.world.level.block.BlockState;
 import net.minecraft.world.level.block.CollisionContext;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult.Type;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult.Type;
+import net.minecraft.world.phys.BlockPos;
+import net.minecraft.world.phys.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 import odinclient.event.EventHandler;

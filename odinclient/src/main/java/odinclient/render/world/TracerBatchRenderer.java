@@ -13,7 +13,7 @@ import net.minecraft.client.render.fog.FogRenderer.FogType;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.MatrixStack.Entry;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3d;
 
 import odinclient.mixin.accessor.GameRendererInvoker;
 import odinclient.module.hud.ThemeModule;
