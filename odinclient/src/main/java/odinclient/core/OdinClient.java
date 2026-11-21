@@ -96,10 +96,9 @@ public final class OdinClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        try {
-            initialize();
-        } catch (Throwable ignored) {
-        }
+        // Odin's Yarn-mapped modules are bundled but not initialized at runtime
+        // to avoid Yarn→Mojang remapping VerifyErrors. The GUI tab opens Odin's
+        // screen via reflection from the main client.
     }
 
     public static synchronized void initialize() {
