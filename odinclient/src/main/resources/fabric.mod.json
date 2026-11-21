@@ -9,9 +9,7 @@
   "environment": "client",
   "icon": "assets/odinclient/icon.png",
   "accessWidener": "odinclient.accesswidener",
-  "entrypoints": {
-    "client": ["odinclient.core.OdinClient"]
-  },
+  "entrypoints": {},
   "mixins": [
     "odinclient-standalone.mixins.json",
     "odinclient-freecam.mixins.json"
