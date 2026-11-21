@@ -119,6 +119,14 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float creditsTabY;
    private float creditsTabW;
    private float creditsTabH;
+   private float odinTabX;
+   private float odinTabY;
+   private float odinTabW;
+   private float odinTabH;
+   private float purxiyTabX;
+   private float purxiyTabY;
+   private float purxiyTabW;
+   private float purxiyTabH;
 
    // Window drag (Dashboard header) & Column panel drag
    private boolean draggingWindow;
@@ -551,6 +559,44 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.text("Cake", this.cakeTabX + 32.0F, kcy, 12.2F, cakeHov ? theme.textPrimary() : theme.textMuted());
       navY += this.cakeTabH + 6.0F;
 
+      // Odin tab
+      this.odinTabX = this.winX + 10.0F;
+      this.odinTabY = navY;
+      this.odinTabW = SIDEBAR_W - 20.0F;
+      this.odinTabH = 30.0F;
+      boolean odinHov = this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH);
+      if (odinHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
+         }
+         vg.rect(this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         vg.rectOutline(this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
+      }
+      float ocy = this.odinTabY + this.odinTabH * 0.5F;
+      vg.circle(this.odinTabX + 18.0F, ocy, 5.2F, theme.accent());
+      vg.circleOutline(this.odinTabX + 18.0F, ocy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Odin", this.odinTabX + 32.0F, ocy, 12.2F, odinHov ? theme.textPrimary() : theme.textMuted());
+      navY += this.odinTabH + 6.0F;
+
+      // Purxiy tab
+      this.purxiyTabX = this.winX + 10.0F;
+      this.purxiyTabY = navY;
+      this.purxiyTabW = SIDEBAR_W - 20.0F;
+      this.purxiyTabH = 30.0F;
+      boolean purxiyHov = this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH);
+      if (purxiyHov) {
+         if (theme.isBloom()) {
+            vg.glow(this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
+         }
+         vg.rect(this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
+         vg.rectOutline(this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
+      }
+      float pcy = this.purxiyTabY + this.purxiyTabH * 0.5F;
+      vg.circle(this.purxiyTabX + 18.0F, pcy, 5.2F, theme.accent());
+      vg.circleOutline(this.purxiyTabX + 18.0F, pcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Purxiy", this.purxiyTabX + 32.0F, pcy, 12.2F, purxiyHov ? theme.textPrimary() : theme.textMuted());
+      navY += this.purxiyTabH + 6.0F;
+
       // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
       navY += 15.0F;
@@ -960,6 +1006,18 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.cakeTabY = cy - this.cakeTabH * 0.5F;
       this.drawPillButton(vg, theme, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, cakeLbl, false, this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH), false);
 
+      String odinLbl = "Odin";
+      this.odinTabW = vg.textWidth(odinLbl, 11.5F) + 24.0F;
+      this.odinTabX = this.cakeTabX - 6.0F - this.odinTabW;
+      this.odinTabY = cy - this.odinTabH * 0.5F;
+      this.drawPillButton(vg, theme, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, odinLbl, false, this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH), false);
+
+      String purxiyLbl = "Purxiy";
+      this.purxiyTabW = vg.textWidth(purxiyLbl, 11.5F) + 24.0F;
+      this.purxiyTabX = this.odinTabX - 6.0F - this.purxiyTabW;
+      this.purxiyTabY = cy - this.purxiyTabH * 0.5F;
+      this.drawPillButton(vg, theme, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH, purxiyLbl, false, this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH), false);
+
       this.cfgBtnH = 28.0F;
       String cfgLbl = "Configs";
       this.cfgBtnW = vg.textWidth(cfgLbl, 11.5F) + 20.0F;
@@ -1150,6 +1208,54 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             cakeClass.getMethod("toggleMenu").invoke(null);
          } catch (Throwable t) {
             AetherClient.LOGGER.error("Failed to toggle Cake Client menu", t);
+         }
+         return true;
+      }
+
+      if (btn == 0 && this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH)) {
+         // Open/close Odin Client's GUI (via reflection — Odin uses Yarn mappings)
+         try {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            String screenClassName = mc.screen != null ? mc.screen.getClass().getName() : "";
+            if (screenClassName.startsWith("odinclient.ui.screen")) {
+               mc.setScreen(null);
+            } else {
+               Class<?> guiClass = Class.forName("odinclient.ui.screen.OdinGuiScreen");
+               Object guiInstance = guiClass.getConstructor(net.minecraft.client.gui.screens.Screen.class).newInstance(mc.screen);
+               mc.setScreen((net.minecraft.client.gui.screens.Screen) guiInstance);
+            }
+         } catch (Throwable t) {
+            AetherClient.LOGGER.error("Failed to toggle Odin Client menu", t);
+         }
+         return true;
+      }
+
+      if (btn == 0 && this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH)) {
+         // Open/close Purxiy Visuals menu (via reflection — Purxiy is a compiled jar)
+         try {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            String screenClassName = mc.screen != null ? mc.screen.getClass().getName() : "";
+            if (screenClassName.contains("purxiy")) {
+               mc.setScreen(null);
+            } else {
+               Class<?> bootstrapClass = Class.forName("dev.purxiy.loader.fabric.OfflineBootstrap");
+               // Try common toggle method names
+               for (String methodName : new String[]{"toggleGui", "openGui", "showGui", "toggle"}) {
+                  try {
+                     bootstrapClass.getMethod(methodName).invoke(null);
+                     return true;
+                  } catch (NoSuchMethodException ignored) {}
+               }
+               // Fallback: try to find a static method that takes no args
+               for (var method : bootstrapClass.getMethods()) {
+                  if (java.lang.reflect.Modifier.isStatic(method.getModifiers()) && method.getParameterCount() == 0) {
+                     try { method.invoke(null); return true; } catch (Throwable ignored) {}
+                  }
+               }
+               AetherClient.LOGGER.warn("Could not find Purxiy GUI toggle method");
+            }
+         } catch (Throwable t) {
+            AetherClient.LOGGER.error("Failed to toggle Purxiy Visuals menu", t);
          }
          return true;
       }

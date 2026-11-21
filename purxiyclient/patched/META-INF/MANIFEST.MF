@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Implementation-Title: Purxiy Visuals Offline
+Implementation-Version: 1.0.0-offline
+Created-By: offline rebuild
+

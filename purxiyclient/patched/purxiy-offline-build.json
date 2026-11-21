@@ -1,0 +1,11 @@
+{
+  "format": 1,
+  "version": "1.0.0-offline",
+  "loaderJar": "Purxiy-Loader.jar",
+  "loaderJarSha256": "e0a60fccc068b6f4107d20edf0c65061cd7fce6a47e7d22f5f3510e761ad6c94",
+  "dump": "2026-11-16T19-47-13.756925900Z",
+  "modules": 65,
+  "classes": 945,
+  "assets": 493,
+  "entrypoint": "dev.purxiy.loader.fabric.OfflineBootstrap"
+}

@@ -46,8 +46,7 @@ java {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 21
-    // Preserve our complete enriched cakeclient-refmap.json without Mixin AP overwriting it
-    options.compilerArgs.addAll(['-proc:none', '-nowarn'])
+    options.compilerArgs.addAll(['-nowarn'])
 }
 
 tasks.named('jar') {

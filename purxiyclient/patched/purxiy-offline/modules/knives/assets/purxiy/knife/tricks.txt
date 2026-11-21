@@ -1,0 +1,1991 @@
+# ================================================================================================ shared poses
+pose hand rest        0      0      0       0      0     0
+pose knife rest       0      0      0       0      0     0
+# the blade shown to you: its face turned to the light, the tip towards your crosshair; and its back
+pose hand show       -0.16   0.14   0.14   -20    -30    30
+pose hand back       -0.18   0.12   0.12   160    -20    30
+
+# ================================================================================================ karambit
+# the ring rests under the little finger; for a spin the knife slides up until the ring is on your index finger (ky)
+pose hand k_spin     -0.15   0.22  -0.08   -10    -10    60
+pose knife k_ring     0      0.28   0       0      0     0
+
+[karambit draw]
+hand
+  0.00  -0.10   0.04  -0.06   -10    -10    50
+  0.42  @k_spin  y=0.16
+  0.60  -0.05   0.06   -0.02   -8     -6    22
+  0.86  @rest
+knife
+  0.00  @k_ring  roll=-1000
+  0.48  @k_ring  roll=-110
+  0.58  @rest    roll=0
+  0.86  @rest
+spin
+  0.00  0.030  8
+  0.42  0.030  6
+  0.56  0      0
+sound
+  0.02  draw    0.85
+  0.57  catch   0.85
+kick
+  0.58  knife roll  150
+
+[karambit inspect Ring Spin]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10     4     2
+  0.44  @show
+  0.78  @show  twist=-10  y=0.15  cock=-34
+  0.96  @back  twist=150
+  1.30  @back  twist=170  y=0.14  cock=-26
+  1.52  @k_spin
+  2.06  @k_spin
+  2.14  @k_spin  y=0.20  flex=57
+  2.24  @k_spin  y=0.26  flex=66
+  2.38  @k_spin  y=0.25
+  2.54  @k_spin  y=0.22
+  2.64  @k_spin  y=0.205  flex=58
+  3.00  @k_spin
+  3.16  -0.10   0.14   0.00   -20    -12    30
+  3.44  -0.04   0.04   0.02   -12     -4    10
+  3.78  @rest
+knife
+  0.00  @rest
+  1.36  @rest
+  1.52  @k_ring  roll=-30
+  2.22  @k_ring  roll=-630
+  2.64  @k_ring  roll=-1170
+  3.00  @k_ring  roll=-1440
+  3.14  @rest    roll=-1440
+  3.78  @rest    roll=-1440
+spin
+  0.00  0      0
+  1.50  0      0
+  1.70  0.030  8
+  2.12  0.045  12
+  2.22  0.020  6
+  2.64  0.020  6
+  2.76  0.040  10
+  3.00  0      0
+hold
+  0.00  main
+  2.22  air   -1.5  z
+  2.64  main
+sound
+  0.42  ring       0.50
+  0.94  whoosh     0.30
+  1.50  click      0.60
+  2.22  toss       0.70
+  2.64  ringcatch  0.80
+  3.13  catch      0.90
+  3.40  ring       0.30  1.12
+kick
+  3.14  knife roll  160
+
+[karambit inspect Reverse Flick]
+hand
+  0.00  @rest
+  0.10   0.006 -0.012  0.004    6      6    -4
+  0.30  @k_spin
+  0.94  @k_spin
+  1.00  @k_spin  y=0.20  flex=54
+  1.18  @show  twist=-34
+  1.40  @show  twist=-10
+  1.52  @back  twist=150
+  1.72  @back  twist=168
+  1.90  @k_spin
+  2.32  @k_spin
+  2.46  -0.08   0.10   0.00   -20    -12    30
+  2.80  @rest
+knife
+  0.00  @rest
+  0.22  @rest
+  0.32  @k_ring  roll=20
+  0.92  @k_ring  roll=720
+  0.98  @rest    roll=720
+  1.84  @rest    roll=720
+  1.94  @k_ring  roll=700
+  2.32  @k_ring  roll=360
+  2.44  @rest    roll=360
+  2.80  @rest    roll=360
+spin
+  0.00  0      0
+  0.32  0      0
+  0.45  0.040  10
+  0.85  0.045  12
+  0.95  0      0
+  1.94  0      0
+  2.04  0.035  9
+  2.30  0.020  5
+  2.40  0      0
+sound
+  0.30  click   0.60
+  0.97  catch   0.90
+  1.16  ring    0.45
+  1.50  whoosh  0.30  1.06
+  1.93  click   0.50
+  2.42  catch   0.85
+kick
+  0.98  knife roll  -180
+  2.44  knife roll  140
+
+[karambit inspect Hand Off | twohand]
+hand
+  0.00  @rest
+  0.12   0.004 -0.012  0.004    6      4     0
+  0.34  @k_spin  x=-0.17  y=0.20
+  0.78  @k_spin  x=-0.17  y=0.20
+  0.84  @k_spin  x=-0.18  y=0.18   flex=56
+  0.92  @k_spin  x=-0.21  y=0.23   flex=64
+  1.08  @k_spin  x=-0.14  y=0.17
+  1.40  -0.08   0.10  -0.04    -14    -10    44
+  1.72  @k_spin  x=-0.15  y=0.18
+  1.94  @k_spin  x=-0.17  y=0.20
+  2.02  @k_spin  x=-0.17  y=0.19   flex=57
+  2.40  @k_spin  x=-0.16  y=0.21
+  2.56  -0.10   0.14   0.00   -20    -12    30
+  2.86  -0.04   0.04   0.02   -12     -4    10
+  3.20  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.36  @k_ring  roll=-20
+  0.90  @k_ring  roll=-675
+  1.26  @k_ring  roll=-1000
+  1.70  @k_ring  roll=-460
+  2.02  @k_ring  roll=-1440
+  2.40  @k_ring  roll=-1800
+  2.54  @rest    roll=-1800
+  3.20  @rest    roll=-1800
+off
+  0.00  -0.12   0.08  -0.06   -10    -10    50   0
+  0.40  -0.12   0.08  -0.06   -10    -10    50   0
+  0.86  -0.17   0.18  -0.08   -10    -10    60   1
+  1.26  -0.17   0.20  -0.08   -10    -10    60   1
+  1.32  -0.17   0.185 -0.08   -10    -10    57   1
+  1.62  -0.17   0.20  -0.08   -10    -10    60   1
+  1.68  -0.18   0.18  -0.08   -10    -10    56   1
+  1.76  -0.21   0.23  -0.08   -10    -10    64   1
+  1.98  -0.15   0.14  -0.06   -10    -10    48   1
+  2.40  -0.10   0.04  -0.02   -10    -10    30   0
+spin
+  0.00  0      0
+  0.36  0      0
+  0.50  0.035  9
+  0.80  0.045  12
+  0.90  0.020  5
+  1.26  0.010  3
+  1.40  0.040  10
+  1.62  0.040  10
+  1.70  0.020  5
+  2.02  0.020  5
+  2.14  0.035  9
+  2.40  0      0
+hold
+  0.00  main
+  0.90  air   -1    z
+  1.26  off
+  1.70  air   -1    z
+  2.02  main
+sound
+  0.34  click      0.55
+  0.90  toss       0.70
+  1.26  ringcatch  0.80  0.94
+  1.70  toss       0.65  1.04
+  2.02  ringcatch  0.80
+  2.53  catch      0.90
+kick
+  2.54  knife roll  150
+
+[karambit fidget Quick Spin]
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @k_spin  y=0.17  x=-0.12
+  0.80  @k_spin  y=0.17  x=-0.12
+  0.95  -0.05   0.06  -0.01   -10     -6    20
+  1.25  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.34  @k_ring  roll=-20
+  0.82  @k_ring  roll=-360
+  0.92  @rest    roll=-360
+  1.25  @rest    roll=-360
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.035  9
+  0.78  0.020  5
+  0.88  0      0
+sound
+  0.32  click   0.45
+  0.91  catch   0.75
+kick
+  0.92  knife roll  140
+# ================================================================================================ butterfly
+# Handle A stays in your fist: while it does, roll + handle A is a whole turn. A flip turns the blade half a turn about
+# A's pin while handle B goes all the way round (B = roll), and every flip ends with B slapping shut against A: a clack.
+# Closed is roll 180 (the blade inside the handles), open is roll 0 (the blade out, both handles in your fist).
+pose hand b_flip     -0.12   0.13   0.02   -20    -10    32
+
+[butterfly draw]
+hand
+  0.00  -0.06   0.00  -0.04   -34    -12    30
+  0.30  @b_flip  y=0.09
+  0.52  @b_flip  y=0.10  twist=-34
+  0.66  -0.04   0.04   0.00   -10     -4    12
+  0.95  @rest
+knife
+  0.00  0 0 0  0 0  180
+  0.22  0 0 0  0 0  180
+  0.48  0 0 0  0 0  360
+  0.95  0 0 0  0 0  360
+handles
+  0.00  -180  180
+  0.22  -180  180
+  0.48  -360  360
+  0.95  -360  360
+sound
+  0.04  whoosh  0.35
+  0.48  clack   0.95
+  0.62  latch   0.45
+kick
+  0.48  knife roll  -90
+  0.48  knife a     90
+
+[butterfly inspect Chaplin]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004    8      4     0
+  0.32  @b_flip
+  0.50  @b_flip  twist=-46  x=-0.13
+  0.72  @b_flip  twist=6    x=-0.11
+  0.94  @b_flip  twist=-46  x=-0.13
+  1.16  @b_flip  twist=6    x=-0.11
+  1.38  @b_flip  twist=-30
+  1.60  @b_flip  y=0.10  flex=24
+  1.68  @b_flip  y=0.17  flex=40
+  1.78  @b_flip  y=0.165
+  1.98  @b_flip  y=0.135
+  2.04  @b_flip  y=0.12  flex=27
+  2.28  @b_flip  twist=-40
+  2.54  @show
+  2.84  @show  twist=-8   y=0.15
+  3.02  @back  twist=150
+  3.30  @back  twist=168
+  3.62  @rest
+knife
+  0.00  0 0 0  0 0    0
+  0.32  0 0 0  0 0    0
+  0.50  0 0 0  0 0  180
+  0.54  0 0 0  0 0  180
+  0.72  0 0 0  0 0  360
+  0.76  0 0 0  0 0  360
+  0.94  0 0 0  0 0  540
+  0.98  0 0 0  0 0  540
+  1.16  0 0 0  0 0  720
+  1.20  0 0 0  0 0  720
+  1.38  0 0 0  0 0  900
+  1.68  0 0 0  0 0  900
+  2.04  0 0 0  0 0 1260
+  2.08  0 0 0  0 0 1260
+  2.28  0 0 0  0 0 1440
+  3.62  0 0 0  0 0 1440
+handles
+  0.00     0     0
+  0.32     0     0
+  0.50  -180   180
+  0.54  -180   180
+  0.72  -360   360
+  0.76  -360   360
+  0.94  -540   540
+  0.98  -540   540
+  1.16  -720   720
+  1.20  -720   720
+  1.38  -900   900
+  2.08  -900   900
+  2.28 -1080  1080
+  3.62 -1080  1080
+hold
+  0.00  main
+  1.68  air  1  z
+  2.04  main
+sound
+  0.50  clack  0.85
+  0.72  clack  0.90  1.04
+  0.94  clack  0.85  0.97
+  1.16  clack  0.90  1.06
+  1.38  clack  0.90
+  1.68  toss   0.60
+  2.04  clack  0.95  0.95
+  2.28  clack  1.00  1.02
+  2.38  latch  0.50
+  2.54  ring   0.45
+kick
+  0.50  knife roll  -70
+  0.50  knife a     70
+  0.72  knife roll  -70
+  0.72  knife a     70
+  0.94  knife roll  -70
+  0.94  knife a     70
+  1.16  knife roll  -70
+  1.16  knife a     70
+  1.38  knife roll  -70
+  1.38  knife a     70
+  2.28  knife roll  -90
+  2.28  knife a     90
+
+[butterfly inspect Aerial]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004    8      4     0
+  0.42  @show
+  0.72  @show  twist=-6  y=0.15
+  0.90  @b_flip  twist=-40
+  1.12  @b_flip  twist=150
+  1.34  @b_flip  twist=-20
+  1.50  @b_flip  y=0.09  flex=22
+  1.58  @b_flip  y=0.18  flex=42
+  1.68  @b_flip  y=0.17
+  1.88  @b_flip  y=0.13
+  1.94  @b_flip  y=0.12  flex=27
+  2.14  @b_flip  twist=-46
+  2.34  @b_flip  twist=6
+  2.60  @back  twist=150
+  2.88  @back  twist=168
+  3.18  @rest
+knife
+  0.00  0 0 0  0 0    0
+  0.72  0 0 0  0 0    0
+  0.90  0 0 0  0 0  180
+  0.94  0 0 0  0 0  180
+  1.12  0 0 0  0 0  360
+  1.16  0 0 0  0 0  360
+  1.34  0 0 0  0 0  540
+  1.58  0 0 0  0 0  540
+  1.94  0 0 0  0 0  900
+  1.98  0 0 0  0 0  900
+  2.14  0 0 0  0 0 1080
+  2.18  0 0 0  0 0 1080
+  2.34  0 0 0  0 0 1260
+  2.38  0 0 0  0 0 1260
+  2.56  0 0 0  0 0 1440
+  3.18  0 0 0  0 0 1440
+handles
+  0.00     0     0
+  0.72     0     0
+  0.90  -180   180
+  0.94  -180   180
+  1.12  -360   360
+  1.16  -360   360
+  1.34  -540   540
+  1.98  -540   540
+  2.14  -720   720
+  2.18  -720   720
+  2.34  -900   900
+  2.38  -900   900
+  2.56 -1080  1080
+  3.18 -1080  1080
+hold
+  0.00  main
+  1.58  air  1  z
+  1.94  main
+sound
+  0.40  ring   0.45
+  0.90  clack  0.85
+  1.12  clack  0.90  1.04
+  1.34  clack  0.85  0.97
+  1.58  toss   0.65
+  1.94  clack  0.95  0.95
+  2.14  clack  0.90  1.03
+  2.34  clack  0.85  0.98
+  2.56  clack  1.00
+  2.66  latch  0.50
+kick
+  0.90  knife roll  -70
+  0.90  knife a     70
+  1.12  knife roll  -70
+  1.12  knife a     70
+  1.34  knife roll  -70
+  1.34  knife a     70
+  2.14  knife roll  -70
+  2.14  knife a     70
+  2.34  knife roll  -70
+  2.34  knife a     70
+  2.56  knife roll  -90
+  2.56  knife a     90
+
+[butterfly fidget Flick]
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.26  @b_flip  y=0.08  twist=-30
+  0.46  @b_flip  y=0.08  twist=4
+  0.66  @b_flip  y=0.07  twist=-24
+  1.00  @rest
+knife
+  0.00  0 0 0  0 0    0
+  0.26  0 0 0  0 0    0
+  0.44  0 0 0  0 0  180
+  0.48  0 0 0  0 0  180
+  0.64  0 0 0  0 0  360
+  1.00  0 0 0  0 0  360
+handles
+  0.00     0     0
+  0.26     0     0
+  0.44  -180   180
+  0.48  -180   180
+  0.64  -360   360
+  1.00  -360   360
+sound
+  0.44  clack  0.75
+  0.64  clack  0.85  1.04
+kick
+  0.44  knife roll  -60
+  0.44  knife a     60
+  0.64  knife roll  -80
+  0.64  knife a     80
+
+# ================================================================================================ m9 bayonet
+# The M9 spins round its guard's ring: slid so the ring sits on your index finger (kx, ky), it turns about it.
+pose hand m_spin     -0.10   0.26  -0.04   -15     -5    70
+pose knife m_ring     0.087 -0.113  0       0      0     0
+
+[m9 draw]
+hand
+  0.00  -0.08   0.06  -0.06   -12     -6    56
+  0.42  @m_spin  y=0.18
+  0.60  -0.05   0.06  -0.02    -8     -4    24
+  0.88  @rest
+knife
+  0.00  @m_ring  roll=-900
+  0.48  @m_ring  roll=-60
+  0.58  @rest    roll=0
+  0.88  @rest
+spin
+  0.00  0.028  8
+  0.42  0.028  6
+  0.56  0      0
+sound
+  0.02  draw    0.85
+  0.58  catch   0.90
+kick
+  0.58  knife roll  150
+
+[m9 inspect Toss and Show]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10      4     2
+  0.44  @show
+  0.80  @show  twist=-8   y=0.15  cock=-36
+  0.90  @show  y=0.11  flex=22
+  0.98  @show  y=0.19  flex=38
+  1.14  @show  y=0.18
+  1.34  @show  y=0.15
+  1.40  @show  y=0.14  flex=26
+  1.62  @back  twist=150
+  1.94  @back  twist=168  y=0.14  cock=-26
+  2.14  @m_spin
+  2.62  @m_spin
+  2.70  @m_spin  y=0.22  flex=62
+  2.92  @show  twist=-30
+  3.20  @show  twist=-14
+  3.56  @rest
+knife
+  0.00  @rest
+  0.96  @rest
+  1.40  @rest    roll=-360
+  2.06  @rest    roll=-360
+  2.16  @m_ring  roll=-380
+  2.64  @m_ring  roll=-720
+  2.72  @rest    roll=-720
+  3.56  @rest    roll=-720
+spin
+  0.00  0      0
+  2.16  0      0
+  2.28  0.035  9
+  2.56  0.030  8
+  2.68  0      0
+hold
+  0.00  main
+  0.98  air  -1  z
+  1.40  main
+sound
+  0.42  ring    0.50
+  0.98  toss    0.70
+  1.40  catch   0.95
+  1.58  whoosh  0.30
+  2.14  click   0.50
+  2.71  catch   0.85  1.05
+  2.92  ring    0.45  1.06
+kick
+  1.40  knife roll  150
+  2.72  knife roll  150
+
+[m9 inspect Ring Spin]
+hand
+  0.00  @rest
+  0.12   0.006 -0.012  0.004    8      6     0
+  0.34  @m_spin
+  1.30  @m_spin
+  1.40  @m_spin  y=0.22  flex=62
+  1.62  -0.06   0.10   0.00   -14    -10    30
+  1.90  @show
+  2.20  @show  twist=-8
+  2.60  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.36  @m_ring  roll=-20
+  1.30  @m_ring  roll=-1080
+  1.42  @rest    roll=-1080
+  2.60  @rest    roll=-1080
+spin
+  0.00  0      0
+  0.36  0      0
+  0.50  0.035  9
+  1.20  0.045  12
+  1.36  0      0
+sound
+  0.34  click   0.55
+  1.41  catch   0.95
+  1.88  ring    0.45
+kick
+  1.42  knife roll  170
+
+[m9 inspect Hand Off | twohand]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10      4     2
+  0.40  @show  x=-0.14
+  0.62  @show  x=-0.15  y=0.11  flex=22
+  0.70  @show  x=-0.19  y=0.19  flex=40
+  0.90  -0.10   0.10   0.02   -14    -12    26
+  1.40  -0.04   0.04   0.00    -8     -6    12
+  1.70  @show  x=-0.13  y=0.12
+  1.96  @show  x=-0.15  y=0.13
+  2.02  @show  x=-0.15  y=0.12  flex=26
+  2.30  @back  twist=150
+  2.62  @back  twist=168
+  3.00  @rest
+knife
+  0.00  @rest
+  0.70  @rest
+  1.10  @rest  roll=-360
+  1.62  @rest  roll=-360  yaw=-180
+  1.66  @rest  roll=-360  yaw=-180
+  2.02  @rest  roll=-720  yaw=-360
+  3.00  @rest  roll=-720  yaw=-360
+off
+  0.00  -0.12   0.08  -0.04   -20    -20    20   0
+  0.30  -0.12   0.08  -0.04   -20    -20    20   0
+  0.72  -0.20   0.12   0.06   -20    -30    30   1
+  1.10  -0.20   0.13   0.08   -20    -30    30   1
+  1.16  -0.20   0.12   0.08   -20    -30    27   1
+  1.38  -0.22   0.15   0.12   160    -20    30   1
+  1.56  -0.22   0.12   0.10   170    -20    24   1
+  1.66  -0.24   0.20   0.10   170    -20    40   1
+  1.80  -0.16   0.10   0.04   170    -20    24   1
+  2.20  -0.10   0.04   0.00   100    -10    10   0
+hold
+  0.00  main
+  0.70  air  -1  z
+  1.10  off
+  1.66  air  -1  z
+  2.02  main
+sound
+  0.40  ring   0.45
+  0.70  toss   0.65
+  1.10  catch  0.90  0.96
+  1.40  ring   0.40  1.08
+  1.66  toss   0.65  1.04
+  2.02  catch  0.95
+kick
+  2.02  knife roll  150
+
+[m9 fidget Flick]
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @m_spin  y=0.20  x=-0.08
+  0.76  @m_spin  y=0.20  x=-0.08
+  0.90  -0.05   0.06  -0.01   -10     -6    20
+  1.20  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.34  @m_ring  roll=-20
+  0.80  @m_ring  roll=-360
+  0.90  @rest    roll=-360
+  1.20  @rest    roll=-360
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.032  8
+  0.74  0.020  5
+  0.84  0      0
+sound
+  0.32  click   0.45
+  0.89  catch   0.75
+kick
+  0.90  knife roll  140
+
+# ================================================================================================ tactical
+# The tactical knife spins in your fist, about its grip, and flips end over end when you toss it.
+pose hand t_spin     -0.14   0.24  -0.06   -15      5    70
+
+[tactical draw]
+hand
+  0.00  -0.06   0.00  -0.04   -20     -6    30
+  0.18  -0.08   0.04  -0.04   -20     -6    24
+  0.26  -0.10   0.12  -0.04   -20     -6    40
+  0.50  -0.08   0.10  -0.02   -14     -6    30
+  0.60  -0.07   0.08  -0.02   -12     -6    24
+  0.90  @rest
+knife
+  0.00  @rest
+  0.26  @rest
+  0.60  @rest  roll=-360
+  0.90  @rest  roll=-360
+hold
+  0.00  main
+  0.26  air  -1  z
+  0.60  main
+sound
+  0.02  draw    0.80
+  0.26  toss    0.55
+  0.60  catch   0.90
+kick
+  0.60  knife roll  150
+
+[tactical inspect Flip Catch]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10      4     2
+  0.42  @show
+  0.74  @show  twist=-8   y=0.15  cock=-36
+  0.84  @show  y=0.10  flex=22
+  0.92  @show  y=0.19  flex=40
+  1.08  @show  y=0.18
+  1.28  @show  y=0.15
+  1.34  @show  y=0.14  flex=26
+  1.60  @t_spin
+  2.14  @t_spin
+  2.34  -0.08   0.12   0.00   -14    -10    30
+  2.56  @back  twist=150
+  2.86  @back  twist=168
+  3.20  @rest
+knife
+  0.00  @rest
+  0.90  @rest
+  1.34  @rest  roll=-720
+  1.60  @rest  roll=-740
+  2.16  @rest  roll=-1440
+  3.20  @rest  roll=-1440
+spin
+  0.00  0      0
+  1.60  0      0
+  1.74  0.030  8
+  2.04  0.030  8
+  2.16  0      0
+hold
+  0.00  main
+  0.92  air  -2  z
+  1.34  main
+sound
+  0.40  ring    0.45
+  0.92  toss    0.75
+  1.34  catch   0.95
+  2.16  catch   0.80  1.05
+  2.84  ring    0.40  1.08
+kick
+  1.34  knife roll  160
+  2.16  knife roll  140
+
+[tactical inspect Palm Spin]
+# two turns round in your fist, a snap, a little flip off the fingers, then its faces
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10      4     2
+  0.40  @t_spin
+  1.26  @t_spin
+  1.34  @t_spin  y=0.21  flex=64
+  1.46  -0.10   0.10   0.02   -16    -10    30
+  1.56  -0.10   0.06   0.02   -16    -10    22
+  1.64  -0.11   0.15   0.02   -16    -10    40
+  1.80  -0.10   0.13   0.02   -16    -10    32
+  1.94  -0.10   0.10   0.02   -16    -10    28
+  2.00  -0.10   0.09   0.02   -16    -10    24
+  2.24  @show
+  2.52  @show  twist=-8
+  2.70  @back  twist=150
+  2.96  @back  twist=168
+  3.30  @rest
+knife
+  0.00  @rest
+  0.36  @rest
+  0.44  @rest  roll=-20
+  1.30  @rest  roll=-720
+  1.64  @rest  roll=-720
+  2.00  @rest  roll=-1080
+  3.30  @rest  roll=-1080
+spin
+  0.00  0      0
+  0.44  0      0
+  0.58  0.032  9
+  1.16  0.040  11
+  1.30  0      0
+hold
+  0.00  main
+  1.64  air  -1  z
+  2.00  main
+sound
+  0.42  click   0.45
+  1.31  catch   0.85
+  1.64  toss    0.55
+  2.00  catch   0.90
+  2.22  ring    0.45
+  2.68  whoosh  0.30  1.08
+kick
+  1.30  knife roll  160
+  2.00  knife roll  130
+
+[tactical fidget Flip]
+hand
+  0.00  @rest
+  0.10  -0.02   0.03   0.02    -6     -4     6
+  0.20  -0.04   0.00   0.02    -8     -4     0
+  0.26  -0.05   0.08   0.02    -8     -4    20
+  0.46  -0.04   0.05   0.02    -8     -4    12
+  0.56  -0.04   0.03   0.02    -8     -4     8
+  0.90  @rest
+knife
+  0.00  @rest
+  0.26  @rest
+  0.56  @rest  roll=-360
+  0.90  @rest  roll=-360
+hold
+  0.00  main
+  0.26  air  -1  z
+  0.56  main
+sound
+  0.26  toss   0.50
+  0.56  catch  0.80
+kick
+  0.56  knife roll  120
+
+# ================================================================================================ crystal fang
+# Spins about its balance point, just above the guard; its big toss goes high and turns twice.
+pose hand c_spin     -0.14   0.16  -0.04   -15     -5    70
+
+[crystal draw]
+hand
+  0.00  -0.08   0.02  -0.04   -16     -6    56
+  0.42  @c_spin  y=0.12
+  0.60  -0.05   0.06  -0.02    -8     -4    22
+  0.90  @rest
+knife
+  0.00  @rest  roll=-1000
+  0.48  @rest  roll=-80
+  0.58  @rest  roll=0
+  0.90  @rest
+spin
+  0.00  0.030  8
+  0.42  0.030  6
+  0.56  0      0
+sound
+  0.02  draw    0.85
+  0.40  ring    0.40  1.12
+  0.58  catch   0.85
+kick
+  0.58  knife roll  150
+
+[crystal inspect Aerial Twirl]
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004    8      4     2
+  0.36  @c_spin
+  1.08  @c_spin
+  1.16  @c_spin  y=0.12  flex=62
+  1.24  @c_spin  y=0.21  flex=74
+  1.40  @c_spin  y=0.20
+  1.58  @c_spin  y=0.17
+  1.64  @c_spin  y=0.155  flex=64
+  2.00  @c_spin
+  2.26  -0.08   0.12   0.00   -14    -10    30
+  2.50  @show
+  2.84  @show  twist=-8   y=0.15
+  3.04  @back  twist=150
+  3.32  @back  twist=168
+  3.70  @rest
+knife
+  0.00  @rest
+  0.30  @rest
+  0.38  @rest  roll=-20
+  1.20  @rest  roll=-810
+  1.64  @rest  roll=-1530
+  2.02  @rest  roll=-1800
+  3.70  @rest  roll=-1800
+spin
+  0.00  0      0
+  0.38  0      0
+  0.52  0.035  9
+  1.10  0.045  12
+  1.20  0.020  5
+  1.64  0.020  5
+  1.78  0.035  9
+  2.02  0      0
+hold
+  0.00  main
+  1.20  air  -2  z
+  1.64  main
+sound
+  1.20  toss   0.75
+  1.64  catch  0.95
+  2.03  catch  0.70  1.06
+  2.50  ring   0.50
+  3.30  ring   0.35  1.12
+kick
+  2.02  knife roll  150
+
+[crystal inspect Juggle | twohand]
+# right, left, right, left, right: every throw 0.32 s in the air, every catch held 0.18 s
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004    8      4     2
+  0.40  @show  x=-0.14  y=0.10
+  0.52  @show  x=-0.15  y=0.07  flex=22
+  0.60  @show  x=-0.19  y=0.15  flex=40
+  0.80  -0.10   0.08   0.02   -14    -12    26
+  1.22  -0.12   0.10   0.06   -20    -24    26
+  1.42  @show  x=-0.15  y=0.11
+  1.48  @show  x=-0.15  y=0.10  flex=26
+  1.54  @show  x=-0.15  y=0.07  flex=22
+  1.60  @show  x=-0.19  y=0.15  flex=40
+  1.80  -0.10   0.08   0.02   -14    -12    26
+  2.22  -0.12   0.10   0.06   -20    -24    26
+  2.42  @show  x=-0.15  y=0.11
+  2.48  @show  x=-0.15  y=0.10  flex=26
+  2.72  @show  twist=-8
+  2.92  @back  twist=150
+  3.20  @back  twist=168
+  3.56  @rest
+knife
+  0.00  @rest
+  0.60  @rest
+  0.92  @rest  roll=-360
+  1.10  @rest  roll=-360
+  1.42  @rest  roll=-720
+  1.60  @rest  roll=-720
+  1.92  @rest  roll=-1080
+  2.10  @rest  roll=-1080
+  2.42  @rest  roll=-1440
+  3.56  @rest  roll=-1440
+off
+  0.00  -0.12   0.06  -0.04   -20    -20    20   0
+  0.26  -0.12   0.06  -0.04   -20    -20    20   0
+  0.64  -0.18   0.10   0.06   -20    -30    26   1
+  0.92  -0.18   0.10   0.06   -20    -30    26   1
+  0.98  -0.18   0.09   0.06   -20    -30    23   1
+  1.04  -0.19   0.06   0.06   -20    -30    20   1
+  1.10  -0.21   0.14   0.06   -20    -30    40   1
+  1.30  -0.18   0.08   0.06   -20    -30    26   1
+  1.70  -0.18   0.10   0.06   -20    -30    26   1
+  1.92  -0.18   0.10   0.06   -20    -30    26   1
+  1.98  -0.18   0.09   0.06   -20    -30    23   1
+  2.04  -0.19   0.06   0.06   -20    -30    20   1
+  2.10  -0.21   0.14   0.06   -20    -30    40   1
+  2.30  -0.16   0.08   0.04   -20    -30    26   1
+  2.76  -0.10   0.02   0.00   -20    -20    10   0
+hold
+  0.00  main
+  0.60  air  -1  z
+  0.92  off
+  1.10  air  -1  z
+  1.42  main
+  1.60  air  -1  z
+  1.92  off
+  2.10  air  -1  z
+  2.42  main
+sound
+  0.60  toss   0.60
+  0.92  catch  0.85  0.96
+  1.10  toss   0.60  1.04
+  1.42  catch  0.90
+  1.60  toss   0.60
+  1.92  catch  0.85  0.96
+  2.10  toss   0.60  1.04
+  2.42  catch  0.95
+  2.70  ring   0.45
+kick
+  2.42  knife roll  150
+
+[crystal fidget Spin]
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @c_spin  y=0.10  x=-0.11
+  0.78  @c_spin  y=0.10  x=-0.11
+  0.92  -0.05   0.05  -0.01   -10     -6    20
+  1.20  @rest
+knife
+  0.00  @rest
+  0.26  @rest
+  0.34  @rest  roll=-20
+  0.80  @rest  roll=-360
+  1.20  @rest  roll=-360
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.032  8
+  0.76  0.020  5
+  0.86  0      0
+sound
+  0.81  catch  0.70
+kick
+  0.80  knife roll  130
+
+# ================================================================================================ more inspects
+
+[karambit inspect Pendulum]
+# round the ring one way, snap, back the other way, snap, then twice round and into the grip
+hand
+  0.00  @rest
+  0.10   0.006 -0.012  0.004    6      6    -4
+  0.30  @k_spin
+  1.84  @k_spin
+  1.92  @k_spin  y=0.20  flex=54
+  2.10  @show  twist=-34
+  2.40  @show  twist=-12
+  2.86  @rest
+knife
+  0.00  @rest
+  0.22  @rest
+  0.32  @k_ring  roll=-10
+  0.68  @k_ring  roll=-360
+  0.74  @k_ring  roll=-360
+  1.10  @k_ring  roll=0
+  1.16  @k_ring  roll=0
+  1.84  @k_ring  roll=-720
+  1.96  @rest    roll=-720
+  2.86  @rest    roll=-720
+spin
+  0.00  0      0
+  0.32  0      0
+  0.44  0.035  9
+  0.66  0.020  5
+  0.76  0.020  5
+  0.90  0.035  9
+  1.08  0.020  5
+  1.18  0.020  5
+  1.32  0.045  12
+  1.80  0.020  5
+  1.92  0      0
+sound
+  0.30  click   0.55
+  0.70  click   0.45  1.08
+  1.12  click   0.45  1.02
+  1.95  catch   0.90
+  2.10  ring    0.45
+kick
+  0.70  knife roll  200
+  1.12  knife roll  -200
+  1.96  knife roll  150
+
+[butterfly inspect Two-Hand Flip | twohand]
+# shut, thrown across, your other hand flips it open and shut and open and shut, thrown back, flipped open
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004    8      4     0
+  0.30  @b_flip  x=-0.13
+  0.48  @b_flip  x=-0.13  twist=-40
+  0.56  @b_flip  x=-0.13  y=0.10  flex=24
+  0.62  @b_flip  x=-0.17  y=0.17  flex=40
+  0.80  -0.08   0.08   0.00   -14    -10    26
+  1.60  -0.06   0.06   0.00   -12     -8    22
+  2.04  @b_flip  x=-0.14  y=0.15
+  2.14  @b_flip  x=-0.14  y=0.13  flex=27
+  2.36  @b_flip  twist=-40
+  2.62  @show
+  2.92  @show  twist=-8
+  3.40  @rest
+knife
+  0.00  0 0 0  0 0    0
+  0.30  0 0 0  0 0    0
+  0.48  0 0 0  0 0  180
+  0.62  0 0 0  0 0  180
+  0.96  0 0 0  0 0  540
+  1.00  0 0 0  0 0  540
+  1.16  0 0 0  0 0  720
+  1.20  0 0 0  0 0  720
+  1.36  0 0 0  0 0  900
+  1.40  0 0 0  0 0  900
+  1.56  0 0 0  0 0 1080
+  1.60  0 0 0  0 0 1080
+  1.76  0 0 0  0 0 1260
+  1.82  0 0 0  0 0 1260
+  2.16  0 0 0  0 0 1620
+  2.20  0 0 0  0 0 1620
+  2.36  0 0 0  0 0 1800
+  3.40  0 0 0  0 0 1800
+handles
+  0.00     0     0
+  0.30     0     0
+  0.48  -180   180
+  1.00  -180   180
+  1.16  -360   360
+  1.20  -360   360
+  1.36  -540   540
+  1.40  -540   540
+  1.56  -720   720
+  1.60  -720   720
+  1.76  -900   900
+  2.20  -900   900
+  2.36 -1080  1080
+  3.40 -1080  1080
+off
+  0.00  -0.12   0.08  -0.04   -20    -10    30   0
+  0.40  -0.12   0.08  -0.04   -20    -10    30   0
+  0.80  -0.13   0.13   0.02   -20    -10    32   1
+  0.96  -0.13   0.13   0.02   -20    -10    32   1
+  1.00  -0.13   0.12   0.02   -20    -10    29   1
+  1.16  -0.13   0.13   0.02   -46    -10    32   1
+  1.36  -0.13   0.13   0.02     6    -10    32   1
+  1.56  -0.13   0.13   0.02   -46    -10    32   1
+  1.74  -0.13   0.13   0.02   -20    -10    32   1
+  1.78  -0.13   0.10   0.02   -20    -10    24   1
+  1.84  -0.17   0.17   0.02   -20    -10    40   1
+  2.04  -0.10   0.08   0.00   -20    -10    26   1
+  2.50  -0.08   0.02  -0.02   -20    -10    16   0
+hold
+  0.00  main
+  0.62  air  1  z
+  0.96  off
+  1.82  air  1  z
+  2.16  main
+sound
+  0.48  clack  0.85
+  0.62  toss   0.60
+  0.96  clack  0.80  0.94
+  1.16  clack  0.85  1.03
+  1.36  clack  0.85  0.97
+  1.56  clack  0.85  1.05
+  1.76  clack  0.85
+  1.82  toss   0.60  1.04
+  2.16  clack  0.90  0.95
+  2.36  clack  1.00  1.02
+  2.46  latch  0.50
+  2.62  ring   0.45
+kick
+  0.48  knife roll  -70
+  0.48  knife a      70
+  2.36  knife roll  -90
+  2.36  knife a      90
+
+[m9 inspect High Toss]
+# shown to you, then thrown high, twice end over end, caught, its back, a turn round the ring
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10      4     2
+  0.44  @show
+  0.76  @show  twist=-8   y=0.15  cock=-36
+  0.86  @show  y=0.09  flex=20
+  0.94  @show  y=0.20  flex=40
+  1.12  @show  y=0.19
+  1.30  @show  y=0.16
+  1.36  @show  y=0.145  flex=26
+  1.60  @back  twist=150
+  1.90  @back  twist=168  y=0.14  cock=-26
+  2.10  @m_spin
+  2.56  @m_spin
+  2.64  @m_spin  y=0.22  flex=62
+  2.86  @show  twist=-30
+  3.40  @rest
+knife
+  0.00  @rest
+  0.94  @rest
+  1.36  @rest    roll=-720
+  2.04  @rest    roll=-720
+  2.12  @m_ring  roll=-740
+  2.58  @m_ring  roll=-1080
+  2.66  @rest    roll=-1080
+  3.40  @rest    roll=-1080
+spin
+  0.00  0      0
+  2.12  0      0
+  2.24  0.035  9
+  2.50  0.030  8
+  2.62  0      0
+hold
+  0.00  main
+  0.94  air  -2  z
+  1.36  main
+sound
+  0.42  ring    0.50
+  0.94  toss    0.75
+  1.36  catch   0.95
+  1.56  whoosh  0.30
+  2.10  click   0.50
+  2.65  catch   0.85  1.05
+  2.86  ring    0.45  1.06
+kick
+  1.36  knife roll  160
+  2.66  knife roll  150
+
+[tactical inspect Swap Spin | twohand]
+# round in your fist, thrown across, round in your other fist, thrown back
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004   10      4     2
+  0.40  @t_spin  x=-0.13
+  0.92  @t_spin  x=-0.13
+  0.98  @t_spin  x=-0.16  y=0.28  flex=74
+  1.16  -0.10   0.14   0.00   -14    -10    40
+  1.80  -0.08   0.12   0.00   -12     -8    36
+  2.14  @t_spin  x=-0.13  y=0.25
+  2.20  @t_spin  x=-0.13  y=0.235  flex=66
+  2.54  @show
+  2.84  @show  twist=-8
+  3.20  @rest
+knife
+  0.00  @rest
+  0.36  @rest
+  0.44  @rest  roll=-20
+  0.94  @rest  roll=-360
+  1.32  @rest  roll=-720
+  1.36  @rest  roll=-720
+  1.84  @rest  roll=-360
+  2.20  @rest  roll=-720
+  3.20  @rest  roll=-720
+spin
+  0.00  0      0
+  0.44  0      0
+  0.56  0.032  9
+  0.88  0.030  8
+  0.96  0.020  5
+  1.32  0.020  5
+  1.44  0.032  9
+  1.80  0.020  5
+  2.20  0.020  5
+  2.32  0      0
+off
+  0.00  -0.12   0.10  -0.04   -15      5    60   0
+  0.50  -0.12   0.10  -0.04   -15      5    60   0
+  1.00  -0.13   0.22  -0.06   -15      5    70   1
+  1.32  -0.13   0.24  -0.06   -15      5    70   1
+  1.36  -0.13   0.225 -0.06   -15      5    64   1
+  1.82  -0.13   0.24  -0.06   -15      5    70   1
+  1.88  -0.16   0.28  -0.06   -15      5    74   1
+  2.10  -0.10   0.14  -0.04   -15      5    50   1
+  2.50  -0.08   0.06  -0.02   -15      5    30   0
+hold
+  0.00  main
+  0.98  air  -1  z
+  1.32  off
+  1.88  air  -1  z
+  2.20  main
+sound
+  0.42  click   0.45
+  0.98  toss    0.60
+  1.32  catch   0.85  0.96
+  1.88  toss    0.60  1.04
+  2.20  catch   0.90
+  2.54  ring    0.45
+kick
+  2.20  knife roll  140
+
+[crystal inspect Spiral]
+# twice round, a little throw, caught, another, caught, round once more and shown
+hand
+  0.00  @rest
+  0.14   0.004 -0.012  0.004    8      4     2
+  0.36  @c_spin
+  0.96  @c_spin
+  1.00  @c_spin  y=0.13  flex=64
+  1.06  @c_spin  y=0.20  flex=74
+  1.22  @c_spin  y=0.18
+  1.34  @c_spin  y=0.165  flex=66
+  1.42  @c_spin  y=0.14  flex=62
+  1.48  @c_spin  y=0.21  flex=74
+  1.64  @c_spin  y=0.19
+  1.76  @c_spin  y=0.165  flex=66
+  2.10  @c_spin
+  2.24  -0.08   0.12   0.00   -14    -10    30
+  2.50  @show
+  2.80  @show  twist=-8
+  3.20  @rest
+knife
+  0.00  @rest
+  0.30  @rest
+  0.38  @rest  roll=-20
+  1.06  @rest  roll=-720
+  1.36  @rest  roll=-1080
+  1.48  @rest  roll=-1170
+  1.78  @rest  roll=-1530
+  2.12  @rest  roll=-1800
+  3.20  @rest  roll=-1800
+spin
+  0.00  0      0
+  0.38  0      0
+  0.52  0.035  9
+  0.96  0.045  12
+  1.06  0.020  5
+  1.36  0.020  5
+  1.48  0.020  5
+  1.78  0.020  5
+  1.92  0.035  9
+  2.12  0      0
+hold
+  0.00  main
+  1.06  air  -1  z
+  1.36  main
+  1.48  air  -1  z
+  1.78  main
+sound
+  1.06  toss   0.65
+  1.36  catch  0.85
+  1.48  toss   0.65  1.05
+  1.78  catch  0.90
+  2.13  catch  0.70  1.06
+  2.50  ring   0.50
+kick
+  2.12  knife roll  150
+
+# ================================================================================================ every knife: on the move
+# Air slashes cut nothing: the hand winds up to the right, sweeps the blade across the middle of the screen (edge first)
+# and follows through low on the left, then comes back. The swing blur draws their arcs.
+pose hand s_wind      0.06   0.09   0.06   -60     50   -10
+pose hand s_cut      -0.17   0.06  -0.12   -55     -8     8
+pose hand s_follow   -0.38   0.01  -0.08   -80    -68    12
+pose hand b_wind     -0.34   0.00  -0.06    96    -62    10
+pose hand b_cut      -0.12   0.07  -0.13   100      4     4
+pose hand b_follow    0.07   0.11   0.03    86     58   -12
+# a hand passing the knife to the other one, near the middle of the screen (the other hand's is its mirror image)
+pose hand pass       -0.11   0.06   0.03   -20    -24    22
+pose off  catch      -0.11   0.06   0.03   -20    -24    22    1
+
+[all walk Slash | slash]
+hand
+  0.00  @rest
+  0.16  @s_wind
+  0.22  @s_wind  x=0.07  y=0.10  cock=56
+  0.30  @s_cut
+  0.38  @s_follow
+  0.46  @s_follow  x=-0.40  y=0.00  cock=-72
+  0.66  -0.16   0.04   0.02   -30    -20     6
+  0.95  @rest
+sound
+  0.27  slash  0.85
+kick
+  0.38  hand x  -0.35
+  0.38  hand cock  -120
+
+[all walk Backhand | slash]
+hand
+  0.00  @rest
+  0.14  -0.10   0.02   0.02   -10    -30     4
+  0.24  @b_wind
+  0.30  @b_wind  x=-0.36  cock=-66
+  0.38  @b_cut
+  0.46  @b_follow
+  0.54  @b_follow  x=0.09  y=0.12  cock=62
+  0.74   0.02   0.06   0.02    30     20    -4
+  1.02  @rest
+sound
+  0.35  slash  0.80  0.94
+kick
+  0.46  hand x  0.35
+  0.46  hand cock  120
+
+[all walk Double Slash | slash]
+hand
+  0.00  @rest
+  0.16  @s_wind
+  0.22  @s_wind  x=0.07  y=0.10  cock=56
+  0.30  @s_cut
+  0.38  @s_follow
+  0.44  @b_wind
+  0.52  @b_cut
+  0.60  @b_follow
+  0.68  @b_follow  x=0.09  y=0.12  cock=62
+  0.88   0.02   0.06   0.02    30     20    -4
+  1.16  @rest
+sound
+  0.27  slash  0.85
+  0.49  slash  0.85  0.93
+kick
+  0.60  hand x  0.30
+  0.60  hand cock  110
+
+[all walk Toss]
+hand
+  0.00  @rest
+  0.12  -0.02  -0.02   0.02    -6     -6    10
+  0.20  -0.03   0.06   0.02    -6     -6    30
+  0.34  -0.03   0.05   0.02    -6     -6    24
+  0.48  -0.03   0.03   0.02    -6     -6    22
+  0.52  -0.03   0.02   0.02    -6     -6    20
+  0.84  @rest
+knife
+  0.00  @rest
+  0.20  @rest
+  0.52  @rest  roll=-360
+  0.84  @rest  roll=-360
+hold
+  0.00  main
+  0.20  air  -1  z
+  0.52  main
+sound
+  0.20  toss   0.55
+  0.52  catch  0.85
+kick
+  0.52  knife roll  130
+  0.52  knife a     -130
+
+[all walk Swap | twohand]
+# a little throw to your other hand, a moment there, and back
+hand
+  0.00  @rest
+  0.14  -0.05   0.01   0.02   -14    -14    14
+  0.26  @pass
+  0.32  @pass  x=-0.14  y=0.11  flex=34
+  0.48  @pass  x=-0.08  y=0.05
+  0.96  @pass  y=0.07
+  1.04  @pass  y=0.06  flex=20
+  1.30  -0.04   0.02   0.02    -8     -6     8
+  1.60  @rest
+off
+  0.00  @catch  in=0  y=-0.02
+  0.10  @catch  in=0  y=-0.02
+  0.40  @catch
+  0.54  @catch  y=0.07
+  0.58  @catch  y=0.06  flex=20
+  0.70  @catch  y=0.04  twist=10
+  0.76  @catch  x=-0.14  y=0.11  flex=34
+  0.92  @catch  x=-0.08  y=0.05
+  1.30  @catch  in=0  y=-0.04  x=-0.04
+knife
+  0.00  @rest
+  0.32  @rest
+  0.58  @rest  roll=-360
+  0.76  @rest  roll=-360
+  1.04  @rest  roll=-720
+  1.60  @rest  roll=-720
+hold
+  0.00  main
+  0.32  air  -1  z
+  0.58  off
+  0.76  air  -1  z
+  1.04  main
+sound
+  0.32  toss   0.55
+  0.58  catch  0.80  0.97
+  0.76  toss   0.55  1.04
+  1.04  catch  0.85
+kick
+  1.04  knife roll  130
+  1.04  knife a     -130
+
+[all inspect Slash Combo | slash]
+# forehand, backhand, a flick of the wrist that throws it up, and the catch
+hand
+  0.00  @rest
+  0.16  @s_wind
+  0.22  @s_wind  x=0.07  y=0.10  cock=56
+  0.30  @s_cut
+  0.38  @s_follow
+  0.44  @b_wind
+  0.52  @b_cut
+  0.60  @b_follow
+  0.68  @b_follow  x=0.09  y=0.12  cock=62
+  0.90  -0.06   0.04   0.04   -20    -20    14
+  1.02  -0.07   0.00   0.04   -20    -20     8
+  1.10  -0.08   0.10   0.04   -20    -20    32
+  1.30  -0.08   0.08   0.04   -20    -20    26
+  1.46  -0.08   0.06   0.04   -20    -20    24
+  1.52  -0.08   0.05   0.04   -20    -20    20
+  1.80  @show
+  2.10  @show  twist=-8
+  2.50  @rest
+knife
+  0.00  @rest
+  1.10  @rest
+  1.52  @rest  roll=-720
+  2.50  @rest  roll=-720
+hold
+  0.00  main
+  1.10  air  -2  z
+  1.52  main
+sound
+  0.27  slash  0.85
+  0.49  slash  0.85  0.93
+  1.10  toss   0.65
+  1.52  catch  0.95
+  1.80  ring   0.45
+kick
+  0.60  hand x  0.30
+  0.60  hand cock  110
+  1.52  knife roll  150
+  1.52  knife a     -150
+
+# an upward slash: low on the right, the blade cocked down, rising across to the upper left
+pose hand u_wind      0.05  -0.07   0.05   -55     72   -18
+pose hand u_cut      -0.14   0.08  -0.12   -60      4     0
+pose hand u_follow   -0.30   0.19  -0.06   -72    -46   -12
+
+[all walk Uppercut | slash]
+hand
+  0.00  @rest
+  0.16  @u_wind
+  0.22  @u_wind  y=-0.08  cock=76
+  0.30  @u_cut
+  0.38  @u_follow
+  0.46  @u_follow  x=-0.32  y=0.20
+  0.68  -0.12   0.08   0.02   -28    -16     0
+  0.98  @rest
+sound
+  0.27  slash  0.85  1.06
+kick
+  0.38  hand y  0.30
+  0.38  hand cock  -110
+
+[all walk Twirl Toss]
+# thrown up turning about its own length: it twirls like a drill and comes down into the grip
+hand
+  0.00  @rest
+  0.12  -0.02  -0.02   0.02    -6     -6    10
+  0.20  -0.03   0.06   0.02    -6     -6    30
+  0.34  -0.03   0.05   0.02    -6     -6    24
+  0.50  -0.03   0.03   0.02    -6     -6    22
+  0.54  -0.03   0.02   0.02    -6     -6    20
+  0.88  @rest
+knife
+  0.00  @rest
+  0.20  @rest
+  0.54  @rest  yaw=720
+  0.88  @rest  yaw=720
+hold
+  0.00  main
+  0.20  air  2  y
+  0.54  main
+sound
+  0.20  toss   0.55  1.06
+  0.54  catch  0.85
+kick
+  0.54  knife yaw  160
+
+[all inspect Twin Slash | twohand slash]
+# a slash, thrown across to your other hand, which slashes back the other way and throws it home
+hand
+  0.00  @rest
+  0.16  @s_wind
+  0.22  @s_wind  x=0.07  y=0.10  cock=56
+  0.30  @s_cut
+  0.38  @s_follow
+  0.42  @s_follow  x=-0.40  y=0.03  cock=-70  flex=20
+  0.70  -0.08   0.02   0.02   -20    -14    10
+  1.06  @pass  x=-0.02  y=0.07
+  1.18  @pass  x=-0.02  y=0.055  flex=20
+  1.50  @show
+  1.86  @show  twist=-8
+  2.30  @rest
+off
+  0.00  @catch  in=0  y=-0.02
+  0.20  @catch  in=0  y=-0.02
+  0.50  0.04   0.07   0.05   -60     50   -10   1
+  0.66  0.06   0.09   0.06   -60     50   -10   1
+  0.68  0.06   0.085  0.06   -60     52   -12   1
+  0.74  @s_wind  x=0.07  y=0.10  cock=56
+  0.82  @s_cut
+  0.90  @s_follow
+  0.96  @s_follow  x=-0.36  y=0.06
+  1.40  -0.10   0.00   0.00   -20    -14    10   0
+knife
+  0.00  @rest
+  0.42  @rest
+  0.68  @rest  roll=-360
+  0.90  @rest  roll=-360
+  1.18  @rest  roll=-720
+  2.30  @rest  roll=-720
+hold
+  0.00  main
+  0.42  air  -1  z
+  0.68  off
+  0.90  air  -1  z
+  1.18  main
+sound
+  0.27  slash  0.85
+  0.42  toss   0.55
+  0.68  catch  0.80  0.97
+  0.79  slash  0.85  1.05
+  0.90  toss   0.55  1.04
+  1.18  catch  0.90
+  1.50  ring   0.45
+kick
+  1.18  knife roll  140
+  1.18  knife a    -140
+
+# ================================================================================================ every knife: the flow on the move
+# Walking keeps the knife busy, one trick after another, so there are many: these join the slashes, swaps and tosses.
+
+[all walk Double Toss]
+# two tosses in a row: a small flip, and off the catch a higher double
+hand
+  0.00  @rest
+  0.12  -0.02  -0.02   0.02    -6     -6    10
+  0.20  -0.03   0.06   0.02    -6     -6    30
+  0.34  -0.03   0.05   0.02    -6     -6    24
+  0.48  -0.03   0.03   0.02    -6     -6    22
+  0.52  -0.03   0.02   0.02    -6     -6    20
+  0.60  -0.03  -0.01   0.02    -6     -6    12
+  0.68  -0.04   0.09   0.02    -6     -6    38
+  0.90  -0.04   0.07   0.02    -6     -6    28
+  1.08  -0.04   0.04   0.02    -6     -6    24
+  1.14  -0.04   0.03   0.02    -6     -6    20
+  1.48  @rest
+knife
+  0.00  @rest
+  0.20  @rest
+  0.52  @rest  roll=-360
+  0.68  @rest  roll=-360
+  1.14  @rest  roll=-1080
+  1.48  @rest  roll=-1080
+hold
+  0.00  main
+  0.20  air  -1  z
+  0.52  main
+  0.68  air  -2  z
+  1.14  main
+sound
+  0.20  toss   0.50
+  0.52  catch  0.70  1.04
+  0.68  toss   0.60  1.06
+  1.14  catch  0.90
+kick
+  0.52  knife roll  100
+  0.52  knife a    -100
+  1.14  knife roll  150
+  1.14  knife a    -150
+
+# two jabs: the point drawn back and aimed at your crosshair, a quick one in, and a deep one, turned, and pulled out
+pose hand st_aim      0.03  -0.02   0.09     0      0     40
+pose hand st_in      -0.10   0.08  -0.26    -8     -8     75
+
+[all walk Stab | slash]
+hand
+  0.00  @rest
+  0.14  @st_aim
+  0.22  @st_aim  z=0.11  flex=46
+  0.29  @st_in  x=-0.07  y=0.05  z=-0.16
+  0.38  @st_aim  z=0.05  flex=50
+  0.46  @st_in
+  0.56  @st_in  twist=-34
+  0.64  @st_in  z=-0.22  twist=-40
+  0.84  -0.02   0.02   0.02   -10     -4    20
+  1.12  @rest
+sound
+  0.26  slash  0.55  1.24
+  0.43  slash  0.75  1.14
+kick
+  0.29  hand z  0.20
+  0.46  hand z  0.30
+  0.46  hand flex  -90
+
+# an X in the air: down from the upper right to the lower left, then from the upper left down to the lower right
+pose hand x_hi        0.10   0.18   0.04   -60     60    -10
+pose hand x_lo       -0.36  -0.04  -0.08   -80    -60     12
+pose hand x_hi2      -0.34   0.22  -0.04    96    -45     10
+pose hand x_lo2       0.08  -0.06   0.02    86     60    -12
+
+[all walk Cross Slash | slash]
+hand
+  0.00  @rest
+  0.16  @x_hi
+  0.22  @x_hi  x=0.11  y=0.19  cock=66
+  0.31  -0.14   0.07  -0.12   -70     -4     2
+  0.40  @x_lo
+  0.50  @x_hi2
+  0.56  @x_hi2  y=0.23  cock=-52
+  0.65  -0.13   0.08  -0.10    92    -10     0
+  0.74  @x_lo2
+  0.82  @x_lo2  x=0.09  y=-0.07  cock=66
+  1.04   0.02   0.04   0.02    30     10    -4
+  1.32  @rest
+sound
+  0.27  slash  0.85  1.02
+  0.61  slash  0.85  0.95
+kick
+  0.40  hand x  -0.30
+  0.74  hand x  0.30
+  0.74  hand cock  90
+
+# ================================================================================================ each knife's own, on the move
+
+[karambit walk Ring Roll]
+# two quick turns round the ring and back into the fist
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.28  @k_spin  y=0.17  x=-0.12
+  0.94  @k_spin  y=0.17  x=-0.12
+  1.08  -0.05   0.06  -0.01   -10     -6    20
+  1.38  @rest
+knife
+  0.00  @rest
+  0.22  @rest
+  0.32  @k_ring  roll=-20
+  0.96  @k_ring  roll=-720
+  1.06  @rest    roll=-720
+  1.38  @rest    roll=-720
+spin
+  0.00  0      0
+  0.32  0      0
+  0.44  0.038  10
+  0.84  0.030  8
+  0.94  0      0
+sound
+  0.30  click   0.45
+  1.05  catch   0.80
+kick
+  1.06  knife roll  150
+
+[karambit walk Ring Toss]
+# a turn round the ring, flicked up off the finger, caught by the ring, and spun home into the fist
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @k_spin
+  0.54  @k_spin
+  0.60  @k_spin  y=0.20  flex=57
+  0.68  @k_spin  y=0.26  flex=66
+  0.82  @k_spin  y=0.25
+  0.94  @k_spin  y=0.22
+  1.02  @k_spin  y=0.205  flex=58
+  1.32  @k_spin
+  1.46  -0.10   0.14   0.00   -20    -12    30
+  1.74  -0.04   0.04   0.02   -12     -4    10
+  2.02  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.32  @k_ring  roll=-20
+  0.60  @k_ring  roll=-400
+  1.02  @k_ring  roll=-940
+  1.32  @k_ring  roll=-1440
+  1.44  @rest    roll=-1440
+  2.02  @rest    roll=-1440
+spin
+  0.00  0      0
+  0.30  0      0
+  0.44  0.038  10
+  0.58  0.045  12
+  0.60  0.020  6
+  1.02  0.020  6
+  1.12  0.040  10
+  1.32  0      0
+hold
+  0.00  main
+  0.60  air  -1.5  z
+  1.02  main
+sound
+  0.30  click      0.55
+  0.60  toss       0.70
+  1.02  ringcatch  0.80
+  1.43  catch      0.90
+kick
+  1.44  knife roll  160
+
+[butterfly walk Rollover]
+# four flips in a steady rhythm, the handles slapping shut on every one
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.24  @b_flip  y=0.08  twist=-30
+  0.42  @b_flip  y=0.085  twist=6
+  0.60  @b_flip  y=0.08  twist=-28
+  0.78  @b_flip  y=0.085  twist=6
+  0.96  @b_flip  y=0.07  twist=-24
+  1.28  @rest
+knife
+  0.00  0 0 0  0 0    0
+  0.24  0 0 0  0 0    0
+  0.40  0 0 0  0 0  180
+  0.44  0 0 0  0 0  180
+  0.58  0 0 0  0 0  360
+  0.62  0 0 0  0 0  360
+  0.76  0 0 0  0 0  540
+  0.80  0 0 0  0 0  540
+  0.94  0 0 0  0 0  720
+  1.28  0 0 0  0 0  720
+handles
+  0.00     0     0
+  0.24     0     0
+  0.40  -180   180
+  0.44  -180   180
+  0.58  -360   360
+  0.62  -360   360
+  0.76  -540   540
+  0.80  -540   540
+  0.94  -720   720
+  1.28  -720   720
+sound
+  0.40  clack  0.70
+  0.58  clack  0.75  1.04
+  0.76  clack  0.75  0.98
+  0.94  clack  0.85  1.05
+kick
+  0.40  knife roll  -60
+  0.40  knife a      60
+  0.58  knife roll  -70
+  0.58  knife a      70
+  0.76  knife roll  -70
+  0.76  knife a      70
+  0.94  knife roll  -80
+  0.94  knife a      80
+
+[butterfly walk Closed Toss]
+# flipped shut, tossed up shut for a turn, caught, and flipped open again
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.24  @b_flip  y=0.08  twist=-30
+  0.44  @b_flip  y=0.07  twist=2
+  0.52  @b_flip  y=0.04  twist=0  flex=24
+  0.58  @b_flip  y=0.14  twist=0  flex=46
+  0.74  @b_flip  y=0.13  twist=0  flex=38
+  0.90  @b_flip  y=0.10  twist=0  flex=34
+  0.94  @b_flip  y=0.09  twist=0
+  1.04  @b_flip  y=0.08  twist=6
+  1.20  @b_flip  y=0.07  twist=-24
+  1.52  @rest
+knife
+  0.00  0 0 0  0 0    0
+  0.24  0 0 0  0 0    0
+  0.42  0 0 0  0 0  180
+  0.58  0 0 0  0 0  180
+  0.94  0 0 0  0 0 -180
+  1.04  0 0 0  0 0 -180
+  1.18  0 0 0  0 0    0
+  1.52  0 0 0  0 0    0
+handles
+  0.00     0     0
+  0.24     0     0
+  0.42  -180   180
+  1.04  -180   180
+  1.18  -360   360
+  1.52  -360   360
+hold
+  0.00  main
+  0.58  air  -1  z
+  0.94  main
+sound
+  0.42  clack  0.75
+  0.58  toss   0.55
+  0.94  catch  0.80
+  1.18  clack  0.85  1.04
+  1.32  latch  0.40
+kick
+  0.42  knife roll  -60
+  0.42  knife a      60
+  0.94  knife roll   110
+  0.94  knife a     -110
+  1.18  knife roll  -80
+  1.18  knife a      80
+
+[m9 walk Ring Twirl]
+# two turns round the guard's ring on your finger, and back into the fist
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @m_spin  y=0.20  x=-0.08
+  0.98  @m_spin  y=0.20  x=-0.08
+  1.12  -0.05   0.06  -0.01   -10     -6    20
+  1.42  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.34  @m_ring  roll=-20
+  1.00  @m_ring  roll=-720
+  1.10  @rest    roll=-720
+  1.42  @rest    roll=-720
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.036  9
+  0.88  0.028  7
+  0.98  0      0
+sound
+  0.32  click   0.45
+  1.09  catch   0.80
+kick
+  1.10  knife roll  150
+
+[m9 walk Spin Toss]
+# a turn round the ring, flicked off the finger into a double, and caught in the fist
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @m_spin  y=0.20  x=-0.08
+  0.62  @m_spin  y=0.20  x=-0.08
+  0.68  @m_spin  y=0.24  x=-0.08  flex=80
+  0.84  -0.06   0.12   0.00   -12     -8    40
+  1.00  -0.05   0.09   0.00   -12     -8    32
+  1.06  -0.05   0.08   0.00   -12     -8    28
+  1.40  @rest
+knife
+  0.00  @rest
+  0.24  @rest
+  0.34  @m_ring  roll=-20
+  0.68  @m_ring  roll=-420
+  1.06  @rest    roll=-1080
+  1.40  @rest    roll=-1080
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.036  9
+  0.62  0.030  8
+  0.68  0      0
+hold
+  0.00  main
+  0.68  air  -2  z
+  1.06  main
+sound
+  0.32  click   0.45
+  0.68  toss    0.65
+  1.06  catch   0.90
+kick
+  1.06  knife roll  150
+
+[tactical walk Palm Twirl]
+# two turns round in your fist and a snap back into the grip
+hand
+  0.00  @rest
+  0.12   0.004 -0.012  0.004   10      4     2
+  0.36  @t_spin
+  1.02  @t_spin
+  1.10  @t_spin  y=0.21  flex=64
+  1.24  -0.08   0.08   0.02   -14     -8    24
+  1.52  @rest
+knife
+  0.00  @rest
+  0.32  @rest
+  0.40  @rest  roll=-20
+  1.06  @rest  roll=-720
+  1.52  @rest  roll=-720
+spin
+  0.00  0      0
+  0.40  0      0
+  0.54  0.032  9
+  0.94  0.040  11
+  1.06  0      0
+sound
+  0.38  click   0.45
+  1.07  catch   0.85
+kick
+  1.06  knife roll  160
+
+[tactical walk Spin Flip]
+# a turn in your fist, then flipped end over end off the fingers and caught
+hand
+  0.00  @rest
+  0.12   0.004 -0.012  0.004   10      4     2
+  0.34  @t_spin
+  0.66  @t_spin
+  0.72  @t_spin  y=0.19  flex=60
+  0.80  -0.10   0.07   0.02   -16    -10    24
+  0.86  -0.11   0.15   0.02   -16    -10    40
+  1.02  -0.10   0.13   0.02   -16    -10    32
+  1.16  -0.10   0.10   0.02   -16    -10    28
+  1.22  -0.10   0.09   0.02   -16    -10    24
+  1.56  @rest
+knife
+  0.00  @rest
+  0.30  @rest
+  0.38  @rest  roll=-20
+  0.72  @rest  roll=-360
+  0.86  @rest  roll=-360
+  1.22  @rest  roll=-720
+  1.56  @rest  roll=-720
+spin
+  0.00  0      0
+  0.38  0      0
+  0.50  0.032  9
+  0.64  0.036  10
+  0.72  0      0
+hold
+  0.00  main
+  0.86  air  -1  z
+  1.22  main
+sound
+  0.36  click   0.45
+  0.73  catch   0.70
+  0.86  toss    0.55
+  1.22  catch   0.90
+kick
+  0.72  knife roll  140
+  1.22  knife roll  130
+
+[crystal walk Balance Spin]
+# two turns balanced just above the guard, glinting, and caught
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @c_spin  y=0.10  x=-0.11
+  0.96  @c_spin  y=0.10  x=-0.11
+  1.10  -0.05   0.05  -0.01   -10     -6    20
+  1.40  @rest
+knife
+  0.00  @rest
+  0.26  @rest
+  0.34  @rest  roll=-20
+  0.98  @rest  roll=-720
+  1.40  @rest  roll=-720
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.034  9
+  0.86  0.026  7
+  0.96  0      0
+sound
+  0.34  ring   0.35  1.15
+  0.99  catch  0.75
+kick
+  0.98  knife roll  140
+
+[crystal walk Orbit Toss]
+# a turn on its balance point, sent up high for a double, and caught
+hand
+  0.00  @rest
+  0.10   0.004 -0.010  0.002    6      4     0
+  0.30  @c_spin  y=0.10  x=-0.11
+  0.62  @c_spin  y=0.10  x=-0.11
+  0.68  @c_spin  y=0.15  x=-0.11  flex=78
+  0.86  -0.06   0.11   0.00   -12     -6    36
+  1.10  -0.05   0.08   0.00   -12     -6    30
+  1.16  -0.05   0.07   0.00   -12     -6    26
+  1.50  @rest
+knife
+  0.00  @rest
+  0.26  @rest
+  0.34  @rest  roll=-20
+  0.68  @rest  roll=-400
+  1.16  @rest  roll=-1080
+  1.50  @rest  roll=-1080
+spin
+  0.00  0      0
+  0.34  0      0
+  0.46  0.034  9
+  0.62  0.030  8
+  0.68  0      0
+hold
+  0.00  main
+  0.68  air  -2  z
+  1.16  main
+sound
+  0.34  ring   0.35  1.15
+  0.68  toss   0.65
+  1.16  catch  0.90
+kick
+  1.16  knife roll  150

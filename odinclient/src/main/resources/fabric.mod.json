@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "odinclient",
+  "version": "1.3.0",
+  "name": "OdinClient",
+  "description": "OdinClient integrated build.",
+  "authors": ["OdinClient"],
+  "license": "MIT",
+  "environment": "client",
+  "icon": "assets/odinclient/icon.png",
+  "accessWidener": "odinclient.accesswidener",
+  "entrypoints": {
+    "client": ["odinclient.core.OdinClient"]
+  },
+  "mixins": [
+    "odinclient-standalone.mixins.json",
+    "odinclient-freecam.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "minecraft": "1.21.11",
+    "java": ">=21"
+  }
+}

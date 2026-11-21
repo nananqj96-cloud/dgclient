@@ -1,0 +1,50 @@
+Purxiy Garage: 3D models
+
+Each model was converted for this client: scaled, reduced in detail, its materials and moving parts rearranged.
+
+Porsche 911
+  "(FREE) Porsche 911 Carrera 4S" by Karol Miklas (https://sketchfab.com/karolmiklas)
+  Licence: CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+  Source: https://sketchfab.com/3d-models/free-porsche-911-carrera-4s-d01b254483794de3819786d93e0e1ebf
+
+BMW M2
+  "2026 ZACOE BMW G87 M2 Widebody Carbon Fiber Kit" by Ddiaz Design (https://sketchfab.com/ddiaz-design)
+  Licence: CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+  Source: https://sketchfab.com/3d-models/2026-zacoe-bmw-g87-m2-widebody-carbon-fiber-kit-d15e7b05cd7543b19b36bdcbc5f27b59
+
+Porsche GT4
+  "Porche GT4" by TegnoGenial (https://sketchfab.com/TegnoGenial)
+  Licence: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  Source: https://sketchfab.com/3d-models/porche-gt4-c78853547a8744a7896e7b755095d66f
+
+Lamborghini Urus
+  "2019 Lamborghini Urus" by Ddiaz Design (https://sketchfab.com/ddiaz-design)
+  Licence: CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+  Source: https://sketchfab.com/3d-models/2019-lamborghini-urus-9ef2fd625ba54ea39226ea5d043c0e13
+
+Lamborghini Veneno
+  "Lambo" by conor.doherty (https://sketchfab.com/conor.doherty)
+  Licence: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  Source: https://sketchfab.com/3d-models/lambo-8b5411b5dbad44398c394166522fa57c
+
+Dracorus
+  "Classic Car Hybrid " Dracorus "" by SamuelLK (https://sketchfab.com/SamuelLK)
+  Licence: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  Source: https://sketchfab.com/3d-models/classic-car-hybrid-dracorus-a1ffd89180d24721ba00ed00eb6afab9
+
+BMW S1000RR
+  "BMW s1000rr | Hassan Visuals 3D" by Hassan Visuals 3D (https://sketchfab.com/HassanVisuals3D)
+  Licence: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  Source: https://sketchfab.com/3d-models/bmw-s1000rr-hassan-visuals-3d-68a6f534194b44a5acc7ccc67630f0b9
+
+Quad Bike
+  "Quad Bike 3d" by Tech developers (https://sketchfab.com/Deepu.Dra)
+  Licence: CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+  Source: https://sketchfab.com/3d-models/quad-bike-3d-aa9d465112c8419a832f204e0d97fa52
+
+Kids Bike
+  "Сhildren's bike" by Epic_Tree_Store (https://sketchfab.com/johngreenstone)
+  Licence: CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+  Source: https://sketchfab.com/3d-models/hildrens-bike-0a16b108ac79488f99c7cbde13925aa7
+
+The Porsche 911 cabin uses parts of the Porsche GT4 model listed above.
