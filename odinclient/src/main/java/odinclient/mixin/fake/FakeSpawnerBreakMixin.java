@@ -18,7 +18,7 @@ public abstract class FakeSpawnerBreakMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/block/Block;getStateFromRawId(I)Lnet/minecraft/block/BlockState;",
+                                    "Lnet/minecraft/world/level/block/Block;getStateFromRawId(I)Lnet/minecraft/world/level/block/BlockState;",
                             ordinal = 0),
             index = 0)
     private int odinclient$fakeSpawnerBreakParticles(int rawId) {

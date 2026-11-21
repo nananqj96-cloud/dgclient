@@ -28,7 +28,7 @@ public abstract class FakePayHudMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIIZ)V",
+                                    "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/core/text/Text;IIIZ)V",
                             ordinal = 0),
             index = 1)
     private Text odinclient$fakePaySidebarTitle(Text text) {
@@ -41,7 +41,7 @@ public abstract class FakePayHudMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIIZ)V",
+                                    "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/core/text/Text;IIIZ)V",
                             ordinal = 1),
             index = 1)
     private Text odinclient$fakePaySidebarName(Text text) {
@@ -54,7 +54,7 @@ public abstract class FakePayHudMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;IIIZ)V",
+                                    "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/core/text/Text;IIIZ)V",
                             ordinal = 2),
             index = 1)
     private Text odinclient$fakePaySidebarScore(Text text) {

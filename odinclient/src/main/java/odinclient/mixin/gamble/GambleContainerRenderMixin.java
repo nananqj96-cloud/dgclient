@@ -48,7 +48,7 @@ public abstract class GambleContainerRenderMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/screen/slot/Slot;getStack()Lnet/minecraft/item/ItemStack;"))
+                                    "Lnet/minecraft/screen/slot/Slot;getStack()Lnet/minecraft/world/item/ItemStack;"))
     private ItemStack odinclient$dropperCell(Slot slot) {
         ItemStack actual = slot.getStack();
         ItemStack displayed = GambleRigger.getDisplayedSlotStack(this.handler, slot, actual);

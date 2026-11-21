@@ -27,7 +27,7 @@ public abstract class TextRendererMixin {
 
     @ModifyVariable(
             method =
-                    "prepare(Lnet/minecraft/text/OrderedText;FFIZZI)Lnet/minecraft/client/font/TextRenderer$GlyphDrawable;",
+                    "prepare(Lnet/minecraft/core/text/OrderedText;FFIZZI)Lnet/minecraft/client/font/TextRenderer$GlyphDrawable;",
             at = @At("HEAD"),
             argsOnly = true,
             ordinal = 0)
@@ -37,7 +37,7 @@ public abstract class TextRendererMixin {
 
     @ModifyVariable(
             method =
-                    "drawWithOutline(Lnet/minecraft/text/OrderedText;FFIILorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+                    "drawWithOutline(Lnet/minecraft/core/text/OrderedText;FFIILorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
             at = @At("HEAD"),
             argsOnly = true,
             ordinal = 0)
@@ -55,7 +55,7 @@ public abstract class TextRendererMixin {
     }
 
     @ModifyVariable(
-            method = "getWidth(Lnet/minecraft/text/StringVisitable;)I",
+            method = "getWidth(Lnet/minecraft/core/text/StringVisitable;)I",
             at = @At("HEAD"),
             argsOnly = true,
             ordinal = 0)
@@ -64,7 +64,7 @@ public abstract class TextRendererMixin {
     }
 
     @ModifyVariable(
-            method = "getWidth(Lnet/minecraft/text/OrderedText;)I",
+            method = "getWidth(Lnet/minecraft/core/text/OrderedText;)I",
             at = @At("HEAD"),
             argsOnly = true,
             ordinal = 0)

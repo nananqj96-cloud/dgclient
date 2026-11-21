@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(AbstractClientPlayerEntity.class)
 public abstract class SkinProtectMixin {
     @Inject(
-            method = "getSkin()Lnet/minecraft/entity/player/SkinTextures;",
+            method = "getSkin()Lnet/minecraft/world/entity/player/SkinTextures;",
             at = @At("HEAD"),
             cancellable = true)
     private void odinclientUseProtectedSkin(CallbackInfoReturnable<SkinTextures> cir) {

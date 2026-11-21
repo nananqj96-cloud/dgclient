@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class FakeElytraFlightMixin {
     @Redirect(
             method = "update",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isGliding()Z"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isGliding()Z"))
     private boolean odinclient$fakeGlideAnimation(LivingEntity entity) {
         return entity.isGliding() || FakeElytra.isFakeGliding(entity);
     }

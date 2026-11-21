@@ -31,7 +31,7 @@ public abstract class FakeElytraPlayerRenderMixin {
 
     @Inject(
             method =
-                    "updateRenderState(Lnet/minecraft/entity/PlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
+                    "updateRenderState(Lnet/minecraft/world/entity/PlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
             at = @At("TAIL"))
     private void odinclient$fakeGlidePose(
             PlayerEntity entity,
