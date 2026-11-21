@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface RenderTypeInvoker {
    @Invoker("create")
    static RenderType cake$create(String name, RenderSetup setup) {
-      // Fallback when the @Invoker cannot be resolved (no refMap) — return a safe default
-      return RenderType.translucent();
+      // Fallback when the @Invoker cannot be resolved (no refMap)
+      throw new AssertionError("RenderTypeInvoker not applied — no refMap available");
    }
 }
