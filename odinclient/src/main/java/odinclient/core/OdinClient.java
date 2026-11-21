@@ -96,7 +96,10 @@ public final class OdinClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        initialize();
+        try {
+            initialize();
+        } catch (Throwable ignored) {
+        }
     }
 
     public static synchronized void initialize() {
