@@ -1,5 +1,6 @@
 package dev.aether.donut;
 
+import dev.aether.AetherClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -17,11 +18,21 @@ public final class DonutNetworking {
    }
 
    public static void register() {
-      PayloadTypeRegistry.playS2C().register(BasesPayload.ID, BasesPayload.CODEC);
+      try {
+         PayloadTypeRegistry.playS2C().register(BasesPayload.ID, BasesPayload.CODEC);
+      } catch (IllegalArgumentException e) {
+         // DonutLarp mod is also installed and already registered this payload type — skip the type registration
+         AetherClient.LOGGER.warn("Payload type {} already registered (DonutLarp present); skipping type registration", BasesPayload.ID);
+      }
       ClientPlayNetworking.registerGlobalReceiver(BasesPayload.ID,
          (payload, context) -> context.client().execute(() -> BaseStore.handle(payload.data())));
 
-      PayloadTypeRegistry.playS2C().register(ActivityPayload.ID, ActivityPayload.CODEC);
+      try {
+         PayloadTypeRegistry.playS2C().register(ActivityPayload.ID, ActivityPayload.CODEC);
+      } catch (IllegalArgumentException e) {
+         // DonutLarp mod is also installed and already registered this payload type — skip the type registration
+         AetherClient.LOGGER.warn("Payload type {} already registered (DonutLarp present); skipping type registration", ActivityPayload.ID);
+      }
       ClientPlayNetworking.registerGlobalReceiver(ActivityPayload.ID,
          (payload, context) -> context.client().execute(() -> ActivityStore.handle(payload.data())));
 
