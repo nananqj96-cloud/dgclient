@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -466,7 +466,7 @@ public final class HudPositionEditorScreen extends Screen {
         }
 
         this.closing = true;
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parentScreen);
         }

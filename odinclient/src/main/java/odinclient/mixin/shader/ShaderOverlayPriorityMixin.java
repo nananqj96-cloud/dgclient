@@ -1,6 +1,6 @@
 package odinclient.mixin.shader;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.GameRenderer;
 
 import odinclient.render.world.XrayGizmoLayers;
@@ -21,6 +21,6 @@ public abstract class ShaderOverlayPriorityMixin {
                                     "Lcom/mojang/blaze3d/systems/RenderSystem;setProjectionMatrix(Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lcom/mojang/blaze3d/systems/ProjectionType;)V",
                             ordinal = 1))
     private void odinclient$renderEspAfterShaderComposition(CallbackInfo ci) {
-        XrayGizmoLayers.drawCapturedGizmos(MinecraftClient.getInstance());
+        XrayGizmoLayers.drawCapturedGizmos(Minecraft.getInstance());
     }
 }

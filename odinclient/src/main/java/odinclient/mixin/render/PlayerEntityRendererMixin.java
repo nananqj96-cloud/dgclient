@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.entity.EntityAttachmentType;
-import net.minecraft.entity.PlayerLikeEntity;
+import net.minecraft.entity.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.module.fake.FakeRoles;
@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerEntityRendererMixin {
     @Inject(
             method =
-                    "updateRenderState(Lnet/minecraft/entity/PlayerLikeEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
+                    "updateRenderState(Lnet/minecraft/entity/PlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
             at = @At("TAIL"))
     private void odinclient$replaceLocalNametag(
-            PlayerLikeEntity entity,
+            PlayerEntity entity,
             PlayerEntityRenderState state,
             float tickDelta,
             CallbackInfo ci) {

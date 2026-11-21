@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
@@ -85,7 +85,7 @@ public class AutoCrystal extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        MinecraftClient client = this.mc;
+        Minecraft client = this.mc;
         if (this.shouldAct()) {
             this.wasActing = true;
             this.tickDelays();
@@ -108,7 +108,7 @@ public class AutoCrystal extends Module {
     }
 
     public boolean shouldAct() {
-        MinecraftClient client = this.mc;
+        Minecraft client = this.mc;
         if (!this.isActive()
                 || client.player == null
                 || client.world == null
@@ -147,7 +147,7 @@ public class AutoCrystal extends Module {
         return module != null && module.shouldAct();
     }
 
-    private void tryPlaceCrystal(MinecraftClient client, BlockHitResult hit, BlockPos pos) {
+    private void tryPlaceCrystal(Minecraft client, BlockHitResult hit, BlockPos pos) {
         if (this.isPlaceTargetValid(client, hit)) {
             if (getCrystalAbove(client.world, pos) == null) {
                 this.lastBrokenCrystalId = -1;
@@ -162,7 +162,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean tryBreakCrystal(MinecraftClient client, EndCrystalEntity crystal) {
+    private boolean tryBreakCrystal(Minecraft client, EndCrystalEntity crystal) {
         if (this.breakTimer > 0.0 || crystal.getId() == this.lastBrokenCrystalId) {
             return false;
         } else if (crystal.isAlive()
@@ -177,7 +177,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean isCrystalUnderCrosshair(MinecraftClient client, EndCrystalEntity crystal) {
+    private boolean isCrystalUnderCrosshair(Minecraft client, EndCrystalEntity crystal) {
         if (client.getCameraEntity() != client.player) {
             return false;
         } else {
@@ -212,7 +212,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean isPlaceTargetValid(MinecraftClient client, BlockHitResult hit) {
+    private boolean isPlaceTargetValid(Minecraft client, BlockHitResult hit) {
         if (!hit.isInsideBlock() && client.getCameraEntity() == client.player) {
             double range = client.player.getBlockInteractionRange();
             double rangeSq = range * range;
@@ -232,7 +232,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private Hand getCrystalHand(MinecraftClient client) {
+    private Hand getCrystalHand(Minecraft client) {
         ClientPlayerEntity player = client.player;
         if (player.getMainHandStack().isOf(Items.END_CRYSTAL)) {
             return Hand.MAIN_HAND;
@@ -281,7 +281,7 @@ public class AutoCrystal extends Module {
     }
 
     private static void interactBlock(
-            MinecraftClient client, BlockHitResult hit, Hand hand, boolean swing) {
+            Minecraft client, BlockHitResult hit, Hand hand, boolean swing) {
         if (client.interactionManager.interactBlock(client.player, hand, hit).isAccepted()
                 && swing) {
             client.player.swingHand(hand);
@@ -298,7 +298,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean isUseButtonHeld(MinecraftClient client) {
+    private boolean isUseButtonHeld(Minecraft client) {
         return client.isWindowFocused()
                 && GLFW.glfwGetMouseButton(client.getWindow().getHandle(), 1) == 1;
     }

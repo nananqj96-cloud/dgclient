@@ -2,7 +2,7 @@ package odinclient.module.fake;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.PlayerLikeEntity;
+import net.minecraft.entity.PlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.StyleSpriteSource.Font;
@@ -77,14 +77,14 @@ public final class FakeRoles extends Module {
         return instance;
     }
 
-    public boolean shouldOverrideName(PlayerLikeEntity entity) {
+    public boolean shouldOverrideName(PlayerEntity entity) {
         return this.isActive()
                 && this.mc.player != null
                 && entity != null
                 && (entity == this.mc.player || this.getRoleFor(entity) != FakeRoles.Role.NONE);
     }
 
-    public Text getFakeName(PlayerLikeEntity entity) {
+    public Text getFakeName(PlayerEntity entity) {
         boolean self = this.mc.player != null && entity == this.mc.player;
         String displayName = self ? sanitizeName(this.fakeName.getValue()) : "";
         String realName = sanitizeName(entity.getName().getString());
@@ -190,7 +190,7 @@ public final class FakeRoles extends Module {
         return setting;
     }
 
-    private FakeRoles.Role getRoleFor(PlayerLikeEntity entity) {
+    private FakeRoles.Role getRoleFor(PlayerEntity entity) {
         return entity == null
                 ? FakeRoles.Role.NONE
                 : this.getAssignedRole(sanitizeName(entity.getName().getString()));

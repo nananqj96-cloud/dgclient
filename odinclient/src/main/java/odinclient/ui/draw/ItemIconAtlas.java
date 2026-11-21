@@ -4,7 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
@@ -172,7 +172,7 @@ public final class ItemIconAtlas {
     private static int[] loadTexture16(String path, int[] region) throws Exception {
         Identifier id = Identifier.of("minecraft", "textures/" + path + ".png");
         Resource resource =
-                MinecraftClient.getInstance().getResourceManager().getResource(id).orElseThrow();
+                Minecraft.getInstance().getResourceManager().getResource(id).orElseThrow();
 
         try (InputStream stream = resource.getInputStream();
                 NativeImage image = NativeImage.read(stream); ) {
@@ -200,7 +200,7 @@ public final class ItemIconAtlas {
             throws Exception {
         Identifier id = Identifier.of("minecraft", "textures/" + path + ".png");
         Resource resource =
-                MinecraftClient.getInstance().getResourceManager().getResource(id).orElseThrow();
+                Minecraft.getInstance().getResourceManager().getResource(id).orElseThrow();
 
         int scale;
         try (InputStream stream = resource.getInputStream();

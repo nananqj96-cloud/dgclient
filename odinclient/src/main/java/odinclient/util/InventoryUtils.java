@@ -2,7 +2,7 @@ package odinclient.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
@@ -14,7 +14,7 @@ public final class InventoryUtils {
     private InventoryUtils() {}
 
     public static SlotResult findInHotbarRange(Predicate<ItemStack> predicate, int from, int to) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player != null && predicate != null) {
             int last = Math.min(to, client.player.getInventory().size() - 1);
 
@@ -29,7 +29,7 @@ public final class InventoryUtils {
     }
 
     public static boolean selectHotbarSlot(int slot, boolean sendPacket) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player != null && slot >= 0 && slot <= 8) {
             client.player.getInventory().setSelectedSlot(slot);
             if (client.getNetworkHandler() != null) {
@@ -68,7 +68,7 @@ public final class InventoryUtils {
         }
 
         private void sendSwap(int button) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client.player != null && client.interactionManager != null && this.slot >= 0) {
                 client.interactionManager.clickSlot(
                         client.player.currentScreenHandler.syncId,

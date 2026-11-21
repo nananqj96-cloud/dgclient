@@ -1,6 +1,6 @@
 package odinclient.ui.draw;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 
@@ -37,7 +37,7 @@ public final class GuiTextBridge {
     }
 
     private static ClickGuiScreen getClickGuiScreen() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         return client != null && client.currentScreen instanceof ClickGuiScreen screen
                 ? screen
                 : null;

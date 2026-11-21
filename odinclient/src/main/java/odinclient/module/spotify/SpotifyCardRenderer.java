@@ -2,7 +2,7 @@ package odinclient.module.spotify;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -53,7 +53,7 @@ final class SpotifyCardRenderer {
 
     void render(
             DrawContext context,
-            MinecraftClient client,
+            Minecraft client,
             SpotifyHudTextures textures,
             NowPlayingTrack track,
             SpotifyCardRenderer.CardLayout layout,
@@ -150,7 +150,7 @@ final class SpotifyCardRenderer {
 
     private void drawStatusRow(
             DrawContext context,
-            MinecraftClient client,
+            Minecraft client,
             NowPlayingTrack track,
             SpotifyCardRenderer.CardLayout layout,
             long now,
@@ -183,7 +183,7 @@ final class SpotifyCardRenderer {
 
     private void drawTrackInfo(
             DrawContext context,
-            MinecraftClient client,
+            Minecraft client,
             NowPlayingTrack track,
             int width,
             float alpha) {
@@ -219,7 +219,7 @@ final class SpotifyCardRenderer {
 
     private void drawProgressBar(
             DrawContext context,
-            MinecraftClient client,
+            Minecraft client,
             NowPlayingTrack track,
             SpotifyCardRenderer.CardLayout layout,
             int width,
@@ -393,7 +393,7 @@ final class SpotifyCardRenderer {
 
     private static void drawScaledText(
             DrawContext context,
-            MinecraftClient client,
+            Minecraft client,
             String text,
             float x,
             float y,

@@ -1,6 +1,6 @@
 package odinclient.setting;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 
 import odinclient.module.Module;
@@ -72,7 +72,7 @@ public final class HudPositionSettings {
 
     private static void openPositionEditor(
             Module module, IntSetting xSetting, IntSetting ySetting) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             Screen parent = client.currentScreen;
             client.setScreen(new HudPositionEditorScreen(parent, module, xSetting, ySetting));

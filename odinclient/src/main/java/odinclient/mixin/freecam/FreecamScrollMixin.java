@@ -2,7 +2,7 @@ package odinclient.mixin.freecam;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.Mouse;
 
 import odinclient.module.movement.Freecam;
@@ -21,7 +21,7 @@ public class FreecamScrollMixin {
         Freecam freecam = Freecam.instance;
         if (freecam != null
                 && freecam.isActive()
-                && MinecraftClient.getInstance().currentScreen == null) {
+                && Minecraft.getInstance().currentScreen == null) {
             double amount = vertical != 0.0 ? vertical : horizontal;
 
             if (amount != 0.0 && freecam.onScroll(amount)) {

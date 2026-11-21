@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.RenderLayer;
@@ -44,7 +44,7 @@ public final class StrawHatFeatureRenderer
             PlayerEntityRenderState state,
             float limbAngle,
             float limbDistance) {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ClientPlayerEntity player = Minecraft.getInstance().player;
         if (ChinaHead.isEnabled() && player != null && state.id == player.getId()) {
             boolean hasHelmet = !player.getEquippedStack(EquipmentSlot.HEAD).isEmpty();
             StrawHatGeometry.HatPlacement placement =

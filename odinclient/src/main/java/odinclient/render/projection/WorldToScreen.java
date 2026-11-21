@@ -1,6 +1,6 @@
 package odinclient.render.projection;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.Vec3d;
 
@@ -48,7 +48,7 @@ public final class WorldToScreen {
                 float ndcX = scratchVector.x * invW;
                 float ndcY = scratchVector.y * invW;
                 if (Float.isFinite(ndcX) && Float.isFinite(ndcY)) {
-                    MinecraftClient client = MinecraftClient.getInstance();
+                    Minecraft client = Minecraft.getInstance();
                     int width = client.getWindow().getScaledWidth();
                     int height = client.getWindow().getScaledHeight();
                     double screenX = (ndcX * 0.5 + 0.5) * width;
@@ -80,7 +80,7 @@ public final class WorldToScreen {
             if (Float.isFinite(scratchVector.x)
                     && Float.isFinite(scratchVector.y)
                     && Float.isFinite(scratchVector.w)) {
-                MinecraftClient client = MinecraftClient.getInstance();
+                Minecraft client = Minecraft.getInstance();
                 if (client != null && client.getWindow() != null) {
                     int width = client.getWindow().getScaledWidth();
                     int height = client.getWindow().getScaledHeight();

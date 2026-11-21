@@ -1,6 +1,6 @@
 package odinclient.ui.hud;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 
@@ -17,7 +17,7 @@ public final class ItemToastRenderer {
     private ItemToastRenderer() {}
 
     public static int getToastWidth(String title, String subtitle) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null && client.textRenderer != null) {
             int titleWidth = BoldText.width(client.textRenderer, title == null ? "" : title);
             int subtitleWidth =
@@ -68,7 +68,7 @@ public final class ItemToastRenderer {
             int y,
             float scale,
             float progress) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null && client.textRenderer != null && context != null) {
             int width = getToastWidth(title, subtitle);
             float clampedScale = Math.max(0.5F, Math.min(2.0F, scale));
@@ -108,7 +108,7 @@ public final class ItemToastRenderer {
 
     private static void drawScaledText(
             DrawContext context, String text, int x, int y, float scale, int color) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null && client.textRenderer != null) {
             context.getMatrices().pushMatrix();
             context.getMatrices().translate((float) x, (float) y);

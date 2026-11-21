@@ -3,7 +3,7 @@ package odinclient.module.render.esp;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -51,7 +51,7 @@ public final class PistonEspRenderer {
 
     public static void renderMovingPistons(StorageEsp esp, WorldRenderEvent event) {
         if (esp.isPistonEspEnabled()) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client.world != null && client.player != null) {
                 ChunkPos chunkPos = client.player.getChunkPos();
                 Color fillColor = esp.getPistonFillColor();
@@ -106,7 +106,7 @@ public final class PistonEspRenderer {
 
     private static PistonEspRenderer.PistonOffsetPos getRenderedPosition(
             BlockPos pos, PistonBlockEntity piston) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         float tickProgress = client.getRenderTickCounter().getTickProgress(false);
         return new PistonEspRenderer.PistonOffsetPos(
                 pos.getX() + piston.getRenderOffsetX(tickProgress),

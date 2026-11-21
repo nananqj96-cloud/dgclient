@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -38,7 +38,7 @@ public final class SkySelectionScreen extends Screen {
     }
 
     public static void open(Screen parent, EnumSetting<?> setting) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(new SkySelectionScreen(parent, setting));
         }
@@ -236,7 +236,7 @@ public final class SkySelectionScreen extends Screen {
     }
 
     private void returnToParent() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }

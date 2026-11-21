@@ -2,7 +2,7 @@ package odinclient.ui.screen;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -120,7 +120,7 @@ public final class SelectorScreen extends Screen {
     }
 
     private static void showScreen(SelectorScreen screen) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null && screen != null) {
             client.setScreen(screen);
         }
@@ -570,7 +570,7 @@ public final class SelectorScreen extends Screen {
     }
 
     private void closeScreen() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }

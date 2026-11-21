@@ -3,7 +3,7 @@ package odinclient.module.debug;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.registry.Registries;
@@ -181,7 +181,7 @@ public final class BlockEntityDebug extends Module {
     private void handleChunkBlockEntity(Object entry, int chunkX, int chunkZ) {
         List<Integer> ints = new ArrayList<>(2);
         BlockEntityType<?> type = null;
-        NbtCompound nbt = null;
+        CompoundTag nbt = null;
 
         for (Field field : getInstanceFields(entry.getClass())) {
             Object value = readField(field, entry);
@@ -189,8 +189,8 @@ public final class BlockEntityDebug extends Module {
                 ints.add((Integer) value);
             } else if (value instanceof BlockEntityType) {
                 type = (BlockEntityType<?>) value;
-            } else if (value instanceof NbtCompound) {
-                nbt = (NbtCompound) value;
+            } else if (value instanceof CompoundTag) {
+                nbt = (CompoundTag) value;
             }
         }
 

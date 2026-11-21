@@ -1,6 +1,6 @@
 package odinclient.ui.hud;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvent;
@@ -149,7 +149,7 @@ public final class ModuleNotifications {
             if (pending.oldState != active && pending.requestedState == active) {
                 toggleCounter++;
                 if (isEnabled()
-                        && !(MinecraftClient.getInstance().currentScreen
+                        && !(Minecraft.getInstance().currentScreen
                                 instanceof OdinGuiScreen)) {
                     String title = module.title;
                     if (title == null || title.isBlank()) {
@@ -189,7 +189,7 @@ public final class ModuleNotifications {
 
     public static void renderHud(DrawContext context) {
         if (context != null
-                && !(MinecraftClient.getInstance().currentScreen instanceof OdinGuiScreen)) {
+                && !(Minecraft.getInstance().currentScreen instanceof OdinGuiScreen)) {
             float scale = getScale() * 0.62F;
 
             try (ScreenScaleCompat.ScaleScope scope = ScreenScaleCompat.enter(context)) {
@@ -432,7 +432,7 @@ public final class ModuleNotifications {
     private static boolean isEnabled() {
         Setting<Boolean> enabledSetting = setting;
         if (enabledSetting != null && Boolean.TRUE.equals(enabledSetting.getValue())) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             return client != null && client.player != null && client.world != null;
         } else {
             return false;
@@ -456,7 +456,7 @@ public final class ModuleNotifications {
     private static void playSound() {
         Setting<Boolean> sounds = soundsSetting;
         if (sounds != null && Boolean.TRUE.equals(sounds.getValue())) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client != null && client.getSoundManager() != null) {
                 try {
                     SoundEvent sound = SoundEvents.BLOCK_NOTE_BLOCK_HAT.value();

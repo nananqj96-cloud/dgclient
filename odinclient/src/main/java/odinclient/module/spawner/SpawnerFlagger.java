@@ -3,7 +3,7 @@ package odinclient.module.spawner;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -297,11 +297,11 @@ public class SpawnerFlagger extends Module {
 
     private String getSpawnerName(MobSpawnerBlockEntity spawner) {
         try {
-            NbtCompound nbt =
+            CompoundTag nbt =
                     spawner.createNbtWithIdentifyingData(this.mc.world.getRegistryManager());
-            Optional<NbtCompound> spawnData = nbt.getCompound("SpawnData");
+            Optional<CompoundTag> spawnData = nbt.getCompound("SpawnData");
             if (spawnData.isPresent()) {
-                Optional<NbtCompound> entity = spawnData.get().getCompound("entity");
+                Optional<CompoundTag> entity = spawnData.get().getCompound("entity");
                 if (entity.isPresent()) {
                     String id = entity.get().getString("id").orElse("");
                     return this.formatEntityId(id);

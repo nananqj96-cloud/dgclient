@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -49,7 +49,7 @@ public final class ArtworkGalleryScreen extends Screen {
     public static void open(Screen parent, EnumSetting<?> setting) {
         if (setting != null) {
             if (!"sky".equals(setting.name)) {
-                MinecraftClient client = MinecraftClient.getInstance();
+                Minecraft client = Minecraft.getInstance();
                 if (client != null) {
                     client.setScreen(new ArtworkGalleryScreen(parent, setting));
                 }
@@ -482,7 +482,7 @@ public final class ArtworkGalleryScreen extends Screen {
     }
 
     private void closeToParent() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }

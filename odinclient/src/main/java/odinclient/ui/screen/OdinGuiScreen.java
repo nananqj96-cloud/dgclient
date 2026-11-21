@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -202,7 +202,7 @@ public final class OdinGuiScreen extends Screen {
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-        if (MinecraftClient.getInstance().world != null) {
+        if (Minecraft.getInstance().world != null) {
             this.applyBlur(context);
         }
     }
@@ -218,7 +218,7 @@ public final class OdinGuiScreen extends Screen {
             this.openProgress =
                     AnimationUtil.smoothApproach(this.openProgress, 0.0F, 16.0F, this.deltaTime);
             if (this.openProgress < 0.02F) {
-                MinecraftClient.getInstance().setScreen(this.parentScreen);
+                Minecraft.getInstance().setScreen(this.parentScreen);
                 return;
             }
         } else {
@@ -4876,7 +4876,7 @@ public final class OdinGuiScreen extends Screen {
         }
 
         if (xSetting != null && ySetting != null) {
-            MinecraftClient.getInstance()
+            Minecraft.getInstance()
                     .setScreen(new HudPositionEditorScreen(this, module, xSetting, ySetting));
         }
     }

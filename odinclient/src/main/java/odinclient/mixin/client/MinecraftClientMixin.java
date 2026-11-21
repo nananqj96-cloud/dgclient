@@ -2,7 +2,7 @@ package odinclient.mixin.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,8 +37,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 @Environment(EnvType.CLIENT)
-@Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin {
+@Mixin(Minecraft.class)
+public abstract class MinecraftMixin {
     @Unique private static final String ODINCLIENT_MENU_CLASS = "odinclient.ui.screen.ClickGuiScreen";
 
     @Unique
@@ -65,12 +65,12 @@ public abstract class MinecraftClientMixin {
         this.odinclient$updateWorldState();
         this.odinclient$handleMenuHotkey();
         this.odinclient$handleModuleKeybinds();
-        IntroSplashScreen.tick((MinecraftClient) (Object) this);
+        IntroSplashScreen.tick((Minecraft) (Object) this);
     }
 
     @Inject(method = "doItemUse", at = @At("RETURN"))
     private void odinclient$postItemUse(CallbackInfo ci) {
-        FastPlace.applyFastPlace((MinecraftClient) (Object) this);
+        FastPlace.applyFastPlace((Minecraft) (Object) this);
     }
 
     @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
@@ -95,7 +95,7 @@ public abstract class MinecraftClientMixin {
 
     @Unique
     private void odinclient$updateWorldState() {
-        MinecraftClient client = (MinecraftClient) (Object) this;
+        Minecraft client = (Minecraft) (Object) this;
         boolean inWorld = client.world != null && client.player != null;
         if (inWorld != this.odinclient$inWorld) {
             this.odinclient$inWorld = inWorld;
@@ -105,7 +105,7 @@ public abstract class MinecraftClientMixin {
 
     @Unique
     private void odinclient$handleMenuHotkey() {
-        MinecraftClient client = (MinecraftClient) (Object) this;
+        Minecraft client = (Minecraft) (Object) this;
         int keyCode = GuiKeybind.getKeyCode();
         boolean down = this.odinclient$isBindDown(client, keyCode);
         if (this.odinclient$isTextInputActive(client.currentScreen)) {
@@ -151,7 +151,7 @@ public abstract class MinecraftClientMixin {
     }
 
     @Unique
-    private boolean odinclient$isBindDown(MinecraftClient client, int key) {
+    private boolean odinclient$isBindDown(Minecraft client, int key) {
         return key >= 1000 && key <= 1007
                 ? GLFW.glfwGetMouseButton(client.getWindow().getHandle(), key - 1000) == 1
                 : key >= 0 && key <= 348 && InputUtil.isKeyPressed(client.getWindow(), key);
@@ -159,7 +159,7 @@ public abstract class MinecraftClientMixin {
 
     @Unique
     private void odinclient$handleModuleKeybinds() {
-        MinecraftClient client = (MinecraftClient) (Object) this;
+        Minecraft client = (Minecraft) (Object) this;
         boolean noScreen = client.currentScreen == null;
         int menuKey = GuiKeybind.getKeyCode();
 

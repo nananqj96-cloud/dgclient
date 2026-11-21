@@ -2,7 +2,7 @@ package odinclient.ui.screen;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -310,7 +310,7 @@ public final class ClickGuiScreen extends Screen {
 
     @Override
     public void close() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }
@@ -672,7 +672,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawSidebarProfileCard(DrawContext context, int x, int y, int width, int height) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         String playerName =
                 client.getGameProfile() == null ? "Player" : client.getGameProfile().name();
         playerName = NameProtect.replaceNames(playerName);
@@ -3673,7 +3673,7 @@ public final class ClickGuiScreen extends Screen {
                 return true;
             } else if (this.panelsModeRect.contains(x, y)) {
                 theme.guiStyle.setValue(ThemeModule.GuiStyle.PANELS);
-                MinecraftClient client = MinecraftClient.getInstance();
+                Minecraft client = Minecraft.getInstance();
                 if (client != null) {
                     client.setScreen(new PanelGuiScreen(this.parent));
                 }

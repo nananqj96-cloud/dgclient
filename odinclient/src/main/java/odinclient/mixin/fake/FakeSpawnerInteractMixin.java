@@ -1,7 +1,7 @@
 package odinclient.mixin.fake;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.util.ActionResult;
@@ -25,7 +25,7 @@ public abstract class FakeSpawnerInteractMixin {
             Hand hand,
             BlockHitResult hitResult,
             CallbackInfoReturnable<ActionResult> cir) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (FakeSpawner.isEnabled()
                 && client.world != null
                 && player != null

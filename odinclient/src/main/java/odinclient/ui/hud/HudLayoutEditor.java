@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 
@@ -110,7 +110,7 @@ public final class HudLayoutEditor {
     }
 
     public static boolean isEditing() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         return client.currentScreen instanceof ChatScreen && client.world != null;
     }
 
@@ -129,7 +129,7 @@ public final class HudLayoutEditor {
         }
 
         if (!(overlayAlpha < 0.02F) && !elements.isEmpty()) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             double mouseX =
                     client.mouse.getScaledX(client.getWindow())
                             / ScreenScaleCompat.getCompensation();
@@ -188,7 +188,7 @@ public final class HudLayoutEditor {
 
     private static void updateDrag(double mouseX, double mouseY) {
         boolean mouseDown =
-                GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), 0)
+                GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getHandle(), 0)
                         == 1;
 
         if (mouseDown && draggedId == null && !wasMouseDown) {

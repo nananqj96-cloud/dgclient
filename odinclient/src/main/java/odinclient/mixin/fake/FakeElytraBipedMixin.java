@@ -1,6 +1,6 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
@@ -36,7 +36,7 @@ public abstract class FakeElytraBipedMixin {
                 }
             }
 
-            if (entity == MinecraftClient.getInstance().player && FakeElytra.isGliding()) {
+            if (entity == Minecraft.getInstance().player && FakeElytra.isGliding()) {
                 state.isGliding = true;
                 state.limbAmplitudeInverse = (float) entity.getVelocity().lengthSquared() / 0.2F;
                 state.limbAmplitudeInverse =

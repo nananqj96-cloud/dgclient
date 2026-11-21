@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -58,7 +58,7 @@ public final class DropperEditorScreen extends Screen {
 
     public static void open(Screen parent, GambleRigger config, int index) {
         if (config != null && index >= 0 && index <= 1) {
-            MinecraftClient.getInstance().setScreen(new DropperEditorScreen(parent, config, index));
+            Minecraft.getInstance().setScreen(new DropperEditorScreen(parent, config, index));
         }
     }
 
@@ -491,7 +491,7 @@ public final class DropperEditorScreen extends Screen {
     }
 
     private void closeScreen() {
-        MinecraftClient.getInstance().setScreen(this.parent);
+        Minecraft.getInstance().setScreen(this.parent);
     }
 
     private void updateLayout() {
@@ -510,7 +510,7 @@ public final class DropperEditorScreen extends Screen {
     }
 
     private String getClipboardText() {
-        String clipboard = MinecraftClient.getInstance().keyboard.getClipboard();
+        String clipboard = Minecraft.getInstance().keyboard.getClipboard();
         return clipboard == null ? "" : clipboard;
     }
 

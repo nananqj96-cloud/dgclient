@@ -5,7 +5,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -62,7 +62,7 @@ public class WorldShapeRenderer {
             RenderSystem.setShaderFog(null);
 
             try {
-                GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+                GameRenderer gameRenderer = Minecraft.getInstance().gameRenderer;
                 if (gameRenderer instanceof GameRendererAccessor) {
                     FogRenderer fogRenderer =
                             ((GameRendererAccessor) gameRenderer).zenya$getFogRenderer();
@@ -118,7 +118,7 @@ public class WorldShapeRenderer {
     }
 
     public static Camera getCamera() {
-        return MinecraftClient.getInstance().gameRenderer.getCamera();
+        return Minecraft.getInstance().gameRenderer.getCamera();
     }
 
     public static Vec3d getCameraPosition(Camera camera) {
@@ -134,7 +134,7 @@ public class WorldShapeRenderer {
         try {
             return (Vec3d) cameraPosMethod.invoke(camera);
         } catch (Exception e) {
-            return MinecraftClient.getInstance().player.getCameraPosVec(1.0F);
+            return Minecraft.getInstance().player.getCameraPosVec(1.0F);
         }
     }
 
@@ -237,7 +237,7 @@ public class WorldShapeRenderer {
 
     public static Vec3d getOffscreenArrowDirection(
             Vec3d fallback, Vec3d target, Vec3d forward, Vec3d right, Vec3d up, double distance) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         int width = client.getWindow().getScaledWidth();
         int height = client.getWindow().getScaledHeight();
         Pair<Vec3d, Boolean> projected =
@@ -618,13 +618,13 @@ public class WorldShapeRenderer {
                     int screenWidth =
                             Math.max(
                                     1,
-                                    MinecraftClient.getInstance()
+                                    Minecraft.getInstance()
                                             .getWindow()
                                             .getFramebufferWidth());
                     int screenHeight =
                             Math.max(
                                     1,
-                                    MinecraftClient.getInstance()
+                                    Minecraft.getInstance()
                                             .getWindow()
                                             .getFramebufferHeight());
                     double scaleX =

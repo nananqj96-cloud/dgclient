@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -63,7 +63,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     public static void open(Screen parent, ChatMacros module) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null && module != null) {
             client.setScreen(new ChatMacroScreen(parent, module));
         }
@@ -529,7 +529,7 @@ public final class ChatMacroScreen extends Screen {
                     this.macroTexts[this.editingTextIndex] =
                             current.substring(0, current.length() - 1);
                 } else if (key == 86 && (input.modifiers() & 2) != 0) {
-                    MinecraftClient client = MinecraftClient.getInstance();
+                    Minecraft client = Minecraft.getInstance();
                     if (client != null) {
                         String clipboard = client.keyboard.getClipboard();
                         if (clipboard != null) {
@@ -759,7 +759,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     private void closeScreen() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }

@@ -4,7 +4,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -84,8 +84,8 @@ public final class AntiVanishActivityMonitor {
 
     private AntiVanishActivityMonitor() {}
 
-    private static MinecraftClient client() {
-        return MinecraftClient.getInstance();
+    private static Minecraft client() {
+        return Minecraft.getInstance();
     }
 
     private static long currentMillis() {
@@ -189,7 +189,7 @@ public final class AntiVanishActivityMonitor {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        MinecraftClient mc = client();
+        Minecraft mc = client();
         if ((AntiVanishDetection.isEnabled() || AutoLog.isAntiVanishLogoutActive())
                 && mc.world != null
                 && mc.player != null
@@ -295,7 +295,7 @@ public final class AntiVanishActivityMonitor {
     }
 
     private void processReceivedPacket(Packet<?> packet, long now) {
-        MinecraftClient mc = client();
+        Minecraft mc = client();
         if (packet instanceof PlayerRemoveS2CPacket) {
             this.detector.onPlayersRemoved(((PlayerRemoveS2CPacket) packet).profileIds(), now);
         } else if (packet instanceof PlayerListS2CPacket listPacket) {
@@ -471,7 +471,7 @@ public final class AntiVanishActivityMonitor {
     }
 
     private boolean isUnexplainedSource(Vec3d source, long now) {
-        MinecraftClient mc = client();
+        Minecraft mc = client();
         if (mc.player.getEntityPos().squaredDistanceTo(source) > 4096.0) {
             return false;
         } else {

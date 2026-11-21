@@ -2,7 +2,7 @@ package odinclient.render.projection;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.Vec3d;
@@ -29,7 +29,7 @@ public final class ScreenProjection {
         if (WorldToScreen.isMatrixFresh()) {
             return WorldToScreen.project(pos);
         } else {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             Camera camera = client.gameRenderer.getCamera();
             Vec3d cameraPos = camera.getCameraPos();
             scratchPos.set(

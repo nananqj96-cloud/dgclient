@@ -1,6 +1,6 @@
 package odinclient.module.fake;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -62,7 +62,7 @@ public final class FakePayTextRewriter {
             return text;
         }
 
-        ServerInfo serverInfo = MinecraftClient.getInstance().getCurrentServerEntry();
+        ServerInfo serverInfo = Minecraft.getInstance().getCurrentServerEntry();
         if (serverInfo == null
                 || serverInfo.address == null
                 || !serverInfo.address.toLowerCase(Locale.ROOT).contains("donutsmp")) {

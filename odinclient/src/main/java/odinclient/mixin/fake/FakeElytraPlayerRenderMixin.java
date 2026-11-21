@@ -1,9 +1,9 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.entity.PlayerLikeEntity;
+import net.minecraft.entity.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.module.fake.FakeElytra;
@@ -23,7 +23,7 @@ public abstract class FakeElytraPlayerRenderMixin {
             cancellable = true)
     private void odinclient$fakeGlideLift(
             PlayerEntityRenderState state, CallbackInfoReturnable<Vec3d> cir) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player != null && state.id == client.player.getId() && FakeElytra.isGliding()) {
             cir.setReturnValue(cir.getReturnValue().add(0.0, FakeElytra.getGlideYOffset(), 0.0));
         }
@@ -31,14 +31,14 @@ public abstract class FakeElytraPlayerRenderMixin {
 
     @Inject(
             method =
-                    "updateRenderState(Lnet/minecraft/entity/PlayerLikeEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
+                    "updateRenderState(Lnet/minecraft/entity/PlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
             at = @At("TAIL"))
     private void odinclient$fakeGlidePose(
-            PlayerLikeEntity entity,
+            PlayerEntity entity,
             PlayerEntityRenderState state,
             float tickDelta,
             CallbackInfo ci) {
-        if (entity == MinecraftClient.getInstance().player && FakeElytra.isGliding()) {
+        if (entity == Minecraft.getInstance().player && FakeElytra.isGliding()) {
             state.glidingTicks = FakeElytra.getGlideTicks() + tickDelta;
         }
     }

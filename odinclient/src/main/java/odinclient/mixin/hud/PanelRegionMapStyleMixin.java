@@ -1,6 +1,6 @@
 package odinclient.mixin.hud;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import odinclient.event.Render2DEvent;
 import odinclient.module.hud.ThemeModule;
@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PanelRegionMapStyleMixin {
     @Inject(method = "onRender2D", at = @At("HEAD"), cancellable = true, remap = false)
     private void odinclient$hideMapBehindPanelScreens(Render2DEvent event, CallbackInfo ci) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (ThemeModule.isPanelStyle() && client != null && client.currentScreen != null) {
             ci.cancel();
         }

@@ -2,7 +2,7 @@ package odinclient.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -25,7 +25,7 @@ public final class EntityUtils {
     }
 
     public static int getEnchantmentLevel(ItemStack stack, RegistryKey<Enchantment> key) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.world != null && stack != null && key != null) {
             RegistryEntry<Enchantment> entry =
                     client.world

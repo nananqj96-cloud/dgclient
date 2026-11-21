@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
@@ -33,7 +33,7 @@ public final class IntroSplashScreen extends Screen {
         this.parent = parent;
     }
 
-    public static void tick(MinecraftClient client) {
+    public static void tick(Minecraft client) {
         if (isShowing && !(client.currentScreen instanceof IntroSplashScreen)) {
             isShowing = false;
             ScannerExecutor.setPaused(false);
@@ -100,7 +100,7 @@ public final class IntroSplashScreen extends Screen {
             this.finished = true;
             isShowing = false;
             ScannerExecutor.setPaused(false);
-            MinecraftClient.getInstance().setScreen(new OdinGuiScreen(this.parent, true));
+            Minecraft.getInstance().setScreen(new OdinGuiScreen(this.parent, true));
         }
     }
 

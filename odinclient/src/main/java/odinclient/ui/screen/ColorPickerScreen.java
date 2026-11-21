@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -60,7 +60,7 @@ public final class ColorPickerScreen extends Screen {
 
     public static void openWithCallback(
             Screen parent, EntityColor initial, Consumer<EntityColor> onApply) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null && onApply != null) {
             client.setScreen(new ColorPickerScreen(parent, initial, onApply));
         }
@@ -298,7 +298,7 @@ public final class ColorPickerScreen extends Screen {
     }
 
     private void closeScreen() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }

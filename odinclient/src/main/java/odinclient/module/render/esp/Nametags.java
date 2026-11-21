@@ -9,7 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -419,11 +419,11 @@ public class Nametags extends Module {
 
     private String getSpawnerLabel(MobSpawnerBlockEntity spawner) {
         try {
-            NbtCompound nbt =
+            CompoundTag nbt =
                     spawner.createNbtWithIdentifyingData(this.mc.world.getRegistryManager());
-            Optional<NbtCompound> spawnData = nbt.getCompound("SpawnData");
+            Optional<CompoundTag> spawnData = nbt.getCompound("SpawnData");
             if (spawnData.isPresent()) {
-                Optional<NbtCompound> entityData = spawnData.get().getCompound("entity");
+                Optional<CompoundTag> entityData = spawnData.get().getCompound("entity");
                 if (entityData.isPresent()) {
                     String id = entityData.get().getString("id").orElse("");
                     if (!id.isEmpty()) {

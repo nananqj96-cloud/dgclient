@@ -2,7 +2,7 @@ package odinclient.module.fake;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -99,7 +99,7 @@ public final class FakeElytra extends Module {
         }
     }
 
-    public static void handleJumpPress(MinecraftClient client) {
+    public static void handleJumpPress(Minecraft client) {
         if (isEnabled()
                 && client.player != null
                 && client.currentScreen == null
@@ -129,11 +129,11 @@ public final class FakeElytra extends Module {
     }
 
     public static boolean isFakeGliding(LivingEntity entity) {
-        return isGliding() && entity == MinecraftClient.getInstance().player;
+        return isGliding() && entity == Minecraft.getInstance().player;
     }
 
     public static double getGlideYOffset() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         return isGliding() && client.player != null && client.player.isOnGround() ? 0.9 : 0.0;
     }
 
@@ -144,7 +144,7 @@ public final class FakeElytra extends Module {
     }
 
     private static boolean canStartGlide(ClientPlayerEntity player) {
-        return isWearingGoldenChestplate(MinecraftClient.getInstance())
+        return isWearingGoldenChestplate(Minecraft.getInstance())
                 && !player.isOnGround()
                 && !player.hasVehicle()
                 && !player.hasStatusEffect(StatusEffects.LEVITATION)
@@ -153,14 +153,14 @@ public final class FakeElytra extends Module {
     }
 
     private static boolean canContinueGlide(ClientPlayerEntity player) {
-        return isWearingGoldenChestplate(MinecraftClient.getInstance())
+        return isWearingGoldenChestplate(Minecraft.getInstance())
                 && !player.hasVehicle()
                 && !player.hasStatusEffect(StatusEffects.LEVITATION)
                 && !player.getAbilities().flying
                 && !player.isTouchingWater();
     }
 
-    private static boolean isWearingGoldenChestplate(MinecraftClient client) {
+    private static boolean isWearingGoldenChestplate(Minecraft client) {
         return client.player != null
                 && client.player
                         .getEquippedStack(EquipmentSlot.CHEST)

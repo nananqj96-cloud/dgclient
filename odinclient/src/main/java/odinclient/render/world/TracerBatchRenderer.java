@@ -3,7 +3,7 @@ package odinclient.render.world;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -199,7 +199,7 @@ public final class TracerBatchRenderer {
                     }
 
                     try {
-                        MinecraftClient client = MinecraftClient.getInstance();
+                        Minecraft client = Minecraft.getInstance();
                         if (client != null
                                 && client.gameRenderer instanceof GameRendererInvoker accessor) {
                             FogRenderer fogRenderer = accessor.odinclient$getFogRenderer();

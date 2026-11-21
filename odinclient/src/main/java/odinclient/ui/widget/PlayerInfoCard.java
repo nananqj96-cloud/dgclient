@@ -1,6 +1,6 @@
 package odinclient.ui.widget;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -44,7 +44,7 @@ public final class PlayerInfoCard {
             float height,
             float alpha,
             float delta) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         PlayerInfoCard.PlayerInfoSnapshot info = PlayerInfoCard.PlayerInfoSnapshot.read(client);
         this.recordFpsSample(info.fps);
         this.smoothedFps = AnimationUtil.smoothApproach(this.smoothedFps, info.fps, 6.0F, delta);
@@ -379,7 +379,7 @@ public final class PlayerInfoCard {
     }
 
     private record PlayerInfoSnapshot(String player, String server, int fps, double bps, int ping) {
-        static PlayerInfoCard.PlayerInfoSnapshot read(MinecraftClient client) {
+        static PlayerInfoCard.PlayerInfoSnapshot read(Minecraft client) {
             String playerName =
                     client.getGameProfile() == null ? "Player" : client.getGameProfile().name();
             String player = NameProtect.replaceNames(playerName);

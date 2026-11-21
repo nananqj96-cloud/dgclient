@@ -1,7 +1,7 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.Block;
+import net.minecraft.block.RenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 
@@ -12,13 +12,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(AbstractBlock.class)
+@Mixin(Block.class)
 public abstract class FakeSpawnerGlassMixin {
     @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
     private void odinclient$hideSpawnerGlass(
-            BlockState state, CallbackInfoReturnable<BlockRenderType> cir) {
+            BlockState state, CallbackInfoReturnable<RenderType> cir) {
         if ((Object) this == Blocks.YELLOW_STAINED_GLASS && FakeSpawner.isEnabled()) {
-            cir.setReturnValue(BlockRenderType.INVISIBLE);
+            cir.setReturnValue(RenderType.INVISIBLE);
         }
     }
 }

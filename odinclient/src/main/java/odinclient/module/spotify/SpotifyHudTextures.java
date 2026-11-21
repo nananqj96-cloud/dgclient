@@ -5,7 +5,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
@@ -44,7 +44,7 @@ final class SpotifyHudTextures {
     }
 
     void updateCardTexture(
-            MinecraftClient client,
+            Minecraft client,
             int width,
             int height,
             int radius,
@@ -116,7 +116,7 @@ final class SpotifyHudTextures {
         }
     }
 
-    void updateBadgeTextures(MinecraftClient client, int badgeColor, int knobColor) {
+    void updateBadgeTextures(Minecraft client, int badgeColor, int knobColor) {
         String cacheKey = badgeColor + ":" + knobColor;
         if (!cacheKey.equals(this.badgeKey)) {
             this.badgeKey = cacheKey;
@@ -256,7 +256,7 @@ final class SpotifyHudTextures {
         return image;
     }
 
-    void updateFallbackCover(MinecraftClient client, int color) {
+    void updateFallbackCover(Minecraft client, int color) {
         String cacheKey = String.valueOf(color);
         if (!cacheKey.equals(this.fallbackKey)) {
             this.fallbackKey = cacheKey;
@@ -312,7 +312,7 @@ final class SpotifyHudTextures {
         }
     }
 
-    void updateCover(MinecraftClient client, String key, byte[] data) {
+    void updateCover(Minecraft client, String key, byte[] data) {
         int size = data == null ? 0 : data.length;
 
         if (!key.equals(this.lastCoverKey) || size != this.lastCoverSize) {
@@ -481,11 +481,11 @@ final class SpotifyHudTextures {
     }
 
     private static void registerTexture(
-            MinecraftClient client, Identifier id, NativeImageBackedTexture texture) {
+            Minecraft client, Identifier id, NativeImageBackedTexture texture) {
         client.getTextureManager().registerTexture(id, texture);
     }
 
-    private static void registerImage(MinecraftClient client, Identifier id, NativeImage image) {
+    private static void registerImage(Minecraft client, Identifier id, NativeImage image) {
         registerTexture(
                 client,
                 id,
@@ -493,7 +493,7 @@ final class SpotifyHudTextures {
     }
 
     private static void registerSmoothImage(
-            MinecraftClient client, Identifier id, NativeImage image) {
+            Minecraft client, Identifier id, NativeImage image) {
         registerTexture(
                 client,
                 id,

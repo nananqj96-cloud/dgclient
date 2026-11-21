@@ -1,6 +1,6 @@
 package odinclient.module.playerchunk;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.util.math.ChunkPos;
@@ -51,7 +51,7 @@ public final class LightChunkTracker {
 
     public static void onLightData(int chunkX, int chunkZ, LightData lightData) {
         if (INSTANCE.enabled && lightData != null) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             ClientWorld world = client == null ? null : client.world;
             if (world != null) {
                 try {
@@ -109,7 +109,7 @@ public final class LightChunkTracker {
                 INSTANCE.enabled = value;
                 INSTANCE.clearAll();
                 if (value) {
-                    MinecraftClient client = MinecraftClient.getInstance();
+                    Minecraft client = Minecraft.getInstance();
                     INSTANCE.currentWorld = client == null ? null : client.world;
                 }
             }
@@ -189,7 +189,7 @@ public final class LightChunkTracker {
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if (this.enabled) {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             ClientWorld world = client.world;
             if (world != this.currentWorld) {
                 synchronized (this) {

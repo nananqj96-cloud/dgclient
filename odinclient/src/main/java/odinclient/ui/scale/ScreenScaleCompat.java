@@ -1,6 +1,6 @@
 package odinclient.ui.scale;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.Window;
@@ -59,7 +59,7 @@ public final class ScreenScaleCompat {
     }
 
     private static Window getWindow() {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         return client == null ? null : client.getWindow();
     }
 

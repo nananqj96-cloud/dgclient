@@ -1,6 +1,6 @@
 package odinclient.ui.widget;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -35,7 +35,7 @@ public final class ConfigsButton {
 
         DashboardRenderer.drawBorderedRoundedRect(
                 context, x, y, 104, 20, 5, fillColor, borderColor);
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        TextRenderer textRenderer = Minecraft.getInstance().textRenderer;
         String label = "CONFIGS";
         int textX = (x + x + 104 - DashboardRenderer.width(textRenderer, label)) / 2;
         int textY = y + 6;
@@ -48,7 +48,7 @@ public final class ConfigsButton {
         if (click.button() != 0) {
             return false;
         } else {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             int screenWidth = client.getWindow().getScaledWidth();
             int y = client.getWindow().getScaledHeight() - 28;
             int x = (screenWidth - 104) / 2;

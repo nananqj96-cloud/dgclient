@@ -1,6 +1,6 @@
 package odinclient.render.world;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.math.Vec3d;
 
@@ -40,7 +40,7 @@ public final class TracerLineBatch {
                 return;
             }
 
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client == null || client.getWindow() == null || client.world == null) {
                 return;
             }

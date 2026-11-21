@@ -2,7 +2,7 @@ package odinclient.module.automation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 
-import odinclient.mixin.accessor.MinecraftClientAccessor;
+import odinclient.mixin.accessor.MinecraftAccessor;
 import odinclient.module.Category;
 import odinclient.module.Module;
 import odinclient.setting.Setting;
@@ -63,14 +63,14 @@ public final class FastPlace extends Module {
         instance = this;
     }
 
-    public static void applyFastPlace(MinecraftClient client) {
+    public static void applyFastPlace(Minecraft client) {
         if (instance != null && instance.isActive() && instance.shouldApply(client)) {
-            ((MinecraftClientAccessor) client)
+            ((MinecraftAccessor) client)
                     .odinclient$setItemUseCooldown(instance.delay.getValue());
         }
     }
 
-    private boolean shouldApply(MinecraftClient client) {
+    private boolean shouldApply(Minecraft client) {
         if (client != null && client.player != null) {
             ItemStack mainHand = client.player.getMainHandStack();
             ItemStack offHand = client.player.getOffHandStack();

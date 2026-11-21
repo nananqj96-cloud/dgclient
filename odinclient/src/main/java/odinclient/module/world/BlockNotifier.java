@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -297,14 +297,14 @@ public final class BlockNotifier extends Module {
 
     private String getSpawnerMob(MobSpawnerBlockEntity spawner) {
         try {
-            NbtCompound nbt =
+            CompoundTag nbt =
                     spawner.createNbtWithIdentifyingData(this.mc.world.getRegistryManager());
-            Optional<NbtCompound> spawnData = nbt.getCompound("SpawnData");
+            Optional<CompoundTag> spawnData = nbt.getCompound("SpawnData");
             if (spawnData.isEmpty()) {
                 return "";
             }
 
-            Optional<NbtCompound> entityData = spawnData.get().getCompound("entity");
+            Optional<CompoundTag> entityData = spawnData.get().getCompound("entity");
             if (entityData.isEmpty()) {
                 return "";
             }

@@ -1,7 +1,7 @@
 package odinclient.module.fake;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
@@ -35,7 +35,7 @@ public final class FakeSpawnerRenderer {
 
     public static void render(
             MatrixStack matrices, WorldRenderState worldState, OrderedRenderCommandQueue queue) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (FakeSpawner.isEnabled() && client.world != null && client.player != null) {
             FakeSpawner.MobType mobType = FakeSpawner.getMobType();
             if (spawnerMob == null
@@ -119,7 +119,7 @@ public final class FakeSpawnerRenderer {
         }
     }
 
-    private static void updateSpawnerCache(MinecraftClient client, BlockPos center, int radius) {
+    private static void updateSpawnerCache(Minecraft client, BlockPos center, int radius) {
         long now = System.nanoTime();
         if (cachedWorld == client.world
                 && cachedCenter != null
@@ -140,7 +140,7 @@ public final class FakeSpawnerRenderer {
         }
     }
 
-    private static void scanForSpawnerBlocks(MinecraftClient client, BlockPos center, int radius) {
+    private static void scanForSpawnerBlocks(Minecraft client, BlockPos center, int radius) {
         int radiusSquared = radius * radius;
 
         for (int dx = -radius; dx <= radius; dx++) {

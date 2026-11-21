@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -59,7 +59,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     public static void open(Screen parent, StringListSetting setting) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(new IgnoredPlayersScreen(parent, setting));
         }
@@ -395,7 +395,7 @@ public final class IgnoredPlayersScreen extends Screen {
                 this.setting.setValue(new ArrayList<>(this.names));
             }
 
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client != null) {
                 client.setScreen(this.parent);
             }

@@ -1,6 +1,6 @@
 package odinclient.mixin.client;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
@@ -42,7 +42,7 @@ public abstract class OdinDebugPacketMixin {
                     "onEntityStatus(Lnet/minecraft/network/packet/s2c/play/EntityStatusS2CPacket;)V",
             at = @At("HEAD"))
     private void odinclient$ownTotemPop(EntityStatusS2CPacket packet, CallbackInfo ci) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.isOnThread() && client.world != null && client.player != null) {
             if (packet.getStatus() == 35 && packet.getEntity(client.world) == client.player) {
                 AutoLog.onTotemPop();

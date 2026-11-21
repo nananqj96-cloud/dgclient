@@ -1,6 +1,6 @@
 package odinclient.ui.widget;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityType;
 
 import odinclient.render.EntityColor;
@@ -76,7 +76,7 @@ public final class MobColorPicker {
 
     private static boolean openColorPicker(EntityColor color) {
         try {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client != null && client.currentScreen instanceof ClickGuiScreen screen) {
                 if (openColorMethod == null) {
                     openColorMethod =

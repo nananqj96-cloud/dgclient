@@ -1,6 +1,6 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -133,7 +133,7 @@ public final class PanelGuiScreen extends Screen {
             PanelLayoutStore.save(this.panelPositions);
         }
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }
@@ -1305,7 +1305,7 @@ public final class PanelGuiScreen extends Screen {
             } else {
                 if (this.dashboardStyleButton.contains(mouseX, mouseY)) {
                     theme.guiStyle.setValue(ThemeModule.GuiStyle.DASHBOARD);
-                    MinecraftClient.getInstance().setScreen(new ClickGuiScreen(this.parent));
+                    Minecraft.getInstance().setScreen(new ClickGuiScreen(this.parent));
                 } else if (this.panelsStyleButton.contains(mouseX, mouseY)) {
                     theme.guiStyle.setValue(ThemeModule.GuiStyle.PANELS);
                 } else if (this.rainbowOption.contains(mouseX, mouseY)) {
@@ -1620,7 +1620,7 @@ public final class PanelGuiScreen extends Screen {
         }
 
         if (xSetting != null && ySetting != null) {
-            MinecraftClient.getInstance()
+            Minecraft.getInstance()
                     .setScreen(new HudPositionEditorScreen(this, module, xSetting, ySetting));
         }
     }
