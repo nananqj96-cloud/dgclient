@@ -19,8 +19,9 @@ java {
 }
 
 // Purxiy is a pre-compiled jar. We package the patched extracted directory
-// directly as a jar (no compilation needed).
-tasks.register('patchedJar', Jar) {
+// directly as the jar output (no compilation needed).
+// The java plugin creates the 'jar' task; we override its source to use patched/.
+tasks.named('jar', Jar) {
     archiveBaseName.set('purxiyvisuals')
     archiveClassifier.set('')
     archiveVersion.set('1.0.2')
@@ -31,22 +32,5 @@ tasks.register('patchedJar', Jar) {
 }
 
 tasks.named('assemble') {
-    dependsOn tasks.named('patchedJar')
-}
-
-tasks.register('remapJar', Copy) {
-    from tasks.named('patchedJar')
-    into layout.buildDirectory.dir('remapped')
-    rename { 'purxiyvisuals-1.0.2.jar' }
-}
-
-// The main jar task just packages the patched content
-tasks.register('jar', Jar) {
-    archiveBaseName.set('purxiyvisuals')
-    archiveClassifier.set('')
-    archiveVersion.set('1.0.2')
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from('patched') {
-        include '**/*'
-    }
+    dependsOn tasks.named('jar')
 }
