@@ -42,7 +42,6 @@ def nanovgJars = fileTree(dir: 'src/main/resources/META-INF/jars', include: ['*.
 def corzRemappedJar = file('corz/build/libs/corz-2.1.0.jar')
 def cakeRemappedJar = file('cakeclient/build/libs/cakeclient-6.9.8+1.21.11.jar')
 def fakeRemappedJar = file('fakeclient/build/libs/fakeclient-1.0.0.jar')
-def odinRemappedJar = file('odinclient/build/libs/odinclient-1.3.0.jar')
 def purxiyRemappedJar = file('purxiyclient/build/libs/purxiyvisuals-1.0.2.jar')
 
 dependencies {
@@ -63,8 +62,6 @@ dependencies {
     // GUI tabs open these via reflection to avoid mapping-namespace conflicts
     include project(':cakeclient')
     include project(':fakeclient')
-    // Odin uses Yarn mappings which can't be remapped to Mojang at runtime
-    // (VerifyError: Bad local variable type). Source is kept in repo but not bundled.
     include project(':purxiyclient')
 
     // Load remapped sub-mods in dev / headless Client GameTests when built
@@ -80,9 +77,6 @@ dependencies {
     if (purxiyRemappedJar.exists()) {
         modRuntimeOnly files(purxiyRemappedJar)
     }
-    // Odin uses Yarn mappings — the `include project(':odinclient')` above
-    // handles jar-in-jar remapping (Yarn→Mojang) for the final build.
-    // Do NOT add the raw Yarn jar to the Mojang runtime here.
 
     implementation nanovgJars
     gametestImplementation nanovgJars
