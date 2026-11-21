@@ -63,7 +63,8 @@ dependencies {
     // GUI tabs open these via reflection to avoid mapping-namespace conflicts
     include project(':cakeclient')
     include project(':fakeclient')
-    include project(':odinclient')
+    // Odin uses Yarn mappings which can't be remapped to Mojang at runtime
+    // (VerifyError: Bad local variable type). Source is kept in repo but not bundled.
     include project(':purxiyclient')
 
     // Load remapped sub-mods in dev / headless Client GameTests when built
