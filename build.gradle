@@ -76,12 +76,12 @@ dependencies {
     if (fakeRemappedJar.exists()) {
         modRuntimeOnly files(fakeRemappedJar)
     }
-    if (odinRemappedJar.exists()) {
-        modRuntimeOnly files(odinRemappedJar)
-    }
     if (purxiyRemappedJar.exists()) {
         modRuntimeOnly files(purxiyRemappedJar)
     }
+    // Odin uses Yarn mappings — the `include project(':odinclient')` above
+    // handles jar-in-jar remapping (Yarn→Mojang) for the final build.
+    // Do NOT add the raw Yarn jar to the Mojang runtime here.
 
     implementation nanovgJars
     gametestImplementation nanovgJars
