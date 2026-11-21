@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.registries.RegistryKey;
 import net.minecraft.core.registries.RegistryKeys;
-import net.minecraft.core.registries.entry.RegistryEntry;
+import net.minecraft.core.Registry.Entry;
 
 import org.joml.Vector3d;
 
@@ -27,7 +27,7 @@ public final class EntityUtils {
     public static int getEnchantmentLevel(ItemStack stack, RegistryKey<Enchantment> key) {
         Minecraft client = Minecraft.getInstance();
         if (client.world != null && stack != null && key != null) {
-            RegistryEntry<Enchantment> entry =
+            Registry.Entry<Enchantment> entry =
                     client.world
                             .getRegistryManager()
                             .getOrThrow(RegistryKeys.ENCHANTMENT)

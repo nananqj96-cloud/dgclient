@@ -1,7 +1,7 @@
 package odinclient.module.fake;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ServerInfo;
 import net.minecraft.network.chat.MutableText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Text;

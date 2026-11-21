@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.protocol.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.world.inventory.SlotActionType;
 
 import java.util.function.Predicate;
@@ -33,7 +33,7 @@ public final class InventoryUtils {
         if (client.player != null && slot >= 0 && slot <= 8) {
             client.player.getInventory().setSelectedSlot(slot);
             if (client.getNetworkHandler() != null) {
-                client.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(slot));
+                client.getNetworkHandler().sendPacket(new ServerboundSetCarriedItemPacket(slot));
             }
 
             return true;

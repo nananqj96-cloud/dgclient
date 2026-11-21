@@ -10,9 +10,9 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ClientPlayNetworkHandler;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.multiplayer.ServerInfo;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
@@ -696,8 +696,8 @@ public final class ClickGuiScreen extends Screen {
             speed = Math.hypot(velocity.x, velocity.z) * 20.0;
             ClientPlayNetworkHandler networkHandler = client.getNetworkHandler();
             if (networkHandler != null) {
-                PlayerListEntry playerListEntry =
-                        networkHandler.getPlayerListEntry(client.player.getGameProfile().id());
+                PlayerInfo playerListEntry =
+                        networkHandler.getPlayerInfo(client.player.getGameProfile().id());
                 if (playerListEntry != null) {
                     ping = Math.max(0, playerListEntry.getLatency());
                 }

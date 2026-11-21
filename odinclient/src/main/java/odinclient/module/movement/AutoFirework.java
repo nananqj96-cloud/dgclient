@@ -1,6 +1,6 @@
 package odinclient.module.movement;
 
-import net.minecraft.client.input.KeyMapping;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.util.InputUtil.Key;
 import net.minecraft.world.entity.player.PlayerInventory;
 import net.minecraft.world.item.ItemStack;

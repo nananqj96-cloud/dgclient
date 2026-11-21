@@ -3,9 +3,9 @@ package odinclient.ui.widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ClientPlayNetworkHandler;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.multiplayer.ServerInfo;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.module.hud.ThemeModule;
@@ -402,8 +402,8 @@ public final class PlayerInfoCard {
                 bps = Math.hypot(velocity.x, velocity.z) * 20.0;
                 ClientPlayNetworkHandler networkHandler = client.getNetworkHandler();
                 if (networkHandler != null) {
-                    PlayerListEntry playerListEntry =
-                            networkHandler.getPlayerListEntry(client.player.getGameProfile().id());
+                    PlayerInfo playerListEntry =
+                            networkHandler.getPlayerInfo(client.player.getGameProfile().id());
                     if (playerListEntry != null) {
                         ping = Math.max(0, playerListEntry.getLatency());
                     }

@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.world.level.block.BlockState;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.multiplayer.ClientPlayerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.EndCrystalEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;

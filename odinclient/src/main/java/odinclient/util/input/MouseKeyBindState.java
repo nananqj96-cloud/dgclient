@@ -1,6 +1,6 @@
 package odinclient.util.input;
 
-import net.minecraft.client.input.KeyMapping;
+import net.minecraft.client.KeyMapping;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

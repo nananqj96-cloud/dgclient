@@ -2,8 +2,8 @@ package odinclient.module.hud;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.multiplayer.ClientPlayNetworkHandler;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.player.SkinTextures;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Text;
@@ -173,7 +173,7 @@ public final class StaffTracker extends Module {
         } else {
             List<StaffTracker.StaffEntry> staff = new ArrayList<>();
 
-            for (PlayerListEntry listEntry :
+            for (PlayerInfo listEntry :
                     this.mc.getNetworkHandler().getListedPlayerListEntries()) {
                 try {
                     String name = listEntry.getProfile().name();

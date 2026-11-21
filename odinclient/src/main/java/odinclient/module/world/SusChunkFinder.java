@@ -3,7 +3,7 @@ package odinclient.module.world;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BlockState;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ServerInfo;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.state.property.Properties;

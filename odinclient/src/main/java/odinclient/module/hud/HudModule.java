@@ -6,8 +6,8 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.multiplayer.AbstractClientPlayerEntity;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.effect.StatusEffectInstance;
 import net.minecraft.world.entity.player.PlayerEntity;
@@ -1065,8 +1065,8 @@ public final class HudModule extends Module {
         if (this.mc.getNetworkHandler() == null) {
             return 0;
         } else {
-            PlayerListEntry entry =
-                    this.mc.getNetworkHandler().getPlayerListEntry(this.mc.player.getUuid());
+            PlayerInfo entry =
+                    this.mc.getNetworkHandler().getPlayerInfo(this.mc.player.getUuid());
             return entry == null ? 0 : entry.getLatency();
         }
     }

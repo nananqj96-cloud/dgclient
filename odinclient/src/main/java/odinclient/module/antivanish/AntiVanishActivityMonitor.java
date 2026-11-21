@@ -5,18 +5,18 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.PlayerEntity;
 import net.minecraft.world.entity.projectile.ProjectileEntity;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.c2s.play.HandSwingC2SPacket;
-import net.minecraft.network.protocol.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.protocol.c2s.play.PlayerInteractBlockC2SPacket;
-import net.minecraft.network.protocol.c2s.play.PlayerInteractEntityC2SPacket;
-import net.minecraft.network.protocol.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.network.protocol.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.protocol.game.HandSwingC2SPacket;
+import net.minecraft.network.protocol.game.PlayerActionC2SPacket;
+import net.minecraft.network.protocol.game.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.protocol.game.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.protocol.game.PlayerInteractItemC2SPacket;
+import net.minecraft.network.protocol.game.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.protocol.s2c.play.BundleS2CPacket;
 import net.minecraft.network.protocol.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.protocol.s2c.play.EntityTrackerUpdateS2CPacket;
@@ -228,13 +228,13 @@ public final class AntiVanishActivityMonitor {
             HashSet<UUID> listedIds = new HashSet<>();
             HashSet<UUID> nearbyIds = new HashSet<>();
 
-            for (PlayerListEntry listEntry : mc.getNetworkHandler().getPlayerList()) {
+            for (PlayerInfo listEntry : mc.getNetworkHandler().getPlayerList()) {
                 if (listEntry.getProfile() != null) {
                     listedIds.add(listEntry.getProfile().id());
                 }
             }
 
-            for (PlayerListEntry listedEntry :
+            for (PlayerInfo listedEntry :
                     mc.getNetworkHandler().getListedPlayerListEntries()) {
                 if (listedEntry.getProfile() != null) {
                     this.detector.onListedPlayer(
@@ -339,7 +339,7 @@ public final class AntiVanishActivityMonitor {
         } else if (packet instanceof CommandSuggestionsS2CPacket suggestionsPacket) {
             HashSet<String> onlineNames = new HashSet<>();
 
-            for (PlayerListEntry listEntry : mc.getNetworkHandler().getPlayerList()) {
+            for (PlayerInfo listEntry : mc.getNetworkHandler().getPlayerList()) {
                 if (listEntry.getProfile() != null) {
                     onlineNames.add(listEntry.getProfile().name().toLowerCase(Locale.ROOT));
                 }

@@ -2,7 +2,7 @@ package odinclient.module.playerdebug;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.multiplayer.ServerInfo;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
