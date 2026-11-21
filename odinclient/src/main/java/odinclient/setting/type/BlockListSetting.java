@@ -2,7 +2,7 @@ package odinclient.setting.type;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 
 import odinclient.setting.Setting;
 import odinclient.setting.SettingBuilder;

@@ -3,8 +3,8 @@ package odinclient.mixin.render;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.StringVisitable;
+import net.minecraft.core.text.OrderedText;
+import net.minecraft.core.text.StringVisitable;
 
 import odinclient.module.privacy.NameProtect;
 

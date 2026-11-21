@@ -1,7 +1,7 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.world.WorldEventHandler;
 
 import odinclient.module.fake.FakeSpawner;

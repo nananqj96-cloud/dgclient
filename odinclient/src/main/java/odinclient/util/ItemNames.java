@@ -2,7 +2,7 @@ package odinclient.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public final class ItemNames {

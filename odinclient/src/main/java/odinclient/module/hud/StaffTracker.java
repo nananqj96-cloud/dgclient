@@ -4,10 +4,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.entity.player.SkinTextures;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
+import net.minecraft.world.entity.player.SkinTextures;
+import net.minecraft.core.text.Style;
+import net.minecraft.core.text.Text;
+import net.minecraft.core.text.TextColor;
 
 import odinclient.event.EventHandler;
 import odinclient.event.Render2DEvent;

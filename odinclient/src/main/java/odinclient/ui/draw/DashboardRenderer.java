@@ -2,11 +2,11 @@ package odinclient.ui.draw;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.StyleSpriteSource;
-import net.minecraft.text.StyleSpriteSource.Font;
-import net.minecraft.text.Text;
+import net.minecraft.core.text.MutableText;
+import net.minecraft.core.text.Style;
+import net.minecraft.core.text.StyleSpriteSource;
+import net.minecraft.core.text.StyleSpriteSource.Font;
+import net.minecraft.core.text.Text;
 import net.minecraft.util.Identifier;
 
 import odinclient.module.hud.ThemeModule;

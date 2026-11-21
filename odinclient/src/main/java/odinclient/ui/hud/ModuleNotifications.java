@@ -3,8 +3,8 @@ package odinclient.ui.hud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.core.sounds.SoundEvent;
+import net.minecraft.core.sounds.SoundEvents;
 
 import odinclient.module.Module;
 import odinclient.module.hud.ThemeModule;
@@ -24,7 +24,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public final class ModuleNotifications {
     private static final Object lock = new Object();

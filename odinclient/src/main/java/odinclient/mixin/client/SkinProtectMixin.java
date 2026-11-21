@@ -1,7 +1,7 @@
 package odinclient.mixin.client;
 
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.world.entity.player.SkinTextures;
 
 import odinclient.module.privacy.SkinProtect;
 

@@ -1,7 +1,7 @@
 package odinclient.setting.type;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.registry.Registries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Identifier;
 
 import odinclient.render.Color;

@@ -2,8 +2,8 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.util.math.Box;
 
 import odinclient.core.Categories;

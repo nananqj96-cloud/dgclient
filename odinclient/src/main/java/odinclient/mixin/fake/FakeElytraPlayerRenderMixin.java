@@ -3,7 +3,7 @@ package odinclient.mixin.fake;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.entity.PlayerEntity;
+import net.minecraft.world.entity.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.module.fake.FakeElytra;

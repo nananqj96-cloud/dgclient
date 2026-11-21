@@ -1,7 +1,7 @@
 package odinclient.mixin.fake;
 
 import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.text.Text;
+import net.minecraft.core.text.Text;
 
 import odinclient.module.fake.FakePay;
 import odinclient.module.fake.FakePayTextRewriter;

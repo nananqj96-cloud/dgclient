@@ -5,7 +5,7 @@ import net.minecraft.client.render.command.BatchingRenderCommandQueue;
 import net.minecraft.client.render.item.ItemRenderState.Glint;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemDisplayContext;
 
 import odinclient.module.render.itemglow.ItemGlowPhaseRenderer;
 

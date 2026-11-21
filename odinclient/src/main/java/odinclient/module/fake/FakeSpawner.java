@@ -2,9 +2,9 @@ package odinclient.module.fake;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.Identifier;
 
 import odinclient.module.Category;

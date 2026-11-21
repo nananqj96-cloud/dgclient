@@ -2,7 +2,7 @@ package odinclient.ui.hud;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import odinclient.manager.ModuleManager;
 import odinclient.module.Module;

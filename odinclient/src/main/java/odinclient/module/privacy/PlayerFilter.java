@@ -1,7 +1,7 @@
 package odinclient.module.privacy;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.PlayerEntity;
 
 public final class PlayerFilter {
     private PlayerFilter() {}

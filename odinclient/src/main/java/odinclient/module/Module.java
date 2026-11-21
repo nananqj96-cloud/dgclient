@@ -3,7 +3,7 @@ package odinclient.module;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.text.Text;
+import net.minecraft.core.text.Text;
 
 import odinclient.manager.ConfigStore;
 import odinclient.setting.Setting;

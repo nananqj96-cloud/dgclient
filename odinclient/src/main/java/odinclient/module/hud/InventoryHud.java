@@ -3,7 +3,7 @@ package odinclient.module.hud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import odinclient.event.EventHandler;
 import odinclient.event.Render2DEvent;

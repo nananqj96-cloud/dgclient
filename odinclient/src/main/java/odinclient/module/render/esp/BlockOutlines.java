@@ -2,9 +2,9 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CollisionContext;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.level.block.BlockState;
+import net.minecraft.world.level.block.CollisionContext;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;

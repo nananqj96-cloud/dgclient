@@ -1,6 +1,6 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.text.TextVisitFactory;
+import net.minecraft.core.text.TextVisitFactory;
 
 import odinclient.module.fake.FakeStats;
 

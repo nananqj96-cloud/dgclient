@@ -2,8 +2,8 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 
 import odinclient.event.EventHandler;

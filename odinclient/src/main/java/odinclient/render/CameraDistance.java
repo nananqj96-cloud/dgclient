@@ -3,7 +3,7 @@ package odinclient.render;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public final class CameraDistance {

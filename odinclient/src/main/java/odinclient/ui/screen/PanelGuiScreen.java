@@ -6,7 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
+import net.minecraft.core.text.Text;
 
 import odinclient.manager.ConfigProfileManager;
 import odinclient.manager.ModuleManager;

@@ -1,9 +1,9 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.block.Blocks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.item.ItemModelManager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import odinclient.module.fake.FakeElytra;
 import odinclient.module.fake.FakeSpawner;

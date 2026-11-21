@@ -1,11 +1,11 @@
 package odinclient.module.render.esp;
 
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.mob.PillagerEntity;
-import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WanderingTraderEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.mob.PillagerEntity;
+import net.minecraft.world.entity.passive.LlamaEntity;
+import net.minecraft.world.entity.passive.VillagerEntity;
+import net.minecraft.world.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;

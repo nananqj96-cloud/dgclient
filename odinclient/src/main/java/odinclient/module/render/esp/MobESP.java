@@ -1,8 +1,8 @@
 package odinclient.module.render.esp;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.SpawnEggItem;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.util.math.Box;
 
 import odinclient.core.Categories;

@@ -1,10 +1,10 @@
 package odinclient.module.render.esp;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.PistonBlockEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.PistonBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;

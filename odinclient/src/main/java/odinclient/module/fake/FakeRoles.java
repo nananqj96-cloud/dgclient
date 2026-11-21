@@ -2,11 +2,11 @@ package odinclient.module.fake;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.PlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.StyleSpriteSource;
-import net.minecraft.text.StyleSpriteSource.Font;
-import net.minecraft.text.Text;
+import net.minecraft.world.entity.PlayerEntity;
+import net.minecraft.core.text.MutableText;
+import net.minecraft.core.text.StyleSpriteSource;
+import net.minecraft.core.text.StyleSpriteSource.Font;
+import net.minecraft.core.text.Text;
 import net.minecraft.util.Identifier;
 
 import odinclient.module.Category;

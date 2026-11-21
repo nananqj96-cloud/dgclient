@@ -1,7 +1,7 @@
 package odinclient.ui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 
 import odinclient.render.EntityColor;
 import odinclient.setting.type.EntityTypeListSetting;

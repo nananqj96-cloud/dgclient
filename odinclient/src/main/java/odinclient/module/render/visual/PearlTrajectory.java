@@ -3,7 +3,7 @@ package odinclient.module.render.visual;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Camera;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Items;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.Vec3d;

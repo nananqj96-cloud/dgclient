@@ -1,7 +1,7 @@
 package odinclient.mixin.fake;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.ElytraFlightController;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.mob.ElytraFlightController;
 
 import odinclient.module.fake.FakeElytra;
 

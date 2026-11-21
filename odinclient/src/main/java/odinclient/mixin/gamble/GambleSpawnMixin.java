@@ -1,7 +1,7 @@
 package odinclient.mixin.gamble;
 
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import odinclient.module.gamble.GambleRigger;
 

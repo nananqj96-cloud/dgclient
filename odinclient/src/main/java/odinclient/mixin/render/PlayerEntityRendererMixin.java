@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.entity.EntityAttachmentType;
-import net.minecraft.entity.PlayerEntity;
+import net.minecraft.world.entity.EntityAttachmentType;
+import net.minecraft.world.entity.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.module.fake.FakeRoles;

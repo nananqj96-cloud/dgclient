@@ -1,6 +1,6 @@
 package odinclient.mixin.render;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import odinclient.module.render.esp.PlayerEsp;
 

@@ -2,7 +2,7 @@ package odinclient.mixin.itemglow;
 
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import odinclient.module.render.itemglow.ItemGlow;
 

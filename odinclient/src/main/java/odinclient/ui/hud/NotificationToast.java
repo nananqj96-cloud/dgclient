@@ -7,8 +7,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.Toast.Visibility;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import odinclient.ui.draw.BoldText;
 

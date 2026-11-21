@@ -10,7 +10,7 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.SkinTextures;
+import net.minecraft.world.entity.player.SkinTextures;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

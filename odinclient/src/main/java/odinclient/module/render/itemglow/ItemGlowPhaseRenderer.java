@@ -16,7 +16,7 @@ import net.minecraft.client.render.item.ItemRenderState.Glint;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.MatrixStack.Entry;
-import net.minecraft.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.util.Identifier;
 
 import odinclient.mixin.accessor.ShaderLayerInvoker;

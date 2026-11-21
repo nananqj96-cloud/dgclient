@@ -2,8 +2,8 @@ package odinclient.module.automation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.world.entity.player.PlayerEntity;
+import net.minecraft.core.text.Text;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;

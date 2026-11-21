@@ -1,7 +1,7 @@
 package odinclient.module.hud;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.core.text.MutableText;
+import net.minecraft.core.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.math.BigDecimal;

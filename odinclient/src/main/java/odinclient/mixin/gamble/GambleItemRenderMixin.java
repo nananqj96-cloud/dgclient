@@ -3,8 +3,8 @@ package odinclient.mixin.gamble;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.entity.ItemEntityRenderer;
 import net.minecraft.client.render.entity.state.ItemEntityRenderState;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.ItemEntity;
+import net.minecraft.world.item.ItemStack;
 
 import odinclient.module.gamble.GambleRigger;
 
