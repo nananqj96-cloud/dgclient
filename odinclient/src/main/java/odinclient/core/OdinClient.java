@@ -3,6 +3,8 @@ package odinclient.core;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import odinclient.manager.ConfigStore;
 import odinclient.manager.ModuleManager;
@@ -72,6 +74,7 @@ import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
 public final class OdinClient implements ClientModInitializer {
+    public static final Logger LOG = LoggerFactory.getLogger("OdinClient");
     private static final String[] MODULE_CLASS_NAMES =
             new String[] {
                 "odinclient.module.spawner.SpawnerFlagger",
@@ -96,7 +99,11 @@ public final class OdinClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        initialize();
+        try {
+            initialize();
+        } catch (Throwable t) {
+            LOG.error("OdinClient failed to initialize", t);
+        }
     }
 
     public static synchronized void initialize() {
