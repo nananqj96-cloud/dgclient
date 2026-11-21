@@ -1136,7 +1136,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          try {
             Class<?> guiClass = Class.forName("com.fakeclient.gui.ClickGuiScreen");
             Object guiInstance = guiClass.getDeclaredConstructor().newInstance();
-            net.minecraft.client.Minecraft.getInstance().getClass().getMethod("setScreen", Class.forName("net.minecraft.client.gui.screen.Screen")).invoke(net.minecraft.client.Minecraft.getInstance(), guiInstance);
+            net.minecraft.client.Minecraft.getInstance().setScreen((Screen) guiInstance);
          } catch (Throwable t) {
             AetherClient.LOGGER.error("Failed to open Fake Client GUI", t);
          }
