@@ -1,8 +1,7 @@
 package odinclient.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.InputConstants;
-import net.minecraft.client.util.Window;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.inventory.SlotActionType;
 import net.minecraft.util.Hand;
@@ -24,7 +23,7 @@ public final class InventoryActions {
 
     public static boolean isInputPressed(Minecraft client, int code) {
         if (client != null && code >= 0) {
-            Window window = client.getWindow();
+            var window = client.getWindow();
             if (window == null) {
                 return false;
             } else if (code >= 1000 && code <= 1007) {
