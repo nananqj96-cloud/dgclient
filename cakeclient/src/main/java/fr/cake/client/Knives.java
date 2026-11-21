@@ -55,7 +55,7 @@ public final class Knives {
   return nativeArm(base().mul(arm),left);
  }
  public static Matrix4f supportArmPose(){boolean left=Minecraft.getInstance().player.getMainArm()!=HumanoidArm.LEFT;return nativeArm(base().mul(leftArm),left);}
- private static Matrix4f nativeArm(Matrix4f matrix,boolean left){var mc=Minecraft.getInstance();var model=mc.getEntityRenderDispatcher().getPlayerRenderer(mc.player).getModel();var part=left?model.leftArm:model.rightArm;var pose=part.getInitialPose();var cubes=((fr.cake.client.mixin.ModelCubesAccess)(Object)part).cake$cubes();if(cubes.isEmpty())return matrix;var cube=cubes.getFirst();var grip=NativeHandGrip.anchor(pose.x(),pose.y(),pose.z(),cube.minX,cube.maxX,cube.maxY,cube.minZ,cube.maxZ,left);return matrix.scale(.32f,.58f,.32f).translate(-grip.x,-grip.y,-grip.z);}
+ private static Matrix4f nativeArm(Matrix4f matrix,boolean left){var mc=Minecraft.getInstance();var model=mc.getEntityRenderDispatcher().getPlayerRenderer(mc.player).getModel();var part=left?model.leftArm:model.rightArm;var pose=part.getInitialPose();java.util.List<?> cubes;try{cubes=((fr.cake.client.mixin.ModelCubesAccess)(Object)part).cake$cubes();}catch(Throwable t){return matrix;}if(cubes.isEmpty())return matrix;var cube=cubes.getFirst();var grip=NativeHandGrip.anchor(pose.x(),pose.y(),pose.z(),cube.minX,cube.maxX,cube.maxY,cube.minZ,cube.maxZ,left);return matrix.scale(.32f,.58f,.32f).translate(-grip.x,-grip.y,-grip.z);}
  public static double drawSeconds(){ensure();return asset==null?1.2:asset.clips[2].duration/speed();}
  public static double inspectionSeconds(){ensure();return asset==null?6.2:asset.clips[1].duration/speed();}
  public static boolean supportHand(){return asset!=null&&asset.clips[playback.mode()].hasLeftArm();}

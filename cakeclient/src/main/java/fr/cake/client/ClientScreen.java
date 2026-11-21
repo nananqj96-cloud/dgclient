@@ -43,7 +43,7 @@ public final class ClientScreen extends Screen {
  @Override public boolean mouseReleased(MouseButtonEvent event){if(event.button()==0){canvas.release();return true;}return false;}
  @Override public void onClose(){closeAnimated();}
  public void closeAnimated(){if(closing==0){canvas.release();closing=System.nanoTime();CakeClient.settings.save();sound("close",.45f);}}
- @Override public void removed(){canvas.release();CakeClient.settings.save();var mouse=(fr.cake.client.mixin.MouseMotionAccess)(Object)minecraft.mouseHandler;mouse.cake$pendingX(0);mouse.cake$pendingY(0);minecraft.mouseHandler.setIgnoreFirstMove();}
+ @Override public void removed(){canvas.release();CakeClient.settings.save();try{var mouse=(fr.cake.client.mixin.MouseMotionAccess)(Object)minecraft.mouseHandler;mouse.cake$pendingX(0);mouse.cake$pendingY(0);}catch(Throwable ignored){}minecraft.mouseHandler.setIgnoreFirstMove();}
  public static void tap(){sound("tap",.35f);}
  private static void sound(String name,float volume){if(CakeClient.settings!=null&&CakeClient.settings.sounds)Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath("cakeclient",name)),1,volume));}
 }
