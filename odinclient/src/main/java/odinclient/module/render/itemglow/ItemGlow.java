@@ -2,9 +2,9 @@ package odinclient.module.render.itemglow;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ItemEntity;
-import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemDisplayContext;
 
 import odinclient.module.Category;
 import odinclient.module.Module;

@@ -2,8 +2,8 @@ package odinclient.mixin.freecam;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 
 import odinclient.module.movement.Freecam;
 
@@ -19,7 +19,7 @@ public class FreecamEntityMixin {
     @Inject(method = "changeLookDirection", at = @At("HEAD"), cancellable = true, require = 1)
     private void odinclient$onChangeLookDirection(double dx, double dy, CallbackInfo ci) {
         Freecam freecam = Freecam.instance;
-        if ((Entity) (Object) this == Minecraft.getInstance().player
+        if ((Entity) (Object) this == MinecraftClient.getInstance().player
                 && freecam != null
                 && freecam.isActive()) {
             freecam.changeLookDirection(
@@ -34,7 +34,7 @@ public class FreecamEntityMixin {
         Freecam freecam = Freecam.instance;
         if (freecam != null
                 && freecam.isActive()
-                && (Object) this == Minecraft.getInstance().player) {
+                && (Object) this == MinecraftClient.getInstance().player) {
             cir.setReturnValue(freecam.getSavedPlayerInput().sneak());
         }
     }

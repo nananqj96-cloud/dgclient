@@ -1,10 +1,10 @@
 package odinclient.module.playerdebug;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.multiplayer.ServerInfo;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.network.ServerInfo;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;

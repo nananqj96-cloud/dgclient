@@ -2,11 +2,11 @@ package odinclient.module.fake;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.entity.PlayerEntity;
-import net.minecraft.network.chat.MutableText;
-import net.minecraft.network.chat.StyleSpriteSource;
-import net.minecraft.network.chat.StyleSpriteSource.Font;
-import net.minecraft.network.chat.Text;
+import net.minecraft.entity.PlayerLikeEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.StyleSpriteSource;
+import net.minecraft.text.StyleSpriteSource.Font;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import odinclient.module.Category;
@@ -77,14 +77,14 @@ public final class FakeRoles extends Module {
         return instance;
     }
 
-    public boolean shouldOverrideName(PlayerEntity entity) {
+    public boolean shouldOverrideName(PlayerLikeEntity entity) {
         return this.isActive()
                 && this.mc.player != null
                 && entity != null
                 && (entity == this.mc.player || this.getRoleFor(entity) != FakeRoles.Role.NONE);
     }
 
-    public Text getFakeName(PlayerEntity entity) {
+    public Text getFakeName(PlayerLikeEntity entity) {
         boolean self = this.mc.player != null && entity == this.mc.player;
         String displayName = self ? sanitizeName(this.fakeName.getValue()) : "";
         String realName = sanitizeName(entity.getName().getString());
@@ -190,7 +190,7 @@ public final class FakeRoles extends Module {
         return setting;
     }
 
-    private FakeRoles.Role getRoleFor(PlayerEntity entity) {
+    private FakeRoles.Role getRoleFor(PlayerLikeEntity entity) {
         return entity == null
                 ? FakeRoles.Role.NONE
                 : this.getAssignedRole(sanitizeName(entity.getName().getString()));

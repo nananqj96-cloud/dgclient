@@ -2,11 +2,11 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.BlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.BlockPos.Mutable;
-import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.Mutable;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;

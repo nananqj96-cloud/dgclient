@@ -2,7 +2,7 @@ package odinclient.manager;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

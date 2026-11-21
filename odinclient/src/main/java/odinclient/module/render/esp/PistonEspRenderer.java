@@ -1,13 +1,13 @@
 package odinclient.module.render.esp;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.PistonBlockEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.ChunkPos;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.PistonBlockEntity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.event.WorldRenderEvent;
@@ -51,7 +51,7 @@ public final class PistonEspRenderer {
 
     public static void renderMovingPistons(StorageEsp esp, WorldRenderEvent event) {
         if (esp.isPistonEspEnabled()) {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             if (client.world != null && client.player != null) {
                 ChunkPos chunkPos = client.player.getChunkPos();
                 Color fillColor = esp.getPistonFillColor();
@@ -106,7 +106,7 @@ public final class PistonEspRenderer {
 
     private static PistonEspRenderer.PistonOffsetPos getRenderedPosition(
             BlockPos pos, PistonBlockEntity piston) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         float tickProgress = client.getRenderTickCounter().getTickProgress(false);
         return new PistonEspRenderer.PistonOffsetPos(
                 pos.getX() + piston.getRenderOffsetX(tickProgress),

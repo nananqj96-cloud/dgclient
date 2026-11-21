@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.render.VertexConsumer;
@@ -51,7 +51,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void fill(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -63,7 +63,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void fillVerticalGradient(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -75,7 +75,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void fillHorizontalGradient(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -87,7 +87,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void fillCornerGradient(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -114,7 +114,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void drawOutline(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -128,7 +128,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void drawShadow(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -153,7 +153,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void fillCircle(
-            GuiGraphics context, float centerX, float centerY, float radius, int color) {
+            DrawContext context, float centerX, float centerY, float radius, int color) {
         fill(
                 context,
                 centerX - radius,
@@ -165,7 +165,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void drawRing(
-            GuiGraphics context,
+            DrawContext context,
             float centerX,
             float centerY,
             float radius,
@@ -182,7 +182,7 @@ public final class SdfShapeRenderer {
                 color);
     }
 
-    public static void drawLines(GuiGraphics context, List<SdfShapeRenderer.LineSegment> segments) {
+    public static void drawLines(DrawContext context, List<SdfShapeRenderer.LineSegment> segments) {
         if (!segments.isEmpty()) {
             float minX = Float.POSITIVE_INFINITY;
             float minY = Float.POSITIVE_INFINITY;
@@ -226,7 +226,7 @@ public final class SdfShapeRenderer {
     }
 
     private static void submitShape(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float width,
@@ -292,7 +292,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void drawLogoHalf(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float scale,
@@ -304,7 +304,7 @@ public final class SdfShapeRenderer {
     }
 
     public static void drawLogo(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float scale,
@@ -319,7 +319,7 @@ public final class SdfShapeRenderer {
     }
 
     private static void submitLogo(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float scale,
@@ -404,13 +404,13 @@ public final class SdfShapeRenderer {
                         .build());
     }
 
-    static ScreenRect getCurrentScissor(GuiGraphics context) {
+    static ScreenRect getCurrentScissor(DrawContext context) {
         if (scissorLookupFailed) {
             return null;
         } else {
             try {
                 if (scissorStackField == null) {
-                    scissorStackField = GuiGraphics.class.getDeclaredField("field_44659");
+                    scissorStackField = DrawContext.class.getDeclaredField("field_44659");
                     scissorStackField.setAccessible(true);
                     scissorPeekMethod =
                             scissorStackField.getType().getDeclaredMethod("method_70863");

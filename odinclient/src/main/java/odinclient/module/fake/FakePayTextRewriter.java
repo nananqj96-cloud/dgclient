@@ -1,10 +1,10 @@
 package odinclient.module.fake;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ServerInfo;
-import net.minecraft.network.chat.MutableText;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.Text;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public final class FakePayTextRewriter {
             return text;
         }
 
-        ServerInfo serverInfo = Minecraft.getInstance().getCurrentServerEntry();
+        ServerInfo serverInfo = MinecraftClient.getInstance().getCurrentServerEntry();
         if (serverInfo == null
                 || serverInfo.address == null
                 || !serverInfo.address.toLowerCase(Locale.ROOT).contains("donutsmp")) {

@@ -14,7 +14,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GpuSampler;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -66,7 +66,7 @@ public final class ItemGlowRenderer {
             float haloRadius) {
         if (!disabled && !batches.isEmpty()) {
             try {
-                Framebuffer framebuffer = Minecraft.getInstance().getFramebuffer();
+                Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
                 GpuTextureView colorView =
                         RenderSystem.outputColorTextureOverride != null
                                 ? RenderSystem.outputColorTextureOverride

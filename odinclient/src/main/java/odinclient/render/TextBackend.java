@@ -2,10 +2,10 @@ package odinclient.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 
-import odinclient.ui.draw.GuiGraphicsHolder;
+import odinclient.ui.draw.DrawContextHolder;
 
 import java.util.Objects;
 
@@ -23,12 +23,12 @@ public interface TextBackend {
 
                 @Override
                 public double getWidth(String text, boolean shadow) {
-                    return Minecraft.getInstance().textRenderer.getWidth(text);
+                    return MinecraftClient.getInstance().textRenderer.getWidth(text);
                 }
 
                 @Override
                 public double getHeight(boolean shadow) {
-                    Objects.requireNonNull(Minecraft.getInstance().textRenderer);
+                    Objects.requireNonNull(MinecraftClient.getInstance().textRenderer);
                     return 9.0;
                 }
 
@@ -39,10 +39,10 @@ public interface TextBackend {
 
                 @Override
                 public double render(String text, double x, double y, Color color, boolean shadow) {
-                    GuiGraphics context = GuiGraphicsHolder.get();
+                    DrawContext context = DrawContextHolder.get();
                     if (context != null) {
                         context.drawText(
-                                Minecraft.getInstance().textRenderer,
+                                MinecraftClient.getInstance().textRenderer,
                                 text,
                                 (int) Math.round(x),
                                 (int) Math.round(y),

@@ -1,12 +1,12 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.network.chat.Text;
+import net.minecraft.text.Text;
 
 import odinclient.manager.ConfigProfileManager;
 import odinclient.manager.ModuleManager;
@@ -201,14 +201,14 @@ public final class OdinGuiScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
-        if (Minecraft.getInstance().world != null) {
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+        if (MinecraftClient.getInstance().world != null) {
             this.applyBlur(context);
         }
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         long now = System.nanoTime();
         this.deltaTime =
                 Math.min(0.05F, Math.max(5.0E-4F, (float) (now - this.lastFrameNanos) / 1.0E9F));
@@ -218,7 +218,7 @@ public final class OdinGuiScreen extends Screen {
             this.openProgress =
                     AnimationUtil.smoothApproach(this.openProgress, 0.0F, 16.0F, this.deltaTime);
             if (this.openProgress < 0.02F) {
-                Minecraft.getInstance().setScreen(this.parentScreen);
+                MinecraftClient.getInstance().setScreen(this.parentScreen);
                 return;
             }
         } else {
@@ -294,7 +294,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void drawWindowFrame(GuiGraphics context, float alpha) {
+    private void drawWindowFrame(DrawContext context, float alpha) {
         int accentStart = ThemeModule.getAccentColorAt(0.0F);
         int accentEnd = ThemeModule.getAccentColorAt(1.0F);
         SdfShapeRenderer.drawShadow(
@@ -365,7 +365,7 @@ public final class OdinGuiScreen extends Screen {
                         AnimationUtil.lerpColor(-14870999, accentStart, 0.25F), alpha));
     }
 
-    private void drawSidebar(GuiGraphics context, float alpha) {
+    private void drawSidebar(DrawContext context, float alpha) {
         float x = 10.0F;
         float y = 10.0F;
         float height = 360.0F;
@@ -622,7 +622,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void drawModulesPage(GuiGraphics context, float width, float alpha) {
+    private void drawModulesPage(DrawContext context, float width, float alpha) {
         boolean searching = !this.searchQuery.isBlank();
         List<Module> allModules =
                 this.modules(searching ? null : this.selectedCategory, this.searchQuery, 0);
@@ -717,7 +717,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawPageHeader(
-            GuiGraphics context,
+            DrawContext context,
             String title,
             String suffix,
             String subtitle,
@@ -755,7 +755,7 @@ public final class OdinGuiScreen extends Screen {
         this.drawSearchBar(context, 170.0F + width, 170.0F + width - headerWidth - 10.0F, alpha);
     }
 
-    private void drawSearchBar(GuiGraphics context, float right, float maxWidth, float alpha) {
+    private void drawSearchBar(DrawContext context, float right, float maxWidth, float alpha) {
         float focus = this.animate("search-focus", this.searchFocused ? 1.0F : 0.0F, 12.0F);
         float barWidth =
                 Math.min(
@@ -902,7 +902,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void drawStatusFilter(GuiGraphics context, float alpha) {
+    private void drawStatusFilter(DrawContext context, float alpha) {
         float left = 172.0F;
         float y = 48.0F;
         float height = 14.0F;
@@ -997,7 +997,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawModuleRow(
-            GuiGraphics context, Module module, float x, float y, float width, float alpha) {
+            DrawContext context, Module module, float x, float y, float width, float alpha) {
         if (!(alpha <= 0.01F)) {
             int accent = ThemeModule.getAccentColorAt((y - 70.0F) / 310.0F);
             boolean active = module.isActive();
@@ -1265,7 +1265,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void drawModuleInspector(GuiGraphics context, float alpha) {
+    private void drawModuleInspector(DrawContext context, float alpha) {
         this.inspectorProgress =
                 AnimationUtil.smoothApproach(
                         this.inspectorProgress,
@@ -1526,7 +1526,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawInspectorRowBackground(
-            GuiGraphics context, float x, float y, float width, float height, float alpha) {
+            DrawContext context, float x, float y, float width, float height, float alpha) {
         boolean hovered = this.isHovered(x, y, width, height);
         float hoverProgress =
                 this.animate(
@@ -1544,7 +1544,7 @@ public final class OdinGuiScreen extends Screen {
                         AnimationUtil.lerpColor(-15659750, -15265501, hoverProgress), alpha));
     }
 
-    private void drawSettingTooltip(GuiGraphics context, float alpha) {
+    private void drawSettingTooltip(DrawContext context, float alpha) {
         boolean suppressed =
                 this.closing
                         || this.namingConfig
@@ -1581,7 +1581,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawSettingRow(
-            GuiGraphics context,
+            DrawContext context,
             Module module,
             Setting<?> setting,
             float x,
@@ -1847,7 +1847,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawSlider(
-            GuiGraphics context,
+            DrawContext context,
             Setting<?> setting,
             float x,
             float y,
@@ -1942,7 +1942,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawToggle(
-            GuiGraphics context, Object id, float x, float y, boolean on, float alpha) {
+            DrawContext context, Object id, float x, float y, boolean on, float alpha) {
         int accent = ThemeModule.getAccentColorAt(0.5F);
         float progress = this.animate("toggle:" + id, on ? 1.0F : 0.0F, 11.0F);
         float knobProgress =
@@ -2000,7 +2000,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawKeybindButton(
-            GuiGraphics context, Setting<Integer> setting, float x, float y, float alpha) {
+            DrawContext context, Setting<Integer> setting, float x, float y, float alpha) {
         boolean listening = this.listeningKeybind == setting;
         Integer keyCode = setting.getValue();
         String label =
@@ -2011,7 +2011,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawEnumSelector(
-            GuiGraphics context, EnumSetting<?> setting, float right, float y, float alpha) {
+            DrawContext context, EnumSetting<?> setting, float right, float y, float alpha) {
         String label = formatEnumName(setting.getValue());
         String bumpKey = "choice-bump:" + System.identityHashCode(setting);
         float bump = this.animations.getOrDefault(bumpKey, 0.0F);
@@ -2066,7 +2066,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawValueButton(
-            GuiGraphics context, String text, float right, float y, boolean active, float alpha) {
+            DrawContext context, String text, float right, float y, boolean active, float alpha) {
         int accent = ThemeModule.getAccentColorAt(0.6F);
         float pulse = active ? 0.5F + 0.5F * (float) Math.sin(this.elapsedTime * 6.0F) : 0.0F;
         float width = SdfFontRenderer.width(SdfFontRenderer.FontStyle.BODY_SMALL, text) + 12.0F;
@@ -2112,7 +2112,7 @@ public final class OdinGuiScreen extends Screen {
                 AnimationUtil.multiplyAlpha(active ? -1 : -6845010, alpha));
     }
 
-    private void drawConfigsPage(GuiGraphics context, float width, float alpha) {
+    private void drawConfigsPage(DrawContext context, float width, float alpha) {
         float fade = this.getContentFade();
         int accent = ThemeModule.getAccentColorAt(0.3F);
         List<ConfigProfileManager.Profile> profiles = ConfigProfileManager.profiles();
@@ -2428,7 +2428,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void drawConfigNamePrompt(GuiGraphics context, float alpha) {
+    private void drawConfigNamePrompt(DrawContext context, float alpha) {
         float intro = this.animate("config-naming", 1.0F, 12.0F);
         int accent = ThemeModule.getAccentColorAt(0.5F);
         float screenWidth = this.isPanelLayout() ? this.layoutWidth : 600.0F;
@@ -2547,7 +2547,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private float drawIconButton(
-            GuiGraphics context,
+            DrawContext context,
             String icon,
             String tooltip,
             float right,
@@ -2614,7 +2614,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawActionButton(
-            GuiGraphics context,
+            DrawContext context,
             String id,
             String icon,
             String label,
@@ -2716,7 +2716,7 @@ public final class OdinGuiScreen extends Screen {
                 });
     }
 
-    private void drawKeybindsPage(GuiGraphics context, float width, float alpha) {
+    private void drawKeybindsPage(DrawContext context, float width, float alpha) {
         float fade = this.getContentFade();
         List<Module> modules = this.modules(null, this.searchQuery, 0);
         int boundCount = 0;
@@ -2884,7 +2884,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawSimpleHeader(
-            GuiGraphics context,
+            DrawContext context,
             String title,
             String suffix,
             String subtitle,
@@ -2916,7 +2916,7 @@ public final class OdinGuiScreen extends Screen {
                 AnimationUtil.multiplyAlpha(-6845010, alpha * fade));
     }
 
-    private void drawStatusToast(GuiGraphics context, float alpha) {
+    private void drawStatusToast(DrawContext context, float alpha) {
         long now = System.currentTimeMillis();
         float target = !this.status.isEmpty() && now < this.statusExpiry ? 1.0F : 0.0F;
         float progress = this.animate("status", target, 10.0F);
@@ -2972,7 +2972,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawScrollFade(
-            GuiGraphics context, float x, float y, float width, float height, float alpha) {
+            DrawContext context, float x, float y, float width, float height, float alpha) {
         SdfShapeRenderer.fillHorizontalGradient(
                 context,
                 x,
@@ -2994,7 +2994,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawScrollbar(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             float height,
@@ -3042,7 +3042,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void renderPanelLayout(GuiGraphics context, int mouseX, int mouseY) {
+    private void renderPanelLayout(DrawContext context, int mouseX, int mouseY) {
         float screenWidth = this.width;
         float screenHeight = this.height;
         long visiblePanels =
@@ -3111,7 +3111,7 @@ public final class OdinGuiScreen extends Screen {
         this.drawSettingTooltip(context, progress);
     }
 
-    private void drawPanelSearchBar(GuiGraphics context, float alpha) {
+    private void drawPanelSearchBar(DrawContext context, float alpha) {
         float focus = this.animate("search-focus", this.searchFocused ? 1.0F : 0.0F, 12.0F);
         float width = 170.0F + 50.0F * AnimationUtil.easeOutCubic(focus);
         float height = 18.0F;
@@ -3222,7 +3222,7 @@ public final class OdinGuiScreen extends Screen {
         }
     }
 
-    private void drawPanelHub(GuiGraphics context, float x, float y, float alpha) {
+    private void drawPanelHub(DrawContext context, float x, float y, float alpha) {
         int accent = ThemeModule.getAccentColorAt(0.2F);
         float listHeight = PANEL_CATEGORIES.length * 18.0F + 54.0F;
         float cardHeight = 128.0F;
@@ -3362,7 +3362,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawHubEntry(
-            GuiGraphics context,
+            DrawContext context,
             float x,
             float y,
             String icon,
@@ -3454,7 +3454,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawCategoryPanel(
-            GuiGraphics context, String category, float x, float y, float alpha) {
+            DrawContext context, String category, float x, float y, float alpha) {
         if (!(alpha < 0.01F)) {
             int accent = ThemeModule.getAccentColorAt(0.3F);
             boolean searching = !this.searchQuery.isBlank();
@@ -3628,7 +3628,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawPanelModuleRow(
-            GuiGraphics context, Module module, float x, float y, float alpha) {
+            DrawContext context, Module module, float x, float y, float alpha) {
         int accent = ThemeModule.getAccentColorAt(0.4F);
         boolean active = module.isActive();
         this.animate(
@@ -3795,7 +3795,7 @@ public final class OdinGuiScreen extends Screen {
         this.editingSetting = null;
     }
 
-    private void drawDropdown(GuiGraphics context, float alpha) {
+    private void drawDropdown(DrawContext context, float alpha) {
         float progress = this.animate("dropdown", this.openDropdown == null ? 0.0F : 1.0F, 13.0F);
         if (this.openDropdown != null) {
             this.lastOpenDropdown = this.openDropdown;
@@ -3901,7 +3901,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawConfigsDropdown(
-            GuiGraphics context, float x, float y, float width, float height, float alpha) {
+            DrawContext context, float x, float y, float width, float height, float alpha) {
         int accent = ThemeModule.getAccentColorAt(0.3F);
         List<ConfigProfileManager.Profile> profiles = ConfigProfileManager.profiles();
         float slotY = y + 2.0F;
@@ -4167,7 +4167,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private void drawKeybindsDropdown(
-            GuiGraphics context, float x, float y, float width, float height, float alpha) {
+            DrawContext context, float x, float y, float width, float height, float alpha) {
         int accent = ThemeModule.getAccentColorAt(0.3F);
         float rowX = x + 8.0F;
         float rowWidth = width - 16.0F;
@@ -4301,7 +4301,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private float drawLabeledIconButton(
-            GuiGraphics context,
+            DrawContext context,
             String icon,
             String label,
             String tooltip,
@@ -4361,7 +4361,7 @@ public final class OdinGuiScreen extends Screen {
     }
 
     private float drawSmallIconButton(
-            GuiGraphics context,
+            DrawContext context,
             String icon,
             String tooltip,
             float right,
@@ -4417,7 +4417,7 @@ public final class OdinGuiScreen extends Screen {
         return left;
     }
 
-    private void drawLayoutSwitcher(GuiGraphics context, float alpha) {
+    private void drawLayoutSwitcher(DrawContext context, float alpha) {
         float drawScale = this.isPanelLayout() ? this.scale : this.scale * 0.9F;
         float viewWidth = this.width / drawScale;
         float viewHeight = this.height / drawScale;
@@ -4876,7 +4876,7 @@ public final class OdinGuiScreen extends Screen {
         }
 
         if (xSetting != null && ySetting != null) {
-            Minecraft.getInstance()
+            MinecraftClient.getInstance()
                     .setScreen(new HudPositionEditorScreen(this, module, xSetting, ySetting));
         }
     }
@@ -4964,7 +4964,7 @@ public final class OdinGuiScreen extends Screen {
         return next;
     }
 
-    private void pushScissor(GuiGraphics context, float x, float y, float width, float height) {
+    private void pushScissor(DrawContext context, float x, float y, float width, float height) {
         this.scissorStack.add(new float[] {x, y, width, height});
         context.enableScissor(
                 (int) Math.floor(x),
@@ -4973,7 +4973,7 @@ public final class OdinGuiScreen extends Screen {
                 (int) Math.ceil(y + height));
     }
 
-    private void popScissor(GuiGraphics context) {
+    private void popScissor(DrawContext context) {
         if (!this.scissorStack.isEmpty()) {
             this.scissorStack.remove(this.scissorStack.size() - 1);
         }
@@ -5170,12 +5170,12 @@ public final class OdinGuiScreen extends Screen {
     }
 
     public static void drawModuleIcon(
-            GuiGraphics context, Module module, float x, float y, float size, int color) {
+            DrawContext context, Module module, float x, float y, float size, int color) {
         drawIcon(context, getModuleIconName(module), x, y, size, color);
     }
 
     public static void drawIcon(
-            GuiGraphics context, String name, float x, float y, float size, int color) {
+            DrawContext context, String name, float x, float y, float size, int color) {
         if (name != null && name.length() == 1 && name.charAt(0) >= '\ue000') {
             SdfFontRenderer.drawIcon(context, name, x, y, size * 0.8F, color);
         } else if (!ItemIconAtlas.drawIcon(context, name, x, y, size, color)) {

@@ -2,9 +2,9 @@ package odinclient.module.fake;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.MutableText;
-import net.minecraft.network.chat.Text;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import odinclient.module.Category;
@@ -110,7 +110,7 @@ public final class FakePay extends Module {
         }
 
         String target = matcher.group(1);
-        Minecraft.getInstance()
+        MinecraftClient.getInstance()
                 .execute(() -> applyFakePaymentOnClient(module, target, amount));
         return true;
     }
@@ -194,11 +194,11 @@ public final class FakePay extends Module {
     }
 
     private void sendLocalMessage(String message) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         client.execute(() -> sendMessageOnClient(client, message));
     }
 
-    private static void sendMessageOnClient(Minecraft client, String message) {
+    private static void sendMessageOnClient(MinecraftClient client, String message) {
         if (client.player != null) {
             client.player.sendMessage(Text.literal(message), false);
         }

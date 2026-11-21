@@ -2,13 +2,13 @@ package odinclient.render.projection;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.mixin.accessor.GameRendererInvoker;
-import odinclient.ui.draw.GuiGraphicsHolder;
+import odinclient.ui.draw.DrawContextHolder;
 import odinclient.ui.scale.ScreenScaleCompat;
 
 import org.joml.Matrix3x2fStack;
@@ -29,7 +29,7 @@ public final class ScreenProjection {
         if (WorldToScreen.isMatrixFresh()) {
             return WorldToScreen.project(pos);
         } else {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             Camera camera = client.gameRenderer.getCamera();
             Vec3d cameraPos = camera.getCameraPos();
             scratchPos.set(
@@ -67,12 +67,12 @@ public final class ScreenProjection {
     }
 
     public static void pushTransform(Vector3d pos) {
-        pushTransformTo(pos, GuiGraphicsHolder.get());
+        pushTransformTo(pos, DrawContextHolder.get());
     }
 
-    public static void pushTransformTo(Vector3d pos, GuiGraphics context) {
+    public static void pushTransformTo(Vector3d pos, DrawContext context) {
         if (context != null) {
-            GuiGraphicsHolder.set(context);
+            DrawContextHolder.set(context);
             Matrix3x2fStack matrices = context.getMatrices();
             matrices.pushMatrix();
             float compensation = ScreenScaleCompat.getCompensation();
@@ -82,10 +82,10 @@ public final class ScreenProjection {
     }
 
     public static void popTransform() {
-        popTransformFrom(GuiGraphicsHolder.get());
+        popTransformFrom(DrawContextHolder.get());
     }
 
-    public static void popTransformFrom(GuiGraphics context) {
+    public static void popTransformFrom(DrawContext context) {
         if (context != null) {
             context.getMatrices().popMatrix();
         }

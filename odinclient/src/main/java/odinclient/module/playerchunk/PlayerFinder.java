@@ -2,10 +2,10 @@ package odinclient.module.playerchunk;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Text;
-import net.minecraft.world.phys.ChunkPos;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.debug.gizmo.GizmoDrawer;
 import net.minecraft.world.debug.gizmo.GizmoDrawing;
 
@@ -271,9 +271,9 @@ public final class PlayerFinder extends Module {
             this.awaitingTeleport = false;
             this.autoRtp.setValue(false);
             this.warning("Auto RTP stopped after detecting a player chunk.");
-            if (this.mc.getConnection() != null
-                    && this.mc.getConnection().getConnection() != null) {
-                this.mc.getConnection().getConnection().disconnect(Text.of("Chunk found"));
+            if (this.mc.getNetworkHandler() != null
+                    && this.mc.getNetworkHandler().getConnection() != null) {
+                this.mc.getNetworkHandler().getConnection().disconnect(Text.of("Chunk found"));
             }
         }
     }

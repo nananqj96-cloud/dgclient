@@ -1,6 +1,6 @@
 package odinclient.mixin.hud;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 
 import odinclient.event.Render2DEvent;
 import odinclient.module.hud.ThemeModule;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PanelSpotifyHudHideMixin {
     @Inject(method = "onRender2D", at = @At("HEAD"), cancellable = true, remap = false)
     private void odinclient$hideSpotifyBehindPanelScreens(Render2DEvent event, CallbackInfo ci) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (ThemeModule.isPanelStyle() && client != null && client.currentScreen != null) {
             ci.cancel();
         }

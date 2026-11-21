@@ -4,9 +4,9 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.FilterMode;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.render.VertexConsumer;
@@ -56,7 +56,7 @@ public final class ItemIconAtlas {
     }
 
     public static boolean drawIcon(
-            GuiGraphics context, String name, float centerX, float centerY, float size, int color) {
+            DrawContext context, String name, float centerX, float centerY, float size, int color) {
         if (color >>> 24 == 0) {
             return true;
         }
@@ -172,7 +172,7 @@ public final class ItemIconAtlas {
     private static int[] loadTexture16(String path, int[] region) throws Exception {
         Identifier id = Identifier.of("minecraft", "textures/" + path + ".png");
         Resource resource =
-                Minecraft.getInstance().getResourceManager().getResource(id).orElseThrow();
+                MinecraftClient.getInstance().getResourceManager().getResource(id).orElseThrow();
 
         try (InputStream stream = resource.getInputStream();
                 NativeImage image = NativeImage.read(stream); ) {
@@ -200,7 +200,7 @@ public final class ItemIconAtlas {
             throws Exception {
         Identifier id = Identifier.of("minecraft", "textures/" + path + ".png");
         Resource resource =
-                Minecraft.getInstance().getResourceManager().getResource(id).orElseThrow();
+                MinecraftClient.getInstance().getResourceManager().getResource(id).orElseThrow();
 
         int scale;
         try (InputStream stream = resource.getInputStream();

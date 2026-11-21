@@ -2,8 +2,8 @@ package odinclient.module;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Text;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 
 import odinclient.manager.ConfigStore;
 import odinclient.setting.Setting;
@@ -19,7 +19,7 @@ public class Module {
     public final String description;
     public final SettingGroupList settings = new SettingGroupList();
     public final Setting<Integer> keybind;
-    protected final Minecraft mc = Minecraft.getInstance();
+    protected final MinecraftClient mc = MinecraftClient.getInstance();
     private boolean active;
 
     public Module(Category category, String name, String description) {

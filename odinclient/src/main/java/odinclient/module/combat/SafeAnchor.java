@@ -2,15 +2,15 @@ package odinclient.module.combat;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.item.Items;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.Items;
 import net.minecraft.state.property.Properties;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Direction;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

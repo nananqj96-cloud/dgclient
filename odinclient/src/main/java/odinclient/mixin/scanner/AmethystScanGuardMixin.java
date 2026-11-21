@@ -1,8 +1,8 @@
 package odinclient.mixin.scanner;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.module.world.AmethystESP;
@@ -69,7 +69,7 @@ public abstract class AmethystScanGuardMixin {
 
     @Inject(method = "enqueueChunk", at = @At("HEAD"), cancellable = true, remap = false)
     private void odinclient$skipUnchangedChunk(int chunkX, int chunkZ, CallbackInfo ci) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         ClientWorld world = client == null ? null : client.world;
         if (world == null) {
             ci.cancel();
@@ -126,6 +126,6 @@ public abstract class AmethystScanGuardMixin {
     private void odinclient$resetChunkScanCache(CallbackInfo ci) {
         ODINCLIENT_SCANNED_CHUNKS.clear();
         odinclient$pruneCounter = 0;
-        odinclient$worldToken = Minecraft.getInstance().world;
+        odinclient$worldToken = MinecraftClient.getInstance().world;
     }
 }

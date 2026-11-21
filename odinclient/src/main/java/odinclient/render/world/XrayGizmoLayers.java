@@ -4,7 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DepthTestFunction;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.LayeringTransform;
 import net.minecraft.client.render.OutputTarget;
@@ -46,7 +46,7 @@ public final class XrayGizmoLayers {
         capturedMatrix = new Matrix4f(matrix);
     }
 
-    public static void drawCapturedGizmos(Minecraft client) {
+    public static void drawCapturedGizmos(MinecraftClient client) {
         if (client != null && client.world != null && client.gameRenderer != null) {
             Framebuffer framebuffer = client.getFramebuffer();
             GizmoDrawerImpl drawer = capturedDrawer;

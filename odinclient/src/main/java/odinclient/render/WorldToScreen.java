@@ -1,9 +1,9 @@
 package odinclient.render;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.Pair;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -14,7 +14,7 @@ public class WorldToScreen {
     public static final Matrix4f projectionMatrix = new Matrix4f();
     public static final Matrix4f viewMatrix = new Matrix4f();
     public static final Matrix4f modelViewMatrix = new Matrix4f();
-    static Minecraft mc = Minecraft.getInstance();
+    static MinecraftClient mc = MinecraftClient.getInstance();
 
     public static Vec3d worldToScreen(Vec3d pos) {
         Camera camera = mc.getEntityRenderDispatcher().camera;

@@ -11,14 +11,14 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.phys.RotationAxis;
+import net.minecraft.util.math.RotationAxis;
 
 import odinclient.mixin.accessor.RenderPipelinesAccessor;
 
@@ -41,7 +41,7 @@ public final class SkyArtRenderer {
         if (artwork != null && !initFailed) {
             ensureInitialized();
             if (pipeline != null && vertexBuffer != null && indexCount > 0) {
-                Minecraft client = Minecraft.getInstance();
+                MinecraftClient client = MinecraftClient.getInstance();
                 Framebuffer framebuffer = client == null ? null : client.getFramebuffer();
                 if (client != null && framebuffer != null) {
                     GpuTextureView colorView = framebuffer.getColorAttachmentView();

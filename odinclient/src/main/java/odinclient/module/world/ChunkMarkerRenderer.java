@@ -11,7 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem.ShapeIndexBuffer;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.render.BufferBuilder;
@@ -20,7 +20,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.mixin.accessor.ShaderPipelineInvoker;
 import odinclient.module.hud.regionmap.RegionBorderBuilder;
@@ -114,7 +114,7 @@ public final class ChunkMarkerRenderer {
                 return;
             }
 
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             Framebuffer framebuffer = client.getFramebuffer();
             GpuTextureView colorView = framebuffer.getColorAttachmentView();
             GpuTextureView depthView = framebuffer.getDepthAttachmentView();

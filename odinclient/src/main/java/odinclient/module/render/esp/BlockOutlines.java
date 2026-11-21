@@ -2,13 +2,13 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.BlockState;
-import net.minecraft.world.level.block.CollisionContext;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult.Type;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.HitResult.Type;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 import odinclient.event.EventHandler;
@@ -89,7 +89,7 @@ public final class BlockOutlines extends Module {
 
                 if (entity != null) {
                     VoxelShape shape =
-                            state.getOutlineShape(this.mc.world, blockPos, CollisionContext.of(entity));
+                            state.getOutlineShape(this.mc.world, blockPos, ShapeContext.of(entity));
                     if (!shape.isEmpty()) {
                         EntityColor entityColor = this.color.getValue();
                         if (entityColor != null) {

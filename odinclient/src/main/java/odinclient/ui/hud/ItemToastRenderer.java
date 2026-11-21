@@ -1,8 +1,8 @@
 package odinclient.ui.hud;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.ItemStack;
 
 import odinclient.manager.ModuleManager;
 import odinclient.module.Module;
@@ -17,7 +17,7 @@ public final class ItemToastRenderer {
     private ItemToastRenderer() {}
 
     public static int getToastWidth(String title, String subtitle) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null && client.textRenderer != null) {
             int titleWidth = BoldText.width(client.textRenderer, title == null ? "" : title);
             int subtitleWidth =
@@ -30,7 +30,7 @@ public final class ItemToastRenderer {
     }
 
     public static void drawAnchoredToast(
-            GuiGraphics context,
+            DrawContext context,
             ItemStack stack,
             String title,
             String subtitle,
@@ -60,7 +60,7 @@ public final class ItemToastRenderer {
     }
 
     public static void drawToast(
-            GuiGraphics context,
+            DrawContext context,
             ItemStack stack,
             String title,
             String subtitle,
@@ -68,7 +68,7 @@ public final class ItemToastRenderer {
             int y,
             float scale,
             float progress) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null && client.textRenderer != null && context != null) {
             int width = getToastWidth(title, subtitle);
             float clampedScale = Math.max(0.5F, Math.min(2.0F, scale));
@@ -107,8 +107,8 @@ public final class ItemToastRenderer {
     }
 
     private static void drawScaledText(
-            GuiGraphics context, String text, int x, int y, float scale, int color) {
-        Minecraft client = Minecraft.getInstance();
+            DrawContext context, String text, int x, int y, float scale, int color) {
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null && client.textRenderer != null) {
             context.getMatrices().pushMatrix();
             context.getMatrices().translate((float) x, (float) y);
@@ -119,7 +119,7 @@ public final class ItemToastRenderer {
     }
 
     private static void drawScaledItem(
-            GuiGraphics context, ItemStack stack, int x, int y, float scale) {
+            DrawContext context, ItemStack stack, int x, int y, float scale) {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate((float) x, (float) y);
         context.getMatrices().scale(scale, scale);
@@ -133,7 +133,7 @@ public final class ItemToastRenderer {
     }
 
     private static void drawHalfScaleRoundedRect(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -143,7 +143,7 @@ public final class ItemToastRenderer {
     }
 
     private static void drawRoundedRect(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         int corner = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (corner == 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -160,7 +160,7 @@ public final class ItemToastRenderer {
     }
 
     private static void drawRoundedRow(
-            GuiGraphics context, int x, int y, int width, float inset, int color) {
+            DrawContext context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int leftEdge = (int) Math.ceil(left);

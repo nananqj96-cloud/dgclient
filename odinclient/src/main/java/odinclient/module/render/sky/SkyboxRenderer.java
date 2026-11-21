@@ -13,7 +13,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
@@ -45,7 +45,7 @@ public final class SkyboxRenderer {
         if (sky != null && sky.hasTexture() && !disabled) {
             try {
                 initPipeline();
-                Minecraft client = Minecraft.getInstance();
+                MinecraftClient client = MinecraftClient.getInstance();
                 Framebuffer framebuffer = client == null ? null : client.getFramebuffer();
 
                 if (framebuffer == null) {

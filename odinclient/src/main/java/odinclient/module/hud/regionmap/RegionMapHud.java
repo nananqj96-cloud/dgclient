@@ -1,7 +1,7 @@
 package odinclient.module.hud.regionmap;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.world.World;
 
 import odinclient.module.hud.ThemeModule;
@@ -21,8 +21,8 @@ public final class RegionMapHud {
     private RegionMapHud() {}
 
     public static void render(
-            GuiGraphics context,
-            Minecraft client,
+            DrawContext context,
+            MinecraftClient client,
             int screenWidth,
             int screenHeight,
             int percentX,

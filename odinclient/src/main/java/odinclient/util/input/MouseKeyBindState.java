@@ -1,6 +1,6 @@
 package odinclient.util.input;
 
-import net.minecraft.client.KeyMapping;
+import net.minecraft.client.option.KeyBinding;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,7 +11,7 @@ public final class MouseKeyBindState {
 
     private MouseKeyBindState() {}
 
-    public static boolean isKeyPressed(KeyMapping keyBinding) {
+    public static boolean isKeyPressed(KeyBinding keyBinding) {
         if (keyBinding != null && !initFailed) {
             MouseKeyBindState.ReflectionAccessors reflection = accessors;
             if (reflection == null) {
@@ -112,7 +112,7 @@ public final class MouseKeyBindState {
                     getMouseButtonMethod);
         }
 
-        private boolean isPressed(KeyMapping keyBinding) throws ReflectiveOperationException {
+        private boolean isPressed(KeyBinding keyBinding) throws ReflectiveOperationException {
             Object boundKey = this.boundKeyField.get(keyBinding);
             if (boundKey == null) {
                 return false;

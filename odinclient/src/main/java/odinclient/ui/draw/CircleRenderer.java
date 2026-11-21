@@ -1,7 +1,7 @@
 package odinclient.ui.draw;
 
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 import org.joml.Matrix3x2fStack;
@@ -20,7 +20,7 @@ public final class CircleRenderer {
     private CircleRenderer() {}
 
     public static void drawCircle(
-            GuiGraphics context, float centerX, float centerY, float radius, int color) {
+            DrawContext context, float centerX, float centerY, float radius, int color) {
         if (context != null && !(radius <= 0.0F) && color >>> 24 != 0) {
             Matrix3x2fStack matrices = context.getMatrices();
             matrices.pushMatrix();

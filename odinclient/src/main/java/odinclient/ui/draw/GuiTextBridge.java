@@ -1,8 +1,8 @@
 package odinclient.ui.draw;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 
 import odinclient.ui.screen.ClickGuiScreen;
 
@@ -15,7 +15,7 @@ public final class GuiTextBridge {
     private GuiTextBridge() {}
 
     public static void drawText(
-            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
         ClickGuiScreen screen = getClickGuiScreen();
         if (screen == null || !tryDrawGuiText(screen, context, text, x, y, color)) {
             context.drawTextWithShadow(textRenderer, text, x, y, color);
@@ -23,7 +23,7 @@ public final class GuiTextBridge {
     }
 
     public static void drawCenteredText(
-            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
         ClickGuiScreen screen = getClickGuiScreen();
         if (screen != null) {
             Integer textWidth = width(screen, text);
@@ -37,20 +37,20 @@ public final class GuiTextBridge {
     }
 
     private static ClickGuiScreen getClickGuiScreen() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         return client != null && client.currentScreen instanceof ClickGuiScreen screen
                 ? screen
                 : null;
     }
 
     private static boolean tryDrawGuiText(
-            ClickGuiScreen screen, GuiGraphics context, String text, int x, int y, int color) {
+            ClickGuiScreen screen, DrawContext context, String text, int x, int y, int color) {
         try {
             if (drawGuiTextMethod == null) {
                 drawGuiTextMethod =
                         ClickGuiScreen.class.getMethod(
                                 "odinclient$drawGuiText",
-                                GuiGraphics.class,
+                                DrawContext.class,
                                 String.class,
                                 int.class,
                                 int.class,

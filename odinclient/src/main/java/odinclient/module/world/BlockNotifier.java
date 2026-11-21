@@ -1,13 +1,13 @@
 package odinclient.module.world;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BlockState;
-import net.minecraft.world.level.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 
@@ -297,14 +297,14 @@ public final class BlockNotifier extends Module {
 
     private String getSpawnerMob(MobSpawnerBlockEntity spawner) {
         try {
-            CompoundTag nbt =
+            NbtCompound nbt =
                     spawner.createNbtWithIdentifyingData(this.mc.world.getRegistryManager());
-            Optional<CompoundTag> spawnData = nbt.getCompound("SpawnData");
+            Optional<NbtCompound> spawnData = nbt.getCompound("SpawnData");
             if (spawnData.isEmpty()) {
                 return "";
             }
 
-            Optional<CompoundTag> entityData = spawnData.get().getCompound("entity");
+            Optional<NbtCompound> entityData = spawnData.get().getCompound("entity");
             if (entityData.isEmpty()) {
                 return "";
             }

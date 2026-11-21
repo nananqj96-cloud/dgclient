@@ -2,22 +2,22 @@ package odinclient.module.combat;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPlayerEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.EndCrystalEntity;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.Items;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
+import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.HitResult.Type;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.hit.HitResult.Type;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.RaycastContext.ShapeType;
@@ -85,7 +85,7 @@ public class AutoCrystal extends Module {
 
     @EventHandler
     private void onTick(TickEvent.Pre event) {
-        Minecraft client = this.mc;
+        MinecraftClient client = this.mc;
         if (this.shouldAct()) {
             this.wasActing = true;
             this.tickDelays();
@@ -108,7 +108,7 @@ public class AutoCrystal extends Module {
     }
 
     public boolean shouldAct() {
-        Minecraft client = this.mc;
+        MinecraftClient client = this.mc;
         if (!this.isActive()
                 || client.player == null
                 || client.world == null
@@ -147,7 +147,7 @@ public class AutoCrystal extends Module {
         return module != null && module.shouldAct();
     }
 
-    private void tryPlaceCrystal(Minecraft client, BlockHitResult hit, BlockPos pos) {
+    private void tryPlaceCrystal(MinecraftClient client, BlockHitResult hit, BlockPos pos) {
         if (this.isPlaceTargetValid(client, hit)) {
             if (getCrystalAbove(client.world, pos) == null) {
                 this.lastBrokenCrystalId = -1;
@@ -162,7 +162,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean tryBreakCrystal(Minecraft client, EndCrystalEntity crystal) {
+    private boolean tryBreakCrystal(MinecraftClient client, EndCrystalEntity crystal) {
         if (this.breakTimer > 0.0 || crystal.getId() == this.lastBrokenCrystalId) {
             return false;
         } else if (crystal.isAlive()
@@ -177,7 +177,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean isCrystalUnderCrosshair(Minecraft client, EndCrystalEntity crystal) {
+    private boolean isCrystalUnderCrosshair(MinecraftClient client, EndCrystalEntity crystal) {
         if (client.getCameraEntity() != client.player) {
             return false;
         } else {
@@ -212,7 +212,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean isPlaceTargetValid(Minecraft client, BlockHitResult hit) {
+    private boolean isPlaceTargetValid(MinecraftClient client, BlockHitResult hit) {
         if (!hit.isInsideBlock() && client.getCameraEntity() == client.player) {
             double range = client.player.getBlockInteractionRange();
             double rangeSq = range * range;
@@ -232,7 +232,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private Hand getCrystalHand(Minecraft client) {
+    private Hand getCrystalHand(MinecraftClient client) {
         ClientPlayerEntity player = client.player;
         if (player.getMainHandStack().isOf(Items.END_CRYSTAL)) {
             return Hand.MAIN_HAND;
@@ -281,7 +281,7 @@ public class AutoCrystal extends Module {
     }
 
     private static void interactBlock(
-            Minecraft client, BlockHitResult hit, Hand hand, boolean swing) {
+            MinecraftClient client, BlockHitResult hit, Hand hand, boolean swing) {
         if (client.interactionManager.interactBlock(client.player, hand, hit).isAccepted()
                 && swing) {
             client.player.swingHand(hand);
@@ -298,7 +298,7 @@ public class AutoCrystal extends Module {
         }
     }
 
-    private boolean isUseButtonHeld(Minecraft client) {
+    private boolean isUseButtonHeld(MinecraftClient client) {
         return client.isWindowFocused()
                 && GLFW.glfwGetMouseButton(client.getWindow().getHandle(), 1) == 1;
     }

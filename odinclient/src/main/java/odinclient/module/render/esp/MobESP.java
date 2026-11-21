@@ -1,9 +1,9 @@
 package odinclient.module.render.esp;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.util.math.Box;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;
@@ -78,7 +78,7 @@ public final class MobESP extends Module {
                                                 this.alpha.getValue());
                                 Color outline =
                                         new Color(entityColor.r, entityColor.g, entityColor.b, 255);
-                                AABB box = entity.getBoundingBox().expand(0.04);
+                                Box box = entity.getBoundingBox().expand(0.04);
                                 event.renderer.stableBox(
                                         box.minX,
                                         box.minY,

@@ -2,15 +2,15 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ItemEntity;
-import net.minecraft.world.entity.player.PlayerEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.phys.BlockPos;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.WorldChunk;
 
 import odinclient.core.Categories;
@@ -419,11 +419,11 @@ public class Nametags extends Module {
 
     private String getSpawnerLabel(MobSpawnerBlockEntity spawner) {
         try {
-            CompoundTag nbt =
+            NbtCompound nbt =
                     spawner.createNbtWithIdentifyingData(this.mc.world.getRegistryManager());
-            Optional<CompoundTag> spawnData = nbt.getCompound("SpawnData");
+            Optional<NbtCompound> spawnData = nbt.getCompound("SpawnData");
             if (spawnData.isPresent()) {
-                Optional<CompoundTag> entityData = spawnData.get().getCompound("entity");
+                Optional<NbtCompound> entityData = spawnData.get().getCompound("entity");
                 if (entityData.isPresent()) {
                     String id = entityData.get().getString("id").orElse("");
                     if (!id.isEmpty()) {

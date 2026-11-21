@@ -2,7 +2,7 @@ package odinclient.event;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.packet.Packet;
 
 @Environment(EnvType.CLIENT)
 public abstract class PacketEvent {

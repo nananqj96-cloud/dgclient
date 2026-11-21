@@ -1,8 +1,8 @@
 package odinclient.module.world;
 
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.world.phys.BlockPos.Mutable;
-import net.minecraft.world.phys.ChunkPos;
+import net.minecraft.util.math.BlockPos.Mutable;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.WorldChunk;
 

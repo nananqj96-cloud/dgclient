@@ -1,8 +1,8 @@
 package odinclient.ui.scale;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.Window;
 
 public final class ScreenScaleCompat {
@@ -54,21 +54,21 @@ public final class ScreenScaleCompat {
         return screen != null && GuiScale.isConfigScreen(screen.getClass().getName());
     }
 
-    public static ScreenScaleCompat.ScaleScope enter(GuiGraphics context) {
+    public static ScreenScaleCompat.ScaleScope enter(DrawContext context) {
         return new ScreenScaleCompat.ScaleScope(context);
     }
 
     private static Window getWindow() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         return client == null ? null : client.getWindow();
     }
 
     public static final class ScaleScope implements AutoCloseable {
-        private final GuiGraphics context;
+        private final DrawContext context;
         private final ScreenScaleCompat.ScaleState previousState;
         private boolean closed;
 
-        private ScaleScope(GuiGraphics context) {
+        private ScaleScope(DrawContext context) {
             this.context = context;
             this.previousState = ScreenScaleCompat.currentState.get();
             context.getMatrices().pushMatrix();

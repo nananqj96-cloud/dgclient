@@ -1,19 +1,19 @@
 package odinclient.ui.screen;
 
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.core.component.DataComponentTypes;
-import net.minecraft.world.entity.player.PlayerInventory;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemConvertible;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.network.chat.Text;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -85,7 +85,7 @@ public final class FakeSpawnerScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         if (context != null) {
             float scale = ScreenScaleCompat.getScale(0);
 
@@ -101,7 +101,7 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private void renderScreen(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    private void renderScreen(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         if (context != null) {
             try {
                 context.fill(
@@ -208,7 +208,7 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private void drawPanel(GuiGraphics context) {
+    private void drawPanel(DrawContext context) {
         int x = this.panelX;
         int y = this.panelY;
         context.fill(x, y, x + 176, y + 222, -3750202);
@@ -265,13 +265,13 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private static void drawSlot(GuiGraphics context, int x, int y) {
+    private static void drawSlot(DrawContext context, int x, int y) {
         context.fill(x, y, x + 18, y + 18, -13158601);
         context.fill(x + 1, y + 1, x + 18, y + 18, -1);
         context.fill(x + 1, y + 1, x + 17, y + 17, -7631989);
     }
 
-    private void drawSlotHighlight(GuiGraphics context, int mouseX, int mouseY) {
+    private void drawSlotHighlight(DrawContext context, int mouseX, int mouseY) {
         if (context != null) {
             for (int row = 0; row < 6; row++) {
                 for (int col = 0; col < 9; col++) {
@@ -313,7 +313,7 @@ public final class FakeSpawnerScreen extends Screen {
     }
 
     private boolean highlightSlotIfHovered(
-            GuiGraphics context, int mouseX, int mouseY, int slotX, int slotY) {
+            DrawContext context, int mouseX, int mouseY, int slotX, int slotY) {
         if (mouseX >= slotX && mouseY >= slotY && mouseX < slotX + 16 && mouseY < slotY + 16) {
             context.fill(slotX, slotY, slotX + 16, slotY + 16, -2130706433);
             return true;
@@ -322,13 +322,13 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private void drawMenuItems(GuiGraphics context) {
+    private void drawMenuItems(DrawContext context) {
         this.drawItem(context, this.sellStack, this.getMenuSlotX(3), this.getMenuSlotY());
         this.drawItem(context, this.spawnerStack, this.getMenuSlotX(4), this.getMenuSlotY());
         this.drawItem(context, this.dropStack, this.getMenuSlotX(5), this.getMenuSlotY());
     }
 
-    private void drawPlayerInventory(GuiGraphics context) {
+    private void drawPlayerInventory(DrawContext context) {
         if (this.client != null && this.client.player != null) {
             PlayerInventory inventory = this.client.player.getInventory();
             if (inventory != null) {
@@ -367,7 +367,7 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private void drawItem(GuiGraphics context, ItemStack stack, int x, int y) {
+    private void drawItem(DrawContext context, ItemStack stack, int x, int y) {
         if (context != null && stack != null && !stack.isEmpty()) {
             try {
                 context.drawItem(stack, x, y);
@@ -380,7 +380,7 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private void drawTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    private void drawTooltip(DrawContext context, int mouseX, int mouseY) {
         if (this.textRenderer != null) {
             if (hasStack(this.sellStack)
                     && isInsideSlot(mouseX, mouseY, this.getMenuSlotX(3), this.getMenuSlotY())) {
@@ -398,7 +398,7 @@ public final class FakeSpawnerScreen extends Screen {
         return stack != null && !stack.isEmpty();
     }
 
-    private void drawSpawnerTooltip(GuiGraphics context, int mouseX, int mouseY) {
+    private void drawSpawnerTooltip(DrawContext context, int mouseX, int mouseY) {
         String label =
                 "1 "
                         + FakeSpawner.getMobType().getDisplayName().toUpperCase(Locale.ROOT)
@@ -476,7 +476,7 @@ public final class FakeSpawnerScreen extends Screen {
         }
     }
 
-    private void drawTextTooltip(GuiGraphics context, List<Text> lines, int x, int y) {
+    private void drawTextTooltip(DrawContext context, List<Text> lines, int x, int y) {
         if (context != null && this.textRenderer != null && lines != null && !lines.isEmpty()) {
             try {
                 context.drawTooltip(this.textRenderer, lines, x, y);

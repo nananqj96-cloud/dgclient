@@ -1,10 +1,10 @@
 package odinclient.ui.hud;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.core.sounds.SoundEvent;
-import net.minecraft.core.sounds.SoundEvents;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 
 import odinclient.module.Module;
 import odinclient.module.hud.ThemeModule;
@@ -24,7 +24,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public final class ModuleNotifications {
     private static final Object lock = new Object();
@@ -149,7 +149,7 @@ public final class ModuleNotifications {
             if (pending.oldState != active && pending.requestedState == active) {
                 toggleCounter++;
                 if (isEnabled()
-                        && !(Minecraft.getInstance().currentScreen
+                        && !(MinecraftClient.getInstance().currentScreen
                                 instanceof OdinGuiScreen)) {
                     String title = module.title;
                     if (title == null || title.isBlank()) {
@@ -187,9 +187,9 @@ public final class ModuleNotifications {
         return toggleCounter;
     }
 
-    public static void renderHud(GuiGraphics context) {
+    public static void renderHud(DrawContext context) {
         if (context != null
-                && !(Minecraft.getInstance().currentScreen instanceof OdinGuiScreen)) {
+                && !(MinecraftClient.getInstance().currentScreen instanceof OdinGuiScreen)) {
             float scale = getScale() * 0.62F;
 
             try (ScreenScaleCompat.ScaleScope scope = ScreenScaleCompat.enter(context)) {
@@ -204,7 +204,7 @@ public final class ModuleNotifications {
         }
     }
 
-    public static void renderOverMenu(GuiGraphics context, int mouseX, int mouseY) {
+    public static void renderOverMenu(DrawContext context, int mouseX, int mouseY) {
         if (context != null) {
             try (ScreenScaleCompat.ScaleScope scope = ScreenScaleCompat.enter(context)) {
                 renderNotifications(
@@ -241,7 +241,7 @@ public final class ModuleNotifications {
     }
 
     private static void renderNotifications(
-            GuiGraphics context,
+            DrawContext context,
             float right,
             float bottom,
             float scale,
@@ -314,7 +314,7 @@ public final class ModuleNotifications {
     }
 
     private static void renderNotification(
-            GuiGraphics context,
+            DrawContext context,
             ModuleNotifications.Notification notification,
             long age,
             float alpha) {
@@ -432,7 +432,7 @@ public final class ModuleNotifications {
     private static boolean isEnabled() {
         Setting<Boolean> enabledSetting = setting;
         if (enabledSetting != null && Boolean.TRUE.equals(enabledSetting.getValue())) {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             return client != null && client.player != null && client.world != null;
         } else {
             return false;
@@ -456,7 +456,7 @@ public final class ModuleNotifications {
     private static void playSound() {
         Setting<Boolean> sounds = soundsSetting;
         if (sounds != null && Boolean.TRUE.equals(sounds.getValue())) {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             if (client != null && client.getSoundManager() != null) {
                 try {
                     SoundEvent sound = SoundEvents.BLOCK_NOTE_BLOCK_HAT.value();

@@ -1,6 +1,6 @@
 package odinclient.ui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 
 import odinclient.setting.Setting;
 import odinclient.ui.anim.AnimationUtil;
@@ -19,7 +19,7 @@ public final class SettingTooltipRenderer {
     private List<String> descriptionLines = List.of();
 
     public void render(
-            GuiGraphics context,
+            DrawContext context,
             Setting<?> setting,
             float mouseX,
             float mouseY,

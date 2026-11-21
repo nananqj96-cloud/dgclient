@@ -2,7 +2,7 @@ package odinclient.module.render.visual;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.phys.BlockPos;
+import net.minecraft.util.math.BlockPos;
 
 import odinclient.render.Color;
 

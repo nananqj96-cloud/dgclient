@@ -9,7 +9,7 @@ import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 import com.mojang.blaze3d.vertex.VertexFormat.IndexType;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
@@ -19,7 +19,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.fog.FogRenderer;
 import net.minecraft.client.render.fog.FogRenderer.FogType;
 import net.minecraft.client.util.BufferAllocator;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.mixin.accessor.GameRendererAccessor;
 import odinclient.render.world.WorldShapeRenderer;
@@ -244,7 +244,7 @@ public final class LightFinderRenderer {
             } else {
                 RenderPipeline pipeline =
                         WorldShapeRenderer.getNoDepthFilledLayer().getRenderPipeline();
-                Framebuffer framebuffer = Minecraft.getInstance().getFramebuffer();
+                Framebuffer framebuffer = MinecraftClient.getInstance().getFramebuffer();
                 GpuTextureView colorView =
                         RenderSystem.outputColorTextureOverride != null
                                 ? RenderSystem.outputColorTextureOverride
@@ -331,7 +331,7 @@ public final class LightFinderRenderer {
         RenderSystem.setShaderFog(null);
 
         try {
-            GameRenderer gameRenderer = Minecraft.getInstance().gameRenderer;
+            GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
             if (gameRenderer instanceof GameRendererAccessor) {
                 FogRenderer fogRenderer =
                         ((GameRendererAccessor) gameRenderer).zenya$getFogRenderer();

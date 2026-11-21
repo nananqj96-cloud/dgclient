@@ -11,7 +11,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat.DrawMode;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.render.VertexConsumer;
@@ -87,7 +87,7 @@ public final class SdfFontRenderer {
     }
 
     public static void drawTextAtTop(
-            GuiGraphics context,
+            DrawContext context,
             SdfFontRenderer.FontStyle style,
             String text,
             float x,
@@ -164,7 +164,7 @@ public final class SdfFontRenderer {
     }
 
     public static void drawTextCenteredY(
-            GuiGraphics context,
+            DrawContext context,
             SdfFontRenderer.FontStyle style,
             String text,
             float x,
@@ -174,7 +174,7 @@ public final class SdfFontRenderer {
     }
 
     public static void drawTextCentered(
-            GuiGraphics context,
+            DrawContext context,
             SdfFontRenderer.FontStyle style,
             String text,
             float x,
@@ -184,7 +184,7 @@ public final class SdfFontRenderer {
     }
 
     public static void drawTextRightAligned(
-            GuiGraphics context,
+            DrawContext context,
             SdfFontRenderer.FontStyle style,
             String text,
             float x,
@@ -194,7 +194,7 @@ public final class SdfFontRenderer {
     }
 
     public static void drawIcon(
-            GuiGraphics context, String icon, float x, float y, float height, int color) {
+            DrawContext context, String icon, float x, float y, float height, int color) {
         if (color >>> 24 != 0) {
             float scale = height / SdfFontRenderer.FontStyle.ICONS.capHeight;
             Matrix3x2fStack matrices = context.getMatrices();

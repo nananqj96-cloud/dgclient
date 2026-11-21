@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ChatScreen;
 
 import odinclient.module.ModuleContext;
 import odinclient.module.hud.ThemeModule;
@@ -57,7 +57,7 @@ public final class HudLayoutEditor {
     }
 
     public static void registerElement(
-            GuiGraphics context,
+            DrawContext context,
             String id,
             String label,
             float x,
@@ -85,7 +85,7 @@ public final class HudLayoutEditor {
     }
 
     public static void registerOffsetElement(
-            GuiGraphics context,
+            DrawContext context,
             String id,
             String label,
             float x,
@@ -110,7 +110,7 @@ public final class HudLayoutEditor {
     }
 
     public static boolean isEditing() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         return client.currentScreen instanceof ChatScreen && client.world != null;
     }
 
@@ -118,7 +118,7 @@ public final class HudLayoutEditor {
         elements.clear();
     }
 
-    public static void renderOverlay(GuiGraphics context, float deltaTicks) {
+    public static void renderOverlay(DrawContext context, float deltaTicks) {
         boolean editing = isEditing();
         overlayAlpha =
                 AnimationUtil.smoothApproach(
@@ -129,7 +129,7 @@ public final class HudLayoutEditor {
         }
 
         if (!(overlayAlpha < 0.02F) && !elements.isEmpty()) {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             double mouseX =
                     client.mouse.getScaledX(client.getWindow())
                             / ScreenScaleCompat.getCompensation();
@@ -188,7 +188,7 @@ public final class HudLayoutEditor {
 
     private static void updateDrag(double mouseX, double mouseY) {
         boolean mouseDown =
-                GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getHandle(), 0)
+                GLFW.glfwGetMouseButton(MinecraftClient.getInstance().getWindow().getHandle(), 0)
                         == 1;
 
         if (mouseDown && draggedId == null && !wasMouseDown) {

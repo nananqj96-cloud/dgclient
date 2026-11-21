@@ -2,40 +2,40 @@ package odinclient.module.antivanish;
 
 import com.mojang.brigadier.suggestion.Suggestion;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.player.PlayerEntity;
-import net.minecraft.world.entity.projectile.ProjectileEntity;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.HandSwingC2SPacket;
-import net.minecraft.network.protocol.game.PlayerActionC2SPacket;
-import net.minecraft.network.protocol.game.PlayerInteractBlockC2SPacket;
-import net.minecraft.network.protocol.game.PlayerInteractEntityC2SPacket;
-import net.minecraft.network.protocol.game.PlayerInteractItemC2SPacket;
-import net.minecraft.network.protocol.game.RequestCommandCompletionsC2SPacket;
-import net.minecraft.network.protocol.s2c.play.BundleS2CPacket;
-import net.minecraft.network.protocol.s2c.play.CommandSuggestionsS2CPacket;
-import net.minecraft.network.protocol.s2c.play.EntityTrackerUpdateS2CPacket;
-import net.minecraft.network.protocol.s2c.play.ExplosionS2CPacket;
-import net.minecraft.network.protocol.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.protocol.s2c.play.ParticleS2CPacket;
-import net.minecraft.network.protocol.s2c.play.PlaySoundFromEntityS2CPacket;
-import net.minecraft.network.protocol.s2c.play.PlaySoundS2CPacket;
-import net.minecraft.network.protocol.s2c.play.PlayerListS2CPacket;
-import net.minecraft.network.protocol.s2c.play.PlayerListS2CPacket.Action;
-import net.minecraft.network.protocol.s2c.play.PlayerListS2CPacket.Entry;
-import net.minecraft.network.protocol.s2c.play.PlayerRemoveS2CPacket;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Action;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket.Entry;
+import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
-import net.minecraft.network.chat.Text;
-import net.minecraft.network.chat.TranslatableTextContent;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.Direction;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
@@ -84,8 +84,8 @@ public final class AntiVanishActivityMonitor {
 
     private AntiVanishActivityMonitor() {}
 
-    private static Minecraft client() {
-        return Minecraft.getInstance();
+    private static MinecraftClient client() {
+        return MinecraftClient.getInstance();
     }
 
     private static long currentMillis() {
@@ -189,12 +189,12 @@ public final class AntiVanishActivityMonitor {
 
     @EventHandler
     private void onTick(TickEvent.Post event) {
-        Minecraft mc = client();
+        MinecraftClient mc = client();
         if ((AntiVanishDetection.isEnabled() || AutoLog.isAntiVanishLogoutActive())
                 && mc.world != null
                 && mc.player != null
-                && mc.getConnection() != null) {
-            String brand = mc.getConnection().getBrand();
+                && mc.getNetworkHandler() != null) {
+            String brand = mc.getNetworkHandler().getBrand();
             RegionMapLayout.RegionRect region =
                     mc.world.getRegistryKey() == World.OVERWORLD
                             ? RegionMapLayout.findRegion(mc.player.getX(), mc.player.getZ())
@@ -206,13 +206,13 @@ public final class AntiVanishActivityMonitor {
 
             if (this.world != mc.world
                     || this.player != mc.player
-                    || this.connection != mc.getConnection()
+                    || this.connection != mc.getNetworkHandler()
                     || !Objects.equals(this.brand, brand)
                     || !Objects.equals(this.regionKey, newRegionKey)) {
                 this.reset();
                 this.world = mc.world;
                 this.player = mc.player;
-                this.connection = mc.getConnection();
+                this.connection = mc.getNetworkHandler();
                 this.brand = brand;
                 this.regionKey = newRegionKey;
                 this.detector.reset(mc.player.getUuid(), mc.player.getGameProfile().name());
@@ -228,14 +228,14 @@ public final class AntiVanishActivityMonitor {
             HashSet<UUID> listedIds = new HashSet<>();
             HashSet<UUID> nearbyIds = new HashSet<>();
 
-            for (PlayerInfo listEntry : mc.getConnection().getPlayerList()) {
+            for (PlayerListEntry listEntry : mc.getNetworkHandler().getPlayerList()) {
                 if (listEntry.getProfile() != null) {
                     listedIds.add(listEntry.getProfile().id());
                 }
             }
 
-            for (PlayerInfo listedEntry :
-                    mc.getConnection().getListedPlayerListEntries()) {
+            for (PlayerListEntry listedEntry :
+                    mc.getNetworkHandler().getListedPlayerListEntries()) {
                 if (listedEntry.getProfile() != null) {
                     this.detector.onListedPlayer(
                             listedEntry.getProfile().id(), listedEntry.getProfile().name(), now);
@@ -283,7 +283,7 @@ public final class AntiVanishActivityMonitor {
                 }
 
                 this.pendingProbes.put(probeId, now);
-                mc.getConnection()
+                mc.getNetworkHandler()
                         .sendPacket(
                                 new RequestCommandCompletionsC2SPacket(probeId, "minecraft:msg "));
             }
@@ -295,7 +295,7 @@ public final class AntiVanishActivityMonitor {
     }
 
     private void processReceivedPacket(Packet<?> packet, long now) {
-        Minecraft mc = client();
+        MinecraftClient mc = client();
         if (packet instanceof PlayerRemoveS2CPacket) {
             this.detector.onPlayersRemoved(((PlayerRemoveS2CPacket) packet).profileIds(), now);
         } else if (packet instanceof PlayerListS2CPacket listPacket) {
@@ -339,7 +339,7 @@ public final class AntiVanishActivityMonitor {
         } else if (packet instanceof CommandSuggestionsS2CPacket suggestionsPacket) {
             HashSet<String> onlineNames = new HashSet<>();
 
-            for (PlayerInfo listEntry : mc.getConnection().getPlayerList()) {
+            for (PlayerListEntry listEntry : mc.getNetworkHandler().getPlayerList()) {
                 if (listEntry.getProfile() != null) {
                     onlineNames.add(listEntry.getProfile().name().toLowerCase(Locale.ROOT));
                 }
@@ -471,7 +471,7 @@ public final class AntiVanishActivityMonitor {
     }
 
     private boolean isUnexplainedSource(Vec3d source, long now) {
-        Minecraft mc = client();
+        MinecraftClient mc = client();
         if (mc.player.getEntityPos().squaredDistanceTo(source) > 4096.0) {
             return false;
         } else {

@@ -2,7 +2,7 @@ package odinclient.render.world;
 
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.render.Color;
 
@@ -20,7 +20,7 @@ public final class WorldBoxQueue {
 
     public static synchronized void addBlockBox(
             double x, double y, double z, Color fill, Color outline) {
-        WorldBoxQueue.QueuedAABB box =
+        WorldBoxQueue.QueuedBox box =
                 new WorldBoxQueue.QueuedBox(
                         x + 0.05, y + 0.05, z + 0.05, x + 0.95, y + 0.95, z + 0.95, true, fill.r,
                         fill.g, fill.b, fill.a, true, outline.r, outline.g, outline.b, outline.a);
@@ -37,7 +37,7 @@ public final class WorldBoxQueue {
             double maxY,
             double maxZ,
             Color color) {
-        WorldBoxQueue.QueuedAABB box =
+        WorldBoxQueue.QueuedBox box =
                 new WorldBoxQueue.QueuedBox(
                         minX, minY, minZ, maxX, maxY, maxZ, false, 0, 0, 0, 0, true, color.r,
                         color.g, color.b, color.a);
@@ -64,7 +64,7 @@ public final class WorldBoxQueue {
             WorldShapeRenderer.ShapeBatch batch = WorldShapeRenderer.createBatch(matrices);
             Vec3d cameraPos = camera.getCameraPos();
 
-            for (WorldBoxQueue.QueuedAABB box : boxes) {
+            for (WorldBoxQueue.QueuedBox box : boxes) {
                 double minX = box.minX - cameraPos.x;
                 double minY = box.minY - cameraPos.y;
                 double minZ = box.minZ - cameraPos.z;

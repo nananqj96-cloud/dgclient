@@ -2,10 +2,10 @@ package odinclient.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
-import net.minecraft.world.inventory.SlotActionType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.function.Predicate;
 
@@ -14,7 +14,7 @@ public final class InventoryUtils {
     private InventoryUtils() {}
 
     public static SlotResult findInHotbarRange(Predicate<ItemStack> predicate, int from, int to) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null && predicate != null) {
             int last = Math.min(to, client.player.getInventory().size() - 1);
 
@@ -29,11 +29,11 @@ public final class InventoryUtils {
     }
 
     public static boolean selectHotbarSlot(int slot, boolean sendPacket) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null && slot >= 0 && slot <= 8) {
             client.player.getInventory().setSelectedSlot(slot);
-            if (client.getConnection() != null) {
-                client.getConnection().sendPacket(new ServerboundSetCarriedItemPacket(slot));
+            if (client.getNetworkHandler() != null) {
+                client.getNetworkHandler().sendPacket(new UpdateSelectedSlotC2SPacket(slot));
             }
 
             return true;
@@ -68,7 +68,7 @@ public final class InventoryUtils {
         }
 
         private void sendSwap(int button) {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             if (client.player != null && client.interactionManager != null && this.slot >= 0) {
                 client.interactionManager.clickSlot(
                         client.player.currentScreenHandler.syncId,

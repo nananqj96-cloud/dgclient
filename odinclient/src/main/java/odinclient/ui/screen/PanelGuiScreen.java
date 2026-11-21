@@ -1,12 +1,12 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.network.chat.Text;
+import net.minecraft.text.Text;
 
 import odinclient.manager.ConfigProfileManager;
 import odinclient.manager.ModuleManager;
@@ -133,14 +133,14 @@ public final class PanelGuiScreen extends Screen {
             PanelLayoutStore.save(this.panelPositions);
         }
 
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.guiScale = ScreenScaleCompat.getScale(this.width) * 0.8F;
         int scaledMouseX = Math.round(mouseX / this.guiScale);
         int scaledMouseY = Math.round(mouseY / this.guiScale);
@@ -207,7 +207,7 @@ public final class PanelGuiScreen extends Screen {
         return Math.round(ScreenScaleCompat.getScaledHeight() / 0.8F);
     }
 
-    private void drawToolbar(GuiGraphics context, int mouseX, int mouseY, int accent) {
+    private void drawToolbar(DrawContext context, int mouseX, int mouseY, int accent) {
         int width = Math.min(525, this.getScaledWidth() - 24);
         int left = (this.getScaledWidth() - width) / 2;
         int top = 9;
@@ -290,7 +290,7 @@ public final class PanelGuiScreen extends Screen {
                 this.searchQuery.isEmpty() ? -9932672 : -1841428);
     }
 
-    private void drawPanels(GuiGraphics context, int mouseX, int mouseY, int accent) {
+    private void drawPanels(DrawContext context, int mouseX, int mouseY, int accent) {
         PanelGuiScreen.PanelLayout layout = this.computeLayout();
         int panelWidth = layout.panelWidth;
         int[] rowHeights = new int[(CATEGORIES.size() + layout.columns - 1) / layout.columns];
@@ -410,7 +410,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawModuleRow(
-            GuiGraphics context,
+            DrawContext context,
             Module module,
             int x,
             int y,
@@ -474,7 +474,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawSettingRow(
-            GuiGraphics context,
+            DrawContext context,
             Module module,
             Setting<?> setting,
             int x,
@@ -629,7 +629,7 @@ public final class PanelGuiScreen extends Screen {
         }
     }
 
-    private void drawThemesOverlay(GuiGraphics context, int mouseX, int mouseY, int accent) {
+    private void drawThemesOverlay(DrawContext context, int mouseX, int mouseY, int accent) {
         context.fill(0, 0, this.getScaledWidth(), this.getScaledHeight(), -1459617792);
         int width = Math.min(470, this.getScaledWidth() - 28);
         int height = Math.min(285, this.getScaledHeight() - 24);
@@ -747,7 +747,7 @@ public final class PanelGuiScreen extends Screen {
                 -3221794);
     }
 
-    private void drawConfigsOverlay(GuiGraphics context, int mouseX, int mouseY, int accent) {
+    private void drawConfigsOverlay(DrawContext context, int mouseX, int mouseY, int accent) {
         context.fill(0, 0, this.getScaledWidth(), this.getScaledHeight(), -1459617792);
         int width = Math.min(510, this.getScaledWidth() - 28);
         int height = Math.min(344, this.getScaledHeight() - 24);
@@ -854,7 +854,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawNewConfigDialog(
-            GuiGraphics context,
+            DrawContext context,
             int left,
             int top,
             int width,
@@ -1162,7 +1162,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private static void drawCategoryIcon(
-            GuiGraphics context, String category, int x, int y, int color) {
+            DrawContext context, String category, int x, int y, int color) {
         switch (category) {
             case "combat":
                 for (int m = 0; m < 6; m++) {
@@ -1213,7 +1213,7 @@ public final class PanelGuiScreen extends Screen {
         }
     }
 
-    private static void drawIconPixel(GuiGraphics context, int x, int y, int color) {
+    private static void drawIconPixel(DrawContext context, int x, int y, int color) {
         context.fill(x, y, x + 2, y + 2, color);
     }
 
@@ -1305,7 +1305,7 @@ public final class PanelGuiScreen extends Screen {
             } else {
                 if (this.dashboardStyleButton.contains(mouseX, mouseY)) {
                     theme.guiStyle.setValue(ThemeModule.GuiStyle.DASHBOARD);
-                    Minecraft.getInstance().setScreen(new ClickGuiScreen(this.parent));
+                    MinecraftClient.getInstance().setScreen(new ClickGuiScreen(this.parent));
                 } else if (this.panelsStyleButton.contains(mouseX, mouseY)) {
                     theme.guiStyle.setValue(ThemeModule.GuiStyle.PANELS);
                 } else if (this.rainbowOption.contains(mouseX, mouseY)) {
@@ -1620,7 +1620,7 @@ public final class PanelGuiScreen extends Screen {
         }
 
         if (xSetting != null && ySetting != null) {
-            Minecraft.getInstance()
+            MinecraftClient.getInstance()
                     .setScreen(new HudPositionEditorScreen(this, module, xSetting, ySetting));
         }
     }
@@ -1683,14 +1683,14 @@ public final class PanelGuiScreen extends Screen {
         return ModuleManager.get().getByName("theme") instanceof ThemeModule theme ? theme : null;
     }
 
-    private void drawOverlayBackground(GuiGraphics context, int x, int y, int width, int height) {
+    private void drawOverlayBackground(DrawContext context, int x, int y, int width, int height) {
         DashboardRenderer.drawRoundedHighlight(
                 context, x + 2, y + 5, width, height, 12, 1879048192);
         DashboardRenderer.drawRoundedRect(context, x, y, width, height, 12, -66449899);
     }
 
     private void drawButton(
-            GuiGraphics context,
+            DrawContext context,
             PanelGuiScreen.Rect rect,
             String label,
             int mouseX,
@@ -1710,7 +1710,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawStyleOption(
-            GuiGraphics context,
+            DrawContext context,
             PanelGuiScreen.Rect rect,
             String title,
             String description,
@@ -1736,7 +1736,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawToggleOption(
-            GuiGraphics context,
+            DrawContext context,
             PanelGuiScreen.Rect rect,
             String label,
             boolean enabled,
@@ -1772,7 +1772,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawValueBox(
-            GuiGraphics context,
+            DrawContext context,
             PanelGuiScreen.Rect rect,
             String text,
             boolean active,
@@ -1794,7 +1794,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawSlider(
-            GuiGraphics context, PanelGuiScreen.Rect rect, double fraction, int accent) {
+            DrawContext context, PanelGuiScreen.Rect rect, double fraction, int accent) {
         double clamped = clampDouble(fraction, 0.0, 1.0);
         this.drawRoundedRectSnapped(context, rect.x, rect.y, rect.w, rect.h, 2, -13617598);
         int fillWidth = (int) Math.round(rect.w * clamped);
@@ -1807,7 +1807,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private void drawRoundedRectSnapped(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0) {
             float scale = 1.6F;
             float snappedX = Math.round(x * scale) / scale;
@@ -1824,7 +1824,7 @@ public final class PanelGuiScreen extends Screen {
         }
     }
 
-    private static void drawToggleKnob(GuiGraphics context, float x, float y, int color) {
+    private static void drawToggleKnob(DrawContext context, float x, float y, int color) {
         Matrix3x2fStack matrices = context.getMatrices();
         matrices.pushMatrix();
         matrices.translate(x, y);
@@ -1833,7 +1833,7 @@ public final class PanelGuiScreen extends Screen {
     }
 
     private static void drawChevron(
-            GuiGraphics context, int x, int y, boolean collapsed, int color) {
+            DrawContext context, int x, int y, boolean collapsed, int color) {
         Matrix3x2fStack matrices = context.getMatrices();
         matrices.pushMatrix();
         float scale = 1.6F;
@@ -1846,15 +1846,15 @@ public final class PanelGuiScreen extends Screen {
         matrices.popMatrix();
     }
 
-    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawText(DrawContext context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawCenteredText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawCenteredText(DrawContext context, String text, int x, int y, int color) {
         DashboardRenderer.drawCenteredBoldText(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawRightAlignedText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawRightAlignedText(DrawContext context, String text, int x, int y, int color) {
         DashboardRenderer.drawRightAlignedBoldText(context, this.textRenderer, text, x, y, color);
     }
 

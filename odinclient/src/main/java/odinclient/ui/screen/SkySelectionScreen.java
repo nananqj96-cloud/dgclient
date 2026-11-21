@@ -1,11 +1,11 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Text;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.module.render.sky.SkyArts;
@@ -38,7 +38,7 @@ public final class SkySelectionScreen extends Screen {
     }
 
     public static void open(Screen parent, EnumSetting<?> setting) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null) {
             client.setScreen(new SkySelectionScreen(parent, setting));
         }
@@ -50,7 +50,7 @@ public final class SkySelectionScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         float scale = ScreenScaleCompat.getScale(0);
 
         try (ScreenScaleCompat.ScaleScope ignored = ScreenScaleCompat.enter(context)) {
@@ -59,7 +59,7 @@ public final class SkySelectionScreen extends Screen {
         }
     }
 
-    private void renderScaled(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    private void renderScaled(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.updateLayout();
         int accent = ThemeModule.getAccentColorAt(0.5F);
         context.fill(
@@ -236,13 +236,13 @@ public final class SkySelectionScreen extends Screen {
     }
 
     private void returnToParent() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }
     }
 
-    private void drawCheckmark(GuiGraphics context, int x, int y) {
+    private void drawCheckmark(DrawContext context, int x, int y) {
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(0.5F, 0.5F);
 
@@ -259,12 +259,12 @@ public final class SkySelectionScreen extends Screen {
         }
     }
 
-    private void drawLabel(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawLabel(DrawContext context, String text, int x, int y, int color) {
         BoldText.draw(context, this.textRenderer, text, x, y, color);
     }
 
     private void drawRoundedRect(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             int r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
             if (r == 0) {
@@ -307,7 +307,7 @@ public final class SkySelectionScreen extends Screen {
     }
 
     private void drawCornerRow(
-            GuiGraphics context, int x, int y, int width, float inset, int color) {
+            DrawContext context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int leftEdge = (int) Math.ceil(left);

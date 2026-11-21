@@ -1,8 +1,8 @@
 package odinclient.render.world;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.render.projection.WorldToScreen;
 import odinclient.ui.draw.SdfShapeRenderer;
@@ -34,13 +34,13 @@ public final class TracerLineBatch {
         }
     }
 
-    public static void render(GuiGraphics context) {
+    public static void render(DrawContext context) {
         try {
             if (queue.isEmpty() || !WorldToScreen.isMatrixFresh()) {
                 return;
             }
 
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             if (client == null || client.getWindow() == null || client.world == null) {
                 return;
             }

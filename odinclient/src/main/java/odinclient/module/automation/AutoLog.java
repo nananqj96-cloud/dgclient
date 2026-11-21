@@ -2,8 +2,8 @@ package odinclient.module.automation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.entity.player.PlayerEntity;
-import net.minecraft.network.chat.Text;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;
@@ -88,7 +88,7 @@ public final class AutoLog extends Module {
                 && !this.loggedOut
                 && this.mc.world != null
                 && this.mc.player != null
-                && this.mc.getConnection() != null) {
+                && this.mc.getNetworkHandler() != null) {
             PlayerEntity closest = null;
 
             for (PlayerEntity player : this.mc.world.getPlayers()) {
@@ -129,9 +129,9 @@ public final class AutoLog extends Module {
         if (!this.loggedOut
                 && this.mc.world != null
                 && this.mc.player != null
-                && this.mc.getConnection() != null) {
+                && this.mc.getNetworkHandler() != null) {
             this.loggedOut = true;
-            this.mc.getConnection().getConnection().disconnect(Text.literal(reason));
+            this.mc.getNetworkHandler().getConnection().disconnect(Text.literal(reason));
         }
     }
 }

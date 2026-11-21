@@ -1,6 +1,6 @@
 package odinclient.mixin.hud;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 
 import odinclient.mixin.accessor.SettingGroupAccessor;
 import odinclient.module.Category;
@@ -58,7 +58,7 @@ public abstract class RegionMapLayoutMixin extends Module {
     }
 
     @Inject(method = "drawPanel", at = @At("HEAD"), cancellable = true, remap = false)
-    private void odinclient$renderNewMap(GuiGraphics context, int x, int y, CallbackInfo ci) {
+    private void odinclient$renderNewMap(DrawContext context, int x, int y, CallbackInfo ci) {
         if (this.odinclient$newRegionMap != null
                 && Boolean.TRUE.equals(this.odinclient$newRegionMap.getValue())) {
             float roundedScale = Math.round(this.scale.getValue().floatValue() * 20.0F) / 20.0F;

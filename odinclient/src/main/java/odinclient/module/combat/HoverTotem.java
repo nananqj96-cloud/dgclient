@@ -2,10 +2,10 @@ package odinclient.module.combat;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screens.ingame.InventoryScreen;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.SlotActionType;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.item.Items;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

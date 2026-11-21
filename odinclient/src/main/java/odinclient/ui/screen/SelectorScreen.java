@@ -1,18 +1,18 @@
 package odinclient.ui.screen;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.Minecraft;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Text;
+import net.minecraft.entity.EntityType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.render.EntityColor;
@@ -120,7 +120,7 @@ public final class SelectorScreen extends Screen {
     }
 
     private static void showScreen(SelectorScreen screen) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null && screen != null) {
             client.setScreen(screen);
         }
@@ -132,7 +132,7 @@ public final class SelectorScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.guiScale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.guiScale);
         int scaledMouseY = Math.round(mouseY / this.guiScale);
@@ -289,7 +289,7 @@ public final class SelectorScreen extends Screen {
     }
 
     private void drawEntry(
-            GuiGraphics context,
+            DrawContext context,
             Object item,
             int x,
             int y,
@@ -570,7 +570,7 @@ public final class SelectorScreen extends Screen {
     }
 
     private void closeScreen() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }
@@ -614,7 +614,7 @@ public final class SelectorScreen extends Screen {
         this.scrollOffset = 0;
     }
 
-    private void drawIcon(GuiGraphics context, Object item, int x, int y) {
+    private void drawIcon(DrawContext context, Object item, int x, int y) {
         ItemStack stack = null;
         if (item instanceof Block block) {
             stack = new ItemStack(block.asItem());
@@ -677,14 +677,14 @@ public final class SelectorScreen extends Screen {
         return BoldText.truncateToWidth(this.textRenderer, text, maxWidth);
     }
 
-    private void drawPanel(GuiGraphics context, int x, int y, int width, int height) {
+    private void drawPanel(DrawContext context, int x, int y, int width, int height) {
         DashboardRenderer.drawRoundedHighlight(
                 context, x + 2, y + 5, width, height, 12, 1962934272);
         DashboardRenderer.drawRoundedRect(context, x, y, width, height, 12, -66449899);
     }
 
     private void button(
-            GuiGraphics context,
+            DrawContext context,
             int x,
             int y,
             int width,
@@ -702,11 +702,11 @@ public final class SelectorScreen extends Screen {
         this.drawCenteredText(context, label, centerX, textY, active ? -723464 : -6182731);
     }
 
-    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawText(DrawContext context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawCenteredText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawCenteredText(DrawContext context, String text, int x, int y, int color) {
         DashboardRenderer.drawCenteredBoldText(context, this.textRenderer, text, x, y, color);
     }
 

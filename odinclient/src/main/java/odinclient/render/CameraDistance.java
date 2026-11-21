@@ -2,8 +2,8 @@ package odinclient.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public final class CameraDistance {
@@ -14,7 +14,7 @@ public final class CameraDistance {
                 ? Double.POSITIVE_INFINITY
                 : Math.sqrt(
                         entity.squaredDistanceTo(
-                                Minecraft.getInstance()
+                                MinecraftClient.getInstance()
                                         .gameRenderer
                                         .getCamera()
                                         .getCameraPos()));
@@ -25,14 +25,14 @@ public final class CameraDistance {
             return false;
         } else {
             return entity.squaredDistanceTo(
-                            Minecraft.getInstance().gameRenderer.getCamera().getCameraPos())
+                            MinecraftClient.getInstance().gameRenderer.getCamera().getCameraPos())
                     <= distance * distance;
         }
     }
 
     public static boolean isPosWithinDistance(double x, double y, double z, double distance) {
         double maxDistanceSq = distance * distance;
-        return Minecraft.getInstance()
+        return MinecraftClient.getInstance()
                         .gameRenderer
                         .getCamera()
                         .getCameraPos()

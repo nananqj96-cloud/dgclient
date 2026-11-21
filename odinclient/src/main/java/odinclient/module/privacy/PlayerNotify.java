@@ -3,10 +3,10 @@ package odinclient.module.privacy;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.world.entity.player.PlayerEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.core.sounds.SoundEvent;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 import odinclient.core.Categories;

@@ -2,11 +2,11 @@ package odinclient.render.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DrawStyle;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.debug.gizmo.GizmoDrawer;
 import net.minecraft.world.debug.gizmo.GizmoDrawing;
 
@@ -42,7 +42,7 @@ public final class GizmoRenderer {
             Color outlineColor,
             BoxRenderMode mode,
             int duration) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null) {
             int fillArgb = fillColor == null ? 0 : fillColor.toArgb();
             int outlineArgb = outlineColor == null ? 0 : outlineColor.toArgb();
@@ -80,7 +80,7 @@ public final class GizmoRenderer {
             Color fillColor,
             Color outlineColor,
             BoxRenderMode mode) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null) {
             int fillArgb = fillColor == null ? 0 : fillColor.toArgb();
             int outlineArgb = outlineColor == null ? 0 : outlineColor.toArgb();
@@ -96,7 +96,7 @@ public final class GizmoRenderer {
     }
 
     private void drawBox(
-            AABB box,
+            Box box,
             int fillColor,
             int lineColor,
             BoxRenderMode mode,
@@ -185,7 +185,7 @@ public final class GizmoRenderer {
     }
 
     public void line(Vec3d from, Vec3d to, Color color, float width) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null && from != null && to != null && color != null) {
             GizmoDrawing.line(from, to, color.toArgb(), Math.max(0.5F, width)).ignoreOcclusion();
         }
@@ -194,7 +194,7 @@ public final class GizmoRenderer {
     private void drawScreenLine(Vec3d from, Vec3d to, Color color, float width) {
         StableLineRenderer.drawLine(
                 this.projectionMatrix,
-                this.getCameraPos(Minecraft.getInstance()),
+                this.getCameraPos(MinecraftClient.getInstance()),
                 from,
                 to,
                 color.toArgb());
@@ -233,7 +233,7 @@ public final class GizmoRenderer {
     }
 
     private double getLineHalfWidth(Vec3d point, Vec3d cameraPos, float width) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         double distance = Math.max(0.05, point.distanceTo(cameraPos));
         double scale =
                 this.modelViewMatrix == null
@@ -246,7 +246,7 @@ public final class GizmoRenderer {
         return Math.max(2.0E-4, width * distance / (scale * screenHeight));
     }
 
-    private Vec3d getCameraPos(Minecraft client) {
+    private Vec3d getCameraPos(MinecraftClient client) {
         Camera activeCamera = this.camera;
         if (activeCamera == null && client.gameRenderer != null) {
             activeCamera = client.gameRenderer.getCamera();
@@ -256,7 +256,7 @@ public final class GizmoRenderer {
     }
 
     public void tracer(Vec3d target, Color color, float width) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null
                 && client.gameRenderer != null
                 && target != null
@@ -268,7 +268,7 @@ public final class GizmoRenderer {
     }
 
     public void stableTracer(Vec3d target, Color color, float width) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client.world != null
                 && client.gameRenderer != null
                 && target != null

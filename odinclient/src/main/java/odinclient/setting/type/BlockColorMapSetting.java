@@ -2,8 +2,8 @@ package odinclient.setting.type;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.block.Block;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 import odinclient.render.EntityColor;

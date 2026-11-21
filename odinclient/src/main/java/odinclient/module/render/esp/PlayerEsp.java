@@ -2,9 +2,9 @@ package odinclient.module.render.esp;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.PlayerEntity;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Box;
 
 import odinclient.event.EventHandler;
 import odinclient.event.WorldRenderEvent;
@@ -93,7 +93,7 @@ public final class PlayerEsp extends Module {
 
             for (PlayerEntity player : this.mc.world.getPlayers()) {
                 if (this.isValidTarget(player)) {
-                    AABB box = player.getBoundingBox().expand(0.04);
+                    Box box = player.getBoundingBox().expand(0.04);
                     if (boxed) {
                         event.renderer.stableBox(
                                 box.minX,

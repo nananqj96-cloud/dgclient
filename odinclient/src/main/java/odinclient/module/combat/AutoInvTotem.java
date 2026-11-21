@@ -2,8 +2,8 @@ package odinclient.module.combat;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screens.ingame.InventoryScreen;
-import net.minecraft.world.item.Items;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.item.Items;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

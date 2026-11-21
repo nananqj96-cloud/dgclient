@@ -1,11 +1,11 @@
 package odinclient.module.movement;
 
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.input.InputConstants.Key;
-import net.minecraft.world.entity.player.PlayerInventory;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.network.chat.Text;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil.Key;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.text.Text;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;
@@ -106,11 +106,11 @@ public final class AutoFirework extends Module {
                 && this.nextUseNanos != Long.MAX_VALUE) {
             long now = System.nanoTime();
             if (now >= this.nextUseNanos) {
-                KeyMapping useKey = this.mc.options.useKey;
+                KeyBinding useKey = this.mc.options.useKey;
                 if (!useKey.isPressed() && this.ensureFireworkHeld()) {
                     this.pressedKey = useKey.getDefaultKey();
-                    KeyMapping.setKeyPressed(this.pressedKey, true);
-                    KeyMapping.onKeyPressed(this.pressedKey);
+                    KeyBinding.setKeyPressed(this.pressedKey, true);
+                    KeyBinding.onKeyPressed(this.pressedKey);
                 }
 
                 this.nextUseNanos = this.nextUseTime(now);
@@ -160,7 +160,7 @@ public final class AutoFirework extends Module {
 
     private void releaseUseKey() {
         if (this.pressedKey != null) {
-            KeyMapping.setKeyPressed(this.pressedKey, false);
+            KeyBinding.setKeyPressed(this.pressedKey, false);
             this.pressedKey = null;
         }
     }
@@ -188,10 +188,10 @@ public final class AutoFirework extends Module {
     }
 
     private void disconnect(String reason) {
-        if (!this.disconnecting && this.isInWorld() && this.mc.getConnection() != null) {
+        if (!this.disconnecting && this.isInWorld() && this.mc.getNetworkHandler() != null) {
             this.disconnecting = true;
             this.releaseUseKey();
-            this.mc.getConnection().getConnection().disconnect(Text.literal(reason));
+            this.mc.getNetworkHandler().getConnection().disconnect(Text.literal(reason));
         }
     }
 }

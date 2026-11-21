@@ -1,6 +1,6 @@
 package odinclient.ui.draw;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 
 public final class FilledCircleRenderer {
     private static final int SMALL_RADIUS_THRESHOLD = 2;
@@ -8,7 +8,7 @@ public final class FilledCircleRenderer {
 
     private FilledCircleRenderer() {}
 
-    public static void fill(GuiGraphics context, int x, int y, int radius, int color) {
+    public static void fill(DrawContext context, int x, int y, int radius, int color) {
         int alpha = color >>> 24;
         if (context != null && radius > 0 && alpha != 0) {
             context.getMatrices().pushMatrix();
@@ -27,7 +27,7 @@ public final class FilledCircleRenderer {
     }
 
     private static void fillCircle(
-            GuiGraphics context,
+            DrawContext context,
             double centerX,
             double centerY,
             double radius,
@@ -57,7 +57,7 @@ public final class FilledCircleRenderer {
     }
 
     private static void fillEdgePixel(
-            GuiGraphics context, int x, int y, double coverage, int color, int alpha) {
+            DrawContext context, int x, int y, double coverage, int color, int alpha) {
         if (!(coverage <= 0.001)) {
             int edgeAlpha = (int) Math.round(alpha * Math.min(1.0, coverage));
             if (edgeAlpha >= 4) {
@@ -67,7 +67,7 @@ public final class FilledCircleRenderer {
     }
 
     public static void fillLegacy(
-            GuiGraphics context, int x, int y, int radius, int color, int alpha) {}
+            DrawContext context, int x, int y, int radius, int color, int alpha) {}
 
     private static int withAlpha(int color, int alpha) {
         int rgb = color & 16777215;

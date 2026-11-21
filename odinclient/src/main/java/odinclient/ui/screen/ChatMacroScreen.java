@@ -1,12 +1,12 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.network.chat.Text;
+import net.minecraft.text.Text;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.module.shortcut.ChatMacros;
@@ -63,7 +63,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     public static void open(Screen parent, ChatMacros module) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null && module != null) {
             client.setScreen(new ChatMacroScreen(parent, module));
         }
@@ -75,7 +75,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.uiScale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.uiScale);
         int scaledMouseY = Math.round(mouseY / this.uiScale);
@@ -271,7 +271,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     private void drawMacroRow(
-            GuiGraphics context,
+            DrawContext context,
             int slot,
             int number,
             int x,
@@ -529,7 +529,7 @@ public final class ChatMacroScreen extends Screen {
                     this.macroTexts[this.editingTextIndex] =
                             current.substring(0, current.length() - 1);
                 } else if (key == 86 && (input.modifiers() & 2) != 0) {
-                    Minecraft client = Minecraft.getInstance();
+                    MinecraftClient client = MinecraftClient.getInstance();
                     if (client != null) {
                         String clipboard = client.keyboard.getClipboard();
                         if (clipboard != null) {
@@ -692,7 +692,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     private void drawButton(
-            GuiGraphics context,
+            DrawContext context,
             int x,
             int y,
             int width,
@@ -759,22 +759,22 @@ public final class ChatMacroScreen extends Screen {
     }
 
     private void closeScreen() {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null) {
             client.setScreen(this.parent);
         }
     }
 
-    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawText(DrawContext context, String text, int x, int y, int color) {
         BoldText.draw(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawCenteredText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawCenteredText(DrawContext context, String text, int x, int y, int color) {
         this.drawText(context, text, x - BoldText.width(this.textRenderer, text) / 2, y, color);
     }
 
     private void drawRoundedRect(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         DashboardRenderer.drawRoundedRect(context, x, y, width, height, radius, color);
     }
 

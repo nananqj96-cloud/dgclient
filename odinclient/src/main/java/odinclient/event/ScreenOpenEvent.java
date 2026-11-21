@@ -2,7 +2,7 @@ package odinclient.event;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
 
 @Environment(EnvType.CLIENT)
 public final class ScreenOpenEvent {

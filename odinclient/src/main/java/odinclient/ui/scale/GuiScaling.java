@@ -1,7 +1,7 @@
 package odinclient.ui.scale;
 
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 
 public final class GuiScaling {
     private GuiScaling() {}
@@ -32,13 +32,13 @@ public final class GuiScaling {
                 : new Click(toScaled(click.x()), toScaled(click.y()), click.buttonInfo());
     }
 
-    public static void pushScale(GuiGraphics context) {
+    public static void pushScale(DrawContext context) {
         context.getMatrices().pushMatrix();
         float scale = getScale();
         context.getMatrices().scale(scale, scale);
     }
 
-    public static void popScale(GuiGraphics context) {
+    public static void popScale(DrawContext context) {
         context.getMatrices().popMatrix();
     }
 }

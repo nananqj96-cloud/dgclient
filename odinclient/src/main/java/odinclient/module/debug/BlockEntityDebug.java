@@ -2,14 +2,14 @@ package odinclient.module.debug;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.network.protocol.s2c.play.ChunkDataS2CPacket;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.core.Categories;
 import odinclient.event.EventHandler;
@@ -181,7 +181,7 @@ public final class BlockEntityDebug extends Module {
     private void handleChunkBlockEntity(Object entry, int chunkX, int chunkZ) {
         List<Integer> ints = new ArrayList<>(2);
         BlockEntityType<?> type = null;
-        CompoundTag nbt = null;
+        NbtCompound nbt = null;
 
         for (Field field : getInstanceFields(entry.getClass())) {
             Object value = readField(field, entry);
@@ -189,8 +189,8 @@ public final class BlockEntityDebug extends Module {
                 ints.add((Integer) value);
             } else if (value instanceof BlockEntityType) {
                 type = (BlockEntityType<?>) value;
-            } else if (value instanceof CompoundTag) {
-                nbt = (CompoundTag) value;
+            } else if (value instanceof NbtCompound) {
+                nbt = (NbtCompound) value;
             }
         }
 

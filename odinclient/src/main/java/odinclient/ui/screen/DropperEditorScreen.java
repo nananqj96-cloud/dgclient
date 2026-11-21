@@ -1,15 +1,15 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Text;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import odinclient.module.gamble.GambleRigger;
@@ -58,7 +58,7 @@ public final class DropperEditorScreen extends Screen {
 
     public static void open(Screen parent, GambleRigger config, int index) {
         if (config != null && index >= 0 && index <= 1) {
-            Minecraft.getInstance().setScreen(new DropperEditorScreen(parent, config, index));
+            MinecraftClient.getInstance().setScreen(new DropperEditorScreen(parent, config, index));
         }
     }
 
@@ -68,7 +68,7 @@ public final class DropperEditorScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.scale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.scale);
         int scaledMouseY = Math.round(mouseY / this.scale);
@@ -220,7 +220,7 @@ public final class DropperEditorScreen extends Screen {
         context.getMatrices().popMatrix();
     }
 
-    private void renderItemPicker(GuiGraphics context, int mouseX, int mouseY) {
+    private void renderItemPicker(DrawContext context, int mouseX, int mouseY) {
         this.drawLabel(
                 context,
                 "CHOOSE BLOCK OR ITEM FOR ROW " + (this.pickingItemRow + 1),
@@ -491,7 +491,7 @@ public final class DropperEditorScreen extends Screen {
     }
 
     private void closeScreen() {
-        Minecraft.getInstance().setScreen(this.parent);
+        MinecraftClient.getInstance().setScreen(this.parent);
     }
 
     private void updateLayout() {
@@ -510,7 +510,7 @@ public final class DropperEditorScreen extends Screen {
     }
 
     private String getClipboardText() {
-        String clipboard = Minecraft.getInstance().keyboard.getClipboard();
+        String clipboard = MinecraftClient.getInstance().keyboard.getClipboard();
         return clipboard == null ? "" : clipboard;
     }
 
@@ -528,12 +528,12 @@ public final class DropperEditorScreen extends Screen {
         return BoldText.truncateToWidth(this.textRenderer, text, maxWidth);
     }
 
-    private void drawLabel(GuiGraphics context, String text, int textX, int textY, int color) {
+    private void drawLabel(DrawContext context, String text, int textX, int textY, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, textX, textY, color);
     }
 
     private void button(
-            GuiGraphics context,
+            DrawContext context,
             int left,
             int top,
             int width,

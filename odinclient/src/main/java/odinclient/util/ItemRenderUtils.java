@@ -2,9 +2,9 @@ package odinclient.util;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.ItemStack;
 
 import org.joml.Matrix3x2fStack;
 
@@ -13,7 +13,7 @@ public final class ItemRenderUtils {
     private ItemRenderUtils() {}
 
     public static void drawItem(
-            GuiGraphics context,
+            DrawContext context,
             ItemStack stack,
             int x,
             int y,
@@ -29,7 +29,7 @@ public final class ItemRenderUtils {
             context.drawItem(stack, 0, 0);
             if (overlay) {
                 context.drawStackOverlay(
-                        Minecraft.getInstance().textRenderer, stack, 0, 0, countText);
+                        MinecraftClient.getInstance().textRenderer, stack, 0, 0, countText);
             }
 
             matrices.popMatrix();

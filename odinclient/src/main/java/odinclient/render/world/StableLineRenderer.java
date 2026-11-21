@@ -1,7 +1,7 @@
 package odinclient.render.world;
 
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import org.joml.Matrix4f;
 

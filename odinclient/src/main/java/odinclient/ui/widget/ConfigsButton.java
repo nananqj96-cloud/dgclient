@@ -1,10 +1,10 @@
 package odinclient.ui.widget;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 
 import odinclient.ui.draw.DashboardRenderer;
 import odinclient.ui.scale.GuiScaling;
@@ -16,7 +16,7 @@ public final class ConfigsButton {
 
     private ConfigsButton() {}
 
-    public static void renderButton(Screen screen, GuiGraphics context, int mouseX, int mouseY) {
+    public static void renderButton(Screen screen, DrawContext context, int mouseX, int mouseY) {
         int screenWidth = context.getScaledWindowWidth();
         int screenHeight = context.getScaledWindowHeight();
         int x = (screenWidth - 104) / 2;
@@ -35,7 +35,7 @@ public final class ConfigsButton {
 
         DashboardRenderer.drawBorderedRoundedRect(
                 context, x, y, 104, 20, 5, fillColor, borderColor);
-        TextRenderer textRenderer = Minecraft.getInstance().textRenderer;
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         String label = "CONFIGS";
         int textX = (x + x + 104 - DashboardRenderer.width(textRenderer, label)) / 2;
         int textY = y + 6;
@@ -48,7 +48,7 @@ public final class ConfigsButton {
         if (click.button() != 0) {
             return false;
         } else {
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             int screenWidth = client.getWindow().getScaledWidth();
             int y = client.getWindow().getScaledHeight() - 28;
             int x = (screenWidth - 104) / 2;

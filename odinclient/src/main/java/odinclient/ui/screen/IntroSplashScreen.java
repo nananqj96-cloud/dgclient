@@ -1,10 +1,10 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.network.chat.Text;
+import net.minecraft.text.Text;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.ui.anim.AnimationUtil;
@@ -33,7 +33,7 @@ public final class IntroSplashScreen extends Screen {
         this.parent = parent;
     }
 
-    public static void tick(Minecraft client) {
+    public static void tick(MinecraftClient client) {
         if (isShowing && !(client.currentScreen instanceof IntroSplashScreen)) {
             isShowing = false;
             ScannerExecutor.setPaused(false);
@@ -100,12 +100,12 @@ public final class IntroSplashScreen extends Screen {
             this.finished = true;
             isShowing = false;
             ScannerExecutor.setPaused(false);
-            Minecraft.getInstance().setScreen(new OdinGuiScreen(this.parent, true));
+            MinecraftClient.getInstance().setScreen(new OdinGuiScreen(this.parent, true));
         }
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         float elapsed = this.advanceElapsed();
         if (elapsed >= 3.0F) {
             this.finish();
@@ -116,7 +116,7 @@ public final class IntroSplashScreen extends Screen {
         }
     }
 
-    private void renderIntro(GuiGraphics context, float elapsed) {
+    private void renderIntro(DrawContext context, float elapsed) {
         float width = ScreenScaleCompat.getScaledWidth();
         float height = ScreenScaleCompat.getScaledHeight();
         float centerX = width * 0.5F;
@@ -277,7 +277,7 @@ public final class IntroSplashScreen extends Screen {
     }
 
     private static void drawAnimatedWord(
-            GuiGraphics context,
+            DrawContext context,
             String word,
             float startX,
             float y,

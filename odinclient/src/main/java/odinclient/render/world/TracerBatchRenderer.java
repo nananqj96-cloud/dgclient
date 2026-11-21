@@ -3,7 +3,7 @@ package odinclient.render.world;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -13,7 +13,7 @@ import net.minecraft.client.render.fog.FogRenderer.FogType;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.MatrixStack.Entry;
-import net.minecraft.world.phys.Vec3d;
+import net.minecraft.util.math.Vec3d;
 
 import odinclient.mixin.accessor.GameRendererInvoker;
 import odinclient.module.hud.ThemeModule;
@@ -199,7 +199,7 @@ public final class TracerBatchRenderer {
                     }
 
                     try {
-                        Minecraft client = Minecraft.getInstance();
+                        MinecraftClient client = MinecraftClient.getInstance();
                         if (client != null
                                 && client.gameRenderer instanceof GameRendererInvoker accessor) {
                             FogRenderer fogRenderer = accessor.odinclient$getFogRenderer();

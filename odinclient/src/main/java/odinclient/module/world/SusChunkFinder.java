@@ -1,18 +1,18 @@
 package odinclient.module.world;
 
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.client.multiplayer.ServerInfo;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.phys.BlockPos;
-import net.minecraft.world.phys.BlockPos.Mutable;
-import net.minecraft.world.phys.ChunkPos;
-import net.minecraft.world.phys.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.Mutable;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
@@ -321,9 +321,9 @@ public final class SusChunkFinder extends Module {
                 this.rescanDone = false;
                 ClientWorld world = this.mc.world;
                 String brand =
-                        this.mc.getConnection() == null
+                        this.mc.getNetworkHandler() == null
                                 ? null
-                                : this.mc.getConnection().getBrand();
+                                : this.mc.getNetworkHandler().getBrand();
                 this.queueChunkScan(
                         event.getChunk(),
                         world,
@@ -587,9 +587,9 @@ public final class SusChunkFinder extends Module {
                                         MAX_VIEW_RADIUS,
                                         this.mc.options.getViewDistance().getValue() + 1));
                 String brand =
-                        this.mc.getConnection() == null
+                        this.mc.getNetworkHandler() == null
                                 ? null
-                                : this.mc.getConnection().getBrand();
+                                : this.mc.getNetworkHandler().getBrand();
                 boolean donutFolia = brand != null && brand.contains("DonutFolia");
 
                 for (int ring = 0; ring <= radius; ring++) {

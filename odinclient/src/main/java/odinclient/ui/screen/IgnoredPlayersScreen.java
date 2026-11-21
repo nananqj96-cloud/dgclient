@@ -1,13 +1,13 @@
 package odinclient.ui.screen;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.network.chat.Text;
+import net.minecraft.text.Text;
 
 import odinclient.module.hud.ThemeModule;
 import odinclient.setting.Setting;
@@ -59,7 +59,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     public static void open(Screen parent, StringListSetting setting) {
-        Minecraft client = Minecraft.getInstance();
+        MinecraftClient client = MinecraftClient.getInstance();
         if (client != null) {
             client.setScreen(new IgnoredPlayersScreen(parent, setting));
         }
@@ -90,7 +90,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         this.updateLayout();
         int accent = this.getAccentColor();
         context.fill(0, 0, this.width, this.height, 2013265920);
@@ -395,7 +395,7 @@ public final class IgnoredPlayersScreen extends Screen {
                 this.setting.setValue(new ArrayList<>(this.names));
             }
 
-            Minecraft client = Minecraft.getInstance();
+            MinecraftClient client = MinecraftClient.getInstance();
             if (client != null) {
                 client.setScreen(this.parent);
             }
@@ -407,7 +407,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawButton(
-            GuiGraphics context,
+            DrawContext context,
             int x,
             int y,
             int width,
@@ -424,7 +424,7 @@ public final class IgnoredPlayersScreen extends Screen {
         this.drawText(context, label, x + (width - this.textWidth(label)) / 2, y + 6, -985864);
     }
 
-    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
+    private void drawText(DrawContext context, String text, int x, int y, int color) {
         BoldText.draw(context, this.textRenderer, text, x, y, color);
     }
 
@@ -437,7 +437,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawRoundedRect(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -448,7 +448,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawRoundedRectScaled(
-            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
+            DrawContext context, int x, int y, int width, int height, int radius, int color) {
         int r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (r == 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -465,7 +465,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawCornerRow(
-            GuiGraphics context, int x, int y, int width, float inset, int color) {
+            DrawContext context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int leftPixel = (int) Math.ceil(left);
