@@ -88,7 +88,7 @@ public final class AutoLog extends Module {
                 && !this.loggedOut
                 && this.mc.world != null
                 && this.mc.player != null
-                && this.mc.getNetworkHandler() != null) {
+                && this.mc.getConnection() != null) {
             PlayerEntity closest = null;
 
             for (PlayerEntity player : this.mc.world.getPlayers()) {
@@ -129,9 +129,9 @@ public final class AutoLog extends Module {
         if (!this.loggedOut
                 && this.mc.world != null
                 && this.mc.player != null
-                && this.mc.getNetworkHandler() != null) {
+                && this.mc.getConnection() != null) {
             this.loggedOut = true;
-            this.mc.getNetworkHandler().getConnection().disconnect(Text.literal(reason));
+            this.mc.getConnection().getConnection().disconnect(Text.literal(reason));
         }
     }
 }

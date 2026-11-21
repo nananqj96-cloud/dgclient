@@ -3,7 +3,7 @@ package odinclient.ui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Text;
 import net.minecraft.util.Identifier;
@@ -72,7 +72,7 @@ public final class ColorPickerScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.guiScale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.guiScale);
         int scaledMouseY = Math.round(mouseY / this.guiScale);
@@ -304,14 +304,14 @@ public final class ColorPickerScreen extends Screen {
         }
     }
 
-    private void drawPanel(DrawContext context, int x, int y, int width, int height) {
+    private void drawPanel(GuiGraphics context, int x, int y, int width, int height) {
         DashboardRenderer.drawRoundedHighlight(
                 context, x + 2, y + 5, width, height, 12, 1962934272);
         DashboardRenderer.drawRoundedRect(context, x, y, width, height, 12, -66449899);
     }
 
     private void button(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -334,11 +334,11 @@ public final class ColorPickerScreen extends Screen {
                 context, this.textRenderer, label, x + width / 2, y + (height - 8) / 2, textColor);
     }
 
-    private void drawLabel(DrawContext context, String text, int x, int y, int color) {
+    private void drawLabel(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawLabelRight(DrawContext context, String text, int x, int y, int color) {
+    private void drawLabelRight(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawRightAlignedBoldText(context, this.textRenderer, text, x, y, color);
     }
 
@@ -347,7 +347,7 @@ public final class ColorPickerScreen extends Screen {
     }
 
     private void drawOverlayTexture(
-            DrawContext context,
+            GuiGraphics context,
             Identifier texture,
             int x,
             int y,

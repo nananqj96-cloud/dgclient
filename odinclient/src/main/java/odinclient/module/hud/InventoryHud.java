@@ -2,7 +2,7 @@ package odinclient.module.hud;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 import odinclient.event.EventHandler;
@@ -99,7 +99,7 @@ public final class InventoryHud extends Module {
     @EventHandler
     private void onRender2D(Render2DEvent event) {
         if (this.shouldRender()) {
-            DrawContext context = event.context;
+            GuiGraphics context = event.context;
             float scaleFactor = Math.max(0.5F, Math.min(1.5F, this.scale.getValue().floatValue()));
             int panelHeight = this.getPanelHeight();
             int virtualWidth = Math.max(182, (int) (event.scaledWidth / scaleFactor));
@@ -151,7 +151,7 @@ public final class InventoryHud extends Module {
         }
     }
 
-    private void drawHud(DrawContext context, int x, int y, int panelHeight) {
+    private void drawHud(GuiGraphics context, int x, int y, int panelHeight) {
         int opacity =
                 Math.max(
                         0,
@@ -219,7 +219,7 @@ public final class InventoryHud extends Module {
         }
     }
 
-    private void drawMainInventory(DrawContext context, int x, int y, int firstSlot) {
+    private void drawMainInventory(GuiGraphics context, int x, int y, int firstSlot) {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 int slot = firstSlot + row * 9 + column;
@@ -233,7 +233,7 @@ public final class InventoryHud extends Module {
         }
     }
 
-    private void drawHotbar(DrawContext context, int x, int y) {
+    private void drawHotbar(GuiGraphics context, int x, int y) {
         int selectedSlot = this.mc.player.getInventory().getSelectedSlot();
 
         for (int i = 0; i < 9; i++) {
@@ -246,7 +246,7 @@ public final class InventoryHud extends Module {
         }
     }
 
-    private void drawSlot(DrawContext context, ItemStack stack, int x, int y, boolean selected) {
+    private void drawSlot(GuiGraphics context, ItemStack stack, int x, int y, boolean selected) {
         boolean empty = stack == null || stack.isEmpty();
         if (this.background.getValue() && (this.showEmptySlots.getValue() || !empty)) {
             int alpha =

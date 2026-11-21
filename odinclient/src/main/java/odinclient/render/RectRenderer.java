@@ -2,9 +2,9 @@ package odinclient.render;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 
-import odinclient.ui.draw.DrawContextHolder;
+import odinclient.ui.draw.GuiGraphicsHolder;
 
 @Environment(EnvType.CLIENT)
 public final class RectRenderer {
@@ -13,7 +13,7 @@ public final class RectRenderer {
     public void begin() {}
 
     public void fillRect(double x, double y, double width, double height, Color color) {
-        DrawContext context = DrawContextHolder.get();
+        GuiGraphics context = GuiGraphicsHolder.get();
         if (context != null && color != null) {
             context.fill(
                     (int) Math.floor(x),

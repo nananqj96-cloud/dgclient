@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.input.InputConstants;
 
 import odinclient.event.ScreenOpenEvent;
 import odinclient.event.TickEvent;

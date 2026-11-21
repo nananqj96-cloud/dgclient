@@ -1,7 +1,7 @@
 package odinclient.ui.screen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.network.chat.Text;
@@ -105,7 +105,7 @@ public final class IntroSplashScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         float elapsed = this.advanceElapsed();
         if (elapsed >= 3.0F) {
             this.finish();
@@ -116,7 +116,7 @@ public final class IntroSplashScreen extends Screen {
         }
     }
 
-    private void renderIntro(DrawContext context, float elapsed) {
+    private void renderIntro(GuiGraphics context, float elapsed) {
         float width = ScreenScaleCompat.getScaledWidth();
         float height = ScreenScaleCompat.getScaledHeight();
         float centerX = width * 0.5F;
@@ -277,7 +277,7 @@ public final class IntroSplashScreen extends Screen {
     }
 
     private static void drawAnimatedWord(
-            DrawContext context,
+            GuiGraphics context,
             String word,
             float startX,
             float y,

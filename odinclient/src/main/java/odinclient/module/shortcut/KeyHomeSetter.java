@@ -2,7 +2,7 @@ package odinclient.module.shortcut;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.input.InputConstants;
 
 import odinclient.event.EventHandler;
 import odinclient.event.TickEvent;

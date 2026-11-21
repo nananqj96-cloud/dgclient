@@ -6,7 +6,7 @@ import com.mojang.blaze3d.textures.FilterMode;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.render.VertexConsumer;
@@ -56,7 +56,7 @@ public final class ItemIconAtlas {
     }
 
     public static boolean drawIcon(
-            DrawContext context, String name, float centerX, float centerY, float size, int color) {
+            GuiGraphics context, String name, float centerX, float centerY, float size, int color) {
         if (color >>> 24 == 0) {
             return true;
         }

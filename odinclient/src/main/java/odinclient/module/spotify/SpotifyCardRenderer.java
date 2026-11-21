@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Identifier;
 
 import odinclient.ui.draw.BoldText;
@@ -52,7 +52,7 @@ final class SpotifyCardRenderer {
     private String remainingLabel = "-0:00";
 
     void render(
-            DrawContext context,
+            GuiGraphics context,
             Minecraft client,
             SpotifyHudTextures textures,
             NowPlayingTrack track,
@@ -106,13 +106,13 @@ final class SpotifyCardRenderer {
         this.lastFrameNanos = System.nanoTime();
     }
 
-    private void drawCardBackground(DrawContext context, int width) {
+    private void drawCardBackground(GuiGraphics context, int width) {
         context.drawTexturedQuad(
                 SpotifyHudTextures.CARD_TEXTURE, -7, -7, width + 7, 69, 0.0F, 1.0F, 0.0F, 1.0F);
     }
 
     private void drawCover(
-            DrawContext context,
+            GuiGraphics context,
             SpotifyHudTextures textures,
             NowPlayingTrack track,
             SpotifyCardRenderer.CardLayout layout) {
@@ -132,7 +132,7 @@ final class SpotifyCardRenderer {
     }
 
     private void drawBadge(
-            DrawContext context, int width, SpotifyCardRenderer.CardLayout layout, float alpha) {
+            GuiGraphics context, int width, SpotifyCardRenderer.CardLayout layout, float alpha) {
         float x = width - 9.0F - 15.0F;
         float y = 8.0F;
         drawCircle(context, x, y, 15.0F, applyAlpha(layout.accent, alpha));
@@ -149,7 +149,7 @@ final class SpotifyCardRenderer {
     }
 
     private void drawStatusRow(
-            DrawContext context,
+            GuiGraphics context,
             Minecraft client,
             NowPlayingTrack track,
             SpotifyCardRenderer.CardLayout layout,
@@ -182,7 +182,7 @@ final class SpotifyCardRenderer {
     }
 
     private void drawTrackInfo(
-            DrawContext context,
+            GuiGraphics context,
             Minecraft client,
             NowPlayingTrack track,
             int width,
@@ -218,7 +218,7 @@ final class SpotifyCardRenderer {
     }
 
     private void drawProgressBar(
-            DrawContext context,
+            GuiGraphics context,
             Minecraft client,
             NowPlayingTrack track,
             SpotifyCardRenderer.CardLayout layout,
@@ -303,7 +303,7 @@ final class SpotifyCardRenderer {
     }
 
     private static void drawRoundedBar(
-            DrawContext context, float left, float top, float right, float bottom, int color) {
+            GuiGraphics context, float left, float top, float right, float bottom, int color) {
         if (!(right <= left) && !(bottom <= top) && color >>> 24 != 0) {
             Matrix3x2fStack matrices = context.getMatrices();
             matrices.pushMatrix();
@@ -365,7 +365,7 @@ final class SpotifyCardRenderer {
     }
 
     private static void drawCircle(
-            DrawContext context, float x, float y, float diameter, int color) {
+            GuiGraphics context, float x, float y, float diameter, int color) {
         if (!(diameter <= 0.0F) && color >>> 24 != 0) {
             Matrix3x2fStack matrices = context.getMatrices();
             matrices.pushMatrix();
@@ -392,7 +392,7 @@ final class SpotifyCardRenderer {
     }
 
     private static void drawScaledText(
-            DrawContext context,
+            GuiGraphics context,
             Minecraft client,
             String text,
             float x,

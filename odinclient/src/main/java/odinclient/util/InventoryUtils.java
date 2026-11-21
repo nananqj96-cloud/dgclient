@@ -32,8 +32,8 @@ public final class InventoryUtils {
         Minecraft client = Minecraft.getInstance();
         if (client.player != null && slot >= 0 && slot <= 8) {
             client.player.getInventory().setSelectedSlot(slot);
-            if (client.getNetworkHandler() != null) {
-                client.getNetworkHandler().sendPacket(new ServerboundSetCarriedItemPacket(slot));
+            if (client.getConnection() != null) {
+                client.getConnection().sendPacket(new ServerboundSetCarriedItemPacket(slot));
             }
 
             return true;

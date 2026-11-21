@@ -1,6 +1,6 @@
 package odinclient.module.hud;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.multiplayer.ClientPlayNetworkHandler;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -122,7 +122,7 @@ public final class StaffTracker extends Module {
 
     @EventHandler
     private void onRender2D(Render2DEvent event) {
-        ClientPlayNetworkHandler networkHandler = this.mc.getNetworkHandler();
+        ClientPlayNetworkHandler networkHandler = this.mc.getConnection();
         if (networkHandler != null && this.mc.world != null) {
             long now = System.nanoTime();
             if (networkHandler != this.lastNetworkHandler) {
@@ -146,7 +146,7 @@ public final class StaffTracker extends Module {
                     && !(this.mc.currentScreen instanceof ClickGuiScreen)
                     && !this.mc.getDebugHud().shouldShowDebugHud()
                     && (!this.cachedStaff.isEmpty() || this.showWhenEmpty.getValue())) {
-                DrawContext context = event.context;
+                GuiGraphics context = event.context;
                 float userScale = this.scale.getValue().floatValue();
                 float scaleFactor = GuiScaling.getScale() * userScale;
                 int width = Math.max(1, (int) Math.floor(event.scaledWidth / scaleFactor));
@@ -168,13 +168,13 @@ public final class StaffTracker extends Module {
     }
 
     private void refreshStaff() {
-        if (this.mc.getNetworkHandler() == null) {
+        if (this.mc.getConnection() == null) {
             this.cachedStaff = List.of();
         } else {
             List<StaffTracker.StaffEntry> staff = new ArrayList<>();
 
             for (PlayerInfo listEntry :
-                    this.mc.getNetworkHandler().getListedPlayerListEntries()) {
+                    this.mc.getConnection().getListedPlayerListEntries()) {
                 try {
                     String name = listEntry.getProfile().name();
                     if (name != null && !name.isBlank()) {
@@ -280,7 +280,7 @@ public final class StaffTracker extends Module {
         return red >= 110 && blue >= 120 && red >= green + 25 && blue >= green + 30;
     }
 
-    private void drawPanel(DrawContext context, int screenWidth, int screenHeight) {
+    private void drawPanel(GuiGraphics context, int screenWidth, int screenHeight) {
         int rows = Math.max(1, this.cachedStaff.size());
         String countText = Integer.toString(this.cachedStaff.size());
         int titleWidth = this.getTextWidth("ONLINE STAFF");
@@ -383,7 +383,7 @@ public final class StaffTracker extends Module {
         }
     }
 
-    private void drawCrown(DrawContext context, int x, int y) {
+    private void drawCrown(GuiGraphics context, int x, int y) {
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(0.5F, 0.5F);
         int originX = x * 2 - 1;
@@ -433,7 +433,7 @@ public final class StaffTracker extends Module {
     }
 
     private void drawThickLine(
-            DrawContext context, int x1, int y1, int x2, int y2, int thickness, int color) {
+            GuiGraphics context, int x1, int y1, int x2, int y2, int thickness, int color) {
         int dx = x2 - x1;
         int dy = y2 - y1;
         int steps = Math.max(Math.abs(dx), Math.abs(dy));
@@ -449,17 +449,17 @@ public final class StaffTracker extends Module {
         }
     }
 
-    private void drawCrownJewel(DrawContext context, int x, int y, int color) {
+    private void drawCrownJewel(GuiGraphics context, int x, int y, int color) {
         context.fill(x, y, x + 2, y + 2, color);
     }
 
-    private void drawRowBackground(DrawContext context, int x, int y, int width, int index) {
+    private void drawRowBackground(GuiGraphics context, int x, int y, int width, int index) {
         int alpha = index % 2 == 0 ? 24 : 18;
         this.drawRoundedRect(context, x + 4, y + 1, width - 8, 16, 4, withAlpha(8293016, alpha));
         this.drawRoundedRect(context, x + 5, y + 2, width - 10, 14, 3, withAlpha(1120288, 118));
     }
 
-    private void drawBackground(DrawContext context, int x, int y, int width, int height) {
+    private void drawBackground(GuiGraphics context, int x, int y, int width, int height) {
         int alpha = (int) Math.round(this.backgroundOpacity.getValue() * 205.0);
         this.drawRoundedRect(
                 context,
@@ -472,7 +472,7 @@ public final class StaffTracker extends Module {
     }
 
     private void drawRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -483,7 +483,7 @@ public final class StaffTracker extends Module {
     }
 
     private void drawRoundedRectScaled(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -506,7 +506,7 @@ public final class StaffTracker extends Module {
     }
 
     private void drawRoundedRow(
-            DrawContext context, int x, int y, int width, float inset, int color) {
+            GuiGraphics context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int startX = (int) Math.ceil(left);
@@ -533,7 +533,7 @@ public final class StaffTracker extends Module {
         }
     }
 
-    private void drawText(DrawContext context, String text, int x, int y, int color) {
+    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
         BoldText.draw(context, this.mc.textRenderer, text, x, y, color);
     }
 

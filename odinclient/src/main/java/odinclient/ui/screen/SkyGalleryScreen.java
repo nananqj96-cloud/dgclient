@@ -3,7 +3,7 @@ package odinclient.ui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Text;
 
@@ -46,7 +46,7 @@ public final class SkyGalleryScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.scale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.scale);
         int scaledMouseY = Math.round(mouseY / this.scale);
@@ -144,7 +144,7 @@ public final class SkyGalleryScreen extends Screen {
     }
 
     private void drawSkyCard(
-            DrawContext context,
+            GuiGraphics context,
             SkyArts.Sky sky,
             int x,
             int y,
@@ -291,7 +291,7 @@ public final class SkyGalleryScreen extends Screen {
     }
 
     private void button(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -317,7 +317,7 @@ public final class SkyGalleryScreen extends Screen {
         this.drawCenteredText(context, label, textX, textY, primary ? -723464 : -6182731);
     }
 
-    private void drawCheckMark(DrawContext context, int x, int y) {
+    private void drawCheckMark(GuiGraphics context, int x, int y) {
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(0.5F, 0.5F);
 
@@ -333,11 +333,11 @@ public final class SkyGalleryScreen extends Screen {
         }
     }
 
-    private void drawText(DrawContext context, String text, int x, int y, int color) {
+    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawCenteredText(DrawContext context, String text, int x, int y, int color) {
+    private void drawCenteredText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawCenteredBoldText(context, this.textRenderer, text, x, y, color);
     }
 

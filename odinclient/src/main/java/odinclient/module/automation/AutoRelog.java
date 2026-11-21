@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.multiplayer.ConnectScreen;
 import net.minecraft.client.multiplayer.ServerAddress;
 import net.minecraft.client.multiplayer.ServerInfo;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.input.InputConstants;
 import net.minecraft.network.chat.Text;
 
 import odinclient.core.Categories;
@@ -119,10 +119,10 @@ public final class AutoRelog extends Module {
     }
 
     private void startRelog(long now) {
-        if (this.mc.getNetworkHandler() != null) {
+        if (this.mc.getConnection() != null) {
             ServerInfo server = this.mc.getCurrentServerEntry();
             if (server == null) {
-                server = this.mc.getNetworkHandler().getServerInfo();
+                server = this.mc.getConnection().getServerInfo();
             }
 
             if (server != null && server.address != null && !server.address.isBlank()) {
@@ -131,7 +131,7 @@ public final class AutoRelog extends Module {
                 this.cooldownUntilMs = now + 10000L;
                 this.reconnectAtMs = now + 300L;
                 this.reconnectPending = true;
-                this.mc.getNetworkHandler().getConnection().disconnect(Text.of("Auto Relog"));
+                this.mc.getConnection().getConnection().disconnect(Text.of("Auto Relog"));
             }
         }
     }
@@ -139,7 +139,7 @@ public final class AutoRelog extends Module {
     private void tryReconnect(long now) {
         if (now >= this.reconnectAtMs
                 && this.mc.world == null
-                && this.mc.getNetworkHandler() == null) {
+                && this.mc.getConnection() == null) {
             ServerInfo server = this.targetServer;
             this.reconnectPending = false;
             this.targetServer = null;

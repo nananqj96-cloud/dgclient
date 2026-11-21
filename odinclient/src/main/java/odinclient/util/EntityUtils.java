@@ -8,7 +8,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.registries.RegistryKey;
-import net.minecraft.core.registries.RegistryKeys;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.Registry.Entry;
 
 import org.joml.Vector3d;
@@ -30,7 +30,7 @@ public final class EntityUtils {
             Registry.Entry<Enchantment> entry =
                     client.world
                             .getRegistryManager()
-                            .getOrThrow(RegistryKeys.ENCHANTMENT)
+                            .getOrThrow(Registries.ENCHANTMENT)
                             .getEntry(key.getValue())
                             .orElse(null);
             return entry == null ? 0 : EnchantmentHelper.getLevel(entry, stack);

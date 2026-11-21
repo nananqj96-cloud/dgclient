@@ -5,7 +5,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharInput;
@@ -306,7 +306,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {}
+    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {}
 
     @Override
     public void close() {
@@ -325,7 +325,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.guiScale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.guiScale);
         int scaledMouseY = Math.round(mouseY / this.guiScale);
@@ -500,7 +500,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawHeader(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         DashboardRenderer.drawRoundedRect(
                 context,
                 layout.x + 1,
@@ -615,7 +615,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawSidebar(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         int x = layout.x + 8;
         int y = layout.y + 50 + 9;
         int width = layout.sidebarW - 15;
@@ -671,7 +671,7 @@ public final class ClickGuiScreen extends Screen {
         this.drawSidebarProfileCard(context, x, cardY, width, Math.max(112, bottom - cardY));
     }
 
-    private void drawSidebarProfileCard(DrawContext context, int x, int y, int width, int height) {
+    private void drawSidebarProfileCard(GuiGraphics context, int x, int y, int width, int height) {
         Minecraft client = Minecraft.getInstance();
         String playerName =
                 client.getGameProfile() == null ? "Player" : client.getGameProfile().name();
@@ -694,7 +694,7 @@ public final class ClickGuiScreen extends Screen {
         if (client.player != null) {
             Vec3d velocity = client.player.getVelocity();
             speed = Math.hypot(velocity.x, velocity.z) * 20.0;
-            ClientPlayNetworkHandler networkHandler = client.getNetworkHandler();
+            ClientPlayNetworkHandler networkHandler = client.getConnection();
             if (networkHandler != null) {
                 PlayerInfo playerListEntry =
                         networkHandler.getPlayerInfo(client.player.getGameProfile().id());
@@ -820,7 +820,7 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
-    private void drawFpsGraph(DrawContext context, int x, int y, int width, int height) {
+    private void drawFpsGraph(GuiGraphics context, int x, int y, int width, int height) {
         DashboardRenderer.drawRoundedRect(
                 context,
                 x,
@@ -902,7 +902,7 @@ public final class ClickGuiScreen extends Screen {
                         + (-p0 + 3.0F * p1 - 3.0F * p2 + p3) * t3);
     }
 
-    private void drawPremiumBadge(DrawContext context, int x, int y, int maxWidth) {
+    private void drawPremiumBadge(GuiGraphics context, int x, int y, int maxWidth) {
         String text = "PREMIUM";
         int textWidth = DashboardRenderer.microWidth(this.textRenderer, text);
         int dotSize = 3;
@@ -956,7 +956,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawDayNightIcon(
-            DrawContext context, int x, int y, boolean night, int cutoutColor) {
+            GuiGraphics context, int x, int y, boolean night, int cutoutColor) {
         int color = night ? accentColor : -14249;
         if (night) {
             Matrix3x2fStack matrices = context.getMatrices();
@@ -979,7 +979,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawModuleGrid(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         int x = layout.x + layout.sidebarW + 6;
         int y = layout.y + 50 + 8;
         int width = layout.w - layout.sidebarW - layout.rightW - 12;
@@ -1064,7 +1064,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawModuleCard(
-            DrawContext context,
+            GuiGraphics context,
             Module module,
             int x,
             int y,
@@ -1148,7 +1148,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawRightPanel(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         int x = layout.x + layout.w - layout.rightW + 5;
         int y = layout.y + 50 + 8;
         int width = layout.rightW - 13;
@@ -1164,7 +1164,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawConfigsTab(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         int x = layout.x + layout.sidebarW + 6;
         int y = layout.y + 50 + 8;
         int width = layout.w - layout.sidebarW - 12;
@@ -1259,7 +1259,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawThemesTab(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         int x = layout.x + layout.sidebarW + 6;
         int y = layout.y + 50 + 8;
         int width = layout.w - layout.sidebarW - 12;
@@ -1390,7 +1390,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawThemePresetCard(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             int index,
             boolean selected,
@@ -1440,7 +1440,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawAccentButton(
-            DrawContext context,
+            GuiGraphics context,
             ThemeModule theme,
             ClickGuiScreen.Rect rect,
             int mouseX,
@@ -1480,7 +1480,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawThemeToggleCard(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String title,
             String description,
@@ -1523,7 +1523,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawThemePreview(
-            DrawContext context,
+            GuiGraphics context,
             ThemeModule theme,
             int x,
             int y,
@@ -1630,7 +1630,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawLayoutModeButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             boolean selected,
@@ -1702,7 +1702,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawConfigSubTab(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             boolean selected,
@@ -1718,7 +1718,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawLocalProfiles(
-            DrawContext context,
+            GuiGraphics context,
             List<ConfigProfileManager.Profile> profiles,
             int x,
             int y,
@@ -1835,7 +1835,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawPresetList(
-            DrawContext context, int x, int y, int width, int height, int mouseX, int mouseY) {
+            GuiGraphics context, int x, int y, int width, int height, int mouseX, int mouseY) {
         List<ConfigProfileManager.BundledConfig> configs = ConfigProfileManager.getBundledConfigs();
         if (configs.isEmpty()) {
             DashboardRenderer.drawBorderedRoundedRect(
@@ -1896,7 +1896,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawQuickActions(
-            DrawContext context, int x, int y, int width, int height, int mouseX, int mouseY) {
+            GuiGraphics context, int x, int y, int width, int height, int mouseX, int mouseY) {
         this.drawText(context, "QUICK ACTIONS", x + 13, y + 14, -789256);
         boolean compact = height < 310;
         int buttonHeight = compact ? 26 : 36;
@@ -1980,7 +1980,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawQuickActionButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             Identifier icon,
             String label,
@@ -2020,7 +2020,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawIconButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             Identifier icon,
             int color,
@@ -2046,7 +2046,7 @@ public final class ClickGuiScreen extends Screen {
                 hovered ? -789256 : -6182984);
     }
 
-    private void drawIcon(DrawContext context, Identifier icon, int x, int y, int size, int color) {
+    private void drawIcon(GuiGraphics context, Identifier icon, int x, int y, int size, int color) {
         context.drawTexture(
                 RenderPipelines.GUI_TEXTURED,
                 icon,
@@ -2064,7 +2064,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawDialogButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             int color,
@@ -2094,7 +2094,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawNewConfigDialog(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         context.fill(
                 0,
                 0,
@@ -2145,7 +2145,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawCategoryPanel(
-            DrawContext context, int x, int y, int width, int height, int mouseX, int mouseY) {
+            GuiGraphics context, int x, int y, int width, int height, int mouseX, int mouseY) {
         List<Module> modules = this.getModulesInCategory(this.selectedCategory);
         int enabledCount = countEnabled(modules);
         boolean compact = height < 310;
@@ -2340,7 +2340,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawModuleDetailPanel(
-            DrawContext context, int x, int y, int width, int height, int mouseX, int mouseY) {
+            GuiGraphics context, int x, int y, int width, int height, int mouseX, int mouseY) {
         Module module = this.selectedModule;
         this.detailPanelRect = new ClickGuiScreen.Rect(x, y, width, height);
         this.enableAllRect = ClickGuiScreen.Rect.EMPTY;
@@ -2488,7 +2488,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawSettingRow(
-            DrawContext context,
+            GuiGraphics context,
             Setting<?> setting,
             int x,
             int y,
@@ -2685,7 +2685,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawColorToggleRow(
-            DrawContext context,
+            GuiGraphics context,
             BooleanSetting toggleSetting,
             ColorSetting colorSetting,
             int x,
@@ -2795,7 +2795,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawFooter(
-            DrawContext context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
+            GuiGraphics context, ClickGuiScreen.PanelLayout layout, int mouseX, int mouseY) {
         int footerY = layout.y + layout.h - 36;
         context.fill(
                 layout.x + 1,
@@ -2883,7 +2883,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawFooterTab(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             Identifier icon,
             String label,
@@ -2929,7 +2929,7 @@ public final class ClickGuiScreen extends Screen {
         this.drawText(context, label, rect.x + 23, rect.y + 9, textColor);
     }
 
-    private void drawSelectorDialog(DrawContext context, int mouseX, int mouseY) {
+    private void drawSelectorDialog(GuiGraphics context, int mouseX, int mouseY) {
         this.refreshSelectorEntries();
         context.fill(
                 0,
@@ -3171,7 +3171,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawSelectorTab(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             boolean selected,
@@ -3205,7 +3205,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawSelectorButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             int mouseX,
@@ -3233,7 +3233,7 @@ public final class ClickGuiScreen extends Screen {
                 !primary && !hovered ? -6182984 : -789256);
     }
 
-    private void drawColorPicker(DrawContext context, int mouseX, int mouseY) {
+    private void drawColorPicker(GuiGraphics context, int mouseX, int mouseY) {
         context.fill(
                 0,
                 0,
@@ -3304,7 +3304,7 @@ public final class ClickGuiScreen extends Screen {
         this.drawPickerButton(context, this.pickerApplyRect, "Apply", mouseX, mouseY, true);
     }
 
-    private void drawPickerArea(DrawContext context, ClickGuiScreen.Rect rect) {
+    private void drawPickerArea(GuiGraphics context, ClickGuiScreen.Rect rect) {
         int hueColor = 0xFF000000 | Color.HSBtoRGB(this.pickerHue, 1.0F, 1.0F) & 16777215;
         DashboardRenderer.drawRoundedRect(
                 context,
@@ -3336,7 +3336,7 @@ public final class ClickGuiScreen extends Screen {
         DashboardRenderer.drawRoundedRect(context, cursorX - 2, cursorY - 2, 4, 4, 2, -16579577);
     }
 
-    private void drawHueBar(DrawContext context, ClickGuiScreen.Rect rect) {
+    private void drawHueBar(GuiGraphics context, ClickGuiScreen.Rect rect) {
         this.drawPickerTexture(context, PICKER_HUE_TEXTURE, rect, 72, 620, -1);
         int cursorY =
                 Math.max(
@@ -3348,7 +3348,7 @@ public final class ClickGuiScreen extends Screen {
                 context, rect.x - 2, cursorY - 1, rect.w + 4, 3, 2, -789256);
     }
 
-    private void drawOpacityBar(DrawContext context, ClickGuiScreen.Rect rect, EntityColor color) {
+    private void drawOpacityBar(GuiGraphics context, ClickGuiScreen.Rect rect, EntityColor color) {
         int rgb = toArgb(color) & 16777215;
         DashboardRenderer.drawRoundedRect(context, rect.x, rect.y, rect.w, rect.h, 5, -2235927);
         this.drawPickerTexture(context, PICKER_OPACITY_TEXTURE, rect, 992, 44, 0xFF000000 | rgb);
@@ -3363,7 +3363,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawPickerTexture(
-            DrawContext context,
+            GuiGraphics context,
             Identifier texture,
             ClickGuiScreen.Rect rect,
             int textureWidth,
@@ -3386,7 +3386,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawPickerButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             int mouseX,
@@ -4185,7 +4185,7 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
-    public void odinclient$drawGuiText(DrawContext context, String text, int x, int y, int color) {
+    public void odinclient$drawGuiText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, x, y, color);
     }
 
@@ -4448,7 +4448,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private boolean drawCategoryIcon(
-            DrawContext context, String category, ItemStack icon, int x, int y) {
+            GuiGraphics context, String category, ItemStack icon, int x, int y) {
         if ("donut".equalsIgnoreCase(category)) {
             context.drawTexture(
                     RenderPipelines.GUI_TEXTURED,
@@ -4473,7 +4473,7 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
-    private void drawBrandLogo(DrawContext context, int x, int y, int size) {
+    private void drawBrandLogo(GuiGraphics context, int x, int y, int size) {
         boolean large = size >= 28;
         Identifier texture = large ? BRAND_LOGO_56 : BRAND_LOGO_48;
         int textureSize = large ? 56 : 48;
@@ -4762,7 +4762,7 @@ public final class ClickGuiScreen extends Screen {
         return color == null ? accentColor : toArgb(color);
     }
 
-    private void drawEntryIcon(DrawContext context, Object item, int x, int y) {
+    private void drawEntryIcon(GuiGraphics context, Object item, int x, int y) {
         ItemStack stack = null;
         if (item instanceof Block block) {
             stack = new ItemStack(block.asItem());
@@ -4778,7 +4778,7 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
-    private void drawScaledItem(DrawContext context, ItemStack stack, int x, int y, float scale) {
+    private void drawScaledItem(GuiGraphics context, ItemStack stack, int x, int y, float scale) {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(x, y);
         context.getMatrices().scale(scale, scale);
@@ -5043,7 +5043,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawToggleSwitch(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             Object key,
             float target,
@@ -5075,7 +5075,7 @@ public final class ClickGuiScreen extends Screen {
                 applyAlpha(-789256, this.openProgress));
     }
 
-    private void drawSlider(DrawContext context, ClickGuiScreen.Rect rect, float progress) {
+    private void drawSlider(GuiGraphics context, ClickGuiScreen.Rect rect, float progress) {
         progress = clamp(progress, 0.0F, 1.0F);
         DashboardRenderer.drawRoundedRect(
                 context,
@@ -5104,7 +5104,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawBulkActionButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             int mouseX,
@@ -5129,7 +5129,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawSmallButton(
-            DrawContext context,
+            GuiGraphics context,
             ClickGuiScreen.Rect rect,
             String label,
             boolean hovered,
@@ -5154,7 +5154,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawScrollbar(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int height,
@@ -5173,7 +5173,7 @@ public final class ClickGuiScreen extends Screen {
                 context, x, thumbY, 2, thumbHeight, 1, applyAlpha(accentColor, this.openProgress));
     }
 
-    private void drawText(DrawContext context, String text, int x, int y, int color) {
+    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldText(
                 context,
                 this.textRenderer,
@@ -5184,7 +5184,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawTextFitted(
-            DrawContext context, String text, int x, int y, int maxWidth, int color) {
+            GuiGraphics context, String text, int x, int y, int maxWidth, int color) {
         String safeText = text == null ? "" : text;
         int textWidth = DashboardRenderer.width(this.textRenderer, safeText);
         if (textWidth <= Math.max(1, maxWidth)) {
@@ -5210,7 +5210,7 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
-    private void drawSmallText(DrawContext context, String text, int x, int y, int color) {
+    private void drawSmallText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawBoldSmallText(
                 context,
                 this.textRenderer,
@@ -5220,7 +5220,7 @@ public final class ClickGuiScreen extends Screen {
                 applyAlpha(color, this.openProgress));
     }
 
-    private void drawSmallTextCentered(DrawContext context, String text, int x, int y, int color) {
+    private void drawSmallTextCentered(GuiGraphics context, String text, int x, int y, int color) {
         String safeText = text == null ? "" : text;
         DashboardRenderer.drawBoldSmallText(
                 context,
@@ -5231,7 +5231,7 @@ public final class ClickGuiScreen extends Screen {
                 applyAlpha(color, this.openProgress));
     }
 
-    private void drawCenteredText(DrawContext context, String text, int x, int y, int color) {
+    private void drawCenteredText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawCenteredBoldText(
                 context,
                 this.textRenderer,
@@ -5241,7 +5241,7 @@ public final class ClickGuiScreen extends Screen {
                 applyAlpha(color, this.openProgress));
     }
 
-    private void drawRightAlignedText(DrawContext context, String text, int x, int y, int color) {
+    private void drawRightAlignedText(GuiGraphics context, String text, int x, int y, int color) {
         DashboardRenderer.drawRightAlignedBoldText(
                 context,
                 this.textRenderer,
@@ -5339,7 +5339,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawGlowRect(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -5356,7 +5356,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawGlow(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -5476,7 +5476,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private void drawGlowSlice(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -5505,7 +5505,7 @@ public final class ClickGuiScreen extends Screen {
     }
 
     private static void drawHorizontalGradient(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -5526,7 +5526,7 @@ public final class ClickGuiScreen extends Screen {
         }
     }
 
-    private void drawBottomGlow(DrawContext context, int x, int y, int width, int height) {
+    private void drawBottomGlow(GuiGraphics context, int x, int y, int width, int height) {
         int steps = Math.min(96, Math.max(24, width / 4));
         int midY = y + Math.round(height * 0.72F);
         int bottom = y + height;

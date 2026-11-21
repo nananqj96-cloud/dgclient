@@ -1,7 +1,7 @@
 package odinclient.render.world;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.render.projection.WorldToScreen;
@@ -34,7 +34,7 @@ public final class TracerLineBatch {
         }
     }
 
-    public static void render(DrawContext context) {
+    public static void render(GuiGraphics context) {
         try {
             if (queue.isEmpty() || !WorldToScreen.isMatrixFresh()) {
                 return;

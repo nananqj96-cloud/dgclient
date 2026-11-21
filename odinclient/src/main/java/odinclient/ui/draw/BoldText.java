@@ -1,7 +1,7 @@
 package odinclient.ui.draw;
 
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.MutableText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.StyleSpriteSource;
@@ -48,7 +48,7 @@ public final class BoldText {
     }
 
     public static void draw(
-            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
         if (context != null && color >>> 24 >= 2) {
             SdfFontRenderer.drawTextAtTop(
                     context, SdfFontRenderer.FontStyle.BOLD, text, x, y, color);

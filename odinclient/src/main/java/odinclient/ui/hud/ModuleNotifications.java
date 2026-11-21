@@ -1,7 +1,7 @@
 package odinclient.ui.hud;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.core.sounds.SoundEvent;
 import net.minecraft.core.sounds.SoundEvents;
@@ -187,7 +187,7 @@ public final class ModuleNotifications {
         return toggleCounter;
     }
 
-    public static void renderHud(DrawContext context) {
+    public static void renderHud(GuiGraphics context) {
         if (context != null
                 && !(Minecraft.getInstance().currentScreen instanceof OdinGuiScreen)) {
             float scale = getScale() * 0.62F;
@@ -204,7 +204,7 @@ public final class ModuleNotifications {
         }
     }
 
-    public static void renderOverMenu(DrawContext context, int mouseX, int mouseY) {
+    public static void renderOverMenu(GuiGraphics context, int mouseX, int mouseY) {
         if (context != null) {
             try (ScreenScaleCompat.ScaleScope scope = ScreenScaleCompat.enter(context)) {
                 renderNotifications(
@@ -241,7 +241,7 @@ public final class ModuleNotifications {
     }
 
     private static void renderNotifications(
-            DrawContext context,
+            GuiGraphics context,
             float right,
             float bottom,
             float scale,
@@ -314,7 +314,7 @@ public final class ModuleNotifications {
     }
 
     private static void renderNotification(
-            DrawContext context,
+            GuiGraphics context,
             ModuleNotifications.Notification notification,
             long age,
             float alpha) {

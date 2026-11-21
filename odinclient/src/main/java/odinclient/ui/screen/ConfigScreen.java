@@ -3,7 +3,7 @@ package odinclient.ui.screen;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
@@ -59,10 +59,10 @@ public final class ConfigScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {}
+    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {}
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         ConfigScreen.Layout bounds =
                 layout(context.getScaledWindowWidth(), context.getScaledWindowHeight());
         TextRenderer font = this.textRenderer;
@@ -128,7 +128,7 @@ public final class ConfigScreen extends Screen {
     }
 
     private void renderProfiles(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer font,
             ConfigScreen.Layout layout,
             int mouseX,
@@ -209,7 +209,7 @@ public final class ConfigScreen extends Screen {
     }
 
     private void renderBottomBar(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer font,
             ConfigScreen.Layout layout,
             int mouseX,
@@ -272,7 +272,7 @@ public final class ConfigScreen extends Screen {
     }
 
     private void renderBrowse(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer font,
             ConfigScreen.Layout layout,
             int mouseX,
@@ -318,7 +318,7 @@ public final class ConfigScreen extends Screen {
     }
 
     private void renderNaming(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer font,
             ConfigScreen.Layout layout,
             int mouseX,
@@ -590,7 +590,7 @@ public final class ConfigScreen extends Screen {
     }
 
     private static void tab(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer font,
             String label,
             int x,
@@ -614,7 +614,7 @@ public final class ConfigScreen extends Screen {
     }
 
     private static void button(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer font,
             String label,
             int x,

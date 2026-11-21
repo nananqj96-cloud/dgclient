@@ -2,7 +2,7 @@ package odinclient.ui.scale;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.util.Window;
 
 public final class ScreenScaleCompat {
@@ -54,7 +54,7 @@ public final class ScreenScaleCompat {
         return screen != null && GuiScale.isConfigScreen(screen.getClass().getName());
     }
 
-    public static ScreenScaleCompat.ScaleScope enter(DrawContext context) {
+    public static ScreenScaleCompat.ScaleScope enter(GuiGraphics context) {
         return new ScreenScaleCompat.ScaleScope(context);
     }
 
@@ -64,11 +64,11 @@ public final class ScreenScaleCompat {
     }
 
     public static final class ScaleScope implements AutoCloseable {
-        private final DrawContext context;
+        private final GuiGraphics context;
         private final ScreenScaleCompat.ScaleState previousState;
         private boolean closed;
 
-        private ScaleScope(DrawContext context) {
+        private ScaleScope(GuiGraphics context) {
             this.context = context;
             this.previousState = ScreenScaleCompat.currentState.get();
             context.getMatrices().pushMatrix();

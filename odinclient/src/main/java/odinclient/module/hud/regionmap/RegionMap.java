@@ -2,7 +2,7 @@ package odinclient.module.hud.regionmap;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 
 import odinclient.event.EventHandler;
 import odinclient.event.Render2DEvent;
@@ -239,7 +239,7 @@ public final class RegionMap extends Module {
             float scale = GuiScaling.getScale();
             int width = Math.max(1, (int) Math.floor(event.scaledWidth / scale));
             int height = Math.max(1, (int) Math.floor(event.scaledHeight / scale));
-            DrawContext context = event.context;
+            GuiGraphics context = event.context;
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(scale, scale);
 
@@ -251,7 +251,7 @@ public final class RegionMap extends Module {
         }
     }
 
-    private void drawPanel(DrawContext context, int screenWidth, int screenHeight) {
+    private void drawPanel(GuiGraphics context, int screenWidth, int screenHeight) {
         int extraHeight = Boolean.TRUE.equals(this.showCoordinates.getValue()) ? 28 : 17;
         int panelHeight = 167 + extraHeight;
         float scale = Math.round(this.scale.getValue().floatValue() * 20.0F) / 20.0F;
@@ -279,7 +279,7 @@ public final class RegionMap extends Module {
     }
 
     private void drawMapPanel(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int cellSize,
@@ -410,7 +410,7 @@ public final class RegionMap extends Module {
     }
 
     private void drawPlayerDot(
-            DrawContext context,
+            GuiGraphics context,
             int gridX,
             int gridY,
             int cellSize,
@@ -433,7 +433,7 @@ public final class RegionMap extends Module {
                 withAlpha(color, 255));
     }
 
-    private void drawCellOutline(DrawContext context, int x, int y, int size, int color) {
+    private void drawCellOutline(GuiGraphics context, int x, int y, int size, int color) {
         int outlineColor = withAlpha(color, 238);
         context.fill(x, y, x + size, y + 1, outlineColor);
         context.fill(x, y + size - 1, x + size, y + size, outlineColor);
@@ -468,7 +468,7 @@ public final class RegionMap extends Module {
     }
 
     private void drawScaledText(
-            DrawContext context, String text, int x, int y, float scale, int color) {
+            GuiGraphics context, String text, int x, int y, float scale, int color) {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(x, y);
         context.getMatrices().scale(scale, scale);
@@ -476,7 +476,7 @@ public final class RegionMap extends Module {
         context.getMatrices().popMatrix();
     }
 
-    private void fillCircle(DrawContext context, int centerX, int centerY, int radius, int color) {
+    private void fillCircle(GuiGraphics context, int centerX, int centerY, int radius, int color) {
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(0.5F, 0.5F);
         int cx = centerX * 2;
@@ -499,7 +499,7 @@ public final class RegionMap extends Module {
     }
 
     private void fillRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -510,7 +510,7 @@ public final class RegionMap extends Module {
     }
 
     private void fillRoundedRectScaled(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         int r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (r == 0) {
             context.fill(x, y, x + width, y + height, color);

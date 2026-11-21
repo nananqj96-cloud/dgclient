@@ -3,7 +3,7 @@ package odinclient.ui.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Text;
 
@@ -67,7 +67,7 @@ public final class ArtworkGalleryScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.scale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.scale);
         int scaledMouseY = Math.round(mouseY / this.scale);
@@ -390,7 +390,7 @@ public final class ArtworkGalleryScreen extends Screen {
     }
 
     private void drawArtworkPreview(
-            DrawContext context, SkyArts.Artwork artwork, int x, int y, int width, int height) {
+            GuiGraphics context, SkyArts.Artwork artwork, int x, int y, int width, int height) {
         float fit =
                 Math.min(
                         (float) width / artwork.getTextureWidth(),
@@ -414,12 +414,12 @@ public final class ArtworkGalleryScreen extends Screen {
                 artwork.getTextureHeight());
     }
 
-    private void drawNoPersonLabel(DrawContext context, int x, int y, int width, int height) {
+    private void drawNoPersonLabel(GuiGraphics context, int x, int y, int width, int height) {
         this.drawCenteredText(context, "NO PERSON", x + width / 2, y + (height - 8) / 2, -9208694);
     }
 
     private void drawDialogButton(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -465,7 +465,7 @@ public final class ArtworkGalleryScreen extends Screen {
         this.drawCenteredText(context, label, x + width / 2, y + 7, textColor);
     }
 
-    private void drawCheckMark(DrawContext context, int x, int y) {
+    private void drawCheckMark(GuiGraphics context, int x, int y) {
         context.getMatrices().pushMatrix();
         context.getMatrices().scale(0.5F, 0.5F);
 
@@ -488,17 +488,17 @@ public final class ArtworkGalleryScreen extends Screen {
         }
     }
 
-    private void drawText(DrawContext context, String text, int x, int y, int color) {
+    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
         BoldText.draw(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawCenteredText(DrawContext context, String text, int centerX, int y, int color) {
+    private void drawCenteredText(GuiGraphics context, String text, int centerX, int y, int color) {
         this.drawText(
                 context, text, centerX - BoldText.width(this.textRenderer, text) / 2, y, color);
     }
 
     private void drawRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         DashboardRenderer.drawRoundedRect(context, x, y, width, height, radius, color);
     }
 
@@ -536,7 +536,7 @@ public final class ArtworkGalleryScreen extends Screen {
     }
 
     private void drawAntialiasedSpan(
-            DrawContext context, int x, int y, int width, float inset, int color) {
+            GuiGraphics context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int fullLeft = (int) Math.ceil(left);

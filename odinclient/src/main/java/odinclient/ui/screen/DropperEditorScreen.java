@@ -2,7 +2,7 @@ package odinclient.ui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
@@ -68,7 +68,7 @@ public final class DropperEditorScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.scale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.scale);
         int scaledMouseY = Math.round(mouseY / this.scale);
@@ -220,7 +220,7 @@ public final class DropperEditorScreen extends Screen {
         context.getMatrices().popMatrix();
     }
 
-    private void renderItemPicker(DrawContext context, int mouseX, int mouseY) {
+    private void renderItemPicker(GuiGraphics context, int mouseX, int mouseY) {
         this.drawLabel(
                 context,
                 "CHOOSE BLOCK OR ITEM FOR ROW " + (this.pickingItemRow + 1),
@@ -528,12 +528,12 @@ public final class DropperEditorScreen extends Screen {
         return BoldText.truncateToWidth(this.textRenderer, text, maxWidth);
     }
 
-    private void drawLabel(DrawContext context, String text, int textX, int textY, int color) {
+    private void drawLabel(GuiGraphics context, String text, int textX, int textY, int color) {
         DashboardRenderer.drawBoldText(context, this.textRenderer, text, textX, textY, color);
     }
 
     private void button(
-            DrawContext context,
+            GuiGraphics context,
             int left,
             int top,
             int width,

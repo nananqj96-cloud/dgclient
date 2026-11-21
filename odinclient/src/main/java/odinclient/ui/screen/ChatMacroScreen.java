@@ -2,7 +2,7 @@ package odinclient.ui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
@@ -75,7 +75,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.uiScale = ScreenScaleCompat.getScale(this.width);
         int scaledMouseX = Math.round(mouseX / this.uiScale);
         int scaledMouseY = Math.round(mouseY / this.uiScale);
@@ -271,7 +271,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     private void drawMacroRow(
-            DrawContext context,
+            GuiGraphics context,
             int slot,
             int number,
             int x,
@@ -692,7 +692,7 @@ public final class ChatMacroScreen extends Screen {
     }
 
     private void drawButton(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -765,16 +765,16 @@ public final class ChatMacroScreen extends Screen {
         }
     }
 
-    private void drawText(DrawContext context, String text, int x, int y, int color) {
+    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
         BoldText.draw(context, this.textRenderer, text, x, y, color);
     }
 
-    private void drawCenteredText(DrawContext context, String text, int x, int y, int color) {
+    private void drawCenteredText(GuiGraphics context, String text, int x, int y, int color) {
         this.drawText(context, text, x - BoldText.width(this.textRenderer, text) / 2, y, color);
     }
 
     private void drawRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         DashboardRenderer.drawRoundedRect(context, x, y, width, height, radius, color);
     }
 

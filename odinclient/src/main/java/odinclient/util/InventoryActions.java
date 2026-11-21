@@ -1,7 +1,7 @@
 package odinclient.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.input.InputConstants;
 import net.minecraft.client.util.Window;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.inventory.SlotActionType;

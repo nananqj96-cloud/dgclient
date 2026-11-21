@@ -1,7 +1,7 @@
 package odinclient.ui.draw;
 
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.MutableText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.StyleSpriteSource;
@@ -62,23 +62,23 @@ public final class DashboardRenderer {
     }
 
     public static void drawBoldText(
-            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
         SdfFontRenderer.drawTextAtTop(context, SdfFontRenderer.FontStyle.BOLD, text, x, y, color);
     }
 
     public static void drawBoldSmallText(
-            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
         SdfFontRenderer.drawTextAtTop(
                 context, SdfFontRenderer.FontStyle.BOLD_SMALL, text, x, y, color);
     }
 
     public static void drawMicroText(
-            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
         SdfFontRenderer.drawTextAtTop(context, SdfFontRenderer.FontStyle.MICRO, text, x, y, color);
     }
 
     public static void drawCenteredBoldText(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer textRenderer,
             String text,
             int centerX,
@@ -89,7 +89,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawRightAlignedBoldText(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer textRenderer,
             String text,
             int rightX,
@@ -99,7 +99,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawOutlinedRoundedRect(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -113,7 +113,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawBorderedRoundedRect(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -127,7 +127,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawRing(
-            DrawContext context,
+            GuiGraphics context,
             int centerX,
             int centerY,
             int radius,
@@ -146,7 +146,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawProgressRing(
-            DrawContext context,
+            GuiGraphics context,
             int centerX,
             int centerY,
             int radius,
@@ -202,7 +202,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             SdfShapeRenderer.fill(
                     context,
@@ -216,7 +216,7 @@ public final class DashboardRenderer {
     }
 
     public static void drawRoundedHighlight(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         drawRoundedRect(context, x, y, width, height, radius, color);
     }
 

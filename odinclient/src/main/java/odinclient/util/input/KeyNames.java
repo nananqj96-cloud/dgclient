@@ -1,6 +1,6 @@
 package odinclient.util.input;
 
-import net.minecraft.client.util.InputUtil.Type;
+import net.minecraft.client.input.InputConstants.Type;
 
 import java.util.Locale;
 

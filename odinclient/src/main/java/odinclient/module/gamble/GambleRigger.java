@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.input.InputConstants;
 import net.minecraft.core.component.DataComponentTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ItemEntity;

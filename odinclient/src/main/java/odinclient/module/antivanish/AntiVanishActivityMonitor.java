@@ -193,8 +193,8 @@ public final class AntiVanishActivityMonitor {
         if ((AntiVanishDetection.isEnabled() || AutoLog.isAntiVanishLogoutActive())
                 && mc.world != null
                 && mc.player != null
-                && mc.getNetworkHandler() != null) {
-            String brand = mc.getNetworkHandler().getBrand();
+                && mc.getConnection() != null) {
+            String brand = mc.getConnection().getBrand();
             RegionMapLayout.RegionRect region =
                     mc.world.getRegistryKey() == World.OVERWORLD
                             ? RegionMapLayout.findRegion(mc.player.getX(), mc.player.getZ())
@@ -206,13 +206,13 @@ public final class AntiVanishActivityMonitor {
 
             if (this.world != mc.world
                     || this.player != mc.player
-                    || this.connection != mc.getNetworkHandler()
+                    || this.connection != mc.getConnection()
                     || !Objects.equals(this.brand, brand)
                     || !Objects.equals(this.regionKey, newRegionKey)) {
                 this.reset();
                 this.world = mc.world;
                 this.player = mc.player;
-                this.connection = mc.getNetworkHandler();
+                this.connection = mc.getConnection();
                 this.brand = brand;
                 this.regionKey = newRegionKey;
                 this.detector.reset(mc.player.getUuid(), mc.player.getGameProfile().name());
@@ -228,14 +228,14 @@ public final class AntiVanishActivityMonitor {
             HashSet<UUID> listedIds = new HashSet<>();
             HashSet<UUID> nearbyIds = new HashSet<>();
 
-            for (PlayerInfo listEntry : mc.getNetworkHandler().getPlayerList()) {
+            for (PlayerInfo listEntry : mc.getConnection().getPlayerList()) {
                 if (listEntry.getProfile() != null) {
                     listedIds.add(listEntry.getProfile().id());
                 }
             }
 
             for (PlayerInfo listedEntry :
-                    mc.getNetworkHandler().getListedPlayerListEntries()) {
+                    mc.getConnection().getListedPlayerListEntries()) {
                 if (listedEntry.getProfile() != null) {
                     this.detector.onListedPlayer(
                             listedEntry.getProfile().id(), listedEntry.getProfile().name(), now);
@@ -283,7 +283,7 @@ public final class AntiVanishActivityMonitor {
                 }
 
                 this.pendingProbes.put(probeId, now);
-                mc.getNetworkHandler()
+                mc.getConnection()
                         .sendPacket(
                                 new RequestCommandCompletionsC2SPacket(probeId, "minecraft:msg "));
             }
@@ -339,7 +339,7 @@ public final class AntiVanishActivityMonitor {
         } else if (packet instanceof CommandSuggestionsS2CPacket suggestionsPacket) {
             HashSet<String> onlineNames = new HashSet<>();
 
-            for (PlayerInfo listEntry : mc.getNetworkHandler().getPlayerList()) {
+            for (PlayerInfo listEntry : mc.getConnection().getPlayerList()) {
                 if (listEntry.getProfile() != null) {
                     onlineNames.add(listEntry.getProfile().name().toLowerCase(Locale.ROOT));
                 }

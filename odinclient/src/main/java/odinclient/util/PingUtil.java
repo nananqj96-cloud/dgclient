@@ -12,8 +12,8 @@ public final class PingUtil {
 
     public static int getPing(PlayerEntity player) {
         Minecraft client = Minecraft.getInstance();
-        if (player != null && client.getNetworkHandler() != null) {
-            PlayerInfo entry = client.getNetworkHandler().getPlayerInfo(player.getUuid());
+        if (player != null && client.getConnection() != null) {
+            PlayerInfo entry = client.getConnection().getPlayerInfo(player.getUuid());
             return entry == null ? 0 : entry.getLatency();
         } else {
             return 0;

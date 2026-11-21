@@ -271,9 +271,9 @@ public final class PlayerFinder extends Module {
             this.awaitingTeleport = false;
             this.autoRtp.setValue(false);
             this.warning("Auto RTP stopped after detecting a player chunk.");
-            if (this.mc.getNetworkHandler() != null
-                    && this.mc.getNetworkHandler().getConnection() != null) {
-                this.mc.getNetworkHandler().getConnection().disconnect(Text.of("Chunk found"));
+            if (this.mc.getConnection() != null
+                    && this.mc.getConnection().getConnection() != null) {
+                this.mc.getConnection().getConnection().disconnect(Text.of("Chunk found"));
             }
         }
     }

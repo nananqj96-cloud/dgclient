@@ -2,7 +2,7 @@ package odinclient.ui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.input.CharInput;
@@ -90,7 +90,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         this.updateLayout();
         int accent = this.getAccentColor();
         context.fill(0, 0, this.width, this.height, 2013265920);
@@ -407,7 +407,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawButton(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             int width,
@@ -424,7 +424,7 @@ public final class IgnoredPlayersScreen extends Screen {
         this.drawText(context, label, x + (width - this.textWidth(label)) / 2, y + 6, -985864);
     }
 
-    private void drawText(DrawContext context, String text, int x, int y, int color) {
+    private void drawText(GuiGraphics context, String text, int x, int y, int color) {
         BoldText.draw(context, this.textRenderer, text, x, y, color);
     }
 
@@ -437,7 +437,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -448,7 +448,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawRoundedRectScaled(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         int r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (r == 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -465,7 +465,7 @@ public final class IgnoredPlayersScreen extends Screen {
     }
 
     private void drawCornerRow(
-            DrawContext context, int x, int y, int width, float inset, int color) {
+            GuiGraphics context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int leftPixel = (int) Math.ceil(left);

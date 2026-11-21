@@ -3,7 +3,7 @@ package odinclient.ui.hud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.Toast.Visibility;
 import net.minecraft.client.toast.ToastManager;
@@ -47,7 +47,7 @@ public final class NotificationToast implements Toast {
     }
 
     @Override
-    public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
+    public void draw(GuiGraphics context, TextRenderer textRenderer, long startTime) {
         if (this.compact) {
             this.drawCompact(context, textRenderer);
         } else {
@@ -64,7 +64,7 @@ public final class NotificationToast implements Toast {
         }
     }
 
-    private void drawCompact(DrawContext context, TextRenderer textRenderer) {
+    private void drawCompact(GuiGraphics context, TextRenderer textRenderer) {
         int width = this.getWidth();
         int height = this.getHeight();
         context.fill(0, 0, width, height, -10329502);
@@ -81,7 +81,7 @@ public final class NotificationToast implements Toast {
     }
 
     private void drawScaledText(
-            DrawContext context,
+            GuiGraphics context,
             TextRenderer textRenderer,
             String text,
             int x,

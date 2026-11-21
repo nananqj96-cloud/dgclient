@@ -1,7 +1,7 @@
 package odinclient.module.movement;
 
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.util.InputUtil.Key;
+import net.minecraft.client.input.InputConstants.Key;
 import net.minecraft.world.entity.player.PlayerInventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -188,10 +188,10 @@ public final class AutoFirework extends Module {
     }
 
     private void disconnect(String reason) {
-        if (!this.disconnecting && this.isInWorld() && this.mc.getNetworkHandler() != null) {
+        if (!this.disconnecting && this.isInWorld() && this.mc.getConnection() != null) {
             this.disconnecting = true;
             this.releaseUseKey();
-            this.mc.getNetworkHandler().getConnection().disconnect(Text.literal(reason));
+            this.mc.getConnection().getConnection().disconnect(Text.literal(reason));
         }
     }
 }

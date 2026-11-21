@@ -2,7 +2,7 @@ package odinclient.ui.screen;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +60,7 @@ public final class HudPositionEditorScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics context, int mouseX, int mouseY, float deltaTicks) {
         int accent = this.getAccentColor();
         context.fill(0, 0, this.width, this.height, 1375731712);
         this.drawGuideGrid(context);
@@ -241,7 +241,7 @@ public final class HudPositionEditorScreen extends Screen {
         this.previewY = Math.round(maxY * this.ySetting.getValue() / 100.0F);
     }
 
-    private void drawGuideGrid(DrawContext context) {
+    private void drawGuideGrid(GuiGraphics context) {
         for (int i = 1; i < 4; i++) {
             int x = this.width * i / 4;
             int y = this.height * i / 4;
@@ -250,7 +250,7 @@ public final class HudPositionEditorScreen extends Screen {
         }
     }
 
-    private void drawSelectionCorners(DrawContext context, int accent) {
+    private void drawSelectionCorners(GuiGraphics context, int accent) {
         int color = withAlpha(accent, this.dragging ? 255 : 225);
         int x = this.previewX;
         int y = this.previewY;
@@ -267,7 +267,7 @@ public final class HudPositionEditorScreen extends Screen {
         context.fill(x + width - 2, y + height - length, x + width, y + height, color);
     }
 
-    private void drawPreview(DrawContext context, int accent) {
+    private void drawPreview(GuiGraphics context, int accent) {
         if ("spotify-hud".equals(this.module.name)) {
             this.drawSpotifyPreview(context, accent);
         } else if ("staf-tracker".equals(this.module.name)) {
@@ -308,7 +308,7 @@ public final class HudPositionEditorScreen extends Screen {
         }
     }
 
-    private void drawSpotifyPreview(DrawContext context, int accent) {
+    private void drawSpotifyPreview(GuiGraphics context, int accent) {
         int x = this.previewX;
         int y = this.previewY;
         int width = this.previewWidth;
@@ -363,7 +363,7 @@ public final class HudPositionEditorScreen extends Screen {
                 withAlpha(accent, 235));
     }
 
-    private void drawStaffPreview(DrawContext context, int accent) {
+    private void drawStaffPreview(GuiGraphics context, int accent) {
         int x = this.previewX;
         int y = this.previewY;
         int width = this.previewWidth;
@@ -382,7 +382,7 @@ public final class HudPositionEditorScreen extends Screen {
         this.drawRoundedRect(context, x + width - 10, rowY + 6, 4, 4, 2, -598343801);
     }
 
-    private void drawRegionMapPreview(DrawContext context, int accent) {
+    private void drawRegionMapPreview(GuiGraphics context, int accent) {
         int x = this.previewX;
         int y = this.previewY;
         int width = this.previewWidth;
@@ -412,7 +412,7 @@ public final class HudPositionEditorScreen extends Screen {
                 || "block-notifier".equals(this.module.name);
     }
 
-    private void drawNotifierPreview(DrawContext context) {
+    private void drawNotifierPreview(GuiGraphics context) {
         float scale = (float) this.getNumericSetting("size", 1.0);
         if ("weather-notifier".equals(this.module.name)) {
             ItemToastRenderer.drawToast(
@@ -438,7 +438,7 @@ public final class HudPositionEditorScreen extends Screen {
     }
 
     private void drawButton(
-            DrawContext context,
+            GuiGraphics context,
             int x,
             int y,
             String label,
@@ -523,7 +523,7 @@ public final class HudPositionEditorScreen extends Screen {
     }
 
     private void drawRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -534,7 +534,7 @@ public final class HudPositionEditorScreen extends Screen {
     }
 
     private void drawRoundedRectScaled(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         int r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (r == 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -551,7 +551,7 @@ public final class HudPositionEditorScreen extends Screen {
     }
 
     private void drawRoundedRow(
-            DrawContext context, int x, int y, int width, float inset, int color) {
+            GuiGraphics context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int leftPixel = (int) Math.ceil(left);

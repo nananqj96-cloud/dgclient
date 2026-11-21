@@ -2,7 +2,7 @@ package odinclient.ui.draw;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 
 import odinclient.ui.screen.ClickGuiScreen;
 
@@ -15,7 +15,7 @@ public final class GuiTextBridge {
     private GuiTextBridge() {}
 
     public static void drawText(
-            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
         ClickGuiScreen screen = getClickGuiScreen();
         if (screen == null || !tryDrawGuiText(screen, context, text, x, y, color)) {
             context.drawTextWithShadow(textRenderer, text, x, y, color);
@@ -23,7 +23,7 @@ public final class GuiTextBridge {
     }
 
     public static void drawCenteredText(
-            DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color) {
+            GuiGraphics context, TextRenderer textRenderer, String text, int x, int y, int color) {
         ClickGuiScreen screen = getClickGuiScreen();
         if (screen != null) {
             Integer textWidth = width(screen, text);
@@ -44,13 +44,13 @@ public final class GuiTextBridge {
     }
 
     private static boolean tryDrawGuiText(
-            ClickGuiScreen screen, DrawContext context, String text, int x, int y, int color) {
+            ClickGuiScreen screen, GuiGraphics context, String text, int x, int y, int color) {
         try {
             if (drawGuiTextMethod == null) {
                 drawGuiTextMethod =
                         ClickGuiScreen.class.getMethod(
                                 "odinclient$drawGuiText",
-                                DrawContext.class,
+                                GuiGraphics.class,
                                 String.class,
                                 int.class,
                                 int.class,

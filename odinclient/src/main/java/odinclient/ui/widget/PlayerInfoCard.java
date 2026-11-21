@@ -1,7 +1,7 @@
 package odinclient.ui.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.multiplayer.ClientPlayNetworkHandler;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -37,7 +37,7 @@ public final class PlayerInfoCard {
     private float graphScale = 0.25F;
 
     public void render(
-            DrawContext context,
+            GuiGraphics context,
             float x,
             float y,
             float width,
@@ -236,7 +236,7 @@ public final class PlayerInfoCard {
                 AnimationUtil.multiplyAlpha(-6845010, alpha));
     }
 
-    private void drawPremiumBadge(DrawContext context, float x, float y, int accent, float alpha) {
+    private void drawPremiumBadge(GuiGraphics context, float x, float y, int accent, float alpha) {
         String label = "PREMIUM";
         float badgeWidth = SdfFontRenderer.width(SdfFontRenderer.FontStyle.TINY, label) + 15.0F;
         SdfShapeRenderer.fillVerticalGradient(
@@ -289,7 +289,7 @@ public final class PlayerInfoCard {
     }
 
     private void drawFpsGraph(
-            DrawContext context,
+            GuiGraphics context,
             float x,
             float y,
             float width,
@@ -400,7 +400,7 @@ public final class PlayerInfoCard {
             if (client.player != null) {
                 Vec3d velocity = client.player.getVelocity();
                 bps = Math.hypot(velocity.x, velocity.z) * 20.0;
-                ClientPlayNetworkHandler networkHandler = client.getNetworkHandler();
+                ClientPlayNetworkHandler networkHandler = client.getConnection();
                 if (networkHandler != null) {
                     PlayerInfo playerListEntry =
                             networkHandler.getPlayerInfo(client.player.getGameProfile().id());

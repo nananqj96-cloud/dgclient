@@ -3,9 +3,9 @@ package odinclient.render;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 
-import odinclient.ui.draw.DrawContextHolder;
+import odinclient.ui.draw.GuiGraphicsHolder;
 
 import java.util.Objects;
 
@@ -39,7 +39,7 @@ public interface TextBackend {
 
                 @Override
                 public double render(String text, double x, double y, Color color, boolean shadow) {
-                    DrawContext context = DrawContextHolder.get();
+                    GuiGraphics context = GuiGraphicsHolder.get();
                     if (context != null) {
                         context.drawText(
                                 Minecraft.getInstance().textRenderer,

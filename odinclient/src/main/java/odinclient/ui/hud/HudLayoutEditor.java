@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 
 import odinclient.module.ModuleContext;
@@ -57,7 +57,7 @@ public final class HudLayoutEditor {
     }
 
     public static void registerElement(
-            DrawContext context,
+            GuiGraphics context,
             String id,
             String label,
             float x,
@@ -85,7 +85,7 @@ public final class HudLayoutEditor {
     }
 
     public static void registerOffsetElement(
-            DrawContext context,
+            GuiGraphics context,
             String id,
             String label,
             float x,
@@ -118,7 +118,7 @@ public final class HudLayoutEditor {
         elements.clear();
     }
 
-    public static void renderOverlay(DrawContext context, float deltaTicks) {
+    public static void renderOverlay(GuiGraphics context, float deltaTicks) {
         boolean editing = isEditing();
         overlayAlpha =
                 AnimationUtil.smoothApproach(

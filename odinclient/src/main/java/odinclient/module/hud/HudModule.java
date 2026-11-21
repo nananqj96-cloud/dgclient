@@ -3,7 +3,7 @@ package odinclient.module.hud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.multiplayer.AbstractClientPlayerEntity;
@@ -202,7 +202,7 @@ public final class HudModule extends Module {
     @EventHandler
     private void onRender2D(Render2DEvent event) {
         if (this.shouldRender()) {
-            DrawContext context = event.context;
+            GuiGraphics context = event.context;
             this.updateCache(System.nanoTime());
             float scale = this.hudScale.getValue().floatValue();
             int scaledWidth = Math.max(1, (int) (event.scaledWidth / scale));
@@ -285,7 +285,7 @@ public final class HudModule extends Module {
                 && !this.mc.getDebugHud().shouldShowDebugHud();
     }
 
-    private void drawInfoPanel(DrawContext context, float scale) {
+    private void drawInfoPanel(GuiGraphics context, float scale) {
         HudLayout.HudPanelLayout layout =
                 HudLayout.computeLayout(
                         this.watermark.getValue(),
@@ -322,7 +322,7 @@ public final class HudModule extends Module {
         }
     }
 
-    private void drawClock(DrawContext context, int scaledWidth, float scale) {
+    private void drawClock(GuiGraphics context, int scaledWidth, float scale) {
         if (this.info.getValue()) {
             String text = this.clockText;
             float[] offset = HudLayoutEditor.getPosition("hud-clock");
@@ -336,7 +336,7 @@ public final class HudModule extends Module {
         }
     }
 
-    private void drawStatusEffects(DrawContext context, int x, int y, float scale) {
+    private void drawStatusEffects(GuiGraphics context, int x, int y, float scale) {
         List<StatusEffectInstance> effects = this.activeEffects;
         if (!effects.isEmpty()) {
             int width = this.effectsPanelWidth;
@@ -395,7 +395,7 @@ public final class HudModule extends Module {
         }
     }
 
-    private int drawModuleList(DrawContext context, int right, int top, float scale) {
+    private int drawModuleList(GuiGraphics context, int right, int top, float scale) {
         List<HudModule.ModuleListEntry> entries = this.moduleEntries;
         if (entries.isEmpty()) {
             return top;
@@ -454,7 +454,7 @@ public final class HudModule extends Module {
     }
 
     private int drawKeybindList(
-            DrawContext context, int x, int screenHeight, int offsetY, float scale) {
+            GuiGraphics context, int x, int screenHeight, int offsetY, float scale) {
         List<HudModule.KeybindEntry> entries = this.keybindEntries;
         if (entries.isEmpty()) {
             return screenHeight;
@@ -503,7 +503,7 @@ public final class HudModule extends Module {
         }
     }
 
-    private void drawArmorDock(DrawContext context, int scaledWidth, int scaledHeight) {
+    private void drawArmorDock(GuiGraphics context, int scaledWidth, int scaledHeight) {
         int count = 0;
 
         for (EquipmentSlot slot : ARMOR_SLOTS) {
@@ -730,7 +730,7 @@ public final class HudModule extends Module {
         this.entriesBuilt = true;
     }
 
-    public void renderRadarBackground(DrawContext context) {
+    public void renderRadarBackground(GuiGraphics context) {
         if (this.shouldRender() && this.radar.getValue()) {
             float scale = this.hudScale.getValue().floatValue();
             int radarY = this.getRadarY();
@@ -776,7 +776,7 @@ public final class HudModule extends Module {
                 this.watermark.getValue(), this.info.getValue(), this.coords.getValue());
     }
 
-    private int drawRadar(DrawContext context, int x, int y) {
+    private int drawRadar(GuiGraphics context, int x, int y) {
         int diameter = this.radarDiameter.getValue();
         int radius = diameter / 2;
         int centerX = x + radius;
@@ -837,7 +837,7 @@ public final class HudModule extends Module {
     }
 
     private void drawCompassLabel(
-            DrawContext context,
+            GuiGraphics context,
             String label,
             double dirX,
             double dirZ,
@@ -871,7 +871,7 @@ public final class HudModule extends Module {
     }
 
     private void drawPanelBackground(
-            DrawContext context, int x, int y, int width, int height, int radius) {
+            GuiGraphics context, int x, int y, int width, int height, int radius) {
         if (this.background.getValue() && width > 0 && height > 0) {
             int alpha =
                     Math.max(
@@ -893,7 +893,7 @@ public final class HudModule extends Module {
     }
 
     private void drawFadingBackground(
-            DrawContext context, int x, int y, int width, int height, float fade) {
+            GuiGraphics context, int x, int y, int width, int height, float fade) {
         if (this.background.getValue() && width > 0 && height > 0) {
             SdfShapeRenderer.fill(
                     context,
@@ -917,7 +917,7 @@ public final class HudModule extends Module {
     }
 
     private static void fillRoundedRectHalfScale(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);
@@ -927,7 +927,7 @@ public final class HudModule extends Module {
     }
 
     private static void fillRoundedRect(
-            DrawContext context, int x, int y, int width, int height, int radius, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int radius, int color) {
         int r = Math.max(0, Math.min(radius, Math.min(width, height) / 2));
         if (r == 0) {
             context.fill(x, y, x + width, y + height, color);
@@ -944,7 +944,7 @@ public final class HudModule extends Module {
     }
 
     private static void fillRoundedRow(
-            DrawContext context, int x, int y, int width, float inset, int color) {
+            GuiGraphics context, int x, int y, int width, float inset, int color) {
         float left = x + inset;
         float right = x + width - inset;
         int leftPixel = (int) Math.ceil(left);
@@ -975,7 +975,7 @@ public final class HudModule extends Module {
         }
     }
 
-    private void drawGradientLine(DrawContext context, int x, int y, int length) {
+    private void drawGradientLine(GuiGraphics context, int x, int y, int length) {
         for (int i = 0; i < length; i++) {
             float t = length <= 1 ? 0.5F : (float) i / (length - 1);
 
@@ -990,7 +990,7 @@ public final class HudModule extends Module {
     }
 
     private void drawScaledText(
-            DrawContext context, String text, int x, int y, float scale, int color) {
+            GuiGraphics context, String text, int x, int y, float scale, int color) {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate((float) x, (float) y);
         context.getMatrices().scale(scale, scale);
@@ -999,7 +999,7 @@ public final class HudModule extends Module {
     }
 
     private void drawStretchedText(
-            DrawContext context,
+            GuiGraphics context,
             String text,
             int textWidth,
             int x,
@@ -1019,13 +1019,13 @@ public final class HudModule extends Module {
     }
 
     private void drawRightAlignedText(
-            DrawContext context, String text, int right, int y, float scale, int color) {
+            GuiGraphics context, String text, int right, int y, float scale, int color) {
         this.drawScaledText(
                 context, text, right - this.scaledTextWidth(text, scale), y, scale, color);
     }
 
     private void drawTextEndingAt(
-            DrawContext context,
+            GuiGraphics context,
             String text,
             int textWidth,
             int right,
@@ -1053,7 +1053,7 @@ public final class HudModule extends Module {
         return Math.max(1, Math.round(BoldText.width(this.mc.textRenderer, text) * scale));
     }
 
-    private void drawScaledItem(DrawContext context, ItemStack stack, int x, int y, float scale) {
+    private void drawScaledItem(GuiGraphics context, ItemStack stack, int x, int y, float scale) {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate((float) x, (float) y);
         context.getMatrices().scale(scale, scale);
@@ -1062,11 +1062,11 @@ public final class HudModule extends Module {
     }
 
     private int ping() {
-        if (this.mc.getNetworkHandler() == null) {
+        if (this.mc.getConnection() == null) {
             return 0;
         } else {
             PlayerInfo entry =
-                    this.mc.getNetworkHandler().getPlayerInfo(this.mc.player.getUuid());
+                    this.mc.getConnection().getPlayerInfo(this.mc.player.getUuid());
             return entry == null ? 0 : entry.getLatency();
         }
     }
@@ -1150,7 +1150,7 @@ public final class HudModule extends Module {
     }
 
     private static void fillHalfScale(
-            DrawContext context, int x, int y, int width, int height, int color) {
+            GuiGraphics context, int x, int y, int width, int height, int color) {
         if (width > 0 && height > 0 && color >>> 24 != 0) {
             context.getMatrices().pushMatrix();
             context.getMatrices().scale(0.5F, 0.5F);

@@ -3,7 +3,7 @@ package odinclient.ui.widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import odinclient.ui.draw.DashboardRenderer;
@@ -16,7 +16,7 @@ public final class ConfigsButton {
 
     private ConfigsButton() {}
 
-    public static void renderButton(Screen screen, DrawContext context, int mouseX, int mouseY) {
+    public static void renderButton(Screen screen, GuiGraphics context, int mouseX, int mouseY) {
         int screenWidth = context.getScaledWindowWidth();
         int screenHeight = context.getScaledWindowHeight();
         int x = (screenWidth - 104) / 2;

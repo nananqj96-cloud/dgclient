@@ -321,9 +321,9 @@ public final class SusChunkFinder extends Module {
                 this.rescanDone = false;
                 ClientWorld world = this.mc.world;
                 String brand =
-                        this.mc.getNetworkHandler() == null
+                        this.mc.getConnection() == null
                                 ? null
-                                : this.mc.getNetworkHandler().getBrand();
+                                : this.mc.getConnection().getBrand();
                 this.queueChunkScan(
                         event.getChunk(),
                         world,
@@ -587,9 +587,9 @@ public final class SusChunkFinder extends Module {
                                         MAX_VIEW_RADIUS,
                                         this.mc.options.getViewDistance().getValue() + 1));
                 String brand =
-                        this.mc.getNetworkHandler() == null
+                        this.mc.getConnection() == null
                                 ? null
-                                : this.mc.getNetworkHandler().getBrand();
+                                : this.mc.getConnection().getBrand();
                 boolean donutFolia = brand != null && brand.contains("DonutFolia");
 
                 for (int ring = 0; ring <= radius; ring++) {

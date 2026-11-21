@@ -3,12 +3,12 @@ package odinclient.render.projection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.Vec3d;
 
 import odinclient.mixin.accessor.GameRendererInvoker;
-import odinclient.ui.draw.DrawContextHolder;
+import odinclient.ui.draw.GuiGraphicsHolder;
 import odinclient.ui.scale.ScreenScaleCompat;
 
 import org.joml.Matrix3x2fStack;
@@ -67,12 +67,12 @@ public final class ScreenProjection {
     }
 
     public static void pushTransform(Vector3d pos) {
-        pushTransformTo(pos, DrawContextHolder.get());
+        pushTransformTo(pos, GuiGraphicsHolder.get());
     }
 
-    public static void pushTransformTo(Vector3d pos, DrawContext context) {
+    public static void pushTransformTo(Vector3d pos, GuiGraphics context) {
         if (context != null) {
-            DrawContextHolder.set(context);
+            GuiGraphicsHolder.set(context);
             Matrix3x2fStack matrices = context.getMatrices();
             matrices.pushMatrix();
             float compensation = ScreenScaleCompat.getCompensation();
@@ -82,10 +82,10 @@ public final class ScreenProjection {
     }
 
     public static void popTransform() {
-        popTransformFrom(DrawContextHolder.get());
+        popTransformFrom(GuiGraphicsHolder.get());
     }
 
-    public static void popTransformFrom(DrawContext context) {
+    public static void popTransformFrom(GuiGraphics context) {
         if (context != null) {
             context.getMatrices().popMatrix();
         }

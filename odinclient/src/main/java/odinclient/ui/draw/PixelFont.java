@@ -1,6 +1,6 @@
 package odinclient.ui.draw;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.Locale;
 
@@ -17,7 +17,7 @@ public final class PixelFont {
         return Math.max(0, total - 1);
     }
 
-    public static void drawString(DrawContext context, String text, int x, int y, int color) {
+    public static void drawString(GuiGraphics context, String text, int x, int y, int color) {
         byte offset = 0;
         String upper = text.toUpperCase(Locale.ROOT);
 
