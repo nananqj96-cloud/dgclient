@@ -14,9 +14,10 @@ import net.fabricmc.loader.api.FabricLoader;
  * {@link ActivityStore}. On play disconnect both stores are cleared so stale base/activity data
  * does not carry into the next world.
  *
- * <p>If the DonutLarp mod is also installed, it registers the payload types itself — Aether Client
- * must NOT also register them (Fabric throws on duplicate type registration). Only the global
- * receivers are registered here, which is safe: multiple receivers per payload type are allowed.
+ * <p>If the DonutLarp mod is also installed, it owns the payload type registrations — Aether Client
+ * must NOT also register them (Fabric throws on duplicate type registration). Receivers are
+ * registered in {@link ClientPlayConnectionEvents#JOIN} so the payload types are guaranteed to
+ * exist by the time receivers are attached, regardless of which mod registered them.
  */
 public final class DonutNetworking {
    private DonutNetworking() {
@@ -31,14 +32,17 @@ public final class DonutNetworking {
          PayloadTypeRegistry.playS2C().register(BasesPayload.ID, BasesPayload.CODEC);
          PayloadTypeRegistry.playS2C().register(ActivityPayload.ID, ActivityPayload.CODEC);
       } else {
-         AetherClient.LOGGER.info("DonutLarp mod detected; skipping payload type registration (receivers only)");
+         AetherClient.LOGGER.info("DonutLarp mod detected; skipping payload type registration (receivers registered on join)");
       }
 
-      ClientPlayNetworking.registerGlobalReceiver(BasesPayload.ID,
-         (payload, context) -> context.client().execute(() -> BaseStore.handle(payload.data())));
-
-      ClientPlayNetworking.registerGlobalReceiver(ActivityPayload.ID,
-         (payload, context) -> context.client().execute(() -> ActivityStore.handle(payload.data())));
+      // Register receivers on JOIN — by then all mods have had a chance to register
+      // their payload types during the init phase, so the types are guaranteed to exist.
+      ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+         ClientPlayNetworking.registerGlobalReceiver(BasesPayload.ID,
+            (payload, context) -> context.client().execute(() -> BaseStore.handle(payload.data())));
+         ClientPlayNetworking.registerGlobalReceiver(ActivityPayload.ID,
+            (payload, context) -> context.client().execute(() -> ActivityStore.handle(payload.data())));
+      });
 
       ClientPlayConnectionEvents.DISCONNECT.register((listener, client) -> {
          BaseStore.clear();
