@@ -10,4 +10,4 @@ pluginManagement {
 }
 
 rootProject.name = 'aetherclient'
-include 'corz-api', 'corz', 'cakeclient', 'fakeclient', 'purxiyclient'
+include 'corz-api', 'corz', 'cakeclient', 'fakeclient', 'purxiyclient', 'odinclient'

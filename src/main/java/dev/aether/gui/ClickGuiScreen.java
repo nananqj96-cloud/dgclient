@@ -60,6 +60,8 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private final Animation openAnim = new Animation(160.0F, 0.0F);
    private final Animation dashScroll = new Animation(150.0F, 0.0F);
    private float dashMaxScroll;
+   private float sidebarScrollY;
+   private float sidebarScrollMax;
    private boolean closing;
    private final ConfigPanel configPanel = new ConfigPanel();
    private final CorzWindow corzWindow;
@@ -351,7 +353,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
       float maxDashW = uiW - 40.0F - (corzW + 14.0F) * corzProg;
       this.winW = Math.clamp(maxDashW, 560.0F, 880.0F);
-      this.winH = Math.clamp(uiH - 64.0F, 400.0F, 580.0F);
+      this.winH = Math.clamp(uiH - 48.0F, 400.0F, 680.0F);
 
       float combinedW = this.winW + gap + corzW * corzProg;
       float defaultDashX = Math.max(12.0F, (uiW - combinedW) * 0.5F);
@@ -418,7 +420,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
       vg.line(this.winX + 14.0F, this.winY + TOPBAR_H, this.winX + SIDEBAR_W - 14.0F, this.winY + TOPBAR_H, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.7F));
 
-      float navY = this.winY + TOPBAR_H + 10.0F;
+      float sbTop = this.winY + TOPBAR_H + 6.0F;
+      float sbBottom = this.winY + this.winH - 50.0F;
+      float sbContentH = sbBottom - sbTop;
+
+      float navY = this.winY + TOPBAR_H + 10.0F - this.sidebarScrollY;
       vg.text("CATEGORIES", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
       navY += 15.0F;
 
@@ -686,6 +692,23 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       String cfgLabel = "Config Profiles";
       float clw = vg.textWidth(cfgLabel, 11.8F);
       vg.text(cfgLabel, this.cfgBtnX + (this.cfgBtnW - clw) * 0.5F, this.cfgBtnY + this.cfgBtnH * 0.5F, 11.8F, cHov ? theme.accentBright() : theme.textPrimary());
+
+      // Calculate sidebar scroll range
+      float contentStart = this.winY + TOPBAR_H + 10.0F;
+      float totalContentH = (navY + this.sidebarScrollY) - contentStart;
+      this.sidebarScrollMax = Math.max(0.0F, totalContentH - (sbBottom - sbTop));
+      this.sidebarScrollY = Math.clamp(this.sidebarScrollY, 0.0F, this.sidebarScrollMax);
+
+      // Sidebar scrollbar
+      if (this.sidebarScrollMax > 1.0F) {
+         float trackX = this.winX + SIDEBAR_W - 5.0F;
+         float trackTop = sbTop;
+         float trackH = sbBottom - sbTop;
+         float thumbH = Math.max(20.0F, trackH * (sbContentH / (sbContentH + this.sidebarScrollMax)));
+         float thumbY = trackTop + (trackH - thumbH) * (this.sidebarScrollY / this.sidebarScrollMax);
+         vg.rect(trackX, trackTop, 2.0F, trackH, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.4F));
+         vg.rect(trackX, thumbY, 2.0F, thumbH, 1.0F, Colors.withAlpha(theme.accentBright(), 0.5F));
+      }
    }
 
    private void renderDashboardTopBar(NVGRenderer vg, Theme theme, float mx, float my, float mainX, float mainW) {
@@ -1565,6 +1588,11 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
       if (this.isDashboardMode()) {
+         // Sidebar scroll
+         if (this.sidebarScrollMax > 0.0F && mx >= this.winX && mx <= this.winX + SIDEBAR_W && my >= this.winY + TOPBAR_H && my <= this.winY + this.winH - 50.0F) {
+            this.sidebarScrollY = Math.clamp(this.sidebarScrollY - (float)scrollY * 30.0F, 0.0F, this.sidebarScrollMax);
+            return true;
+         }
          if (this.dashMaxScroll > 0.0F && this.hit(mx, my, this.winX + SIDEBAR_W, this.winY + TOPBAR_H, this.winW - SIDEBAR_W, this.winH - TOPBAR_H)) {
             this.dashScroll.setTarget(Math.clamp(this.dashScroll.getTarget() - (float)scrollY * 44.0F, 0.0F, this.dashMaxScroll));
          }

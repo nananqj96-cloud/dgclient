@@ -1,5 +1,6 @@
 package dev.aether.module;
 
+import dev.aether.AetherClient;
 import dev.aether.accessory.AccessoriesModule;
 import dev.aether.module.impl.AimAssistModule;
 import dev.aether.module.impl.AnchorMacroModule;
@@ -981,7 +982,12 @@ public class ModuleManager {
    public void onTick() {
       for (Module var2 : this.modules) {
          if (var2.isEnabled() && var2.getCategory() != Category.COMBAT) {
-            var2.onTick();
+            try {
+               var2.onTick();
+            } catch (Throwable t) {
+               AetherClient.LOGGER.error("Module " + var2.getName() + " threw an exception in onTick", t);
+               var2.setEnabled(false);
+            }
          }
       }
    }
@@ -989,7 +995,12 @@ public class ModuleManager {
    public void onCombatTick() {
       for (Module var2 : this.modules) {
          if (var2.isEnabled() && var2.getCategory() == Category.COMBAT) {
-            var2.onTick();
+            try {
+               var2.onTick();
+            } catch (Throwable t) {
+               AetherClient.LOGGER.error("Module " + var2.getName() + " threw an exception in onCombatTick", t);
+               var2.setEnabled(false);
+            }
          }
       }
    }
