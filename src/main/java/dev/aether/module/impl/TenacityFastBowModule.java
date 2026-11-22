@@ -2,12 +2,10 @@ package dev.aether.module.impl;
 
 import dev.aether.module.Category;
 import dev.aether.module.Module;
-import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Items;
 
 public class TenacityFastBowModule extends Module {
@@ -21,14 +19,14 @@ public class TenacityFastBowModule extends Module {
    @Override
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.player == null || mc.screen != null) return;
+      if (mc.player == null || mc.level == null || mc.screen != null) return;
       if (mc.player.getMainHandItem().getItem() != Items.BOW) return;
       if (mc.options.keyUse.isDown()) {
          charging = true;
       } else if (charging) {
          for (Entity e : mc.level.entitiesForRendering()) {
-            if (e instanceof AbstractArrow arrow && arrow.owner() == mc.player) {
-               arrow.setDeltaMovement(arrow.getDeltaMovement().multiply(speed.getFloat(), speed.getFloat(), speed.getFloat()));
+            if (e instanceof Projectile proj && proj.getOwner() == mc.player) {
+               proj.setDeltaMovement(proj.getDeltaMovement().multiply(speed.getFloat(), speed.getFloat(), speed.getFloat()));
             }
          }
          charging = false;

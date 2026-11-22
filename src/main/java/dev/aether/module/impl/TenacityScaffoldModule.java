@@ -57,8 +57,10 @@ public class TenacityScaffoldModule extends Module {
    }
 
    private void placeBlock(Minecraft mc, BlockPos pos) {
-      mc.gameMode.attack(mc.player, null);
-      mc.player.playerCommand(mc.player, "setblock " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " " + block.get() + " 0 replace");
+      if (mc.player == null) return;
+      mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND,
+         new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(pos),
+            net.minecraft.core.Direction.UP, pos, false));
       counter = delay.getInt() + 1;
    }
 }
