@@ -4,8 +4,8 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.world.entity.ai.attributes.EntityAttributeInstance;
+import net.minecraft.world.entity.ai.attributes.EntityAttributes;
 
 public class TenacityStepModule extends Module {
    public final SliderSetting height = this.addSetting(

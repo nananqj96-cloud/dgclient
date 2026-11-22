@@ -2,13 +2,11 @@ package dev.aether.module.impl;
 
 import dev.aether.module.Category;
 import dev.aether.module.Module;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 
 public class TenacityAutoToolModule extends Module {
    private int previous = -1;
@@ -23,8 +21,8 @@ public class TenacityAutoToolModule extends Module {
 
    public void select(BlockPos pos) {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.player == null || mc.world == null || mc.player.isCreative()) return;
-      BlockState state = mc.world.getBlockState(pos);
+      if (mc.player == null || mc.level == null) return;
+      BlockState state = mc.level.getBlockState(pos);
       if (state.isAir()) return;
       var inv = mc.player.getInventory();
       int orig = inv.getSelectedSlot();
@@ -46,8 +44,8 @@ public class TenacityAutoToolModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      boolean mining = mc.currentScreen == null
-         && mc.options.attackKey.isPressed()
+      boolean mining = mc.screen == null
+         && mc.options.keyAttack.isDown()
          && mc.crosshairTarget instanceof BlockHitResult bhr
          && bhr.getType() == HitResult.Type.BLOCK;
       if (!mining && previous >= 0) {

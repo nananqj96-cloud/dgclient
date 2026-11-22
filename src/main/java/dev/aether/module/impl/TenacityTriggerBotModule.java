@@ -5,9 +5,11 @@ import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.EntityHitResult;
 
 public class TenacityTriggerBotModule extends Module {
    public final SliderSetting range = this.addSetting(
@@ -29,7 +31,7 @@ public class TenacityTriggerBotModule extends Module {
    @Override
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.player == null || mc.world == null || mc.currentScreen != null) return;
+      if (mc.player == null || mc.level == null || mc.screen != null) return;
       if (tickCounter > 0) { tickCounter--; return; }
       if (delay.get() > 0) { tickCounter = (int) delay.get(); return; }
 
@@ -39,23 +41,23 @@ public class TenacityTriggerBotModule extends Module {
             && !le.isSpectator()
             && mc.player.distanceTo(le) <= range.get()) {
             if (!combatOnly.get() || isWeaponInHand(mc)) {
-               mc.options.attackKey.setPressed(true);
+               mc.options.keyAttack.setDown(true);
                tickCounter = 1;
                return;
             }
          }
       }
-      mc.options.attackKey.setPressed(false);
+      mc.options.keyAttack.setDown(false);
    }
 
    private boolean isWeaponInHand(Minecraft mc) {
-      var stack = mc.player.getMainHandStack();
+      ItemStack stack = mc.player.getMainHandItem();
       return !stack.isEmpty();
    }
 
    @Override
    protected void onDisable() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.options != null) mc.options.attackKey.setPressed(false);
+      if (mc.options != null) mc.options.keyAttack.setDown(false);
    }
 }

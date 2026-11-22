@@ -24,7 +24,7 @@ public class TenacityNameScramblerModule extends Module {
    @Override
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.player == null || mc.world == null) return;
+      if (mc.player == null || mc.level == null) return;
       long now = System.currentTimeMillis();
       int interval = (int)(1000.0 / speed.get());
       if (now - lastUpdate < interval) return;
@@ -33,7 +33,7 @@ public class TenacityNameScramblerModule extends Module {
       // This is a visual module — the actual name rendering is handled by mixins.
       // Store the scramble state for the name tag renderer to use.
       NameScramblerState.active = isEnabled();
-    }
+   }
 
    /** State holder for name scrambling. */
    public static final class NameScramblerState {

@@ -4,9 +4,8 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
 
 public class TenacityAutoEatModule extends Module {
    public final SliderSetting hunger = this.addSetting(
@@ -23,11 +22,11 @@ public class TenacityAutoEatModule extends Module {
    @Override
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.player == null || mc.currentScreen != null) {
+      if (mc.player == null || mc.screen != null) {
          stop();
          return;
       }
-      int food = mc.player.getHungerManager().getFoodLevel();
+      int food = mc.player.getFoodData().getFoodLevel();
       if (food <= hunger.getInt() && (!eating || food < 20)) {
          if (!eating) {
             int slot = findFood(mc);
@@ -36,7 +35,7 @@ public class TenacityAutoEatModule extends Module {
             mc.player.getInventory().setSelectedSlot(slot);
             eating = true;
          }
-         mc.options.useKey.setPressed(true);
+         mc.options.keyUse.setDown(true);
       } else {
          stop();
       }
@@ -44,8 +43,8 @@ public class TenacityAutoEatModule extends Module {
 
    private int findFood(Minecraft mc) {
       for (int i = 0; i < 9; i++) {
-         ItemStack stack = mc.player.getInventory().getStack(i);
-         if (!stack.isEmpty() && stack.contains(DataComponentTypes.FOOD)) {
+         ItemStack stack = mc.player.getInventory().getItem(i);
+         if (!stack.isEmpty() && stack.has(DataComponents.FOOD)) {
             return i;
          }
       }
@@ -56,7 +55,7 @@ public class TenacityAutoEatModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (eating) {
          eating = false;
-         if (mc.options != null) mc.options.useKey.setPressed(false);
+         if (mc.options != null) mc.options.keyUse.setDown(false);
          if (previous >= 0 && mc.player != null) {
             mc.player.getInventory().setSelectedSlot(previous);
          }

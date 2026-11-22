@@ -5,16 +5,14 @@ import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Mth;
 
 public class TenacityAimAssistModule extends Module {
    public final SliderSetting range = this.addSetting(
@@ -63,48 +61,48 @@ public class TenacityAimAssistModule extends Module {
    }
 
    private boolean isWeapon(ItemStack stack) {
-      return stack.isIn(ItemTags.SWORDS) || stack.isIn(ItemTags.AXES)
-         || stack.isIn(ItemTags.SPEARS) || stack.getItem() == Items.MACE || stack.getItem() == Items.TRIDENT;
+      return stack.is(Items.SWORD) || stack.is(Items.AXE)
+         || stack.is(Items.MACE) || stack.is(Items.TRIDENT);
    }
 
-   private Vec3d aimPoint(LivingEntity entity, Vec3d eye, Vec3d look) {
-      Box box = entity.getBoundingBox().contract(0.08, 0.1, 0.08);
-      Vec3d projected = eye.add(look.multiply(eye.distanceTo(entity.getEyePos()) + 0.5));
-      double x = MathHelper.clamp(projected.x, box.minX, box.maxX);
-      double y = MathHelper.clamp(projected.y, box.minY + box.getLengthY() * 0.25, box.maxY - box.getLengthY() * 0.1);
-      double z = MathHelper.clamp(projected.z, box.minZ, box.maxZ);
-      return new Vec3d(x, y, z);
+   private Vec3 aimPoint(LivingEntity entity, Vec3 eye, Vec3 look) {
+      Vec3 box = entity.getBoundingBox();
+      Vec3 projected = eye.add(look.multiply(eye.distanceTo(entity.getEyePosition()) + 0.5));
+      double x = Mth.clamp(projected.x, box.minX, box.maxX);
+      double y = Mth.clamp(projected.y, box.minY + (box.maxY - box.minY) * 0.25, box.maxY - (box.maxY - box.minY) * 0.1);
+      double z = Mth.clamp(projected.z, box.minZ, box.maxZ);
+      return new Vec3(x, y, z);
    }
 
    @Override
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       long now = System.nanoTime();
-      float dt = MathHelper.clamp((float)(now - last) / 1.0E9F, 5.0E-4F, 0.1F);
+      float dt = Mth.clamp((float)(now - last) / 1.0E9F, 5.0E-4F, 0.1F);
       last = now;
 
-      if (mc.player == null || mc.world == null || mc.currentScreen != null || !mc.player.isAlive() || mc.player.isSpectator()) return;
-      if (clickOnly.get() && !mc.options.attackKey.isPressed()) return;
-      if (weaponOnly.get() && !isWeapon(mc.player.getMainHandStack())) return;
+      if (mc.player == null || mc.level == null || mc.screen != null || !mc.player.isAlive() || mc.player.isSpectator()) return;
+      if (clickOnly.get() && !mc.options.keyAttack.isDown()) return;
+      if (weaponOnly.get() && !isWeapon(mc.player.getMainHandItem())) return;
 
-      Vec3d eye = mc.player.getEyePos();
-      Vec3d look = mc.player.getRotationVec(1.0F);
+      Vec3 eye = mc.player.getEyePosition();
+      Vec3 look = mc.player.getRotationVector(1.0F);
       LivingEntity best = null;
       double bestAngle = fov.get() / 2.0;
 
-      Entity locked = lockId == -1 ? null : mc.world.getEntityById(lockId);
+      Entity locked = lockId == -1 ? null : mc.level.getEntityById(lockId);
       if (sticky.get() && locked instanceof LivingEntity le && le.isAlive()
          && mc.player.distanceTo(le) <= range.get() + 1.0) {
          best = le;
       } else {
          lockId = -1;
-         for (AbstractClientPlayerEntity p : mc.world.getPlayers()) {
+         for (AbstractClientPlayer p : mc.level.players()) {
             if (p == mc.player || !p.isAlive() || p.isSpectator() || p.isInvisible()) continue;
-            if (teams.get() && p.isTeammate(mc.player)) continue;
+            if (teams.get() && p.getTeam() != null && p.getTeam().equals(mc.player.getTeam())) continue;
             if (mc.player.distanceTo(p) > range.get()) continue;
             if (lineOfSight.get() && !mc.player.canSee(p)) continue;
-            Vec3d offset = p.getBoundingBox().getCenter().subtract(eye);
-            double angle = Math.toDegrees(Math.acos(MathHelper.clamp(offset.normalize().dotProduct(look), -1.0, 1.0)));
+            Vec3 offset = p.getBoundingBox().getCenter().subtract(eye);
+            double angle = Math.toDegrees(Math.acos(Mth.clamp(offset.normalize().dotProduct(look), -1.0, 1.0)));
             if (angle < bestAngle) {
                bestAngle = angle;
                best = p;
@@ -122,28 +120,28 @@ public class TenacityAimAssistModule extends Module {
             yawVel *= 0.6F;
             pitchVel *= 0.6F;
          } else {
-            Vec3d vel = aimPoint(best, eye, look).add(best.getVelocity().multiply(0.6, 0.0, 0.6).multiply(dt * 4.0F));
+            Vec3 vel = aimPoint(best, eye, look).add(best.getDeltaMovement().multiply(0.6, 0.0, 0.6).multiply(dt * 4.0F));
             double dx = vel.x - eye.x, dy = vel.y - eye.y, dz = vel.z - eye.z;
             float wantYaw = (float)(Math.toDegrees(Math.atan2(dz, dx)) - 90.0);
             float wantPitch = (float)(-Math.toDegrees(Math.atan2(dy, Math.hypot(dx, dz))));
-            float endY = MathHelper.wrapDegrees(wantYaw - mc.player.getYaw());
-            float ep = wantPitch - mc.player.getPitch();
+            float endY = Mth.wrapDegrees(wantYaw - mc.player.getYRot());
+            float ep = wantPitch - mc.player.getXRot();
             if (human.get()) {
                noiseYaw += ((float)((Math.random() - 0.5) * 0.35) - noiseYaw * 1.5F * dt);
                noisePitch += ((float)((Math.random() - 0.5) * 0.2) - noisePitch * 1.5F * dt);
-               endY += MathHelper.clamp(noiseYaw, -0.8F, 0.8F);
-               ep += MathHelper.clamp(noisePitch, -0.5F, 0.5F);
+               endY += Mth.clamp(noiseYaw, -0.8F, 0.8F);
+               ep += Mth.clamp(noisePitch, -0.5F, 0.5F);
             }
             float accel = 1.0F - (float)Math.exp(-(6.0 + smooth.get() * 0.5) * dt);
-            float wantYawVel = MathHelper.clamp(endY * (float)(speed.get() * 0.12), -200.0F, 200.0F);
-            float wantPitchVel = MathHelper.clamp(ep * (float)(speed.get() * 0.12), -200.0F, 200.0F);
+            float wantYawVel = Mth.clamp(endY * (float)(speed.get() * 0.12), -200.0F, 200.0F);
+            float wantPitchVel = Mth.clamp(ep * (float)(speed.get() * 0.12), -200.0F, 200.0F);
             yawVel += (wantYawVel - yawVel) * accel;
             pitchVel += (wantPitchVel - pitchVel) * accel;
             float dyaw = yawVel * dt;
             float dpitch = pitchVel * dt;
             if (dyaw != 0.0F || dpitch != 0.0F) {
-               mc.player.setYaw(mc.player.getYaw() + dyaw);
-               mc.player.setPitch(MathHelper.clamp(mc.player.getPitch() + dpitch, -90.0F, 90.0F));
+               mc.player.setYRot(mc.player.getYRot() + dyaw);
+               mc.player.setXRot(Mth.clamp(mc.player.getXRot() + dpitch, -90.0F, 90.0F));
             }
          }
       }

@@ -4,6 +4,7 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
+import dev.aether.util.UiSounds;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
@@ -26,10 +27,9 @@ public class TenacityMouseClickSoundModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.getWindow() == null) return;
       for (int btn = 0; btn <= 2; btn++) {
-         int state = GLFW.glfwGetMouseButton(mc.getWindow().getHandle(), btn);
+         int state = GLFW.glfwGetMouseButton(mc.getWindow().handle(), btn);
          if (state == 1 && lastButton != btn) {
-            // Play click sound — hook into UiSounds if available
-            dev.aether.util.UiSounds.select();
+            UiSounds.select();
             lastButton = btn;
          } else if (state == 0 && lastButton == btn) {
             lastButton = -1;

@@ -3,9 +3,7 @@ package dev.aether.module.impl;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 
 public class TenacitySprintModule extends Module {
    public final BooleanSetting omni = this.addSetting(
@@ -20,11 +18,10 @@ public class TenacitySprintModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      Options opts = mc.options;
-      boolean moving = opts.forwardKey.isPressed()
-         || (omni.get() && (opts.backKey.isPressed() || opts.leftKey.isPressed() || opts.rightKey.isPressed()));
-      if (moving && !mc.player.isSneaking() && mc.player.getHungerManager().getFoodLevel() > 6) {
-         opts.sprintKey.setPressed(true);
+      boolean moving = mc.options.keyUp.isDown()
+         || (omni.get() && (mc.options.keyDown.isDown() || mc.options.keyLeft.isDown() || mc.options.keyRight.isDown()));
+      if (moving && !mc.player.isShiftKeyDown() && mc.player.getFoodData().getFoodLevel() > 6) {
+         mc.options.keySprint.setDown(true);
          mc.player.setSprinting(true);
       }
    }
@@ -32,6 +29,6 @@ public class TenacitySprintModule extends Module {
    @Override
    protected void onDisable() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.options != null) mc.options.sprintKey.setPressed(false);
+      if (mc.options != null) mc.options.keySprint.setDown(false);
    }
 }

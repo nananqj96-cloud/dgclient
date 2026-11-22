@@ -3,7 +3,6 @@ package dev.aether.module.impl;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Options;
 
 public class TenacityAutoJumpModule extends Module {
    private boolean pressing;
@@ -15,19 +14,18 @@ public class TenacityAutoJumpModule extends Module {
    @Override
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.player == null || mc.currentScreen != null) {
+      if (mc.player == null || mc.screen != null) {
          if (this.pressing) {
-            mc.options.jumpKey.setPressed(false);
+            mc.options.keyJump.setDown(false);
             this.pressing = false;
          }
          return;
       }
-      Options opts = mc.options;
-      if (mc.player.isOnGround() && opts.forwardKey.isPressed()) {
-         opts.jumpKey.setPressed(true);
+      if (mc.player.onGround() && mc.options.keyUp.isDown()) {
+         mc.options.keyJump.setDown(true);
          this.pressing = true;
       } else if (this.pressing) {
-         opts.jumpKey.setPressed(false);
+         mc.options.keyJump.setDown(false);
          this.pressing = false;
       }
    }
@@ -35,7 +33,7 @@ public class TenacityAutoJumpModule extends Module {
    @Override
    protected void onDisable() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.options != null) mc.options.jumpKey.setPressed(false);
+      if (mc.options != null) mc.options.keyJump.setDown(false);
       this.pressing = false;
    }
 }
