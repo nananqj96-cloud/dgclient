@@ -20,7 +20,7 @@ public class TenacityMoveFixModule extends Module {
       if (mc.player == null || !fix.get()) return;
       var box = mc.player.getBoundingBox();
       var pos = mc.player.getBlockPos();
-      if (mc.level.getBlockState(pos.below()).isAir() && !mc.player.isOnGround()) {
+      if (mc.level.getBlockState(pos.below()).isAir() && !mc.player.onGround()) {
          mc.player.setOnGround(true);
       }
    }

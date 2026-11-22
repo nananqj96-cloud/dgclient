@@ -16,7 +16,7 @@ public class TenacityNoJumpDelayModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      if (autoJump.get() && mc.options.keyJump.isDown() && mc.player.isOnGround()) {
+      if (autoJump.get() && mc.options.keyJump.isDown() && mc.player.onGround()) {
          mc.player.jumpFromGround();
       }
    }

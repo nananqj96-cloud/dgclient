@@ -17,7 +17,7 @@ public class TenacitySafeWalkModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
-      if (!mc.player.isOnGround()) return;
+      if (!mc.player.onGround()) return;
       var box = mc.player.getBoundingBox();
       var pos = mc.player.getBlockPos();
       var ahead = mc.level.getBlockState(pos.offset(mc.player.getX() < mc.player.getX() + mc.player.getDeltaMovement().getX() ? 1 : -1, -1, 0));

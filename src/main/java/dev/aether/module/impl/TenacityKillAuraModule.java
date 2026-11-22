@@ -72,7 +72,7 @@ public class TenacityKillAuraModule extends Module {
       for (double d = 0.5; d < dist; d += 0.5) {
          AABB box = new AABB(from.x + dir.x * d - 0.3, from.y + dir.y * d - 0.3, from.z + dir.z * d - 0.3,
             from.x + dir.x * d + 0.3, from.y + dir.y * d + 0.3, from.z + dir.z * d + 0.3);
-         if (!mc_level(p).getBlockState(new net.minecraft.core.BlockPos(box.minX, box.minY, box.minZ)).isAir()) return false;
+         if (!mc_level(p).getBlockState(new net.minecraft.core.BlockPos((int)box.minX, (int)box.minY, (int)box.minZ)).isAir()) return false;
       }
       return true;
    }

@@ -18,7 +18,7 @@ public class TenacityLongJumpModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.screen != null) return;
-      if (mc.player.isOnGround() && (auto.get() ? mc.options.keyJump.isDown() : false)) {
+      if (mc.player.onGround() && (auto.get() ? mc.options.keyJump.isDown() : false)) {
          mc.player.setDeltaMovement(mc.player.getDeltaMovement().add(0.0, power.getFloat(), 0.0));
       }
    }

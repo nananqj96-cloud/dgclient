@@ -19,13 +19,13 @@ public class TenacityBlinkModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
-      if (mc.player.isOnGround() && mc.options.keyJump.isDown() && !active) {
+      if (mc.player.onGround() && mc.options.keyJump.isDown() && !active) {
          startX = mc.player.getX();
          startY = mc.player.getY();
          startZ = mc.player.getZ();
          active = true;
          mc.player.setPos(mc.player.getX(), mc.player.getY() + distance.getFloat(), mc.player.getZ());
-      } else if (active && mc.player.isOnGround()) {
+      } else if (active && mc.player.onGround()) {
          active = false;
       }
    }

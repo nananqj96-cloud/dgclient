@@ -21,7 +21,7 @@ public class TenacityAntiBotModule extends Module {
    public boolean isBot(Player player) {
       Minecraft mc = Minecraft.getInstance();
       if (mc.getConnection() == null) return false;
-      var info = mc.getConnection().getPlayerInfo(player.getGameProfile());
+      var info = mc.getConnection().getPlayerInfo(player.getUUID());
       if (info == null) return false;
       if (info.latency() > maxPing.getInt()) return true;
       return info.latency() == 0;

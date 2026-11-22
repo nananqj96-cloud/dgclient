@@ -7,7 +7,7 @@ import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.Items;
 
 public class TenacityAutoPotModule extends Module {
    public final SliderSetting health = this.addSetting(new SliderSetting("Health", "Pot when health drops below", 15.0, 1.0, 36.0, 1.0, "hp"));
@@ -24,7 +24,7 @@ public class TenacityAutoPotModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.screen != null) { stop(); return; }
       Player p = mc.player;
-      int hp = p.getHealth();
+      int hp = (int) p.getHealth();
       if (hp <= health.getInt() && (!drinking || p.getHealth() < 20)) {
          if (!drinking) {
             int slot = findPotion(mc);
@@ -42,8 +42,11 @@ public class TenacityAutoPotModule extends Module {
    private int findPotion(Minecraft mc) {
       for (int i = 0; i < 9; i++) {
          ItemStack stack = mc.player.getInventory().getItem(i);
-         if (!stack.isEmpty() && stack.has(DataComponents.POTION)) {
-            return i;
+         if (!stack.isEmpty()) {
+            var item = stack.getItem();
+            if (item == Items.POTION || item == Items.SPLASH_POTION || item == Items.LINGERING_POTION) {
+               return i;
+            }
          }
       }
       return -1;

@@ -18,7 +18,7 @@ public class TenacitySpiderModule extends Module {
       if (mc.player == null || mc.level == null) return;
       var pos = mc.player.getBlockPos();
       var state = mc.level.getBlockState(pos);
-      if (!state.isAir() && mc.player.isOnGround() && (mc.options.keyJump.isDown())) {
+      if (!state.isAir() && mc.player.onGround() && (mc.options.keyJump.isDown())) {
          mc.player.setPos(mc.player.getX(), mc.player.getY() + speed.getFloat(), mc.player.getZ());
       }
    }

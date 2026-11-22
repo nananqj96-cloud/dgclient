@@ -20,7 +20,7 @@ public class TenacitySpeedModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.screen != null) return;
-      boolean ground = mc.player.isOnGround();
+      boolean ground = mc.player.onGround();
       boolean should = (ground && onGround.get()) || (!ground && inAir.get());
       if (should) {
          active = true;

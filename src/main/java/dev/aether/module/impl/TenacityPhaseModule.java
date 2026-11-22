@@ -17,7 +17,7 @@ public class TenacityPhaseModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
       var box = mc.player.getBoundingBox();
-      if (onGround.get() && mc.player.isOnGround()) {
+      if (onGround.get() && mc.player.onGround()) {
          mc.player.setPos(mc.player.getX(), mc.player.getY() - 0.01, mc.player.getZ());
       }
    }

@@ -25,13 +25,13 @@ public class TenacityCriticalsModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.screen != null) return;
       Player p = mc.player;
-      if (p.isOnGround()) {
+      if (p.onGround()) {
          if (onGround.get()) {
             counter = packets.getInt();
          } else {
             counter = 0;
          }
-      } else if (!p.isOnGround() && !strict.get()) {
+      } else if (!p.onGround() && !strict.get()) {
          counter = packets.getInt();
       }
       if (counter > 0) {

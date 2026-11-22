@@ -32,7 +32,7 @@ public class TenacityScaffoldModule extends Module {
       double range = this.range.get();
       for (int x = -(int)range; x <= range; x++) {
          for (int z = -(int)range; z <= range; z++) {
-            BlockPos below = new BlockPos(mc.player.getX() + x, mc.player.getY() - 3, mc.player.getZ() + z);
+            BlockPos below = new BlockPos((int)mc.player.getX() + x, (int)mc.player.getY() - 3, (int)mc.player.getZ() + z);
             if (!isAir(mc, below)) continue;
             BlockPos under = new BlockPos(below.getX(), below.getY() - 1, below.getZ());
             if (isAir(mc, under)) continue;
@@ -42,7 +42,7 @@ public class TenacityScaffoldModule extends Module {
       }
       if (down.get()) {
          for (int i = 1; i <= 5; i++) {
-            BlockPos below = new BlockPos(mc.player.getX(), mc.player.getY() - i, mc.player.getZ());
+            BlockPos below = new BlockPos((int)mc.player.getX(), (int)mc.player.getY() - i, (int)mc.player.getZ());
             if (!isAir(mc, below)) continue;
             BlockPos under = new BlockPos(below.getX(), below.getY() - 1, below.getZ());
             if (isAir(mc, under)) continue;

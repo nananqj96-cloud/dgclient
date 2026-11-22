@@ -18,7 +18,7 @@ public class TenacityTeleportModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
-      if (onJump.get() && mc.options.keyJump.isDown() && mc.player.isOnGround()) {
+      if (onJump.get() && mc.options.keyJump.isDown() && mc.player.onGround()) {
          float yaw = mc.player.getYRot() * 0.017453292F;
          mc.player.setPos(mc.player.getX() - Math.sin(yaw) * distance.getFloat(),
             mc.player.getY(),
