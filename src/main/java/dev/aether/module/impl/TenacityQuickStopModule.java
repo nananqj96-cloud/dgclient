@@ -16,7 +16,7 @@ public class TenacityQuickStopModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      if (mc.options.keySprint.isDown() && mc.options.keyForward.isDown() && mc.player.onGround()) {
+      if (mc.options.keySprint.isDown() && mc.options.keyUp.isDown() && mc.player.onGround()) {
          mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(1.0 - speed.getFloat(), 1.0, 1.0 - speed.getFloat()));
       }
    }

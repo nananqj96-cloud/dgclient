@@ -18,7 +18,7 @@ public class TenacityKeepSprintModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.screen != null || mc.options == null) return;
-      if (always.get() || mc.options.keySprint.isDown() || mc.options.keyForward.isDown()) {
+      if (always.get() || mc.options.keySprint.isDown() || mc.options.keyUp.isDown()) {
          mc.options.keySprint.setDown(true);
       }
    }

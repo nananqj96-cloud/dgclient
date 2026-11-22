@@ -25,7 +25,7 @@ public class TenacityWTapModule extends Module {
       for (var e : mc.level.entitiesForRendering()) {
          if (e == mc.player || !e.isAlive()) continue;
          if (mc.player.distanceTo(e) <= range.get()) {
-            mc.options.keyForward.setDown(true);
+            mc.options.keyUp.setDown(true);
             counter = delay.getInt();
             return;
          }
@@ -35,6 +35,6 @@ public class TenacityWTapModule extends Module {
    @Override
    protected void onDisable() {
       Minecraft mc = Minecraft.getInstance();
-      if (mc.options != null) mc.options.keyForward.setDown(false);
+      if (mc.options != null) mc.options.keyUp.setDown(false);
    }
 }

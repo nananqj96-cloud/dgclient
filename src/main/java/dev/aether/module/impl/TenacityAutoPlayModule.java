@@ -22,7 +22,7 @@ public class TenacityAutoPlayModule extends Module {
       if (mc.player == null) return;
       if (auto.get() && System.currentTimeMillis() - lastPlay > delay.getInt() && mc.player.connection.isConnected()) {
          lastPlay = System.currentTimeMillis();
-         mc.player.sendChatMessage("/play");
+         mc.player.connection.sendChat("/play");
       }
    }
 }

@@ -21,7 +21,7 @@ public class TenacityAutoHypixelModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      if (retry.get() && !mc.player.connection.isConnected() && System.currentTimeMillis() - lastRetry > retryDelay.getInt()) {
+      if (retry.get() && mc.player.connection != null && System.currentTimeMillis() - lastRetry > retryDelay.getInt()) {
          lastRetry = System.currentTimeMillis();
          mc.setScreen(null);
       }

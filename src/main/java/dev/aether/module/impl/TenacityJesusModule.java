@@ -23,7 +23,7 @@ public class TenacityJesusModule extends Module {
          mc.player.setPos(mc.player.getX(), mc.player.getY() - 0.01, mc.player.getZ());
          mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(0.8, 0.0, 0.8));
       }
-      if (mc.player.fallDistance > distance.getFloat()) {
+      if (mc.player.fallDistance > (double)distance.getFloat()) {
          startY = mc.player.getY();
          mc.player.setPos(mc.player.getX(), startY, mc.player.getZ());
          mc.player.fallDistance = 0.0F;

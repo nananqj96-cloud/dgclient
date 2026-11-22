@@ -22,7 +22,7 @@ public class TenacitySurroundModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
       if (counter > 0) { counter--; return; }
-      BlockPos pos = mc.player.getBlockPos();
+      BlockPos pos = mc.player.blockPosition();
       for (int x = -1; x <= 1; x++) {
          for (int z = -1; z <= 1; z++) {
             BlockPos p = pos.offset(x, 0, z);

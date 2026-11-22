@@ -16,7 +16,7 @@ public class TenacitySpiderModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
-      var pos = mc.player.getBlockPos();
+      var pos = mc.player.blockPosition();
       var state = mc.level.getBlockState(pos);
       if (!state.isAir() && mc.player.onGround() && (mc.options.keyJump.isDown())) {
          mc.player.setPos(mc.player.getX(), mc.player.getY() + speed.getFloat(), mc.player.getZ());

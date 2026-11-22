@@ -27,6 +27,6 @@ public class TenacitySpammerModule extends Module {
       if (now - lastSend < delay.getInt()) return;
       lastSend = now;
       String msg = random.get() ? MSGS[(int)(Math.random() * MSGS.length)] : "hello";
-      mc.player.sendChatMessage(msg);
+      mc.player.connection.sendChat(msg);
    }
 }

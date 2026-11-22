@@ -24,7 +24,7 @@ public class TenacityNoSlowModule extends Module {
       if (mc.player == null || mc.level == null) return;
       boolean inWater = mc.player.isInWater();
       boolean inSoul = false;
-      var block = mc.level.getBlockState(mc.player.getBlockPos().below());
+      var block = mc.level.getBlockState(mc.player.blockPosition().below());
       if (block.is(net.minecraft.world.level.block.Blocks.SOUL_SAND) || block.is(net.minecraft.world.level.block.Blocks.SOUL_FIRE)) {
          inSoul = true;
       }

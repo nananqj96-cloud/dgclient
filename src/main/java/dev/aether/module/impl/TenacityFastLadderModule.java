@@ -16,7 +16,7 @@ public class TenacityFastLadderModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
-      var pos = mc.player.getBlockPos();
+      var pos = mc.player.blockPosition();
       if (mc.level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.LADDER) && mc.options.keyUp.isDown()) {
          mc.player.setPos(mc.player.getX(), mc.player.getY() + speed.getFloat(), mc.player.getZ());
       }

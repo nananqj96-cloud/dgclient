@@ -18,7 +18,7 @@ public class TenacityAntiFreezeModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      if (unfreeze.get() && mc.player.isAlive() && mc.player.getDeltaMovement().lengthSq() < 0.001) {
+      if (unfreeze.get() && mc.player.isAlive() && mc.player.getDeltaMovement().x*mc.player.getDeltaMovement().x + mc.player.getDeltaMovement().y*mc.player.getDeltaMovement().y + mc.player.getDeltaMovement().z*mc.player.getDeltaMovement().z < 0.001) {
          counter++;
          if (counter > 100) {
             counter = 0;

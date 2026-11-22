@@ -33,7 +33,7 @@ public class TenacityTargetStrafeModule extends Module {
       double dx = target.getX() - mc.player.getX();
       double dz = target.getZ() - mc.player.getZ();
       float yaw = (float)(Math.atan2(dz, dx) - Math.PI * 0.5);
-      float strafeYaw = yaw + (clockwise.get() ? 1.0F : -1.0F) * Mth.degToRad(angle.getFloat());
+      float strafeYaw = yaw + (clockwise.get() ? 1.0F : -1.0F) * (float)Math.toRadians(angle.getFloat());
       double dist = minDist;
       mc.player.setPos(mc.player.getX() + Math.cos(strafeYaw) * speed.getFloat() * 0.5,
          mc.player.getY(), mc.player.getZ() + Math.sin(strafeYaw) * speed.getFloat() * 0.5);

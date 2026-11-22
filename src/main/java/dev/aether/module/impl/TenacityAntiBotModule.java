@@ -23,7 +23,7 @@ public class TenacityAntiBotModule extends Module {
       if (mc.getConnection() == null) return false;
       var info = mc.getConnection().getPlayerInfo(player.getUUID());
       if (info == null) return false;
-      if (info.latency() > maxPing.getInt()) return true;
-      return info.latency() == 0;
+      if (info.getLatency() > maxPing.getInt()) return true;
+      return info.getLatency() == 0;
    }
 }

@@ -19,7 +19,7 @@ public class TenacityMoveFixModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || !fix.get()) return;
       var box = mc.player.getBoundingBox();
-      var pos = mc.player.getBlockPos();
+      var pos = mc.player.blockPosition();
       if (mc.level.getBlockState(pos.below()).isAir() && !mc.player.onGround()) {
          mc.player.setOnGround(true);
       }

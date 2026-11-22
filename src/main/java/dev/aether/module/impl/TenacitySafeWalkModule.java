@@ -19,10 +19,10 @@ public class TenacitySafeWalkModule extends Module {
       if (mc.player == null || mc.level == null) return;
       if (!mc.player.onGround()) return;
       var box = mc.player.getBoundingBox();
-      var pos = mc.player.getBlockPos();
+      var pos = mc.player.blockPosition();
       var ahead = mc.level.getBlockState(pos.offset(mc.player.getX() < mc.player.getX() + mc.player.getDeltaMovement().getX() ? 1 : -1, -1, 0));
       if (edge.get() && ahead.isAir()) {
-         mc.options.keyForward.setDown(false);
+         mc.options.keyUp.setDown(false);
       }
    }
 }
