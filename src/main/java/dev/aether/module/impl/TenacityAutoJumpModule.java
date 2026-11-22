@@ -8,7 +8,7 @@ public class TenacityAutoJumpModule extends Module {
    private boolean pressing;
 
    public TenacityAutoJumpModule() {
-      super("Tenacity Auto Jump", "Jumps for you while you walk (Tenacity port)", Category.MISC);
+      super("Auto Jump", "Jumps for you while you walk (ported)", Category.MISC);
    }
 
    @Override

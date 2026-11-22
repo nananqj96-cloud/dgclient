@@ -9,7 +9,7 @@ public class TenacitySnapTapModule extends Module {
    private int lastH, lastV;
 
    public TenacitySnapTapModule() {
-      super("Tenacity Snap Tap", "Last pressed key wins when holding opposite movement keys (Tenacity port)", Category.MISC);
+      super("Snap Tap", "Last pressed key wins when holding opposite movement keys (ported)", Category.MISC);
    }
 
    /** Apply snap-tap logic to player input. Called from the movement mixin. */

@@ -18,7 +18,7 @@ public class TenacityNameScramblerModule extends Module {
    private final StringBuilder scrambled = new StringBuilder();
 
    public TenacityNameScramblerModule() {
-      super("Tenacity Name Scrambler", "Scrambles player names with random characters (Tenacity port)", Category.MISC);
+      super("Name Scrambler", "Scrambles player names with random characters (ported)", Category.MISC);
    }
 
    @Override

@@ -11,7 +11,7 @@ public class TenacitySprintModule extends Module {
    );
 
    public TenacitySprintModule() {
-      super("Tenacity Sprint", "Always sprint while moving (Tenacity port)", Category.MISC);
+      super("Sprint", "Always sprint while moving (ported)", Category.MISC);
    }
 
    @Override

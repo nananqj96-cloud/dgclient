@@ -25,7 +25,7 @@ public class TenacityTriggerBotModule extends Module {
    private int tickCounter;
 
    public TenacityTriggerBotModule() {
-      super("Tenacity Trigger Bot", "Auto-attacks entities you look at (Tenacity port)", Category.COMBAT);
+      super("Trigger Bot", "Auto-attacks entities you look at (ported)", Category.COMBAT);
    }
 
    @Override

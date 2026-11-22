@@ -135,10 +135,13 @@ public class ModuleEntry {
    private float measureSettingsHeight(NVGRenderer vg) {
       float innerW = Math.max(120.0F, this.width - 24.0F);
       float total = 8.0F;
+      float wy = this.y + this.headerHeight() + 8.0F;
       for (SettingWidget w : this.widgets) {
          if (w.isVisible()) {
-            w.setWidth(innerW);
-            total += w.height(vg) + 4.0F;
+            w.setBounds(this.x + 12.0F, wy, innerW);
+            float wh = w.height(vg);
+            total += wh + 4.0F;
+            wy += wh + 4.0F;
          }
       }
       return total + 4.0F;

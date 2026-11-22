@@ -13,7 +13,7 @@ public class TenacityStepModule extends Module {
    );
 
    public TenacityStepModule() {
-      super("Tenacity Step", "Walk up blocks without jumping (Tenacity port)", Category.MISC);
+      super("Step", "Walk up blocks without jumping (ported)", Category.MISC);
    }
 
    @Override

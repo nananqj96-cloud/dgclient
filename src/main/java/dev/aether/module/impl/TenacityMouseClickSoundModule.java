@@ -19,7 +19,7 @@ public class TenacityMouseClickSoundModule extends Module {
    private int lastButton = -1;
 
    public TenacityMouseClickSoundModule() {
-      super("Tenacity Click Sound", "Plays a sound on mouse clicks (Tenacity port)", Category.MISC);
+      super("Click Sound", "Plays a sound on mouse clicks (ported)", Category.MISC);
    }
 
    @Override

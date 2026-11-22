@@ -53,7 +53,7 @@ public class TenacityAimAssistModule extends Module {
    private float noiseYaw, noisePitch, yawVel, pitchVel, remYaw, remPitch;
 
    public TenacityAimAssistModule() {
-      super("Tenacity Aim Assist", "Eases your aim onto nearby players (Tenacity port)", Category.COMBAT);
+      super("Aim Assist", "Eases your aim onto nearby players (ported)", Category.COMBAT);
    }
 
    @Override

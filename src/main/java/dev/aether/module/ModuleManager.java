@@ -88,6 +88,7 @@ import dev.aether.module.impl.TenacitySnapTapModule;
 import dev.aether.module.impl.TenacitySprintModule;
 import dev.aether.module.impl.TenacityStepModule;
 import dev.aether.module.impl.TenacityTriggerBotModule;
+import dev.aether.module.impl.TenacityVisualsModule;
 import dev.aether.module.impl.TriggerbotModule;
 import dev.aether.module.impl.WeatherChangerModule;
 import dev.aether.module.impl.WeatherNotifierModule;
@@ -195,6 +196,7 @@ public class ModuleManager {
    public TenacityAutoRespawnModule tenacityAutoRespawn;
    public TenacityAutoToolModule tenacityAutoTool;
    public TenacityAimAssistModule tenacityAimAssist;
+   public TenacityVisualsModule tenacityVisuals;
    public TenacityTriggerBotModule tenacityTriggerBot;
    public TenacityMouseClickSoundModule tenacityClickSound;
    public TenacityNameScramblerModule tenacityNameScrambler;
@@ -246,6 +248,8 @@ public class ModuleManager {
       this.register(this.tenacityAimAssist);
       this.tenacityTriggerBot = new TenacityTriggerBotModule();
       this.register(this.tenacityTriggerBot);
+      this.tenacityVisuals = new TenacityVisualsModule();
+      this.register(this.tenacityVisuals);
       this.tenacityClickSound = new TenacityMouseClickSoundModule();
       this.register(this.tenacityClickSound);
       this.tenacityNameScrambler = new TenacityNameScramblerModule();

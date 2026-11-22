@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screens.DeathScreen;
 
 public class TenacityAutoRespawnModule extends Module {
    public TenacityAutoRespawnModule() {
-      super("Tenacity Auto Respawn", "Respawns immediately after dying (Tenacity port)", Category.MISC);
+      super("Auto Respawn", "Respawns immediately after dying (ported)", Category.MISC);
    }
 
    @Override

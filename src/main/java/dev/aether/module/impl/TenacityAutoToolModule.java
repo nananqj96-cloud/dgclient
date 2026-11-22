@@ -15,7 +15,7 @@ public class TenacityAutoToolModule extends Module {
    private static TenacityAutoToolModule instance;
 
    public TenacityAutoToolModule() {
-      super("Tenacity Auto Tool", "Selects the best tool while mining (Tenacity port)", Category.MISC);
+      super("Auto Tool", "Selects the best tool while mining (ported)", Category.MISC);
       instance = this;
    }
 
