@@ -5,6 +5,7 @@ import dev.aether.module.Module;
 import dev.aether.settings.SliderSetting;
 import dev.aether.settings.BooleanSetting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.entity.player.Player;
 
 public class TenacityChestStealerModule extends Module {
@@ -23,16 +24,13 @@ public class TenacityChestStealerModule extends Module {
       if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen) {
          if (counter > 0) { counter--; return; }
          Player player = mc.player;
-         var slots = screen.getMenu().getSlots();
+         int syncId = screen.getMenu().containerId;
          boolean stole = false;
-         for (int i = 0; i < slots.size(); i++) {
-            var slot = slots.get(i);
-            if (!slot.hasItem()) continue;
-            if (i < 9) continue; // skip hotbar
-            mc.gameMode.handleInventoryMouseClick(screen.getMenu().containerId, i, 0,
-               net.minecraft.world.inventory.clicking.ClickType.PICKUP, player);
+         for (int i = 9; i < 54; i++) {
+            mc.gameMode.handleInventoryMouseClick(syncId, i, 0, ClickType.PICKUP, player);
             stole = true;
             counter = delay.getInt();
+            if (autoClose.get()) { mc.player.closeContainer(); return; }
          }
          if (stole && autoClose.get()) { mc.player.closeContainer(); }
       }

@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 public class TenacityJesusModule extends Module {
    public final SliderSetting distance = this.addSetting(new SliderSetting("Distance", "Fall distance before reset", 10.0, 1.0, 50.0, 1.0, "m"));
    public final BooleanSetting water = this.addSetting(new BooleanSetting("Water", "Walk on water", true));
-   private float startY;
+   private double startY;
 
    public TenacityJesusModule() {
       super("Jesus", "Walk on water and avoid falling", Category.MOVEMENT);
