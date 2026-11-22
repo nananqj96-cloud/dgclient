@@ -5,7 +5,6 @@ import dev.aether.module.Module;
 import dev.aether.settings.SliderSetting;
 import dev.aether.settings.BooleanSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 
 public class TenacityChestStealerModule extends Module {
@@ -24,16 +23,16 @@ public class TenacityChestStealerModule extends Module {
       if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen) {
          if (counter > 0) { counter--; return; }
          Player player = mc.player;
-         Inventory inv = player.getInventory();
          var slots = screen.getMenu().getSlots();
          boolean stole = false;
          for (int i = 0; i < slots.size(); i++) {
             var slot = slots.get(i);
-            if (slot.hasItem() && inv.canPlaceItem(slot.getItem())) {
-               screen.getMenu().removeItem(i, 1);
-               stole = true;
-               counter = delay.getInt();
-            }
+            if (!slot.hasItem()) continue;
+            if (i < 9) continue; // skip hotbar
+            mc.gameMode.handleInventoryMouseClick(screen.getMenu().containerId, i, 0,
+               net.minecraft.world.inventory.clicking.ClickType.PICKUP, player);
+            stole = true;
+            counter = delay.getInt();
          }
          if (stole && autoClose.get()) { mc.player.closeContainer(); }
       }
