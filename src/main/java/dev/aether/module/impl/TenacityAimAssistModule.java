@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.Mth;
@@ -66,7 +67,7 @@ public class TenacityAimAssistModule extends Module {
    }
 
    private Vec3 aimPoint(LivingEntity entity, Vec3 eye, Vec3 look) {
-      Vec3 box = entity.getBoundingBox();
+      AABB box = entity.getBoundingBox();
       Vec3 projected = eye.add(look.multiply(eye.distanceTo(entity.getEyePosition()) + 0.5));
       double x = Mth.clamp(projected.x, box.minX, box.maxX);
       double y = Mth.clamp(projected.y, box.minY + (box.maxY - box.minY) * 0.25, box.maxY - (box.maxY - box.minY) * 0.1);
@@ -116,7 +117,7 @@ public class TenacityAimAssistModule extends Module {
          lockId = -1;
       } else {
          lockId = best.getId();
-         if (mc.crosshairTarget instanceof EntityHitResult ehr && ehr.getEntity() == best) {
+         if (mc.hitResult instanceof EntityHitResult ehr && ehr.getEntity() == best) {
             yawVel *= 0.6F;
             pitchVel *= 0.6F;
          } else {

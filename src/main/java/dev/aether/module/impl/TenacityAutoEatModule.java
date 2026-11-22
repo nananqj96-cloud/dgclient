@@ -16,7 +16,7 @@ public class TenacityAutoEatModule extends Module {
    private boolean eating;
 
    public TenacityAutoEatModule() {
-      super("Tenacity Auto Eat", "Eats food from your hotbar when hungry (Tenacity port)", Category.PLAYER);
+      super("Tenacity Auto Eat", "Eats food from your hotbar when hungry (Tenacity port)", Category.MISC);
    }
 
    @Override
