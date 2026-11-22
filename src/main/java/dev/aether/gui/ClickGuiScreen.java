@@ -504,7 +504,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       float sbx = this.corzTabX + this.corzTabW - sbw - 6.0F;
       vg.rect(sbx, ccy - 6.5F, sbw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), corzOpen ? 0.38F : 0.18F));
       vg.text(stateBadge, sbx + 4.5F, ccy, 8.5F, theme.accentBright());
-      navY += this.corzTabH + 6.0F;
+      navY += this.corzTabH + 10.0F;
 
       // Accessories popup launcher
       this.accTabX = this.winX + 10.0F;
@@ -531,7 +531,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          vg.rect(abx, acy - 6.5F, abw, 13.0F, 6.5F, Colors.withAlpha(theme.accent(), 0.38F));
          vg.text(accBadge, abx + 4.5F, acy, 8.5F, theme.accentBright());
       }
-      navY += this.accTabH + 6.0F;
+      navY += this.accTabH + 10.0F;
 
       // Fake Client tab — opens Fake Client's own ClickGuiScreen
       this.fakeTabX = this.winX + 10.0F;
@@ -550,7 +550,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circle(this.fakeTabX + 18.0F, fcy, 5.2F, theme.accent());
       vg.circleOutline(this.fakeTabX + 18.0F, fcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Fake", this.fakeTabX + 32.0F, fcy, 12.2F, fakeHov ? theme.textPrimary() : theme.textMuted());
-      navY += this.fakeTabH + 6.0F;
+      navY += this.fakeTabH + 10.0F;
 
       // Cake Client tab — opens Cake Client's dashboard menu
       this.cakeTabX = this.winX + 10.0F;
@@ -569,7 +569,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circle(this.cakeTabX + 18.0F, kcy, 5.2F, theme.accent());
       vg.circleOutline(this.cakeTabX + 18.0F, kcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Cake", this.cakeTabX + 32.0F, kcy, 12.2F, cakeHov ? theme.textPrimary() : theme.textMuted());
-      navY += this.cakeTabH + 6.0F;
+      navY += this.cakeTabH + 10.0F;
 
       // Odin tab
       this.odinTabX = this.winX + 10.0F;
@@ -588,7 +588,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circle(this.odinTabX + 18.0F, ocy, 5.2F, theme.accent());
       vg.circleOutline(this.odinTabX + 18.0F, ocy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Odin", this.odinTabX + 32.0F, ocy, 12.2F, odinHov ? theme.textPrimary() : theme.textMuted());
-      navY += this.odinTabH + 6.0F;
+      navY += this.odinTabH + 10.0F;
 
       // Purxiy tab
       this.purxiyTabX = this.winX + 10.0F;
@@ -607,7 +607,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circle(this.purxiyTabX + 18.0F, pcy, 5.2F, theme.accent());
       vg.circleOutline(this.purxiyTabX + 18.0F, pcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Purxiy", this.purxiyTabX + 32.0F, pcy, 12.2F, purxiyHov ? theme.textPrimary() : theme.textMuted());
-      navY += this.purxiyTabH + 6.0F;
+      navY += this.purxiyTabH + 10.0F;
 
       // Tenacity tab
       this.tenacityTabX = this.winX + 10.0F;
@@ -624,7 +624,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circle(this.tenacityTabX + 18.0F, tcy, 5.2F, theme.accent());
       vg.circleOutline(this.tenacityTabX + 18.0F, tcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Tenacity", this.tenacityTabX + 32.0F, tcy, 12.2F, tenacityHov ? theme.textPrimary() : theme.textMuted());
-      navY += this.tenacityTabH + 6.0F;
+      navY += this.tenacityTabH + 10.0F;
 
       // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
@@ -1017,40 +1017,40 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.corzTabH = 28.0F;
       String corzLbl = "Corz";
       this.corzTabW = vg.textWidth(corzLbl, 11.5F) + 24.0F;
-      this.corzTabX = this.modeBtnX - 6.0F - this.corzTabW;
+      this.corzTabX = this.modeBtnX - 14.0F - this.corzTabW;
       this.corzTabY = cy - this.corzTabH * 0.5F;
       this.drawPillButton(vg, theme, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH, corzLbl, STATE.isCorzOpen(), this.hit(mx, my, this.corzTabX, this.corzTabY, this.corzTabW, this.corzTabH), false);
 
       this.fakeTabH = 28.0F;
       String fakeLbl = "Fake";
       this.fakeTabW = vg.textWidth(fakeLbl, 11.5F) + 24.0F;
-      this.fakeTabX = this.corzTabX - 6.0F - this.fakeTabW;
+      this.fakeTabX = this.corzTabX - 14.0F - this.fakeTabW;
       this.fakeTabY = cy - this.fakeTabH * 0.5F;
       this.drawPillButton(vg, theme, this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH, fakeLbl, false, this.hit(mx, my, this.fakeTabX, this.fakeTabY, this.fakeTabW, this.fakeTabH), false);
 
       this.cakeTabH = 28.0F;
       String cakeLbl = "Cake";
       this.cakeTabW = vg.textWidth(cakeLbl, 11.5F) + 24.0F;
-      this.cakeTabX = this.fakeTabX - 6.0F - this.cakeTabW;
+      this.cakeTabX = this.fakeTabX - 14.0F - this.cakeTabW;
       this.cakeTabY = cy - this.cakeTabH * 0.5F;
       this.drawPillButton(vg, theme, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, cakeLbl, false, this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH), false);
 
       String odinLbl = "Odin";
       this.odinTabW = vg.textWidth(odinLbl, 11.5F) + 24.0F;
-      this.odinTabX = this.cakeTabX - 6.0F - this.odinTabW;
+      this.odinTabX = this.cakeTabX - 14.0F - this.odinTabW;
       this.odinTabY = cy - this.odinTabH * 0.5F;
       this.drawPillButton(vg, theme, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, odinLbl, false, this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH), false);
 
       String purxiyLbl = "Purxiy";
       this.purxiyTabW = vg.textWidth(purxiyLbl, 11.5F) + 24.0F;
-      this.purxiyTabX = this.odinTabX - 6.0F - this.purxiyTabW;
+      this.purxiyTabX = this.odinTabX - 14.0F - this.purxiyTabW;
       this.purxiyTabY = cy - this.purxiyTabH * 0.5F;
       this.drawPillButton(vg, theme, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH, purxiyLbl, false, this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH), false);
 
       this.cfgBtnH = 28.0F;
       String cfgLbl = "Configs";
       this.cfgBtnW = vg.textWidth(cfgLbl, 11.5F) + 20.0F;
-      this.cfgBtnX = this.cakeTabX - 6.0F - this.cfgBtnW;
+      this.cfgBtnX = this.cakeTabX - 14.0F - this.cfgBtnW;
       this.cfgBtnY = cy - this.cfgBtnH * 0.5F;
       this.drawPillButton(vg, theme, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH, cfgLbl, false, this.hit(mx, my, this.cfgBtnX, this.cfgBtnY, this.cfgBtnW, this.cfgBtnH), false);
 
@@ -1249,7 +1249,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             if (screenClassName.startsWith("odinclient.ui.screen")) {
                mc.setScreen(null);
             } else {
-               Class<?> guiClass = Class.forName("odinclient.ui.screen.OdinGuiScreen");
+               Class<?> guiClass = Class.forName("odinclient.ui.screen.ClickGuiScreen");
                Object guiInstance = guiClass.getConstructor(net.minecraft.client.gui.screens.Screen.class).newInstance(mc.screen);
                mc.setScreen((net.minecraft.client.gui.screens.Screen) guiInstance);
             }
@@ -1260,28 +1260,17 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       }
 
       if (btn == 0 && this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH)) {
-         // Open/close Purxiy Visuals menu (via reflection — Purxiy is a compiled jar)
+         // Open/close Purxiy Visuals menu (via reflection — Purxiy is a compiled jar with obfuscated class names)
          try {
             net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
             String screenClassName = mc.screen != null ? mc.screen.getClass().getName() : "";
             if (screenClassName.contains("purxiy")) {
                mc.setScreen(null);
             } else {
-               Class<?> bootstrapClass = Class.forName("dev.purxiy.loader.fabric.OfflineBootstrap");
-               // Try common toggle method names
-               for (String methodName : new String[]{"toggleGui", "openGui", "showGui", "toggle"}) {
-                  try {
-                     bootstrapClass.getMethod(methodName).invoke(null);
-                     return true;
-                  } catch (NoSuchMethodException ignored) {}
-               }
-               // Fallback: try to find a static method that takes no args
-               for (var method : bootstrapClass.getMethods()) {
-                  if (java.lang.reflect.Modifier.isStatic(method.getModifiers()) && method.getParameterCount() == 0) {
-                     try { method.invoke(null); return true; } catch (Throwable ignored) {}
-                  }
-               }
-               AetherClient.LOGGER.warn("Could not find Purxiy GUI toggle method");
+               // Purxiy's main menu screen is dev.purxiy.l.q.u (extends Screen, constructor takes Screen)
+               Class<?> guiClass = Class.forName("dev.purxiy.l.q.u");
+               Object guiInstance = guiClass.getConstructor(net.minecraft.client.gui.screens.Screen.class).newInstance(mc.screen);
+               mc.setScreen((net.minecraft.client.gui.screens.Screen) guiInstance);
             }
          } catch (Throwable t) {
             AetherClient.LOGGER.error("Failed to toggle Purxiy Visuals menu", t);
