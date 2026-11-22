@@ -28,6 +28,9 @@ public class ThemeManager {
       this.themes.add(new Theme("Red", -45715, false, false));
       this.themes.add(new Theme("Slate", -9255492, false, false));
       this.themes.add(new RainbowTheme());
+      this.themes.add(new TenacityTheme(0xFF4851B0, 0));
+      this.themes.add(new TenacityTheme(0xFF66BB6A, 1));
+      this.themes.add(new TenacityTheme(0xFFAB47BC, 2));
       this.current = this.themes.getFirst();
    }
 

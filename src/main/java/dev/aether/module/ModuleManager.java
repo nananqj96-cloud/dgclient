@@ -77,6 +77,17 @@ import dev.aether.module.impl.StaffListModule;
 import dev.aether.module.impl.StorageEspModule;
 import dev.aether.module.impl.SwingSpeedModule;
 import dev.aether.module.impl.TimeChangerModule;
+import dev.aether.module.impl.TenacityAimAssistModule;
+import dev.aether.module.impl.TenacityAutoEatModule;
+import dev.aether.module.impl.TenacityAutoJumpModule;
+import dev.aether.module.impl.TenacityAutoRespawnModule;
+import dev.aether.module.impl.TenacityAutoToolModule;
+import dev.aether.module.impl.TenacityMouseClickSoundModule;
+import dev.aether.module.impl.TenacityNameScramblerModule;
+import dev.aether.module.impl.TenacitySnapTapModule;
+import dev.aether.module.impl.TenacitySprintModule;
+import dev.aether.module.impl.TenacityStepModule;
+import dev.aether.module.impl.TenacityTriggerBotModule;
 import dev.aether.module.impl.TriggerbotModule;
 import dev.aether.module.impl.WeatherChangerModule;
 import dev.aether.module.impl.WeatherNotifierModule;
@@ -175,6 +186,18 @@ public class ModuleManager {
    public SpeedMineModule speedMine;
    public HomeMethodModule homeMethod;
    public PanoramaModule panorama;
+   // Tenacity ported modules
+   public TenacitySprintModule tenacitySprint;
+   public TenacitySnapTapModule tenacitySnapTap;
+   public TenacityStepModule tenacityStep;
+   public TenacityAutoJumpModule tenacityAutoJump;
+   public TenacityAutoEatModule tenacityAutoEat;
+   public TenacityAutoRespawnModule tenacityAutoRespawn;
+   public TenacityAutoToolModule tenacityAutoTool;
+   public TenacityAimAssistModule tenacityAimAssist;
+   public TenacityTriggerBotModule tenacityTriggerBot;
+   public TenacityMouseClickSoundModule tenacityClickSound;
+   public TenacityNameScramblerModule tenacityNameScrambler;
    private Runnable openGuiAction = () -> {
    };
    private BiConsumer<Module, Boolean> toggleListener = (module, boolean_) -> {
@@ -201,6 +224,32 @@ public class ModuleManager {
       this.register(this.jumpCircles);
       this.clickGui = new Modules.ClickGuiModule();
       this.register(this.clickGui);
+      this.registerTenacityModules();
+   }
+
+   private void registerTenacityModules() {
+      this.tenacitySprint = new TenacitySprintModule();
+      this.register(this.tenacitySprint);
+      this.tenacitySnapTap = new TenacitySnapTapModule();
+      this.register(this.tenacitySnapTap);
+      this.tenacityStep = new TenacityStepModule();
+      this.register(this.tenacityStep);
+      this.tenacityAutoJump = new TenacityAutoJumpModule();
+      this.register(this.tenacityAutoJump);
+      this.tenacityAutoEat = new TenacityAutoEatModule();
+      this.register(this.tenacityAutoEat);
+      this.tenacityAutoRespawn = new TenacityAutoRespawnModule();
+      this.register(this.tenacityAutoRespawn);
+      this.tenacityAutoTool = new TenacityAutoToolModule();
+      this.register(this.tenacityAutoTool);
+      this.tenacityAimAssist = new TenacityAimAssistModule();
+      this.register(this.tenacityAimAssist);
+      this.tenacityTriggerBot = new TenacityTriggerBotModule();
+      this.register(this.tenacityTriggerBot);
+      this.tenacityClickSound = new TenacityMouseClickSoundModule();
+      this.register(this.tenacityClickSound);
+      this.tenacityNameScrambler = new TenacityNameScramblerModule();
+      this.register(this.tenacityNameScrambler);
    }
 
    private void registerPlaceholders() {

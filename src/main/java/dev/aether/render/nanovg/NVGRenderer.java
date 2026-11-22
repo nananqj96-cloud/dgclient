@@ -25,6 +25,7 @@ import org.lwjgl.system.MemoryUtil;
 public final class NVGRenderer {
    public static final String FONT_XUONG = "xuong";
    public static final String FONT_VANILLA = "vanilla";
+   public static final String FONT_TENACITY = "tenacity";
    private static final int MAX_WIDTH_CACHE = 2048;
    private static final float[] STAR_COS = new float[10];
    private static final float[] STAR_SIN = new float[10];
@@ -41,6 +42,7 @@ public final class NVGRenderer {
    private final long ctx;
    private final int xuongFontId;
    private final int vanillaFontId;
+   private final int tenacityFontId;
    private final List<ByteBuffer> retainedFontData = new ArrayList<>();
    private String activeFont = FONT_XUONG;
    private int activeFontId = -1;
@@ -63,6 +65,7 @@ public final class NVGRenderer {
       }
       this.xuongFontId = this.loadFont(FONT_XUONG, "assets/aetherclient/fonts/Xuong-Regular.ttf");
       this.vanillaFontId = this.loadFont(FONT_VANILLA, "assets/aetherclient/fonts/Monocraft.ttf");
+      this.tenacityFontId = this.loadFont(FONT_TENACITY, "assets/aetherclient/fonts/Inter-Regular.ttf");
       if (this.xuongFontId != -1 && this.vanillaFontId != -1) {
          NanoVG.nvgAddFallbackFontId(this.ctx, this.xuongFontId, this.vanillaFontId);
       }
@@ -104,7 +107,10 @@ public final class NVGRenderer {
    }
 
    public void setFontMode(String mode) {
-      if ("Xuong".equals(mode) && this.xuongFontId != -1) {
+      if ("Tenacity".equals(mode) && this.tenacityFontId != -1) {
+         this.activeFont = FONT_TENACITY;
+         this.activeFontId = this.tenacityFontId;
+      } else if ("Xuong".equals(mode) && this.xuongFontId != -1) {
          this.activeFont = FONT_XUONG;
          this.activeFontId = this.xuongFontId;
       } else if (this.vanillaFontId != -1) {
@@ -126,6 +132,9 @@ public final class NVGRenderer {
    private int resolveFontId(String font) {
       if (font == null) {
          return -1;
+      }
+      if (FONT_TENACITY.equals(font)) {
+         return this.tenacityFontId != -1 ? this.tenacityFontId : this.xuongFontId;
       }
       if (FONT_XUONG.equals(font)) {
          return this.xuongFontId != -1 ? this.xuongFontId : this.vanillaFontId;

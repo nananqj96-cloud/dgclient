@@ -58,7 +58,7 @@ public final class Modules {
          new SliderSetting("Blur Strength", "How strong the background blur is", 5.0, 1.0, 10.0, 1.0)
       );
       public final ModeSetting font = this.addSetting(
-         new ModeSetting("Font", "GUI font (Xuong TTF or vanilla-style)", "Xuong", "Xuong", "Vanilla")
+         new ModeSetting("Font", "GUI font (Xuong TTF, Tenacity Inter, or vanilla-style)", "Xuong", "Xuong", "Tenacity", "Vanilla")
       );
       public final BooleanSetting experimentalMinimalGui = this.addSetting(
          new BooleanSetting("Experimental Minimal GUI", "Show the minimal experimental GUI instead of the full dashboard", false)
