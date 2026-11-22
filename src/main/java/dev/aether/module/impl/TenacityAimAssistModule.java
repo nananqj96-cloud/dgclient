@@ -95,7 +95,9 @@ public class TenacityAimAssistModule extends Module {
       if (weaponOnly.get() && !isWeapon(mc.player.getMainHandItem())) return;
 
       Vec3 eye = mc.player.getEyePosition();
-      Vec3 look = mc.player.getRotationVector();
+      float yawRad = (float)Math.toRadians(mc.player.getYRot());
+      float pitchRad = (float)Math.toRadians(mc.player.getXRot());
+      Vec3 look = new Vec3(-Math.sin(yawRad) * Math.cos(pitchRad), -Math.sin(pitchRad), Math.cos(yawRad) * Math.cos(pitchRad));
       LivingEntity best = null;
       double bestAngle = fov.get() / 2.0;
 
