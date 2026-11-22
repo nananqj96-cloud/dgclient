@@ -88,6 +88,26 @@ public class ThemeManager {
       }
    }
 
+   /**
+    * Selects a client-specific theme by name. For "Tenacity", selects the
+    * Tenacity theme. For "Odin"/"Cake"/"Purxiy", falls back to the Tenacity
+    * theme (the closest dark visual match available).
+    */
+   public void selectClient(String clientName) {
+      if (clientName == null) return;
+      Theme match = this.byName(clientName);
+      if (match != null) {
+         this.select(match);
+         return;
+      }
+      for (Theme t : this.themes) {
+         if (t instanceof TenacityTheme) {
+            this.select(t);
+            return;
+         }
+      }
+   }
+
    public JsonObject toJson() {
       JsonObject root = new JsonObject();
       root.addProperty("current", this.current.getName());

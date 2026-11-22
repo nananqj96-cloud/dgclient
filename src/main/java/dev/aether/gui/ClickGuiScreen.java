@@ -127,6 +127,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float purxiyTabY;
    private float purxiyTabW;
    private float purxiyTabH;
+   private float tenacityTabX;
+   private float tenacityTabY;
+   private float tenacityTabW;
+   private float tenacityTabH;
 
    // Window drag (Dashboard header) & Column panel drag
    private boolean draggingWindow;
@@ -235,6 +239,14 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
 
    public void toggleLayoutMode() {
       this.guiModule().layout.set(this.isDashboardMode() ? "Columns" : "Dashboard");
+      this.dashScroll.snapTo(0.0F);
+      UiSounds.select();
+   }
+
+   private void selectClientTheme(String clientName) {
+      AetherClient.themes().selectClient(clientName);
+      this.favouritesOnly = false;
+      this.search.setLength(0);
       this.dashScroll.snapTo(0.0F);
       UiSounds.select();
    }
@@ -596,6 +608,23 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.circleOutline(this.purxiyTabX + 18.0F, pcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
       vg.text("Purxiy", this.purxiyTabX + 32.0F, pcy, 12.2F, purxiyHov ? theme.textPrimary() : theme.textMuted());
       navY += this.purxiyTabH + 6.0F;
+
+      // Tenacity tab
+      this.tenacityTabX = this.winX + 10.0F;
+      this.tenacityTabY = navY;
+      this.tenacityTabW = SIDEBAR_W - 20.0F;
+      this.tenacityTabH = 30.0F;
+      boolean tenacityHov = this.hit(mx, my, this.tenacityTabX, this.tenacityTabY, this.tenacityTabW, this.tenacityTabH);
+      if (tenacityHov) {
+         vg.glow(this.tenacityTabX, this.tenacityTabY, this.tenacityTabW, this.tenacityTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
+      }
+      vg.rect(this.tenacityTabX, this.tenacityTabY, this.tenacityTabW, this.tenacityTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
+      vg.rectOutline(this.tenacityTabX, this.tenacityTabY, this.tenacityTabW, this.tenacityTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
+      float tcy = this.tenacityTabY + this.tenacityTabH * 0.5F;
+      vg.circle(this.tenacityTabX + 18.0F, tcy, 5.2F, theme.accent());
+      vg.circleOutline(this.tenacityTabX + 18.0F, tcy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
+      vg.text("Tenacity", this.tenacityTabX + 32.0F, tcy, 12.2F, tenacityHov ? theme.textPrimary() : theme.textMuted());
+      navY += this.tenacityTabH + 6.0F;
 
       // Themes & Audio tab
       vg.text("CUSTOMIZE", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
@@ -1354,6 +1383,23 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             this.search.setLength(0);
             this.dashScroll.snapTo(0.0F);
             UiSounds.select();
+            return true;
+         }
+         // Cake / Odin / Purxiy tabs — select their respective visual theme
+         if (btn == 0 && this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH)) {
+            this.selectClientTheme("Cake");
+            return true;
+         }
+         if (btn == 0 && this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH)) {
+            this.selectClientTheme("Odin");
+            return true;
+         }
+         if (btn == 0 && this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH)) {
+            this.selectClientTheme("Purxiy");
+            return true;
+         }
+         if (btn == 0 && this.hit(mx, my, this.tenacityTabX, this.tenacityTabY, this.tenacityTabW, this.tenacityTabH)) {
+            this.selectClientTheme("Tenacity");
             return true;
          }
          return true;
