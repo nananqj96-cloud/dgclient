@@ -109,7 +109,8 @@ public class TenacityAimAssistModule extends Module {
             if (p == mc.player || !p.isAlive() || p.isSpectator() || p.isInvisible()) continue;
             if (teams.get() && p.getTeam() != null && p.getTeam().equals(mc.player.getTeam())) continue;
             if (mc.player.distanceTo(p) > range.get()) continue;
-            Vec3 offset = p.getBoundingBox().getCenter().subtract(eye);
+            AABB pb = p.getBoundingBox();
+            Vec3 offset = new Vec3((pb.minX + pb.maxX) * 0.5, (pb.minY + pb.maxY) * 0.5, (pb.minZ + pb.maxZ) * 0.5).subtract(eye);
             double angle = Math.toDegrees(Math.acos(Mth.clamp(offset.normalize().dot(look), -1.0, 1.0)));
             if (angle < bestAngle) {
                bestAngle = angle;
