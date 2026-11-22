@@ -5,6 +5,9 @@ public enum Category {
    MISC("Misc", "misc"),
    RENDER("Render", "render"),
    VISUALS("Visuals", "visuals"),
+   MOVEMENT("Movement", "movement"),
+   PLAYER("Player", "player"),
+   EXPLOIT("Exploit", "exploit"),
    CLIENT("Client", "client"),
    DONUT("Donut", "donut");
 
