@@ -11,7 +11,7 @@ public class TenacitySprintModule extends Module {
    );
 
    public TenacitySprintModule() {
-      super("Tenacity Sprint", "Always sprint while moving (Tenacity port)", Category.MOVEMENT);
+      super("Tenacity Sprint", "Always sprint while moving (Tenacity port)", Category.MISC);
    }
 
    @Override
@@ -22,7 +22,6 @@ public class TenacitySprintModule extends Module {
          || (omni.get() && (mc.options.keyDown.isDown() || mc.options.keyLeft.isDown() || mc.options.keyRight.isDown()));
       if (moving && !mc.player.isShiftKeyDown() && mc.player.getFoodData().getFoodLevel() > 6) {
          mc.options.keySprint.setDown(true);
-         mc.player.setSprinting(true);
       }
    }
 

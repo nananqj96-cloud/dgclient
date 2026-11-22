@@ -9,7 +9,7 @@ public class TenacitySnapTapModule extends Module {
    private int lastH, lastV;
 
    public TenacitySnapTapModule() {
-      super("Tenacity Snap Tap", "Last pressed key wins when holding opposite movement keys (Tenacity port)", Category.MOVEMENT);
+      super("Tenacity Snap Tap", "Last pressed key wins when holding opposite movement keys (Tenacity port)", Category.MISC);
    }
 
    /** Apply snap-tap logic to player input. Called from the movement mixin. */
@@ -27,7 +27,7 @@ public class TenacitySnapTapModule extends Module {
       instance.pl = l; instance.pr = r; instance.pf = f; instance.pb = b;
       if (l && r) { l = instance.lastH == -1; r = instance.lastH == 1; }
       if (f && b) { f = instance.lastV == 1; b = instance.lastV == -1; }
-      return new Input(f, b, l, r, input.jump(), input.sneak(), input.sprint());
+      return new Input(f, b, l, r, input.jump(), input.shift(), input.sprint());
    }
 
    private static TenacitySnapTapModule instance;
