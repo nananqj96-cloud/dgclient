@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
@@ -62,13 +63,20 @@ public class TenacityAimAssistModule extends Module {
    }
 
    private boolean isWeapon(ItemStack stack) {
-      return stack.is(Items.SWORD) || stack.is(Items.AXE)
-         || stack.is(Items.MACE) || stack.is(Items.TRIDENT);
+      if (stack.isEmpty()) return false;
+      Item item = stack.getItem();
+      return item == Items.MACE || item == Items.TRIDENT
+         || item == Items.WOODEN_SWORD || item == Items.STONE_SWORD
+         || item == Items.GOLDEN_SWORD || item == Items.IRON_SWORD
+         || item == Items.DIAMOND_SWORD || item == Items.NETHERITE_SWORD
+         || item == Items.WOODEN_AXE || item == Items.STONE_AXE
+         || item == Items.GOLDEN_AXE || item == Items.IRON_AXE
+         || item == Items.DIAMOND_AXE || item == Items.NETHERITE_AXE;
    }
 
    private Vec3 aimPoint(LivingEntity entity, Vec3 eye, Vec3 look) {
       AABB box = entity.getBoundingBox();
-      Vec3 projected = eye.add(look.multiply(eye.distanceTo(entity.getEyePosition()) + 0.5));
+      Vec3 projected = eye.add(look.scale(eye.distanceTo(entity.getEyePosition()) + 0.5));
       double x = Mth.clamp(projected.x, box.minX, box.maxX);
       double y = Mth.clamp(projected.y, box.minY + (box.maxY - box.minY) * 0.25, box.maxY - (box.maxY - box.minY) * 0.1);
       double z = Mth.clamp(projected.z, box.minZ, box.maxZ);
@@ -87,11 +95,11 @@ public class TenacityAimAssistModule extends Module {
       if (weaponOnly.get() && !isWeapon(mc.player.getMainHandItem())) return;
 
       Vec3 eye = mc.player.getEyePosition();
-      Vec3 look = mc.player.getRotationVector(1.0F);
+      Vec3 look = mc.player.getRotationVector();
       LivingEntity best = null;
       double bestAngle = fov.get() / 2.0;
 
-      Entity locked = lockId == -1 ? null : mc.level.getEntityById(lockId);
+      Entity locked = lockId == -1 ? null : mc.level.getEntity(lockId);
       if (sticky.get() && locked instanceof LivingEntity le && le.isAlive()
          && mc.player.distanceTo(le) <= range.get() + 1.0) {
          best = le;
@@ -101,9 +109,8 @@ public class TenacityAimAssistModule extends Module {
             if (p == mc.player || !p.isAlive() || p.isSpectator() || p.isInvisible()) continue;
             if (teams.get() && p.getTeam() != null && p.getTeam().equals(mc.player.getTeam())) continue;
             if (mc.player.distanceTo(p) > range.get()) continue;
-            if (lineOfSight.get() && !mc.player.canSee(p)) continue;
             Vec3 offset = p.getBoundingBox().getCenter().subtract(eye);
-            double angle = Math.toDegrees(Math.acos(Mth.clamp(offset.normalize().dotProduct(look), -1.0, 1.0)));
+            double angle = Math.toDegrees(Math.acos(Mth.clamp(offset.normalize().dot(look), -1.0, 1.0)));
             if (angle < bestAngle) {
                bestAngle = angle;
                best = p;
@@ -113,15 +120,13 @@ public class TenacityAimAssistModule extends Module {
 
       if (best == null) {
          yawVel = pitchVel = 0.0F;
-      } else if (lineOfSight.get() && !mc.player.canSee(best)) {
-         lockId = -1;
       } else {
          lockId = best.getId();
          if (mc.hitResult instanceof EntityHitResult ehr && ehr.getEntity() == best) {
             yawVel *= 0.6F;
             pitchVel *= 0.6F;
          } else {
-            Vec3 vel = aimPoint(best, eye, look).add(best.getDeltaMovement().multiply(0.6, 0.0, 0.6).multiply(dt * 4.0F));
+            Vec3 vel = aimPoint(best, eye, look).add(best.getDeltaMovement().multiply(0.6, 0.0, 0.6).scale(dt * 4.0F));
             double dx = vel.x - eye.x, dy = vel.y - eye.y, dz = vel.z - eye.z;
             float wantYaw = (float)(Math.toDegrees(Math.atan2(dz, dx)) - 90.0);
             float wantPitch = (float)(-Math.toDegrees(Math.atan2(dy, Math.hypot(dx, dz))));

@@ -33,9 +33,9 @@ public class TenacityTriggerBotModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null || mc.screen != null) return;
       if (tickCounter > 0) { tickCounter--; return; }
-      if (delay.get() > 0) { tickCounter = (int) delay.get(); return; }
+      if (delay.get() > 0) { tickCounter = delay.getInt(); return; }
 
-      if (mc.crosshairTarget instanceof EntityHitResult ehr) {
+      if (mc.hitResult instanceof EntityHitResult ehr) {
          Entity target = ehr.getEntity();
          if (target instanceof LivingEntity le && le.isAlive()
             && !le.isSpectator()
