@@ -21,19 +21,21 @@ public class TenacityChestStealerModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.screen != null) return;
-      if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.GenericContainerScreen<?> screen) {
+      if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen) {
          if (counter > 0) { counter--; return; }
          Player player = mc.player;
          Inventory inv = player.getInventory();
          var slots = screen.getMenu().getSlots();
+         boolean stole = false;
          for (int i = 0; i < slots.size(); i++) {
             var slot = slots.get(i);
-            if (slot.hasItem() && !inv.canPlaceItem(slot.getItem())) continue;
-            if (slot.getItem().isEmpty()) continue;
-            screen.getMenu().removeItem(i, 1);
-            counter = delay.getInt();
+            if (slot.hasItem() && inv.canPlaceItem(slot.getItem())) {
+               screen.getMenu().removeItem(i, 1);
+               stole = true;
+               counter = delay.getInt();
+            }
          }
-         if (autoClose.get()) { mc.player.closeContainer(); }
+         if (stole && autoClose.get()) { mc.player.closeContainer(); }
       }
    }
 }

@@ -20,7 +20,7 @@ public class TenacitySafeWalkModule extends Module {
       if (!mc.player.onGround()) return;
       var box = mc.player.getBoundingBox();
       var pos = mc.player.blockPosition();
-      var ahead = mc.level.getBlockState(pos.offset(mc.player.getX() < mc.player.getX() + mc.player.getDeltaMovement().getX() ? 1 : -1, -1, 0));
+      var ahead = mc.level.getBlockState(pos.offset(mc.player.getX() < mc.player.getX() + mc.player.getDeltaMovement().x ? 1 : -1, -1, 0));
       if (edge.get() && ahead.isAir()) {
          mc.options.keyUp.setDown(false);
       }

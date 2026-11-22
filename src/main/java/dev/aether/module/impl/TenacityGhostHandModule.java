@@ -6,6 +6,7 @@ import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 
 public class TenacityGhostHandModule extends Module {
    public final SliderSetting range = this.addSetting(new SliderSetting("Range", "Reach distance", 5.0, 1.0, 15.0, 0.5, "m"));
@@ -19,11 +20,15 @@ public class TenacityGhostHandModule extends Module {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null || mc.level == null) return;
       if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult bhr) {
-         if (mc.player.distanceTo(bhr.getBlockPos().getX(), bhr.getBlockPos().getY(), bhr.getBlockPos().getZ()) > range.get()) {
-            BlockPos pos = bhr.getBlockPos();
+         BlockPos pos = bhr.getBlockPos();
+         double dx = pos.getX() - mc.player.getX();
+         double dy = pos.getY() - mc.player.getY();
+         double dz = pos.getZ() - mc.player.getZ();
+         if (Math.sqrt(dx*dx + dy*dy + dz*dz) > range.get()) {
             var state = mc.level.getBlockState(pos);
             if (state.is(Blocks.CHEST) || state.is(Blocks.ENDER_CHEST) || state.is(Blocks.BARREL) || state.is(Blocks.SHULKER_BOX)) {
-               mc.player.openBlockContainer(mc.level, pos);
+               mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                  new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(pos), net.minecraft.core.Direction.UP, pos, false));
             }
          }
       }

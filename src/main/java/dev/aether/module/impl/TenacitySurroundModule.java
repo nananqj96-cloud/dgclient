@@ -27,7 +27,9 @@ public class TenacitySurroundModule extends Module {
          for (int z = -1; z <= 1; z++) {
             BlockPos p = pos.offset(x, 0, z);
             if (mc.level.getBlockState(p).isAir()) {
-               mc.player.placeBlock(p, mc.level.getBlockState(p), null, null);
+               mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND,
+                  new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(p),
+                     net.minecraft.core.Direction.UP, p, false));
                counter = delay.getInt();
                return;
             }

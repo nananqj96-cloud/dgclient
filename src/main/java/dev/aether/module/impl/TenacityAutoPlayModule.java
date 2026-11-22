@@ -20,7 +20,7 @@ public class TenacityAutoPlayModule extends Module {
    public void onTick() {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == null) return;
-      if (auto.get() && System.currentTimeMillis() - lastPlay > delay.getInt() && mc.player.connection.isConnected()) {
+      if (auto.get() && System.currentTimeMillis() - lastPlay > delay.getInt()) {
          lastPlay = System.currentTimeMillis();
          mc.player.connection.sendChat("/play");
       }
