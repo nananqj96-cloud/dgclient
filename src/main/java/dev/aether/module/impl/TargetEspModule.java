@@ -92,47 +92,47 @@ public class TargetEspModule extends Module {
     }
 
 //     private void onRender(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        ClientLevel level = mc.level;
-        if (level != null && mc.player != null) {
-            if (level != this.boundLevel) {
-                this.reset();
-                this.boundLevel = level;
-            }
-
-            long now = System.nanoTime();
-            float dt = this.lastFrame == 0L ? 0.0F : Math.min(0.1F, (float)(now - this.lastFrame) / 1.0E9F);
-            this.lastFrame = now;
-            this.phase = this.phase + dt * this.tempo.get();
-            this.retarget(this.pick(mc), event.partialTick, level);
-            this.current.presence = this.current.entity != null ? Math.min(1.0F, this.current.presence + dt / 0.3F) : 0.0F;
-            this.previous.presence = Math.max(0.0F, this.previous.presence - dt / 0.38F);
-            if (this.previous.presence <= 0.0F) {
-                this.previous.entity = null;
-            }
-
-            this.current.follow(event.partialTick, level);
-            this.previous.follow(event.partialTick, level);
-            if (this.current.entity != null || this.previous.entity != null) {
-                this.palette.resolve(this.colorMode.get(), CosmeticAccent.argb(), this.mainColor.argb(), this.secondColor.argb());
-                this.hit = this.colorMode.is("Manual") ? this.hitColor.argb() : this.palette.flash();
-                this.canvas.begin(mc.gameRenderer.getMainCamera());
-                if (this.previous.entity != null) {
-                    this.draw(this.previous, true);
-                }
-
-                if (this.current.entity != null) {
-                    this.draw(this.current, false);
-                }
-
-                this.canvas.submit(this.throughWalls.get());
-            }
-        } else {
-            if (this.boundLevel != null) {
-                this.reset();
-            }
-        }
-    }
+//         Minecraft mc = Minecraft.getInstance();
+//         ClientLevel level = mc.level;
+//         if (level != null && mc.player != null) {
+//             if (level != this.boundLevel) {
+//                 this.reset();
+//                 this.boundLevel = level;
+//             }
+//
+//             long now = System.nanoTime();
+//             float dt = this.lastFrame == 0L ? 0.0F : Math.min(0.1F, (float)(now - this.lastFrame) / 1.0E9F);
+//             this.lastFrame = now;
+//             this.phase = this.phase + dt * this.tempo.get();
+//             this.retarget(this.pick(mc), event.partialTick, level);
+//             this.current.presence = this.current.entity != null ? Math.min(1.0F, this.current.presence + dt / 0.3F) : 0.0F;
+//             this.previous.presence = Math.max(0.0F, this.previous.presence - dt / 0.38F);
+//             if (this.previous.presence <= 0.0F) {
+//                 this.previous.entity = null;
+//             }
+//
+//             this.current.follow(event.partialTick, level);
+//             this.previous.follow(event.partialTick, level);
+//             if (this.current.entity != null || this.previous.entity != null) {
+//                 this.palette.resolve(this.colorMode.get(), CosmeticAccent.argb(), this.mainColor.argb(), this.secondColor.argb());
+//                 this.hit = this.colorMode.is("Manual") ? this.hitColor.argb() : this.palette.flash();
+//                 this.canvas.begin(mc.gameRenderer.getMainCamera());
+//                 if (this.previous.entity != null) {
+//                     this.draw(this.previous, true);
+//                 }
+//
+//                 if (this.current.entity != null) {
+//                     this.draw(this.current, false);
+//                 }
+//
+//                 this.canvas.submit(this.throughWalls.get());
+//             }
+//         } else {
+//             if (this.boundLevel != null) {
+//                 this.reset();
+//             }
+//         }
+//     }
 
     private void retarget(LivingEntity wanted, float partialTick, ClientLevel level) {
         if (wanted != this.current.entity) {

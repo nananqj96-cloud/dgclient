@@ -40,13 +40,13 @@ public class AntiTrapModule extends Module {
     }
 
 //     private void onEntityAdded(WorldEntityAddEvent event) {
-        if (this.preventSpawn.get()) {
-            Entity entity = event.entity;
-            if (this.isTrapEntity(entity)) {
-                this.pendingSpawns.add(entity);
-            }
-        }
-    }
+//         if (this.preventSpawn.get()) {
+//             Entity entity = event.entity;
+//             if (this.isTrapEntity(entity)) {
+//                 this.pendingSpawns.add(entity);
+//             }
+//         }
+//     }
 
     public void onTick() {
         Minecraft mc = Minecraft.getInstance();

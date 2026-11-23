@@ -113,35 +113,35 @@ public class EspModule extends Module {
         this.glowLevel = null;
     }
 
-//     @EventHandler
-//     public void onRender3D(Render3DEvent event) {
-        boolean box = this.sBox.get() && !this.sShape.is("Glow");
-        boolean tracers = this.sTracers.get();
-        if (box || tracers) {
-            String shape = this.sShape.get();
-            float lineWidth = this.sLineWidth.get();
-            int fillAlpha = Math.round(this.sFillAlpha.get() * 255.0F);
-
-            for (EspModule.Target target : this.targets(event.partialTick)) {
-                int color = this.colorFor(target);
-                AABB bounds = interpolatedBox(target.entity(), event.partialTick);
-                if (box) {
-                    int fill = color & 16777215 | fillAlpha << 24;
-
-                    GizmoStyle style = switch (shape) {
-                        case "Fill" -> GizmoStyle.fill(fill);
-                        case "Both" -> GizmoStyle.strokeAndFill(color, lineWidth, fill);
-                        default -> GizmoStyle.stroke(color, lineWidth);
-                    };
-                    Gizmos.cuboid(bounds, style).setAlwaysOnTop();
-                }
-
-                if (tracers) {
-                    TracerEngine.draw(bounds.getCenter(), this.sCustomTracerColor.get() ? this.sTracerColor.argb() : color);
-                }
-            }
-        }
-    }
+//     Render3DEvent-based rendering removed in Aether port
+//     private void onRender3D(Render3DEvent event) {
+//         boolean box = this.sBox.get() && !this.sShape.is("Glow");
+//         boolean tracers = this.sTracers.get();
+//         if (box || tracers) {
+//             String shape = this.sShape.get();
+//             float lineWidth = this.sLineWidth.get();
+//             int fillAlpha = Math.round(this.sFillAlpha.get() * 255.0F);
+//
+//             for (EspModule.Target target : this.targets(event.partialTick)) {
+//                 int color = this.colorFor(target);
+//                 AABB bounds = interpolatedBox(target.entity(), event.partialTick);
+//                 if (box) {
+//                     int fill = color & 16777215 | fillAlpha << 24;
+//
+//                     GizmoStyle style = switch (shape) {
+//                         case "Fill" -> GizmoStyle.fill(fill);
+//                         case "Both" -> GizmoStyle.strokeAndFill(color, lineWidth, fill);
+//                         default -> GizmoStyle.stroke(color, lineWidth);
+//                     };
+//                     Gizmos.cuboid(bounds, style).setAlwaysOnTop();
+//                 }
+//
+//                 if (tracers) {
+//                     TracerEngine.draw(bounds.getCenter(), this.sCustomTracerColor.get() ? this.sTracerColor.argb() : color);
+//                 }
+//             }
+//         }
+//     }
 
     private List<EspModule.Target> targets(float partialTick) {
         Minecraft mc = Minecraft.getInstance();
@@ -204,8 +204,8 @@ public class EspModule extends Module {
         return switch (target.group()) {
             case PLAYER -> {
 //                 if (this.sFriends.get() && target.entity() instanceof Player player && FriendStore.getInstance().isFriend(player.getGameProfile().name())) {
-                    yield this.sFriendColor.argb();
-                }
+//                     yield this.sFriendColor.argb();
+//                 }
 
                 yield this.sPlayerColor.argb();
             }
