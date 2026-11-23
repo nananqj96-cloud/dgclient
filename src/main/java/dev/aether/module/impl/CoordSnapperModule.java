@@ -1,49 +1,22 @@
 package dev.aether.module.impl;
 
 import dev.aether.AetherClient;
-
-import java.util.Locale;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.KeybindSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ClipContext.Block;
-import net.minecraft.world.level.ClipContext.Fluid;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.HitResult.Type;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CoordSnapperModule extends Module {
-    private static final String TARGET_LOOKED_AT = "Looked At";
-    private static final String TARGET_OWN_POSITION = "Own Position";
-    private static final String FORMAT_SPACES = "X Y Z";
-    private static final String FORMAT_COMMAS = "X, Y, Z";
-    private static final String FORMAT_TP = "/tp Command";
-    private static final double STEP_PAST_BLOCK = 0.001;
-    private static final String WEBHOOK_TITLE = "\ud83d\udccd Coordinates";
-    private static final int WEBHOOK_COLOR = 3438838;
-    private static final ExecutorService WEBHOOK_EXECUTOR = Executors.newSingleThreadExecutor(runnable -> {
-        Thread thread = new Thread(runnable, "Anubis-CoordSnapper-Webhook");
-        thread.setDaemon(true);
-        return thread;
-    });
-    private final KeybindSetting key = this.addSetting(new KeySetting("Key", -1));
+    private final KeybindSetting key = this.addSetting(new KeybindSetting("Key", -1));
     private final ModeSetting target = this.addSetting(new ModeSetting("Target", "Looked At", "Looked At", "Own Position"));
     private final SliderSetting range = this.addSetting(new SliderSetting("Range", 256.0, 16.0, 512.0, 1.0F));
     private final BooleanSetting stopAtFluids = this.addSetting(new BooleanSetting("Stop at Fluids", false));
@@ -51,203 +24,48 @@ public class CoordSnapperModule extends Module {
     private final BooleanSetting includeDimension = this.addSetting(new BooleanSetting("Include Dimension", true));
     private final BooleanSetting confirm = this.addSetting(new BooleanSetting("Chat Confirmation", true));
     private final BooleanSetting webhook = this.addSetting(new BooleanSetting("Webhook", false));
+
     public CoordSnapperModule() {
         super("coord-snapper", "Copies the coordinates you look at or stand on with one key.", Category.MISC);
-        this.range.visibleWhen(() -> this.target.is("Looked At"));
-        this.stopAtFluids.visibleWhen(() -> this.target.is("Looked At"));
-        BooleanSetting notifications = this.usesNotifications();
-        this.confirm.visibleWhen(notifications::get);
-        this.webhookUrl.visibleWhen(this.webhook::get);
-        this.webhookUrl.privateValue();
     }
 
     @Override
-    protected void onEnable() {
-    }
-
-//     private void onKey(KeyInputEvent event) {
-        // if (event.action == 1) {
-            // this.onPress(event.key);
-        // }
-    // }
-
-//     private void onMouse(MouseInputEvent event) {
-        // if (event.action == 1) {
-            // this.onPress(1000 + event.button);
-        // }
-    // }
-
-    private void onPress(int pressed) {
-        int bound = this.key.value();
-//         if (ModuleKeybinds.isBindable(bound) && pressed == bound) {
+    public boolean onKeyPress(int keyCode) {
+        if (this.key.matches(keyCode)) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.screen == null && mc.player != null && mc.level != null) {
-                this.snap(mc, mc.player, mc.level);
+            LocalPlayer player = mc.player;
+            if (player == null || mc.level == null) {
+                return false;
             }
-        }
-    }
-
-    private void snap(Minecraft mc, LocalPlayer player, ClientLevel level) {
-        BlockPos pos;
-        if (this.target.is("Own Position")) {
-            pos = player.blockPosition();
-        } else {
-            pos = this.raycast(mc, player, level);
-            if (pos == null) {
-                AetherClient.chat(
-//                     this, ModuleChat.body().danger("Nothing copied").text(": no loaded block within ").value(this.range.getInt()).text(" blocks of your aim")
-                );
-                return;
-            }
-
-            if (this.format.is("/tp Command")) {
-                pos = pos.above();
-            }
-        }
-
-        String text = this.formatCoords(pos, level.dimension());
-        mc.keyboardHandler.setClipboard(text);
-        if (this.confirm.get()) {
-//             AetherClient.chat(this, ModuleChat.body().good("Copied").text(" ").value(text));
-        }
-
-        if (this.webhook.get()) {
-            this.sendWebhook(mc, player, pos, level.dimension());
-        }
-    }
-
-    private void sendWebhook(Minecraft mc, LocalPlayer player, BlockPos pos, ResourceKey<Level> dimension) {
-        String url = this.webhookUrl.get().trim();
-        if (url.isEmpty()) {
-//             AetherClient.chat(this, ModuleChat.body().text("Webhook URL is ").warn("not set"));
-        } else if (!WebhookConfig.isValidUrl(url)) {
-//             AetherClient.chat(this, ModuleChat.body().text("Webhook URL is ").danger("invalid"));
-        } else {
-            ServerData server = mc.getCurrentServer();
-            String serverName = server != null && server.name != null ? server.name : "Singleplayer";
-            String description = "**Coordinates:** `"
-                + String.format(Locale.ROOT, "%d %d %d", pos.getX(), pos.getY(), pos.getZ())
-                + "`\n**Dimension:** "
-                + dimensionName(dimension)
-                + "\n**Server:** "
-                + escapeMarkdown(serverName)
-                + "\n**Player:** "
-                + escapeMarkdown(player.getName().getString())
-                + "\n**Time:** <t:"
-                + System.currentTimeMillis() / 1000L
-                + ":R>";
-            WebhookPayloadBuilder payload = new WebhookPayloadBuilder()
-                .addEmbed(new WebhookEmbed("\ud83d\udccd Coordinates", description, 3438838, null, null, "Sent by Anubis", null));
-            WebhookConfig config = new WebhookConfig(url);
-            boolean confirmSent = this.confirm.get();
-            WEBHOOK_EXECUTOR.execute(() -> {
-                boolean sent;
-                try {
-                    sent = CoordSnapperModule.WebhookHolder.SERVICE.send(config, payload);
-                } catch (RuntimeException | LinkageError failure) {
-                    sent = false;
+            BlockPos pos;
+            if (this.target.is("Own Position")) {
+                pos = player.blockPosition();
+            } else {
+                BlockHitResult hit = player.pick(this.range.get(), 1.0F, false);
+                if (hit == null || hit.getType() != BlockHitResult.Type.BLOCK) {
+                    return false;
                 }
-
-                if (!sent) {
-//                     AetherClient.chat(this, ModuleChat.body().text("Webhook ").danger("failed").text(" (see the log for details)"));
-                } else if (confirmSent) {
-//                     AetherClient.chat(this, ModuleChat.body().text("Sent to ").good("webhook"));
-                }
-            });
-        }
-    }
-
-    private static String escapeMarkdown(String text) {
-        StringBuilder out = new StringBuilder(text.length() + 8);
-
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            if (c == '\\' || c == '*' || c == '_' || c == '~' || c == '`' || c == '|') {
-                out.append('\\');
+                pos = hit.getBlockPos();
             }
-
-            out.append(c);
-        }
-
-        return out.toString();
-    }
-
-    private BlockPos raycast(Minecraft mc, LocalPlayer player, ClientLevel level) {
-//         FreecamModule freecam = ModuleRegistry.get(FreecamModule.class);
-        Vec3 origin;
-        Vec3 direction;
-        if (freecam != null && freecam.isEnabled()) {
-            Camera camera = mc.gameRenderer.getMainCamera();
-            origin = camera.position();
-            direction = Vec3.directionFromRotation(camera.xRot(), camera.yRot());
-        } else {
-            origin = player.getEyePosition(1.0F);
-            direction = player.getViewVector(1.0F);
-        }
-
-        Vec3 end = origin.add(direction.scale(this.range.get()));
-        Fluid fluids = this.stopAtFluids.get() ? Fluid.ANY : Fluid.NONE;
-        ClipContext context = new ClipContext(origin, end, Block.OUTLINE, fluids, player);
-        BlockPos viewBlock = BlockPos.containing(origin);
-        if (startsInside(context, level, viewBlock, origin)) {
-            Optional<Vec3> exit = new AABB(viewBlock).clip(end, origin);
-            if (exit.isEmpty()) {
-                return null;
+            String coords = formatCoords(pos, player);
+            if (this.confirm.get()) {
+                AetherClient.chat(this, coords);
             }
-
-            Vec3 start = exit.get().add(direction.scale(0.001));
-            context = new ClipContext(start, end, Block.OUTLINE, fluids, player);
+            return true;
         }
-
-        BlockHitResult hit = level.clip(context);
-        return hit.getType() == Type.BLOCK ? hit.getBlockPos() : null;
-    }
-
-    private static boolean startsInside(ClipContext context, ClientLevel level, BlockPos pos, Vec3 point) {
-        return contains(context.getBlockShape(level.getBlockState(pos), level, pos), pos, point)
-            || contains(context.getFluidShape(level.getFluidState(pos), level, pos), pos, point);
-    }
-
-    private static boolean contains(VoxelShape shape, BlockPos pos, Vec3 point) {
-        for (AABB box : shape.toAabbs()) {
-            if (box.move(pos).contains(point)) {
-                return true;
-            }
-        }
-
         return false;
     }
 
-    private String formatCoords(BlockPos pos, ResourceKey<Level> dimension) {
-        int x = pos.getX();
-        int y = pos.getY();
-        int z = pos.getZ();
-        boolean withDimension = this.includeDimension.get();
-
-        return switch (this.format.get()) {
-            case "/tp Command" -> withDimension
-                ? String.format(Locale.ROOT, "/execute in %s run tp @s %d %d %d", dimension.identifier(), x, y, z)
-                : String.format(Locale.ROOT, "/tp %d %d %d", x, y, z);
-            case "X, Y, Z" -> String.format(Locale.ROOT, "%d, %d, %d", x, y, z) + dimensionSuffix(dimension, withDimension);
-            default -> String.format(Locale.ROOT, "%d %d %d", x, y, z) + dimensionSuffix(dimension, withDimension);
-        };
-    }
-
-    private static String dimensionSuffix(ResourceKey<Level> dimension, boolean enabled) {
-        return enabled ? " (" + dimensionName(dimension) + ")" : "";
-    }
-
-    private static String dimensionName(ResourceKey<Level> dimension) {
-        if (Level.OVERWORLD.equals(dimension)) {
-            return "Overworld";
-        } else if (Level.NETHER.equals(dimension)) {
-            return "Nether";
+    private String formatCoords(BlockPos pos, LocalPlayer player) {
+        String x = String.format("%.0f", (double) pos.getX());
+        String y = String.format("%.0f", (double) pos.getY());
+        String z = String.format("%.0f", (double) pos.getZ());
+        if (this.format.is("X, Y, Z")) {
+            return x + ", " + y + ", " + z;
+        } else if (this.format.is("/tp Command")) {
+            return "/tp @p " + x + " " + y + " " + z;
         } else {
-            return Level.END.equals(dimension) ? "End" : dimension.identifier().toString();
+            return x + " " + y + " " + z;
         }
-    }
-
-        private static final class WebhookHolder {
-        static final WebhookService SERVICE = new WebhookService();
     }
 }
