@@ -44,9 +44,6 @@ public class BlockEntityDebugModule extends Module {
     }
 
     @Override
-    public int settingsVersion() {
-        return SETTINGS_VERSION;
-    }
 
     @Override
     protected void onEnable() {

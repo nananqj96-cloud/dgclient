@@ -65,7 +65,7 @@ public class SpawnerNotifierModule extends Module {
 
     private void notify(BlockPos pos) {
         Minecraft mc = Minecraft.getInstance();
-        AetherClient.chat(this, foundMessage(mc, pos));
+        AetherClient.notifications().pushInfo(foundMessage(mc, pos));
 
         if (this.sSound.get() && mc.player != null && mc.level != null) {
         }

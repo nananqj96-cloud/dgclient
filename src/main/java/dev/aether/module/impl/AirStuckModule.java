@@ -13,9 +13,6 @@ public class AirStuckModule extends Module {
     }
 
     @Override
-    public boolean persistEnabled() {
-        return false;
-    }
 
     @Override
     protected void onEnable() {

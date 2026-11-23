@@ -35,7 +35,7 @@ public class TpMacroModule extends Module {
     public void setTarget(String name) {
         this.target = name;
         this.lastSent = 0L;
-        AetherClient.chat(this, "Sending /" + this.command.get() + " " + name + " every " + this.interval.get() + "s.");
+        AetherClient.notifications().pushInfo("Sending /" + this.command.get() + " " + name + " every " + this.interval.get() + "s.");
     }
 
     public void clearTarget() {
