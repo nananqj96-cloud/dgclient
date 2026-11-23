@@ -6,6 +6,7 @@ import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
+import dev.aether.settings.StringSetting;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.client.Minecraft;
 
@@ -43,6 +44,9 @@ public class AutoTpaModule extends Module {
    );
    public final BooleanSetting notify = this.addSetting(
       new BooleanSetting("Notify", "Show a notification each time a request is sent.", false)
+   );
+   public final StringSetting target = this.addSetting(
+      new StringSetting("Target", "Player name to send requests to.", "")
    );
    private long nextSendAtMs = -1L;
    private String lastSent;

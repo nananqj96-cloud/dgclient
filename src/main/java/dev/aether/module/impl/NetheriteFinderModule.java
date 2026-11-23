@@ -38,7 +38,7 @@ public class NetheriteFinderModule extends Module {
         if (this.pendingCount > 0) {
             long now = System.currentTimeMillis();
             if (now - this.lastNotifyAt >= 2000L) {
-                AetherClient.chat(this, this.pendingCount + " new hidden-debris chunk" + (this.pendingCount == 1 ? " " : "s ") + "found");
+                AetherClient.notifications().pushInfo(this.pendingCount + " new hidden-debris chunk" + (this.pendingCount == 1 ? " " : "s ") + "found");
                 this.pendingCount = 0;
                 this.lastNotifyAt = now;
             }

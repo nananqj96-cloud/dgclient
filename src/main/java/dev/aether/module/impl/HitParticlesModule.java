@@ -40,9 +40,7 @@ public class HitParticlesModule extends Module {
     private static final String COLOR_ACCENT = "Accent";
     private static final double LIFT = 0.25;
     private static final int PEEP_DUST = 16743112;
-    private final ModeSetting type = this.addSetting(
-        "type", new ModeSetting("Type", "Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust")
-    );
+    private final ModeSetting type = this.addSetting(new ModeSetting("Type", "Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust"));
     private final SliderSetting amount = this.addSetting(new SliderSetting("Amount", "Amount", 10.0, 1.0, 40.0, 1.0F));
     private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", "Spread", 1.0, 0.25, 3.0, 0.25F));
     private final ModeSetting origin = this.addSetting(new ModeSetting("Origin", "Origin", "Impact", "Impact", "Body"));
@@ -110,7 +108,7 @@ public class HitParticlesModule extends Module {
         double spreadScale = this.spread.get();
         double jitter = burst.jitter() * spreadScale;
         int count = this.amount.getInt();
-//         float pink = this.type.is("Dust") ? 0.0F : ThemeTint.world();
+        float pink = 0.0F;
         ParticleOptions pinkDust = pink > 0.0F ? new DustParticleOptions(16743112, 0.9F) : null;
 
         for (int i = 0; i < count; i++) {
