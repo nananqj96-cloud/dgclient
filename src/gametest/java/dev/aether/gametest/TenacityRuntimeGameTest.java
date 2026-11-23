@@ -29,11 +29,11 @@ public class TenacityRuntimeGameTest implements FabricClientGameTest {
             m.tenacityBrightness.brightness.set(80.0);
             m.tenacityBrightness.setEnabled(true);
             require(m.tenacityBrightness.isEnabled(), "Brightness should be enabled");
-            require(mc.options.gamma().get() == 1.0, "Gamma should still be default 1.0 before tick (got " + mc.options.gamma().get() + ")");
+            require(mc.options.gamma().get().floatValue() == 1.0F, "Gamma should still be default 1.0 before tick (got " + mc.options.gamma().get() + ")");
          });
          context.waitTicks(3); // Let END_CLIENT_TICK fire 3 times
          context.runOnClient(mc -> {
-            float gamma = mc.options.gamma().get();
+            float gamma = mc.options.gamma().get().floatValue();
             require(gamma != 1.0, "Brightness onTick must change gamma via real tick events (got " + gamma + ")");
             m.tenacityBrightness.setEnabled(false);
          });
