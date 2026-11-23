@@ -986,7 +986,6 @@ public class ModuleManager {
                var2.onTick();
             } catch (Throwable t) {
                AetherClient.LOGGER.error("Module " + var2.getName() + " threw an exception in onTick", t);
-               var2.setEnabled(false);
             }
          }
       }
@@ -999,7 +998,6 @@ public class ModuleManager {
                var2.onTick();
             } catch (Throwable t) {
                AetherClient.LOGGER.error("Module " + var2.getName() + " threw an exception in onCombatTick", t);
-               var2.setEnabled(false);
             }
          }
       }

@@ -121,10 +121,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    private float creditsTabY;
    private float creditsTabW;
    private float creditsTabH;
-   private float odinTabX;
-   private float odinTabY;
-   private float odinTabW;
-   private float odinTabH;
    private float purxiyTabX;
    private float purxiyTabY;
    private float purxiyTabW;
@@ -424,6 +420,10 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       float sbBottom = this.winY + this.winH - 50.0F;
       float sbContentH = sbBottom - sbTop;
 
+      // Clip sidebar content to visible area — buttons outside viewport don't render
+      vg.save();
+      vg.scissor(this.winX + 4.0F, sbTop, SIDEBAR_W - 8.0F, sbContentH);
+
       float navY = this.winY + TOPBAR_H + 10.0F - this.sidebarScrollY;
       vg.text("CATEGORIES", this.winX + 16.0F, navY + 4.0F, 9.5F, theme.textDisabled());
       navY += 15.0F;
@@ -577,25 +577,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       vg.text("Cake", this.cakeTabX + 32.0F, kcy, 12.2F, cakeHov ? theme.textPrimary() : theme.textMuted());
       navY += this.cakeTabH + 10.0F;
 
-      // Odin tab
-      this.odinTabX = this.winX + 10.0F;
-      this.odinTabY = navY;
-      this.odinTabW = SIDEBAR_W - 20.0F;
-      this.odinTabH = 30.0F;
-      boolean odinHov = this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH);
-      if (odinHov) {
-         if (theme.isBloom()) {
-            vg.glow(this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, 7.0F, 6.0F, Colors.withAlpha(theme.accent(), 0.18F));
-         }
-         vg.rect(this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, 7.0F, Colors.withAlpha(theme.accent(), 0.14F));
-         vg.rectOutline(this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, 7.0F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.40F));
-      }
-      float ocy = this.odinTabY + this.odinTabH * 0.5F;
-      vg.circle(this.odinTabX + 18.0F, ocy, 5.2F, theme.accent());
-      vg.circleOutline(this.odinTabX + 18.0F, ocy, 7.2F, 1.0F, Colors.withAlpha(theme.accentBright(), 0.65F));
-      vg.text("Odin", this.odinTabX + 32.0F, ocy, 12.2F, odinHov ? theme.textPrimary() : theme.textMuted());
-      navY += this.odinTabH + 10.0F;
-
       // Purxiy tab
       this.purxiyTabX = this.winX + 10.0F;
       this.purxiyTabY = navY;
@@ -709,6 +690,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          vg.rect(trackX, trackTop, 2.0F, trackH, 1.0F, Colors.withAlpha(theme.borderSubtle(), 0.4F));
          vg.rect(trackX, thumbY, 2.0F, thumbH, 1.0F, Colors.withAlpha(theme.accentBright(), 0.5F));
       }
+      vg.restore();
    }
 
    private void renderDashboardTopBar(NVGRenderer vg, Theme theme, float mx, float my, float mainX, float mainW) {
@@ -1058,15 +1040,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
       this.cakeTabY = cy - this.cakeTabH * 0.5F;
       this.drawPillButton(vg, theme, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH, cakeLbl, false, this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH), false);
 
-      String odinLbl = "Odin";
-      this.odinTabW = vg.textWidth(odinLbl, 11.5F) + 24.0F;
-      this.odinTabX = this.cakeTabX - 14.0F - this.odinTabW;
-      this.odinTabY = cy - this.odinTabH * 0.5F;
-      this.drawPillButton(vg, theme, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH, odinLbl, false, this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH), false);
-
       String purxiyLbl = "Purxiy";
       this.purxiyTabW = vg.textWidth(purxiyLbl, 11.5F) + 24.0F;
-      this.purxiyTabX = this.odinTabX - 14.0F - this.purxiyTabW;
+      this.purxiyTabX = this.cakeTabX - 14.0F - this.purxiyTabW;
       this.purxiyTabY = cy - this.purxiyTabH * 0.5F;
       this.drawPillButton(vg, theme, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH, purxiyLbl, false, this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH), false);
 
@@ -1264,24 +1240,6 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
          return true;
       }
 
-      if (btn == 0 && this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH)) {
-         // Open/close Odin Client's GUI (via reflection — Odin uses Yarn mappings)
-         try {
-            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-            String screenClassName = mc.screen != null ? mc.screen.getClass().getName() : "";
-            if (screenClassName.startsWith("odinclient.ui.screen")) {
-               mc.setScreen(null);
-            } else {
-               Class<?> guiClass = Class.forName("odinclient.ui.screen.ClickGuiScreen");
-               Object guiInstance = guiClass.getConstructor(net.minecraft.client.gui.screens.Screen.class).newInstance(mc.screen);
-               mc.setScreen((net.minecraft.client.gui.screens.Screen) guiInstance);
-            }
-         } catch (Throwable t) {
-            AetherClient.LOGGER.error("Failed to toggle Odin Client menu", t);
-         }
-         return true;
-      }
-
       if (btn == 0 && this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH)) {
          // Open/close Purxiy Visuals menu (via reflection — Purxiy is a compiled jar with obfuscated class names)
          try {
@@ -1397,13 +1355,9 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
             UiSounds.select();
             return true;
          }
-         // Cake / Odin / Purxiy tabs — select their respective visual theme
+         // Cake / Purxiy tabs — select their respective visual theme
          if (btn == 0 && this.hit(mx, my, this.cakeTabX, this.cakeTabY, this.cakeTabW, this.cakeTabH)) {
             this.selectClientTheme("Cake");
-            return true;
-         }
-         if (btn == 0 && this.hit(mx, my, this.odinTabX, this.odinTabY, this.odinTabW, this.odinTabH)) {
-            this.selectClientTheme("Odin");
             return true;
          }
          if (btn == 0 && this.hit(mx, my, this.purxiyTabX, this.purxiyTabY, this.purxiyTabW, this.purxiyTabH)) {

@@ -67,13 +67,20 @@ public abstract class Module {
    public void setEnabled(boolean enabled) {
       if (this.enabled != enabled) {
          this.enabled = enabled;
-         if (enabled) {
-            this.onEnable();
-         } else {
-            this.onDisable();
+         try {
+            if (enabled) {
+               this.onEnable();
+            } else {
+               this.onDisable();
+            }
+         } catch (Throwable t) {
+            java.util.logging.Logger.getLogger("AetherClient").warning("Module " + this.name + " threw in onEnable/onDisable: " + t.getMessage());
          }
          if (this.toggleCallback != null) {
-            this.toggleCallback.accept(this, enabled);
+            try {
+               this.toggleCallback.accept(this, enabled);
+            } catch (Throwable ignored) {
+            }
          }
       }
    }
