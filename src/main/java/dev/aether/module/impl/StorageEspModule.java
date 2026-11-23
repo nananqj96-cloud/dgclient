@@ -1,333 +1,47 @@
 package dev.aether.module.impl;
 
-import java.util.HashMap;
-import java.util.Map;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
-import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
-import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AbstractFurnaceBlock;
-import net.minecraft.world.level.block.BarrelBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.EnchantingTableBlock;
-import net.minecraft.world.level.block.EnderChestBlock;
-import net.minecraft.world.level.block.HopperBlock;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
-import net.minecraft.world.level.block.SpawnerBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StorageEspModule extends Module {
-//     private final EspStyle style = new EspStyle(this::addSetting, "Outline", 0.25F, 256.0F);
     private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", false));
-    private final StorageEspModule.Type chest = new StorageEspModule.Type(
-        "Chest", true, -6530304, "chests", "chest-color", "chest-tracers", "chest-tracer-color"
-    );
-    private final StorageEspModule.Type enderChest = new StorageEspModule.Type(
-        "Ender Chest", true, -9109249, "ender-chests", "ender-chest-color", "ender-chest-tracers", "ender-chest-tracer-color"
-    );
-    private final StorageEspModule.Type shulker = new StorageEspModule.Type(
-        "Shulker Box", true, -7995234, "shulker-boxes", "shulker-box-color", "shulker-tracers", "shulker-tracer-color"
-    );
-    private final StorageEspModule.Type spawner = new StorageEspModule.Type(
-        "Spawner", true, -7700826, "spawners", "spawner-color", "spawner-tracers", "spawner-tracer-color"
-    );
-    private final StorageEspModule.Type furnace = new StorageEspModule.Type(
-        "Furnace", false, -10197916, "furnaces", "furnace-color", "furnace-tracers", "furnace-tracer-color"
-    );
-    private final StorageEspModule.Type barrel = new StorageEspModule.Type(
-        "Barrel", true, -10204366, "barrels", "barrel-color", "barrel-tracers", "barrel-tracer-color"
-    );
-    private final StorageEspModule.Type enchanting = new StorageEspModule.Type(
-        "Enchanting Table", true, -3670016, "enchanting-tables", "enchanting-table-color", "enchanting-tracers", "enchanting-tracer-color"
-    );
-    private final StorageEspModule.Type hopper = new StorageEspModule.Type(
-        "Hopper", false, -11513776, "hoppers", "hopper-color", "hopper-tracers", "hopper-tracer-color"
-    );
-    private final StorageEspModule.Type[] types = new StorageEspModule.Type[]{
-        this.chest, this.enderChest, this.shulker, this.spawner, this.furnace, this.barrel, this.enchanting, this.hopper
-    };
-//     private final BlockLayer layer = new BlockLayer(new BlockLayer.Palette() {
-        @Override
-        public int color(Object kind) {
-            return ((StorageEspModule.Type)kind).color.argb();
-        }
-
-        @Override
-        public int tracerColor(Object kind) {
-            StorageEspModule.Type t = (StorageEspModule.Type)kind;
-            return t.tracers.get() ? t.tracerColor.argb() : 0;
-        }
-    }, () -> Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.dimension());
-    private final Map<ResourceKey<Level>, Long2ObjectOpenHashMap<StorageEspModule.Type>> detections = new HashMap<>();
-    private ResourceKey<Level> shownDimension;
+    private final ColorSetting sChestColor = this.addSetting(new ColorSetting("Chest Color", -11513776));
+    private final Map<Long, Integer> layer = new HashMap<>();
 
     public StorageEspModule() {
         super("storage-esp", "Highlights storage blocks and spawners with per-type colours.", Category.EXPLOIT);
     }
 
-    private StorageEspModule.Type typeOf(Block block) {
-        if (block instanceof ChestBlock) {
-            return this.chest;
-        } else if (block instanceof EnderChestBlock) {
-            return this.enderChest;
-        } else if (block instanceof ShulkerBoxBlock) {
-            return this.shulker;
-        } else if (block instanceof SpawnerBlock) {
-            return this.spawner;
-        } else if (block instanceof AbstractFurnaceBlock) {
-            return this.furnace;
-        } else if (block instanceof BarrelBlock) {
-            return this.barrel;
-        } else if (block instanceof EnchantingTableBlock) {
-            return this.enchanting;
-        } else {
-            return block instanceof HopperBlock ? this.hopper : null;
-        }
-    }
-
-    private StorageEspModule.Type typeOf(BlockEntityType<?> type) {
-        if (type == BlockEntityType.CHEST || type == BlockEntityType.TRAPPED_CHEST) {
-            return this.chest;
-        } else if (type == BlockEntityType.ENDER_CHEST) {
-            return this.enderChest;
-        } else if (type == BlockEntityType.SHULKER_BOX) {
-            return this.shulker;
-        } else if (type == BlockEntityType.MOB_SPAWNER) {
-            return this.spawner;
-        } else if (type == BlockEntityType.FURNACE || type == BlockEntityType.BLAST_FURNACE || type == BlockEntityType.SMOKER) {
-            return this.furnace;
-        } else if (type == BlockEntityType.BARREL) {
-            return this.barrel;
-        } else if (type == BlockEntityType.ENCHANTING_TABLE) {
-            return this.enchanting;
-        } else {
-            return type == BlockEntityType.HOPPER ? this.hopper : null;
-        }
-    }
-
-    private StorageEspModule.Type typeOf(BlockEntityType<?> type, CompoundTag tag) {
-        StorageEspModule.Type known = this.typeOf(type);
-        if (known == null && tag != null) {
-            Identifier id = tag.getString("id").map(Identifier::tryParse).orElse(null);
-            return id == null ? null : this.typeOf(BuiltInRegistries.BLOCK_ENTITY_TYPE.getValue(id));
-        } else {
-            return known;
-        }
-    }
-
-    private void rescan() {
-        if (this.isEnabled()) {
-            this.layer.clear();
-            ClientLevel level = Minecraft.getInstance().level;
-            this.shownDimension = level == null ? null : level.dimension();
-            Long2ObjectOpenHashMap<StorageEspModule.Type> found = this.shownDimension == null ? null : this.detections.get(this.shownDimension);
-            if (found != null) {
-                for (Entry<StorageEspModule.Type> entry : found.long2ObjectEntrySet()) {
-                    if (entry.getValue().enabled.get()) {
-                        this.layer.put(entry.getLongKey(), entry.getValue());
-                    }
-                }
-            }
-        }
-    }
-
-    private boolean anyTracer() {
-        if (!this.sTracers.get()) {
-            return false;
-        }
-
-        for (StorageEspModule.Type type : this.types) {
-            if (type.enabled.get() && type.tracers.get()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     protected void onEnable() {
-        this.detections.clear();
-        this.layer.clear();
-//         ChunkScanner.register(this);
-        ClientLevel level = Minecraft.getInstance().level;
-        this.shownDimension = level == null ? null : level.dimension();
-        if (level != null && Minecraft.getInstance().player != null) {
-            ChunkPos center = Minecraft.getInstance().player.chunkPosition();
-            int radius = Minecraft.getInstance().options.getEffectiveRenderDistance() + 1;
-
-            for (int x = center.x - radius; x <= center.x + radius; x++) {
-                for (int z = center.z - radius; z <= center.z + radius; z++) {
-                    LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
-                    if (chunk != null) {
-                        this.scanBlockEntities(chunk);
-                    }
-                }
-            }
-        }
     }
 
     @Override
     protected void onDisable() {
-//         ChunkScanner.unregister(this);
-        this.detections.clear();
         this.layer.clear();
-        this.shownDimension = null;
-    }
-
-    private void found(BlockPos pos, StorageEspModule.Type type) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (type != null && level != null) {
-            long key = pos.asLong();
-            StorageEspModule.Type previous = this.detections.computeIfAbsent(level.dimension(), k -> new Long2ObjectOpenHashMap<>()).put(key, type);
-            if (previous != type) {
-                if (previous != null) {
-                    this.layer.remove(key);
-                }
-
-                if (type.enabled.get()) {
-                    this.layer.put(key, type);
-                }
-            }
-        }
-    }
-
-    private void gone(BlockPos pos) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null) {
-            Long2ObjectOpenHashMap<StorageEspModule.Type> found = this.detections.get(level.dimension());
-            if (found != null && found.remove(pos.asLong()) != null) {
-                this.layer.remove(pos.asLong());
-            }
-        }
     }
 
     @Override
-    public boolean wants(BlockState state) {
-        return this.typeOf(state.getBlock()) != null;
+    public void onTick() {
     }
 
-    @Override
-    public void found(long pos, BlockState state) {
-        this.found(BlockPos.of(pos), this.typeOf(state.getBlock()));
+    public void found(long pos, int color) {
+        this.layer.put(pos, color);
     }
 
-    @Override
     public void removed(long pos) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null && level.getBlockState(BlockPos.of(pos)).isAir()) {
-            this.gone(BlockPos.of(pos));
-        }
+        this.layer.remove(pos);
     }
 
-    @Override
     public void reset() {
-        this.detections.clear();
         this.layer.clear();
     }
 
-    private void scanBlockEntities(LevelChunk chunk) {
-        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-            this.found(blockEntity.getBlockPos(), this.typeOf(blockEntity.getType()));
-        }
-    }
-
-    private void blockChanged(BlockPos pos, BlockState state) {
-        StorageEspModule.Type type = this.typeOf(state.getBlock());
-        if (type != null) {
-            this.found(pos, type);
-        } else if (state.isAir()) {
-            this.gone(pos);
-        }
-    }
-
-//     @EventHandler
-//     public void onPacketApplied(PacketAppliedEvent event) {
-        // ClientLevel level = Minecraft.getInstance().level;
-        // if (level != null) {
-            // if (level.dimension() != this.shownDimension) {
-                // this.rescan();
-            // }
-
-            // if (event.packet instanceof ClientboundLevelChunkWithLightPacket packet) {
-                // packet.getChunkData()
-                    // .getBlockEntitiesTagsConsumer(packet.getX(), packet.getZ())
-                    // .accept((pos, type, tag) -> this.found(pos, this.typeOf(type, tag)));
-                // LevelChunk chunk = level.getChunkSource().getChunkNow(packet.getX(), packet.getZ());
-                // if (chunk != null) {
-                    // this.scanBlockEntities(chunk);
-                // }
-            // } else if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
-                // this.blockChanged(packet.getPos(), packet.getBlockState());
-            // } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
-                // packet.runUpdates(this::blockChanged);
-            // } else if (event.packet instanceof ClientboundLoginPacket) {
-                // this.detections.clear();
-                // this.layer.clear();
-            // }
-        // }
-    // }
-
-//     @EventHandler
-//     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        // if (event.packet instanceof ClientboundBlockEntityDataPacket packet) {
-            // BlockPos pos = packet.getPos();
-            // StorageEspModule.Type type = this.typeOf(packet.getType(), packet.getTag());
-            // if (type != null) {
-                // Minecraft.getInstance().execute(() -> {
-                    // if (this.isEnabled()) {
-                        // this.found(pos, type);
-                    // }
-                // });
-            // }
-        // }
-    // }
-
-//     @EventHandler
-//     public void onRender3D(Render3DEvent event) {
-        // ClientLevel level = Minecraft.getInstance().level;
-        // if (level != null && level.dimension() != this.shownDimension) {
-            // this.rescan();
-        // }
-
-        // this.layer.render(event, this.style);
-        // if (this.anyTracer()) {
-            // this.layer.renderTracers(this.style);
-        // }
-    // }
-
-        private final class Type {
-        final BooleanSetting enabled;
-        final BooleanSetting tracers;
-        final ColorSetting color;
-        final ColorSetting tracerColor;
-
-        Type(String label, boolean on, int argb, String idOn, String idColor, String idTracers, String idTracerColor) {
-            this.enabled = StorageEspModule.this.addSetting(idOn, new BooleanSetting(label, on));
-            this.color = StorageEspModule.this.addSetting(idColor, new ColorSetting(label + " Color", argb));
-            this.tracers = StorageEspModule.this.addSetting(idTracers, new BooleanSetting(label + " Tracers", false));
-            this.tracerColor = StorageEspModule.this.addSetting(idTracerColor, new ColorSetting(label + " Tracer Color", argb));
-            this.color.visibleWhen(this.enabled::get);
-            this.tracers.visibleWhen(() -> StorageEspModule.this.sTracers.get() && this.enabled.get());
-            this.tracerColor.visibleWhen(() -> StorageEspModule.this.sTracers.get() && this.enabled.get() && this.tracers.get());
-        }
+    public int getChestColor() {
+        return this.sChestColor.argb();
     }
 }

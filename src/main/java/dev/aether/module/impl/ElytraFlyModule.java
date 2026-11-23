@@ -354,13 +354,13 @@ public class ElytraFlyModule extends Module {
     // }
 
 //     private static void setMovement(LocalPlayer player, boolean aliased, PlayerMoveEvent event, double x, double y, double z) {
-        event.x = x;
-        event.y = y;
-        event.z = z;
-        if (aliased) {
-            player.setDeltaMovement(x, y, z);
-        }
-    }
+        // event.x = x;
+        // event.y = y;
+        // event.z = z;
+        // if (aliased) {
+            // player.setDeltaMovement(x, y, z);
+        // }
+    // }
 
     public boolean canPacketEfly(LocalPlayer player) {
         return this.modeType == ElytraFlightModes.Packet && player.getItemBySlot(EquipmentSlot.CHEST).has(DataComponents.GLIDER) && !player.onGround();
@@ -381,12 +381,12 @@ public class ElytraFlyModule extends Module {
     private void enableGroundListener() {
         if (this.groundListener == null) {
 //             this.groundListener = PlayerMoveEvent.TYPE.listen(this, Stage.PRE, EventPriority.NORMAL, event -> {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null && player.onGround() && player.getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) {
-                    ElytraFlyInventory.chestSwap();
-                    this.cancelGroundListener();
-                }
-            });
+                // LocalPlayer player = Minecraft.getInstance().player;
+                // if (player != null && player.onGround() && player.getItemBySlot(EquipmentSlot.CHEST).getItem() == Items.ELYTRA) {
+                    // ElytraFlyInventory.chestSwap();
+                    // this.cancelGroundListener();
+                // }
+            // });
         }
     }
 
@@ -400,14 +400,14 @@ public class ElytraFlyModule extends Module {
     private void enableInstaDropListener() {
         if (this.instaDropListener == null) {
 //             this.instaDropListener = TickEvent.TYPE.listen(this, Stage.POST, EventPriority.NORMAL, event -> {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null && player.isFallFlying()) {
-                    player.setDeltaMovement(0.0, 0.0, 0.0);
-                    player.connection.send(new StatusOnly(true, player.horizontalCollision));
-                } else {
-                    this.cancelInstaDropListener();
-                }
-            });
+                // LocalPlayer player = Minecraft.getInstance().player;
+                // if (player != null && player.isFallFlying()) {
+                    // player.setDeltaMovement(0.0, 0.0, 0.0);
+                    // player.connection.send(new StatusOnly(true, player.horizontalCollision));
+                // } else {
+                    // this.cancelInstaDropListener();
+                // }
+            // });
         }
     }
 
