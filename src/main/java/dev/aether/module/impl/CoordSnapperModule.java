@@ -16,7 +16,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class CoordSnapperModule extends Module {
-    private final KeybindSetting key = this.addSetting(new KeybindSetting("Key", -1));
+    private final KeybindSetting key = this.addSetting(new KeybindSetting("Key", "Key", -1));
     private final ModeSetting target = this.addSetting(new ModeSetting("Target", "Target", "Looked At", "Looked At", "Own Position"));
     private final SliderSetting range = this.addSetting(new SliderSetting("Range", "Range", 256.0, 16.0, 512.0, 1.0F));
     private final BooleanSetting stopAtFluids = this.addSetting(new BooleanSetting("Stop at Fluids", "Stop at Fluids", false));
@@ -41,7 +41,7 @@ public class CoordSnapperModule extends Module {
             if (this.target.is("Own Position")) {
                 pos = player.blockPosition();
             } else {
-                BlockHitResult hit = player.pick(this.range.get(), 1.0F, false);
+                BlockHitResult hit = (BlockHitResult) player.pick(this.range.get(), 1.0F, false);
                 if (hit == null || hit.getType() != BlockHitResult.Type.BLOCK) {
                     return false;
                 }
@@ -49,7 +49,7 @@ public class CoordSnapperModule extends Module {
             }
             String coords = formatCoords(pos, player);
             if (this.confirm.get()) {
-                AetherClient.chat(this, coords);
+                AetherClient.notifications().pushInfo(coords);
             }
             return true;
         }

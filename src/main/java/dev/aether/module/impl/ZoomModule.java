@@ -32,7 +32,7 @@ public class ZoomModule extends Module {
 
     @Override
     protected void onEnable() {
-        target = (float) this.zoom.get();
+        target = this.zoom.getFloat();
         if (this.cinematic.get()) {
             Minecraft mc = Minecraft.getInstance();
             this.smoothBefore = mc.options.smoothCamera;
@@ -76,7 +76,7 @@ public class ZoomModule extends Module {
         float seconds = lastNanos == 0L ? 0.0F : Math.min(0.1F, (float)(now - lastNanos) / 1.0E9F);
         lastNanos = now;
         ZoomModule module = instance;
-        float smooth = module == null ? 0.0F : (float) module.smoothness.get() / 100.0F;
+        float smooth = module == null ? 0.0F : module.smoothness.getFloat() / 100.0F;
         if (!(smooth <= 0.0F) && current != target) {
             float rate = 30.0F + -25.0F * smooth;
             float blend = 1.0F - (float)Math.exp(-seconds * rate);

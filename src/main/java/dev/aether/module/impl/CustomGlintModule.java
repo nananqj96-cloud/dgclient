@@ -78,7 +78,7 @@ public class CustomGlintModule extends Module {
     }
 
     public float uvScaleMultiplier() {
-        return 1.0F / this.patternSize.get();
+        return 1.0F / this.patternSize.getFloat();
     }
 
     private void refresh() {

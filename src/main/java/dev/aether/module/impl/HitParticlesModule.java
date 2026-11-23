@@ -141,13 +141,13 @@ public class HitParticlesModule extends Module {
             case "End Rod" -> new HitParticlesModule.Burst(ParticleTypes.END_ROD, 0.09, 0.1);
             case "Totem" -> new HitParticlesModule.Burst(ParticleTypes.TOTEM_OF_UNDYING, 0.45, 0.1);
             case "Heart" -> new HitParticlesModule.Burst(ParticleTypes.HEART, 0.0, 0.35);
-            case "Dust" -> new HitParticlesModule.Burst(new DustParticleOptions(this.dustRgb(), this.dustSize.get()), 1.0, 0.3);
+            case "Dust" -> new HitParticlesModule.Burst(new DustParticleOptions(this.dustRgb(), (float) this.dustSize.get()), 1.0, 0.3);
             default -> new HitParticlesModule.Burst(ParticleTypes.CRIT, 0.8, 0.1);
         };
     }
 
     private int dustRgb() {
-//         int argb = this.dustColorMode.is("Accent") ? CosmeticAccent.argb() : ThemeTint.world(this.dustColor.argb());
+        int argb = this.dustColor.get();
         return argb & 16777215;
     }
 
