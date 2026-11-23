@@ -290,7 +290,7 @@ public class SpawnerProtectModule extends Module {
         double dist = Math.sqrt(dx * dx + dz * dz);
         float targetYaw = (float)Math.toDegrees(Math.atan2(-dx, dz));
         float targetPitch = (float)(-Math.toDegrees(Math.atan2(dy, dist)));
-        float step = this.rotationSpeed.get();
+        float step = this.rotationSpeed.get().floatValue();
         player.setYRot(player.getYRot() + Mth.clamp(Mth.wrapDegrees(targetYaw - player.getYRot()), -step, step));
         player.setXRot(player.getXRot() + Mth.clamp(Mth.wrapDegrees(targetPitch - player.getXRot()), -step, step));
     }

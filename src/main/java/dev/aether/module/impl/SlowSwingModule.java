@@ -12,7 +12,7 @@ public class SlowSwingModule extends Module {
     }
 
     public int getModifiedSwingDuration(int vanilla) {
-        float s = this.speed.get();
+        float s = this.speed.get().floatValue();
         if (s <= 0.0F) {
             s = 0.1F;
         }

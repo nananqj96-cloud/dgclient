@@ -45,7 +45,7 @@ public class ItemEspModule extends Module {
             return true;
         }
 
-        float range = Math.max(1.0F, this.sRange.get());
+        float range = (float) Math.max(1.0F, this.sRange.get());
         return item.getPosition(partialTick).distanceToSqr(mc.player.getEyePosition(partialTick)) <= (double)range * range;
     }
 

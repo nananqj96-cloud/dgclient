@@ -119,7 +119,7 @@ public class EspModule extends Module {
 //         boolean tracers = this.sTracers.get();
 //         if (box || tracers) {
 //             String shape = this.sShape.get();
-//             float lineWidth = this.sLineWidth.get();
+//             float lineWidth = this.sLineWidth.get().floatValue();
 //             int fillAlpha = Math.round(this.sFillAlpha.get() * 255.0F);
 //
 //             for (EspModule.Target target : this.targets(event.partialTick)) {
@@ -147,7 +147,7 @@ public class EspModule extends Module {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.player != null) {
             int max = Math.max(1, Math.min(96, this.sMaxEntities.getInt()));
-            float range = Math.max(1.0F, this.sRange.get());
+            float range = (float) Math.max(1.0F, this.sRange.get());
             double rangeSq = (double)range * range;
             Vec3 eye = mc.player.getEyePosition(partialTick);
             List<EspModule.Target> result = new ArrayList<>();

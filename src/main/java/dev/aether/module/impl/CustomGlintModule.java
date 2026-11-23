@@ -86,7 +86,7 @@ public class CustomGlintModule extends Module {
         if (mc.level != null && mc.getOverlay() == null && RenderSystem.tryGetDevice() != null) {
             int itemRgb = this.colorMode.is("Accent") ? CosmeticAccent.argb() & 16777215 : this.itemColor.rgb();
             int armorRgb = this.colorMode.is("Custom") && this.separateArmor.get() ? this.armorColor.rgb() : itemRgb;
-            float strength = this.intensity.get();
+            float strength = this.intensity.get().floatValue();
             this.items.tint(mc, itemRgb, strength);
             this.armor.tint(mc, armorRgb, strength);
         }

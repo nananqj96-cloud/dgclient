@@ -12,6 +12,6 @@ public class FullbrightModule extends Module {
     }
 
     public float gamma() {
-        return Math.max(1.0F, this.gamma.get());
+        return (float) Math.max(1.0F, this.gamma.get());
     }
 }

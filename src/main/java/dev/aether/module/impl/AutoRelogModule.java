@@ -68,7 +68,7 @@ public class AutoRelogModule extends Module {
                     this.aboveTicks = 0;
                 } else {
                     double y = player.getY();
-                    float line = this.yLevel.get();
+                    float line = this.yLevel.get().floatValue();
                     if (y >= line + 4.0F) {
                         if (this.aboveTicks < 40) {
                             this.aboveTicks++;

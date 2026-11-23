@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WaypointsModule extends Module {
-    private final KeybindSetting addKey = this.addSetting(new KeybindSetting("Add Here Key", -1));
+    private final KeybindSetting addKey = this.addSetting(new KeybindSetting("Add Here Key", "Add Here Key", -1));
     private final BooleanSetting deaths = this.addSetting(new BooleanSetting("Death Waypoints", "Death Waypoints", true));
     private final SliderSetting deathMemory = this.addSetting(new SliderSetting("Death Memory", "Death Memory", 3.0, 1.0, 10.0, 1.0F));
     private final BooleanSetting otherDimension = this.addSetting(new BooleanSetting("Show In Other Dimension", "Show In Other Dimension", true));
@@ -25,7 +25,7 @@ public class WaypointsModule extends Module {
     private final List<Waypoint> waypoints = new ArrayList<>();
 
     public WaypointsModule() {
-        super("waypoints", "Waypoints", "Saved places shown on screen with distance. Entries are \"Name x y z\", optionally ending in nether or end.", Category.RENDER);
+        super("waypoints", "Saved places shown on screen with distance. Entries are \"Name x y z\", optionally ending in nether or end.", Category.RENDER);
     }
 
     @Override

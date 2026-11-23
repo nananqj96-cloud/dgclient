@@ -232,7 +232,7 @@ public class NametagsModule extends Module {
             int contentW = Math.max(Math.max(row1W, row2W), row3W);
             int panelW = contentW + 8;
             int panelH = 8 + font.lineHeight + 3 + 10 + (earlier.isEmpty() ? 0 : 13);
-            float baseScale = Math.max(0.5F, Math.min(2.0F, this.sScale.get()));
+            float baseScale = (float) Math.max(0.5F, Math.min(2.0F, this.sScale.get()));
             double minScale = Math.max(0.3F, Math.min(1.0F, this.sMinScale.get()));
             float distScale = (float)Math.min(1.0, Math.max(minScale, 8.0 / Math.max(1.0, dist)));
             float scale = baseScale * distScale;

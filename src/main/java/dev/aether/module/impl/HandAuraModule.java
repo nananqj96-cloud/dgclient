@@ -101,7 +101,7 @@ public class HandAuraModule extends Module {
     }
 
     private float auraStrength(long now) {
-        float strength = this.aura.get() / 100.0F;
+        float strength = (float) this.aura.get() / 100.0F;
         if (!this.breathe.get()) {
             return strength;
         }

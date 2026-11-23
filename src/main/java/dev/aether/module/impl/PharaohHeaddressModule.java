@@ -22,7 +22,7 @@ public class PharaohHeaddressModule extends Module {
     private final BooleanSetting friends = this.addSetting(new BooleanSetting("On Friends", "On Friends", false));
 
     public PharaohHeaddressModule() {
-        super("pharaoh-headdress", "Pharaoh Headdress", "Puts a pharaoh headdress on your player model.", Category.VISUALS);
+        super("pharaoh-headdress", "Puts a pharaoh headdress on your player model.", Category.VISUALS);
     }
 
     @Override

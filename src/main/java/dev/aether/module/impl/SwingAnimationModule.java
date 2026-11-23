@@ -75,7 +75,7 @@ public class SwingAnimationModule extends Module {
 
     public void pose(PoseStack pose, float progress, int side) {
         if (!(progress <= 0.0F) && !(progress >= 1.0F)) {
-            float k = this.intensity.get();
+            float k = this.intensity.get().floatValue();
             switch (this.styleIndex) {
                 case 1:
                     ankh(pose, progress, side, k);
