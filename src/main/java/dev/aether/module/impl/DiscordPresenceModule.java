@@ -239,7 +239,7 @@ public class DiscordPresenceModule extends Module {
         private void send(DiscordPresenceModule.Card next) throws IOException {
             try {
                 this.ipc.setActivity(DiscordPresenceModule.activity(next));
-//             } catch (DiscordIpc.RefusedException refused) {
+            } catch (Exception refused) {
                 this.report("Discord refused the card", refused);
             }
 
@@ -250,7 +250,7 @@ public class DiscordPresenceModule extends Module {
         private void clear() {
             try {
                 this.ipc.setActivity(null);
-//             } catch (IOException | DiscordIpc.RefusedException ignored) {
+            } catch (Exception ignored) {
             }
 
             this.hangUp();

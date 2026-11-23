@@ -47,7 +47,7 @@ public class MediaBaseFinderModule extends Module {
 //     private final SliderSetting opacity = this.addSetting(HudPanel.opacitySetting());
 //     private final HudPanel panel = new HudPanel(
 //         this.addSetting("pos-x", HudPanel.coordinate("X")), this.addSetting("pos-y", HudPanel.coordinate("Y")), this.scale, this.opacity
-    );
+//     );
     private final ShardTracker shard = new ShardTracker();
 //     private final ScreenText screenText = new ScreenText(16733695, 3.0F);
     private final Queue<UUID> modeUpdates = new ConcurrentLinkedQueue<>();
