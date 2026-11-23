@@ -3,7 +3,6 @@ package dev.aether.module.impl;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.KeySetting;
 import dev.aether.settings.KeybindSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
