@@ -172,7 +172,7 @@ public class AutoTotemModule extends Module {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (mc.level != null && player != null && mc.gameMode != null && player.isAlive() && !player.isRemoved() && !(player.getHealth() <= 0.0F)) {
-            this.refill, this.refillDelay.getInt());
+//            this.refill.update(this.refill, this.refillDelay.getInt());
         } else {
             this.reset();
         }

@@ -399,10 +399,11 @@ public class SpotifyHudModule extends Module {
 
     private static boolean isDown(Minecraft mc, int key) {
 //         if (!ModuleKeybinds.isBindable(key)) {
-            return false;
-        } else {
+//             return false;
+//         } else {
 //             return key >= 1000 ? GLFW.glfwGetMouseButton(mc.getWindow().handle(), key - 1000) == 1 : AnubisKeyPolling.isKeyDown(mc.getWindow(), key);
-        }
+//         }
+        return false;
     }
 
         public enum LyricHighlight {

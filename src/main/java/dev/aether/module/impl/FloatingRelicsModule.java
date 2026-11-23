@@ -123,7 +123,7 @@ public class FloatingRelicsModule extends Module {
             float restitution = this.bounce.get();
 
             for (int i = 0; i < this.live; i++) {
-                this;
+//                this.update(this.relics[i]);
             }
 
             for (int i = 0; i < this.live; i++) {

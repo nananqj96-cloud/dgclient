@@ -84,7 +84,7 @@ public class HandsModule extends Module {
     private void shapeHand(PoseStack pose, boolean mainHand, int side) {
         boolean on = this.isEnabled();
         HandsModule.HandState state = mainHand ? this.mainState : this.offState;
-        state ? this.off : this.main, on, this.follow());
+//        this.applyPose(state ? this.off : this.main, on, this.follow());
         if (!on && this.mainState.rested && this.offState.rested) {
             live = null;
         } else if (!state.rested) {
