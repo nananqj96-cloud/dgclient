@@ -17,9 +17,9 @@ public class HandModelModule extends Module {
     public static volatile HandModelModule active;
     private static final String ALL_ITEMS = "All Items";
     private static final String WEAPONS_TOOLS = "Weapons & Tools";
-    private final ModeSetting items = this.addSetting(new ModeSetting("Items", "All Items", "All Items", "Weapons & Tools"));
-    private final BooleanSetting mainHand = this.addSetting(new BooleanSetting("Main Hand", true));
-    private final BooleanSetting offHand = this.addSetting(new BooleanSetting("Off Hand", true));
+    private final ModeSetting items = this.addSetting(new ModeSetting("Items", "Items", "All Items", "All Items", "Weapons & Tools"));
+    private final BooleanSetting mainHand = this.addSetting(new BooleanSetting("Main Hand", "Main Hand", true));
+    private final BooleanSetting offHand = this.addSetting(new BooleanSetting("Off Hand", "Off Hand", true));
 
     public HandModelModule() {
         super("3d-hand", "Shows your own arm holding the item in first person: swords, tools, items and blocks.", Category.VISUALS);

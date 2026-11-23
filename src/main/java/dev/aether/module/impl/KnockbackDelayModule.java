@@ -9,13 +9,13 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 public class KnockbackDelayModule extends Module {
-    private final SliderSetting chance = this.addSetting(new SliderSetting("Chance (%)", 40.0, 0.0, 100.0, 5.0F));
-    private final SliderSetting airMin = this.addSetting(new SliderSetting("Air Delay Min (ms)", 50.0, 0.0, 500.0, 10.0F));
-    private final SliderSetting airMax = this.addSetting(new SliderSetting("Air Delay Max (ms)", 100.0, 0.0, 500.0, 10.0F));
-    private final SliderSetting groundMin = this.addSetting(new SliderSetting("Ground Delay Min (ms)", 200.0, 0.0, 1000.0, 10.0F));
-    private final SliderSetting groundMax = this.addSetting(new SliderSetting("Ground Delay Max (ms)", 250.0, 0.0, 1000.0, 10.0F));
-    private final BooleanSetting waterCheck = this.addSetting(new BooleanSetting("Not In Water", false));
-    private final BooleanSetting onlyFights = this.addSetting(new BooleanSetting("Only Near Enemies", true));
+    private final SliderSetting chance = this.addSetting(new SliderSetting("Chance (%)", "Chance (%)", 40.0, 0.0, 100.0, 5.0F));
+    private final SliderSetting airMin = this.addSetting(new SliderSetting("Air Delay Min (ms)", "Air Delay Min (ms)", 50.0, 0.0, 500.0, 10.0F));
+    private final SliderSetting airMax = this.addSetting(new SliderSetting("Air Delay Max (ms)", "Air Delay Max (ms)", 100.0, 0.0, 500.0, 10.0F));
+    private final SliderSetting groundMin = this.addSetting(new SliderSetting("Ground Delay Min (ms)", "Ground Delay Min (ms)", 200.0, 0.0, 1000.0, 10.0F));
+    private final SliderSetting groundMax = this.addSetting(new SliderSetting("Ground Delay Max (ms)", "Ground Delay Max (ms)", 250.0, 0.0, 1000.0, 10.0F));
+    private final BooleanSetting waterCheck = this.addSetting(new BooleanSetting("Not In Water", "Not In Water", false));
+    private final BooleanSetting onlyFights = this.addSetting(new BooleanSetting("Only Near Enemies", "Only Near Enemies", true));
 
     public KnockbackDelayModule() {
         super("knockback-delay", "Takes some hits' knockback a random moment late: a little in the air, longer on the ground.", Category.COMBAT);

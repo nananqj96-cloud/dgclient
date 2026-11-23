@@ -10,13 +10,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class SusChunkFinderModule extends Module {
-    private final ModeSetting method = this.addSetting(new ModeSetting("Method", "Classic", "Classic", "ANBS+ Scan"));
-    private final SliderSetting spreadRadius = this.addSetting(new SliderSetting("Simulation Distance", 5.0, 2.0, 16.0, 1.0F));
-    private final SliderSetting sensitivity = this.addSetting(new SliderSetting("Sensitivity", 6.0, 1.0, 20.0, 1.0F));
-    private final ColorSetting chunkColor = this.addSetting(new ColorSetting("Chunk Color", 1627325444));
-    private final BooleanSetting tracers = this.addSetting(new BooleanSetting("Tracers", true));
-    private final BooleanSetting detectMined = this.addSetting(new BooleanSetting("Detect Mined Clusters", false));
-    private final ColorSetting minedColor = this.addSetting(new ColorSetting("Mined Color", 1621511679));
+    private final ModeSetting method = this.addSetting(new ModeSetting("Method", "Method", "Classic", "Classic", "ANBS+ Scan"));
+    private final SliderSetting spreadRadius = this.addSetting(new SliderSetting("Simulation Distance", "Simulation Distance", 5.0, 2.0, 16.0, 1.0F));
+    private final SliderSetting sensitivity = this.addSetting(new SliderSetting("Sensitivity", "Sensitivity", 6.0, 1.0, 20.0, 1.0F));
+    private final ColorSetting chunkColor = this.addSetting(new ColorSetting("Chunk Color", "Chunk Color", 1627325444));
+    private final BooleanSetting tracers = this.addSetting(new BooleanSetting("Tracers", "Tracers", true));
+    private final BooleanSetting detectMined = this.addSetting(new BooleanSetting("Detect Mined Clusters", "Detect Mined Clusters", false));
+    private final ColorSetting minedColor = this.addSetting(new ColorSetting("Mined Color", "Mined Color", 1621511679));
 
     public SusChunkFinderModule() {
         super("sus-chunk-finder", "Finds chunks with signs of player activity from grown amethyst, kelp, vines, bamboo, cocoa and bee nests.", Category.EXPLOIT);

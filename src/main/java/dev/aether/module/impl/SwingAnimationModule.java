@@ -24,11 +24,11 @@ public class SwingAnimationModule extends Module {
     private static final long COMBAT_WINDOW_MS = 3000L;
     private static final float PI = (float) Math.PI;
     private static final float TAU = (float) (Math.PI * 2);
-    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Slash", "Slash", "Chop", "Hook", "Spin", "Double Tap", "Push"));
-    private final SliderSetting tempo = this.addSetting(new SliderSetting("Tempo", 1.0, 0.4, 2.5, 0.05F));
-    private final SliderSetting intensity = this.addSetting(new SliderSetting("Intensity", 1.0, 0.2, 2.0, 0.05F));
-    private final BooleanSetting offhand = this.addSetting(new BooleanSetting("Offhand Too", true));
-    private final BooleanSetting combatOnly = this.addSetting(new BooleanSetting("Combat Only", false));
+    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Slash", "Slash", "Chop", "Hook", "Spin", "Double Tap", "Push"));
+    private final SliderSetting tempo = this.addSetting(new SliderSetting("Tempo", "Tempo", 1.0, 0.4, 2.5, 0.05F));
+    private final SliderSetting intensity = this.addSetting(new SliderSetting("Intensity", "Intensity", 1.0, 0.2, 2.0, 0.05F));
+    private final BooleanSetting offhand = this.addSetting(new BooleanSetting("Offhand Too", "Offhand Too", true));
+    private final BooleanSetting combatOnly = this.addSetting(new BooleanSetting("Combat Only", "Combat Only", false));
     private int styleIndex;
     private boolean styled;
 

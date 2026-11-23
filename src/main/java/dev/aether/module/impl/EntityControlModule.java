@@ -10,17 +10,17 @@ import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 
 public class EntityControlModule extends Module {
     public static volatile EntityControlModule active;
-    private final BooleanSetting boats = this.addSetting(new BooleanSetting("Boats", true));
-    private final BooleanSetting horses = this.addSetting(new BooleanSetting("Horses", true));
-    private final BooleanSetting camels = this.addSetting(new BooleanSetting("Camels", true));
-    private final BooleanSetting pigs = this.addSetting(new BooleanSetting("Pigs", true));
-    private final BooleanSetting striders = this.addSetting(new BooleanSetting("Striders", true));
-    private final BooleanSetting nautiluses = this.addSetting(new BooleanSetting("Nautiluses", true));
-    private final BooleanSetting happyGhasts = this.addSetting(new BooleanSetting("Happy Ghasts", true));
-    private final BooleanSetting spoofSaddle = this.addSetting(new BooleanSetting("Spoof Saddle", false));
-    private final BooleanSetting maxJump = this.addSetting(new BooleanSetting("Max Jump", true));
-    private final BooleanSetting lockYaw = this.addSetting(new BooleanSetting("Lock Yaw", true));
-    private final BooleanSetting cancelServerPackets = this.addSetting(new BooleanSetting("Cancel Server Packets", false));
+    private final BooleanSetting boats = this.addSetting(new BooleanSetting("Boats", "Boats", true));
+    private final BooleanSetting horses = this.addSetting(new BooleanSetting("Horses", "Horses", true));
+    private final BooleanSetting camels = this.addSetting(new BooleanSetting("Camels", "Camels", true));
+    private final BooleanSetting pigs = this.addSetting(new BooleanSetting("Pigs", "Pigs", true));
+    private final BooleanSetting striders = this.addSetting(new BooleanSetting("Striders", "Striders", true));
+    private final BooleanSetting nautiluses = this.addSetting(new BooleanSetting("Nautiluses", "Nautiluses", true));
+    private final BooleanSetting happyGhasts = this.addSetting(new BooleanSetting("Happy Ghasts", "Happy Ghasts", true));
+    private final BooleanSetting spoofSaddle = this.addSetting(new BooleanSetting("Spoof Saddle", "Spoof Saddle", false));
+    private final BooleanSetting maxJump = this.addSetting(new BooleanSetting("Max Jump", "Max Jump", true));
+    private final BooleanSetting lockYaw = this.addSetting(new BooleanSetting("Lock Yaw", "Lock Yaw", true));
+    private final BooleanSetting cancelServerPackets = this.addSetting(new BooleanSetting("Cancel Server Packets", "Cancel Server Packets", false));
 
     public EntityControlModule() {
         super("entity-control", "Lets you control rideable entities without a saddle.", Category.MOVEMENT);

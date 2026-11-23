@@ -8,11 +8,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AutoTrapModule extends Module {
-    private final SliderSetting range = this.addSetting(new SliderSetting("Range", 4.0, 1.0, 6.0, 0.5F));
-    private final BooleanSetting rotate = this.addSetting(new BooleanSetting("Rotate", true));
-    private final SliderSetting perTick = this.addSetting(new SliderSetting("Blocks Per Tick", 4.0, 1.0, 8.0, 1.0F));
-    private final BooleanSetting top = this.addSetting(new BooleanSetting("Top Block", true));
-    private final BooleanSetting show = this.addSetting(new BooleanSetting("Show Target", true));
+    private final SliderSetting range = this.addSetting(new SliderSetting("Range", "Range", 4.0, 1.0, 6.0, 0.5F));
+    private final BooleanSetting rotate = this.addSetting(new BooleanSetting("Rotate", "Rotate", true));
+    private final SliderSetting perTick = this.addSetting(new SliderSetting("Blocks Per Tick", "Blocks Per Tick", 4.0, 1.0, 8.0, 1.0F));
+    private final BooleanSetting top = this.addSetting(new BooleanSetting("Top Block", "Top Block", true));
+    private final BooleanSetting show = this.addSetting(new BooleanSetting("Show Target", "Show Target", true));
 
     public AutoTrapModule() {
         super("auto-trap", "Boxes the nearest enemy in with obsidian: sides at feet and head height, then the top.", Category.COMBAT);

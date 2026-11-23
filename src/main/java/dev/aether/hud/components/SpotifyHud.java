@@ -1,7 +1,7 @@
 package dev.aether.hud.components;
 
 import dev.aether.hud.HudComponent;
-import dev.aether.module.Modules;
+import dev.aether.module.impl.SpotifyHudModule;
 import dev.aether.render.nanovg.NVGImages;
 import dev.aether.render.nanovg.NVGRenderer;
 import dev.aether.spotify.SpotifyService;
@@ -23,12 +23,12 @@ public class SpotifyHud extends HudComponent {
    private static final float VBAR_X = 36.0F;
    private static final float VBAR_TRIM = 46.0F;
    private static final float VOL_CY = 80.0F;
-   private final Modules.SpotifyModule module;
+   private final SpotifyHudModule module;
    private final SpotifyService service;
    private final ThemeManager themes;
    private static final long DEMO_START = System.nanoTime();
 
-   public SpotifyHud(Modules.SpotifyModule var1, SpotifyService var2, ThemeManager var3) {
+   public SpotifyHud(SpotifyHudModule var1, SpotifyService var2, ThemeManager var3) {
       super("spotify", 0.5F, 0.965F, var1::isEnabled);
       this.module = var1;
       this.service = var2;

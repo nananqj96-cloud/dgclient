@@ -9,13 +9,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class FlyModule extends Module {
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Abilities", "Abilities", "Velocity"));
-    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 0.1, 0.0, 10.0, 0.05F));
-    private final BooleanSetting verticalSpeedMatch = this.addSetting(new BooleanSetting("Vertical Speed Match", false));
-    private final BooleanSetting noSneak = this.addSetting(new BooleanSetting("No Sneak", false));
-    private final ModeSetting antiKickMode = this.addSetting(new ModeSetting("Anti Kick Mode", "Packet", "Normal", "Packet", "None"));
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Anti Kick Delay", 20.0, 1.0, 200.0, 1.0F));
-    private final SliderSetting offTime = this.addSetting(new SliderSetting("Anti Kick Off Time", 1.0, 1.0, 20.0, 1.0F));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Abilities", "Abilities", "Velocity"));
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", "Speed", 0.1, 0.0, 10.0, 0.05F));
+    private final BooleanSetting verticalSpeedMatch = this.addSetting(new BooleanSetting("Vertical Speed Match", "Vertical Speed Match", false));
+    private final BooleanSetting noSneak = this.addSetting(new BooleanSetting("No Sneak", "No Sneak", false));
+    private final ModeSetting antiKickMode = this.addSetting(new ModeSetting("Anti Kick Mode", "Anti Kick Mode", "Packet", "Normal", "Packet", "None"));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Anti Kick Delay", "Anti Kick Delay", 20.0, 1.0, 200.0, 1.0F));
+    private final SliderSetting offTime = this.addSetting(new SliderSetting("Anti Kick Off Time", "Anti Kick Off Time", 1.0, 1.0, 20.0, 1.0F));
 
     public FlyModule() {
         super("fly", "Lets you fly.", Category.MOVEMENT);

@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class NameProtectModule extends Module {
-    private final ModeSetting others = this.addSetting(new ModeSetting("Others", "Keep", "Keep", "Same Label", "Numbered"));
-    private final ModeSetting othersLabel = this.addSetting(new ModeSetting("Others Label", "Player", "Player", "Anonymous", "Unknown"));
+    private final ModeSetting others = this.addSetting(new ModeSetting("Others", "Others", "Keep", "Keep", "Same Label", "Numbered"));
+    private final ModeSetting othersLabel = this.addSetting(new ModeSetting("Others Label", "Others Label", "Player", "Player", "Anonymous", "Unknown"));
 
     public NameProtectModule() {
         super("name-protect", "Shows aliases instead of player names on your screen.", Category.MISC);

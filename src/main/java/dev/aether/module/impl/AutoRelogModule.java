@@ -19,8 +19,8 @@ public class AutoRelogModule extends Module {
     private static final Logger LOGGER = LoggerFactory.getLogger("Anubis");
     private static final int REARM_HEIGHT = 4;
     private static final int REARM_TICKS = 40;
-    private final SliderSetting yLevel = this.addSetting(new NumberSetting("Y Level", 0.0F, -60.0F, 16.0F));
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", 3.0, 1.0, 30.0, 0.5F));
+    private final SliderSetting yLevel = this.addSetting(new SliderSetting("Y Level", "Y Level", 0.0, -60.0, 16.0, 1.0F));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", "Delay", 3.0, 1.0, 30.0, 0.5F));
     private ClientLevel seenLevel;
     private LocalPlayer seenPlayer;
     private int aboveTicks;

@@ -7,8 +7,8 @@ import dev.aether.settings.SliderSetting;
 
 public class TridentBoostModule extends Module {
     public static volatile TridentBoostModule active;
-    private final SliderSetting boost = this.addSetting(new SliderSetting("Boost", 2.0, 0.1, 10.0, 0.1F));
-    private final BooleanSetting outOfWater = this.addSetting(new BooleanSetting("Out Of Water", true));
+    private final SliderSetting boost = this.addSetting(new SliderSetting("Boost", "Boost", 2.0, 0.1, 10.0, 0.1F));
+    private final BooleanSetting outOfWater = this.addSetting(new BooleanSetting("Out Of Water", "Out Of Water", true));
 
     public TridentBoostModule() {
         super("trident-boost", "Boosts you when using riptide with a trident.", Category.MOVEMENT);

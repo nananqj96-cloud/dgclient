@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class TenacityScaffoldModule extends Module {
    public final SliderSetting delay = this.addSetting(new SliderSetting("Delay", "Place delay in ticks", 0.0, 0.0, 10.0, 1.0, "t"));
    public final SliderSetting range = this.addSetting(new SliderSetting("Range", "Search range", 10.0, 3.0, 30.0, 1.0, "m"));
-   public final ModeSetting block = this.addSetting(new ModeSetting("Block", "Block to place", "Obsidian", "Obsidian", "Cobblestone", "Stone"));
+   public final ModeSetting block = this.addSetting(new ModeSetting("Block", "Block", "Block to place", "Obsidian", "Obsidian", "Cobblestone", "Stone"));
    public final BooleanSetting down = this.addSetting(new BooleanSetting("Down", "Also place below", true));
 
    private int counter;

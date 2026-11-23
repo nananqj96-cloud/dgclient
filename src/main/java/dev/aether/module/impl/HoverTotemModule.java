@@ -13,8 +13,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Items;
 
 public class HoverTotemModule extends Module {
-    private final BooleanSetting hotbarRefill = this.addSetting(new BooleanSetting("Hotbar Refill", false));
-    private final SliderSetting hotbarSlot = this.addSetting(new SliderSetting("Hotbar Slot", 1.0, 1.0, 9.0, 1.0F));
+    private final BooleanSetting hotbarRefill = this.addSetting(new BooleanSetting("Hotbar Refill", "Hotbar Refill", false));
+    private final SliderSetting hotbarSlot = this.addSetting(new SliderSetting("Hotbar Slot", "Hotbar Slot", 1.0, 1.0, 9.0, 1.0F));
 
     public HoverTotemModule() {
         super("hovertotem", "Swaps a hovered totem from any open container into the offhand or selected hotbar slot.", Category.COMBAT);

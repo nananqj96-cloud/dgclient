@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AutoEatModule extends Module {
-    private final SliderSetting hunger = this.addSetting(new SliderSetting("Hunger", 16.0, 0.0, 20.0, 1.0F));
-    private final SliderSetting health = this.addSetting(new SliderSetting("Health", 10.0, 0.0, 20.0, 1.0F));
+    private final SliderSetting hunger = this.addSetting(new SliderSetting("Hunger", "Hunger", 16.0, 0.0, 20.0, 1.0F));
+    private final SliderSetting health = this.addSetting(new SliderSetting("Health", "Health", 10.0, 0.0, 20.0, 1.0F));
 
     public AutoEatModule() {
         super("auto-eat", "Eats hotbar or offhand food once hunger or health drops too low.", Category.MISC);

@@ -45,10 +45,10 @@ public class FakeLagModule extends Module {
     private static final double AIM_CONE_DEGREES = 30.0;
     private static final double TOWARDS = 0.02;
     private static final int BOX_COLOR = -43691;
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Dynamic", "Dynamic", "Always"));
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay (ms)", 100.0, 10.0, 1000.0, 10.0F));
-    private final SliderSetting range = this.addSetting(new SliderSetting("Range", 6.0, 3.0, 12.0, 0.5F));
-    private final BooleanSetting render = this.addSetting(new BooleanSetting("Show Server Position", true));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Dynamic", "Dynamic", "Always"));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay (ms)", "Delay (ms)", 100.0, 10.0, 1000.0, 10.0F));
+    private final SliderSetting range = this.addSetting(new SliderSetting("Range", "Range", 6.0, 3.0, 12.0, 0.5F));
+    private final BooleanSetting render = this.addSetting(new BooleanSetting("Show Server Position", "Show Server Position", true));
     private final Minecraft mc = Minecraft.getInstance();
     private final Deque<FakeLagModule.Held> held = new ArrayDeque<>();
     private boolean releasing;

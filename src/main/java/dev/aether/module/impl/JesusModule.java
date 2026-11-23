@@ -17,11 +17,11 @@ public class JesusModule extends Module {
     private static final String SOLID = "Solid";
     private static final String IGNORE = "Ignore";
     private static final double ASCEND_SPEED = 0.11;
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Solid", "Solid", "Ignore", "Packet"));
-    private final BooleanSetting ascend = this.addSetting(new BooleanSetting("Ascend", true));
-    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 0.11, 0.01, 0.5, 0.01F));
-    private final BooleanSetting onlyInLiquid = this.addSetting(new BooleanSetting("Only In Liquid", true));
-    private final BooleanSetting stopOnLand = this.addSetting(new BooleanSetting("Stop On Land", true));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Solid", "Solid", "Ignore", "Packet"));
+    private final BooleanSetting ascend = this.addSetting(new BooleanSetting("Ascend", "Ascend", true));
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", "Speed", 0.11, 0.01, 0.5, 0.01F));
+    private final BooleanSetting onlyInLiquid = this.addSetting(new BooleanSetting("Only In Liquid", "Only In Liquid", true));
+    private final BooleanSetting stopOnLand = this.addSetting(new BooleanSetting("Stop On Land", "Stop On Land", true));
 
     public JesusModule() {
         super("jesus", "Walks on water and lava.", Category.MOVEMENT);

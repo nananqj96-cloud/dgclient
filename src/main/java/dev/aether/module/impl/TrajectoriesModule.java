@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TrajectoriesModule extends Module {
-    private final BooleanSetting aimPreview = this.addSetting(new BooleanSetting("Aim Preview", true));
-    private final BooleanSetting ghostArc = this.addSetting(new BooleanSetting("Ghost Arc", true));
-    private final BooleanSetting inFlight = this.addSetting(new BooleanSetting("In Flight", true));
-    private final BooleanSetting othersShots = this.addSetting(new BooleanSetting("Others' Shots", true));
-    private final SliderSetting range = this.addSetting(new SliderSetting("Range", 64.0, 16.0, 160.0, 8.0F));
-    private final BooleanSetting bows = this.addSetting(new BooleanSetting("Bows & Crossbows", true));
-    private final BooleanSetting tridents = this.addSetting(new BooleanSetting("Tridents", true));
-    private final BooleanSetting throwables = this.addSetting(new BooleanSetting("Throwables", true));
-    private final BooleanSetting pearls = this.addSetting(new BooleanSetting("Ender Pearls", true));
-    private final ModeSetting pathStyle = this.addSetting(new ModeSetting("Path", "Beads", "Beads", "Dashes", "Solid"));
+    private final BooleanSetting aimPreview = this.addSetting(new BooleanSetting("Aim Preview", "Aim Preview", true));
+    private final BooleanSetting ghostArc = this.addSetting(new BooleanSetting("Ghost Arc", "Ghost Arc", true));
+    private final BooleanSetting inFlight = this.addSetting(new BooleanSetting("In Flight", "In Flight", true));
+    private final BooleanSetting othersShots = this.addSetting(new BooleanSetting("Others' Shots", "Others' Shots", true));
+    private final SliderSetting range = this.addSetting(new SliderSetting("Range", "Range", 64.0, 16.0, 160.0, 8.0F));
+    private final BooleanSetting bows = this.addSetting(new BooleanSetting("Bows & Crossbows", "Bows & Crossbows", true));
+    private final BooleanSetting tridents = this.addSetting(new BooleanSetting("Tridents", "Tridents", true));
+    private final BooleanSetting throwables = this.addSetting(new BooleanSetting("Throwables", "Throwables", true));
+    private final BooleanSetting pearls = this.addSetting(new BooleanSetting("Ender Pearls", "Ender Pearls", true));
+    private final ModeSetting pathStyle = this.addSetting(new ModeSetting("Path", "Path", "Beads", "Beads", "Dashes", "Solid"));
     private final List<Projectile> tracked = new ArrayList<>();
 
     public TrajectoriesModule() {

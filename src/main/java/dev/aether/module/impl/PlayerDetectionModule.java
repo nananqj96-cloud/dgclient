@@ -6,12 +6,12 @@ import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ModeSetting;
 
 public class PlayerDetectionModule extends Module {
-    private final BooleanSetting enableDisconnect = this.addSetting(new BooleanSetting("Disconnect", true));
-    private final ModeSetting notificationMode = this.addSetting(new ModeSetting("Notification Mode", "Both", "Chat", "Toast", "Both"));
-    private final BooleanSetting toggleOnPlayer = this.addSetting(new BooleanSetting("Toggle On Detect", true));
-    private final BooleanSetting enableWebhook = this.addSetting(new BooleanSetting("Webhook", false));
-    private final BooleanSetting selfPing = this.addSetting(new BooleanSetting("Self Ping", false));
-    private final BooleanSetting enablePanicPay = this.addSetting(new BooleanSetting("Enable Panic Pay", false));
+    private final BooleanSetting enableDisconnect = this.addSetting(new BooleanSetting("Disconnect", "Disconnect", true));
+    private final ModeSetting notificationMode = this.addSetting(new ModeSetting("Notification Mode", "Notification Mode", "Both", "Chat", "Toast", "Both"));
+    private final BooleanSetting toggleOnPlayer = this.addSetting(new BooleanSetting("Toggle On Detect", "Toggle On Detect", true));
+    private final BooleanSetting enableWebhook = this.addSetting(new BooleanSetting("Webhook", "Webhook", false));
+    private final BooleanSetting selfPing = this.addSetting(new BooleanSetting("Self Ping", "Self Ping", false));
+    private final BooleanSetting enablePanicPay = this.addSetting(new BooleanSetting("Enable Panic Pay", "Enable Panic Pay", false));
 
     public PlayerDetectionModule() {
         super("player-detection", "Detects when players are in the world.", Category.DONUT);

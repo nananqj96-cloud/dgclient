@@ -34,8 +34,8 @@ public class DiscordPresenceModule extends Module {
     private static final long IDLE_POLL_MS = 1000L;
     private static final long MIN_UPDATE_GAP_MS = 4000L;
     private static final long KEEP_ALIVE_MS = 60000L;
-    private final BooleanSetting showServerIp = this.addSetting(new BooleanSetting("Show Server IP", true));
-    private final BooleanSetting discordButton = this.addSetting(new BooleanSetting("Discord Button", true));
+    private final BooleanSetting showServerIp = this.addSetting(new BooleanSetting("Show Server IP", "Show Server IP", true));
+    private final BooleanSetting discordButton = this.addSetting(new BooleanSetting("Discord Button", "Discord Button", true));
     private volatile DiscordPresenceModule.Card card;
     private DiscordPresenceModule.Link link;
     private Connection session;

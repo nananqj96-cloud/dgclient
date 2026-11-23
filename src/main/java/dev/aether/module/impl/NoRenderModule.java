@@ -6,16 +6,16 @@ import dev.aether.settings.BooleanSetting;
 
 public class NoRenderModule extends Module {
     private static NoRenderModule instance;
-    private final BooleanSetting sFireOverlay = this.addSetting(new BooleanSetting("Fire Overlay", true));
-    private final BooleanSetting sTotemAnimation = this.addSetting(new BooleanSetting("Totem Animation", true));
-    private final BooleanSetting sPumpkinPowderSnow = this.addSetting(new BooleanSetting("Pumpkin & Powder Snow", true));
-    private final BooleanSetting sNauseaPortal = this.addSetting(new BooleanSetting("Nausea & Portal", true));
-    private final BooleanSetting sBlindnessDarkness = this.addSetting(new BooleanSetting("Blindness & Darkness", true));
-    private final BooleanSetting sSpawnerMob = this.addSetting(new BooleanSetting("Spawner Mob", true));
-    private final BooleanSetting sFallingBlocks = this.addSetting(new BooleanSetting("Falling Blocks", false));
-    private final BooleanSetting sWeather = this.addSetting(new BooleanSetting("Weather", true));
-    private final BooleanSetting sLavaFog = this.addSetting(new BooleanSetting("Lava Fog", true));
-    private final BooleanSetting sEntityFire = this.addSetting(new BooleanSetting("Entity Fire", false));
+    private final BooleanSetting sFireOverlay = this.addSetting(new BooleanSetting("Fire Overlay", "Fire Overlay", true));
+    private final BooleanSetting sTotemAnimation = this.addSetting(new BooleanSetting("Totem Animation", "Totem Animation", true));
+    private final BooleanSetting sPumpkinPowderSnow = this.addSetting(new BooleanSetting("Pumpkin & Powder Snow", "Pumpkin & Powder Snow", true));
+    private final BooleanSetting sNauseaPortal = this.addSetting(new BooleanSetting("Nausea & Portal", "Nausea & Portal", true));
+    private final BooleanSetting sBlindnessDarkness = this.addSetting(new BooleanSetting("Blindness & Darkness", "Blindness & Darkness", true));
+    private final BooleanSetting sSpawnerMob = this.addSetting(new BooleanSetting("Spawner Mob", "Spawner Mob", true));
+    private final BooleanSetting sFallingBlocks = this.addSetting(new BooleanSetting("Falling Blocks", "Falling Blocks", false));
+    private final BooleanSetting sWeather = this.addSetting(new BooleanSetting("Weather", "Weather", true));
+    private final BooleanSetting sLavaFog = this.addSetting(new BooleanSetting("Lava Fog", "Lava Fog", true));
+    private final BooleanSetting sEntityFire = this.addSetting(new BooleanSetting("Entity Fire", "Entity Fire", false));
 
     public NoRenderModule() {
         super("no-render", "Hide selected overlays, screen effects and entity renders.", Category.RENDER);

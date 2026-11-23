@@ -8,7 +8,7 @@ import net.minecraft.client.player.LocalPlayer;
 
 public class SneakModule extends Module {
     public static volatile SneakModule active;
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Vanilla", "Packet", "Vanilla"));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Vanilla", "Packet", "Vanilla"));
 
     public SneakModule() {
         super("sneak", "Sneaks for you.", Category.MOVEMENT);

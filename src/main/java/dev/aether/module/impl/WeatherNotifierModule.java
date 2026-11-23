@@ -6,7 +6,7 @@ import dev.aether.settings.BooleanSetting;
 import net.minecraft.client.Minecraft;
 
 public class WeatherNotifierModule extends Module {
-    private final BooleanSetting sound = this.addSetting(new BooleanSetting("Sound", true));
+    private final BooleanSetting sound = this.addSetting(new BooleanSetting("Sound", "Sound", true));
     private boolean wasRaining;
     private boolean notified;
 

@@ -12,9 +12,9 @@ import net.minecraft.world.phys.Vec3;
 
 public class ItemEspModule extends Module {
     private static ItemEspModule instance;
-    private final SliderSetting sRange = this.addSetting(new SliderSetting("Range", 128.0, 10.0, 512.0, 1.0F));
-    private final BooleanSetting sOutline = this.addSetting(new BooleanSetting("Outline", true));
-    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", false));
+    private final SliderSetting sRange = this.addSetting(new SliderSetting("Range", "Range", 128.0, 10.0, 512.0, 1.0F));
+    private final BooleanSetting sOutline = this.addSetting(new BooleanSetting("Outline", "Outline", true));
+    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", "Tracers", false));
     public ItemEspModule() {
         super("item-esp", "Highlights selected dropped items with model outlines and tracers.", Category.RENDER);
         instance = this;

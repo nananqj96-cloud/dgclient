@@ -10,16 +10,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class CustomCrosshairModule extends Module {
-    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Cross", "Cross", "T", "X", "Dot", "Circle"));
-    private final SliderSetting size = this.addSetting(new SliderSetting("Size", 6.0, 1.0, 20.0, 1.0F));
-    private final SliderSetting gap = this.addSetting(new SliderSetting("Gap", 2.0, 0.0, 16.0, 1.0F));
-    private final SliderSetting thickness = this.addSetting(new SliderSetting("Thickness", 2.0, 1.0, 5.0, 1.0F));
-    private final BooleanSetting centerDot = this.addSetting(new BooleanSetting("Center Dot", false));
-    private final BooleanSetting outline = this.addSetting(new BooleanSetting("Outline", true));
-    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Custom", "Custom", "Accent"));
-    private final ColorSetting color = this.addSetting(new ColorSetting("Custom Color", -657929));
-    private final BooleanSetting targetTint = this.addSetting(new BooleanSetting("Target Tint", false));
-    private final ColorSetting targetColor = this.addSetting(new ColorSetting("Target Color", -47814));
+    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Cross", "Cross", "T", "X", "Dot", "Circle"));
+    private final SliderSetting size = this.addSetting(new SliderSetting("Size", "Size", 6.0, 1.0, 20.0, 1.0F));
+    private final SliderSetting gap = this.addSetting(new SliderSetting("Gap", "Gap", 2.0, 0.0, 16.0, 1.0F));
+    private final SliderSetting thickness = this.addSetting(new SliderSetting("Thickness", "Thickness", 2.0, 1.0, 5.0, 1.0F));
+    private final BooleanSetting centerDot = this.addSetting(new BooleanSetting("Center Dot", "Center Dot", false));
+    private final BooleanSetting outline = this.addSetting(new BooleanSetting("Outline", "Outline", true));
+    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Color", "Custom", "Custom", "Accent"));
+    private final ColorSetting color = this.addSetting(new ColorSetting("Custom Color", "Custom Color", -657929));
+    private final BooleanSetting targetTint = this.addSetting(new BooleanSetting("Target Tint", "Target Tint", false));
+    private final ColorSetting targetColor = this.addSetting(new ColorSetting("Target Color", "Target Color", -47814));
     private float scale = 1.0F;
 
     public CustomCrosshairModule() {

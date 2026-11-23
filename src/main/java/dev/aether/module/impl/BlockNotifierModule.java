@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class BlockNotifierModule extends Module {
-    private final BooleanSetting sound = this.addSetting(new BooleanSetting("Sound", true));
+    private final BooleanSetting sound = this.addSetting(new BooleanSetting("Sound", "Sound", true));
 
     public BlockNotifierModule() {
         super("block-notifier", "Shows a toast with the block and its coordinates when one of your chosen blocks shows up.", Category.MISC);

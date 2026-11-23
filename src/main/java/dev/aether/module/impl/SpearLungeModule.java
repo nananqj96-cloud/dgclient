@@ -8,9 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class SpearLungeModule extends Module {
-    private final KeybindSetting key = this.addSetting(new KeySetting("Lunge Key", -1));
-    private final BooleanSetting reachPoke = this.addSetting(new BooleanSetting("Reach Poke", false));
-    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", true));
+    private final KeybindSetting key = this.addSetting(new KeybindSetting("Lunge Key", "Lunge Key", -1));
+    private final BooleanSetting reachPoke = this.addSetting(new BooleanSetting("Reach Poke", "Reach Poke", false));
+    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "Switch Back", true));
 
     public SpearLungeModule() {
         super("spear-swap", "Swaps to your Lunge spear and lunges. Reach Poke stabs with a spear past sword reach.", Category.COMBAT);

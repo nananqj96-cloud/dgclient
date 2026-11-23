@@ -10,14 +10,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class LowHealthWarningModule extends Module {
-    private final SliderSetting warnBelow = this.addSetting(new SliderSetting("Warn Below", 7.0, 2.0, 20.0, 1.0F));
-    private final BooleanSetting countAbsorption = this.addSetting(new BooleanSetting("Count Absorption", true));
-    private final ModeSetting pulse = this.addSetting(new ModeSetting("Pulse", "Heartbeat", "Heartbeat", "Breath", "Steady"));
-    private final SliderSetting intensity = this.addSetting(new SliderSetting("Intensity", 0.7, 0.2, 1.0, 0.05F));
-    private final SliderSetting reach = this.addSetting(new SliderSetting("Reach", 0.16, 0.06, 0.35, 0.01F));
-    private final BooleanSetting edgeLine = this.addSetting(new BooleanSetting("Edge Line", true));
-    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Theme", "Theme", "Manual"));
-    private final ColorSetting glowColor = this.addSetting(new ColorSetting("Glow Color", -13338378));
+    private final SliderSetting warnBelow = this.addSetting(new SliderSetting("Warn Below", "Warn Below", 7.0, 2.0, 20.0, 1.0F));
+    private final BooleanSetting countAbsorption = this.addSetting(new BooleanSetting("Count Absorption", "Count Absorption", true));
+    private final ModeSetting pulse = this.addSetting(new ModeSetting("Pulse", "Pulse", "Heartbeat", "Heartbeat", "Breath", "Steady"));
+    private final SliderSetting intensity = this.addSetting(new SliderSetting("Intensity", "Intensity", 0.7, 0.2, 1.0, 0.05F));
+    private final SliderSetting reach = this.addSetting(new SliderSetting("Reach", "Reach", 0.16, 0.06, 0.35, 0.01F));
+    private final BooleanSetting edgeLine = this.addSetting(new BooleanSetting("Edge Line", "Edge Line", true));
+    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Color", "Theme", "Theme", "Manual"));
+    private final ColorSetting glowColor = this.addSetting(new ColorSetting("Glow Color", "Glow Color", -13338378));
     private float level;
     private float phase;
     private float danger;

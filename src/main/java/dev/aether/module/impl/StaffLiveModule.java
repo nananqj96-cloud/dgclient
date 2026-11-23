@@ -6,8 +6,8 @@ import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 
 public class StaffLiveModule extends Module {
-    private final SliderSetting interval = this.addSetting(new SliderSetting("Check Every (s)", 60.0, 15.0, 600.0, 5.0F));
-    private final SliderSetting scale = this.addSetting(new SliderSetting("Scale", 1.0, 0.5, 3.0, 0.05F));
+    private final SliderSetting interval = this.addSetting(new SliderSetting("Check Every (s)", "Check Every (s)", 60.0, 15.0, 600.0, 5.0F));
+    private final SliderSetting scale = this.addSetting(new SliderSetting("Scale", "Scale", 1.0, 0.5, 3.0, 0.05F));
     private long lastCheck;
 
     public StaffLiveModule() {

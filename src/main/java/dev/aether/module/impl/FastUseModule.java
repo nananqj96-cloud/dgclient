@@ -11,9 +11,9 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 
 public class FastUseModule extends Module {
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", 0.0, 0.0, 3.0, 1.0F));
-    private final BooleanSetting blocks = this.addSetting(new BooleanSetting("Blocks", true));
-    private final BooleanSetting items = this.addSetting(new BooleanSetting("Items", true));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", "Delay", 0.0, 0.0, 3.0, 1.0F));
+    private final BooleanSetting blocks = this.addSetting(new BooleanSetting("Blocks", "Blocks", true));
+    private final BooleanSetting items = this.addSetting(new BooleanSetting("Items", "Items", true));
 
     public FastUseModule() {
         super("fast-use", "Places blocks and uses items faster while use is held.", Category.MISC);

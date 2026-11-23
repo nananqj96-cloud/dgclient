@@ -17,13 +17,13 @@ import net.minecraft.world.phys.Vec3;
 
 public class CoordSnapperModule extends Module {
     private final KeybindSetting key = this.addSetting(new KeybindSetting("Key", -1));
-    private final ModeSetting target = this.addSetting(new ModeSetting("Target", "Looked At", "Looked At", "Own Position"));
-    private final SliderSetting range = this.addSetting(new SliderSetting("Range", 256.0, 16.0, 512.0, 1.0F));
-    private final BooleanSetting stopAtFluids = this.addSetting(new BooleanSetting("Stop at Fluids", false));
-    private final ModeSetting format = this.addSetting(new ModeSetting("Format", "X Y Z", "X Y Z", "X, Y, Z", "/tp Command"));
-    private final BooleanSetting includeDimension = this.addSetting(new BooleanSetting("Include Dimension", true));
-    private final BooleanSetting confirm = this.addSetting(new BooleanSetting("Chat Confirmation", true));
-    private final BooleanSetting webhook = this.addSetting(new BooleanSetting("Webhook", false));
+    private final ModeSetting target = this.addSetting(new ModeSetting("Target", "Target", "Looked At", "Looked At", "Own Position"));
+    private final SliderSetting range = this.addSetting(new SliderSetting("Range", "Range", 256.0, 16.0, 512.0, 1.0F));
+    private final BooleanSetting stopAtFluids = this.addSetting(new BooleanSetting("Stop at Fluids", "Stop at Fluids", false));
+    private final ModeSetting format = this.addSetting(new ModeSetting("Format", "Format", "X Y Z", "X Y Z", "X, Y, Z", "/tp Command"));
+    private final BooleanSetting includeDimension = this.addSetting(new BooleanSetting("Include Dimension", "Include Dimension", true));
+    private final BooleanSetting confirm = this.addSetting(new BooleanSetting("Chat Confirmation", "Chat Confirmation", true));
+    private final BooleanSetting webhook = this.addSetting(new BooleanSetting("Webhook", "Webhook", false));
 
     public CoordSnapperModule() {
         super("coord-snapper", "Copies the coordinates you look at or stand on with one key.", Category.MISC);

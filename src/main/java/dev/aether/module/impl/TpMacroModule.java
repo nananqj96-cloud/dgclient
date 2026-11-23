@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class TpMacroModule extends Module {
-    private final ModeSetting command = this.addSetting(new ModeSetting("Command", "tpa", "tpa", "tpahere"));
-    private final SliderSetting interval = this.addSetting(new SliderSetting("Interval (s)", 1.0, 0.25, 60.0, 0.25F));
+    private final ModeSetting command = this.addSetting(new ModeSetting("Command", "Command", "tpa", "tpa", "tpahere"));
+    private final SliderSetting interval = this.addSetting(new SliderSetting("Interval (s)", "Interval (s)", 1.0, 0.25, 60.0, 0.25F));
     private String target;
     private long lastSent;
 

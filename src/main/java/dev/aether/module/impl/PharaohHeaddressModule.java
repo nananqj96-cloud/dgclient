@@ -10,16 +10,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class PharaohHeaddressModule extends Module {
-    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Nemes", "Nemes", "Khepresh", "Sun Disc"));
-    private final SliderSetting stripes = this.addSetting(new SliderSetting("Stripes", 5.0, 3.0, 9.0, 1.0F));
-    private final BooleanSetting collar = this.addSetting(new BooleanSetting("Broad Collar", true));
-    private final SliderSetting size = this.addSetting(new SliderSetting("Size", 1.0, 0.8, 1.3, 0.05F));
-    private final ModeSetting color = this.addSetting(new ModeSetting("Color", "Theme", "Theme", "Manual"));
-    private final ColorSetting gold = this.addSetting(new ColorSetting("Gold Color", -7688204));
-    private final ColorSetting inlay = this.addSetting(new ColorSetting("Inlay Color", -13738055));
-    private final ColorSetting gem = this.addSetting(new ColorSetting("Gem Color", -10313473));
-    private final BooleanSetting glint = this.addSetting(new BooleanSetting("Glint", true));
-    private final BooleanSetting friends = this.addSetting(new BooleanSetting("On Friends", false));
+    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Nemes", "Nemes", "Khepresh", "Sun Disc"));
+    private final SliderSetting stripes = this.addSetting(new SliderSetting("Stripes", "Stripes", 5.0, 3.0, 9.0, 1.0F));
+    private final BooleanSetting collar = this.addSetting(new BooleanSetting("Broad Collar", "Broad Collar", true));
+    private final SliderSetting size = this.addSetting(new SliderSetting("Size", "Size", 1.0, 0.8, 1.3, 0.05F));
+    private final ModeSetting color = this.addSetting(new ModeSetting("Color", "Color", "Theme", "Theme", "Manual"));
+    private final ColorSetting gold = this.addSetting(new ColorSetting("Gold Color", "Gold Color", -7688204));
+    private final ColorSetting inlay = this.addSetting(new ColorSetting("Inlay Color", "Inlay Color", -13738055));
+    private final ColorSetting gem = this.addSetting(new ColorSetting("Gem Color", "Gem Color", -10313473));
+    private final BooleanSetting glint = this.addSetting(new BooleanSetting("Glint", "Glint", true));
+    private final BooleanSetting friends = this.addSetting(new BooleanSetting("On Friends", "On Friends", false));
 
     public PharaohHeaddressModule() {
         super("pharaoh-headdress", "Pharaoh Headdress", "Puts a pharaoh headdress on your player model.", Category.VISUALS);

@@ -14,16 +14,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.BlockPos;
 
 public class CrystalAuraModule extends Module {
-    private final BooleanSetting requireHold = this.addSetting(new BooleanSetting("Require Hold", false));
+    private final BooleanSetting requireHold = this.addSetting(new BooleanSetting("Require Hold", "Require Hold", false));
     private final KeybindSetting holdKey = this.addSetting(new KeybindSetting("Hold Key", 1003));
-    private final SliderSetting placeDelay = this.addSetting(new SliderSetting("Place Delay", 0.0, 0.0, 10.0, 1.0F));
-    private final SliderSetting breakDelay = this.addSetting(new SliderSetting("Break Delay", 0.0, 0.0, 10.0, 1.0F));
-    private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", 4.0, 0.0, 20.0, 0.5F));
-    private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", 8.0, 0.0, 20.0, 0.5F));
-    private final BooleanSetting facePlace = this.addSetting(new BooleanSetting("Face Place", true));
+    private final SliderSetting placeDelay = this.addSetting(new SliderSetting("Place Delay", "Place Delay", 0.0, 0.0, 10.0, 1.0F));
+    private final SliderSetting breakDelay = this.addSetting(new SliderSetting("Break Delay", "Break Delay", 0.0, 0.0, 10.0, 1.0F));
+    private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", "Min Damage", 4.0, 0.0, 20.0, 0.5F));
+    private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", "Max Self Damage", 8.0, 0.0, 20.0, 0.5F));
+    private final BooleanSetting facePlace = this.addSetting(new BooleanSetting("Face Place", "Face Place", true));
     private final KeybindSetting forceFacePlace = this.addSetting(new KeybindSetting("Force Face Place", -1));
-    private final BooleanSetting autoObsidian = this.addSetting(new BooleanSetting("Auto Obsidian", true));
-    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", true));
+    private final BooleanSetting autoObsidian = this.addSetting(new BooleanSetting("Auto Obsidian", "Auto Obsidian", true));
+    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "Switch Back", true));
 
     public CrystalAuraModule() {
         super("crystal-aura", "Places and breaks end crystals for the most damage.", Category.COMBAT);

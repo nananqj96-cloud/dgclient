@@ -9,11 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class FreelookModule extends Module {
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Player", "Player", "Camera"));
-    private final BooleanSetting togglePerspective = this.addSetting(new BooleanSetting("Toggle Perspective", true));
-    private final SliderSetting sensitivity = this.addSetting(new SliderSetting("Camera Sensitivity", 8.0, 0.0, 10.0, 0.1F));
-    private final BooleanSetting arrows = this.addSetting(new BooleanSetting("Arrows Control Opposite", true));
-    private final SliderSetting arrowSpeed = this.addSetting(new SliderSetting("Arrow Speed", 4.0, 0.0, 10.0, 0.5F));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Player", "Player", "Camera"));
+    private final BooleanSetting togglePerspective = this.addSetting(new BooleanSetting("Toggle Perspective", "Toggle Perspective", true));
+    private final SliderSetting sensitivity = this.addSetting(new SliderSetting("Camera Sensitivity", "Camera Sensitivity", 8.0, 0.0, 10.0, 0.1F));
+    private final BooleanSetting arrows = this.addSetting(new BooleanSetting("Arrows Control Opposite", "Arrows Control Opposite", true));
+    private final SliderSetting arrowSpeed = this.addSetting(new SliderSetting("Arrow Speed", "Arrow Speed", 4.0, 0.0, 10.0, 0.5F));
 
     public FreelookModule() {
         super("freelook", "Turns the camera and the player separately.", Category.RENDER);

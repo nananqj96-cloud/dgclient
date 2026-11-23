@@ -22,7 +22,7 @@ public class TenacityKillAuraModule extends Module {
    public final BooleanSetting hostiles = this.addSetting(new BooleanSetting("Hostiles", "Target hostile mobs", false));
    public final BooleanSetting multi = this.addSetting(new BooleanSetting("Multi", "Attack multiple targets", false));
    public final BooleanSetting raycast = this.addSetting(new BooleanSetting("Raycast", "Require line of sight", true));
-   public final ModeSetting sort = this.addSetting(new ModeSetting("Sort", "Target sorting", "Distance", "Distance", "Angle", "Health"));
+   public final ModeSetting sort = this.addSetting(new ModeSetting("Sort", "Sort", "Target sorting", "Distance", "Distance", "Angle", "Health"));
 
    private int tickCounter;
 

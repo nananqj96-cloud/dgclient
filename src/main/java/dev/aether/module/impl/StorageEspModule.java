@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StorageEspModule extends Module {
-    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", false));
-    private final ColorSetting sChestColor = this.addSetting(new ColorSetting("Chest Color", -11513776));
+    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", "Tracers", false));
+    private final ColorSetting sChestColor = this.addSetting(new ColorSetting("Chest Color", "Chest Color", -11513776));
     private final Map<Long, Integer> layer = new HashMap<>();
 
     public StorageEspModule() {

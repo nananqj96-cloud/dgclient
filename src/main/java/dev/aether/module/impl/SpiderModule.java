@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class SpiderModule extends Module {
-    private final SliderSetting climbSpeed = this.addSetting(new SliderSetting("Climb Speed", 0.2, 0.0, 10.0, 0.1F));
+    private final SliderSetting climbSpeed = this.addSetting(new SliderSetting("Climb Speed", "Climb Speed", 0.2, 0.0, 10.0, 0.1F));
 
     public SpiderModule() {
         super("spider", "Allows you to climb walls like a spider.", Category.MOVEMENT);

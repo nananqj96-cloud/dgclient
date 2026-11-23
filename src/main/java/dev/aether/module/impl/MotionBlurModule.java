@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 
 public class MotionBlurModule extends Module {
     public static volatile MotionBlurModule active;
-    private final SliderSetting strength = this.addSetting(new SliderSetting("Strength", 50.0, 10.0, 90.0, 5.0F));
+    private final SliderSetting strength = this.addSetting(new SliderSetting("Strength", "Strength", 50.0, 10.0, 90.0, 5.0F));
 
     public MotionBlurModule() {
         super("motion-blur", "Adds motion blur when you turn.", Category.VISUALS);

@@ -27,8 +27,8 @@ public class LegitAutoToolModule extends Module {
     private static final int SWITCH_DELAY_TICKS = 2;
     private static final String SHARD_NAME = "shard pickaxe";
     private static final String SHARD_LORE = "breaks 9 blocks at once";
-    private final BooleanSetting drill = this.addSetting(new BooleanSetting("Drill Instabreak", true));
-    private final BooleanSetting delayed = this.addSetting(new BooleanSetting("Delay", true));
+    private final BooleanSetting drill = this.addSetting(new BooleanSetting("Drill Instabreak", "Drill Instabreak", true));
+    private final BooleanSetting delayed = this.addSetting(new BooleanSetting("Delay", "Delay", true));
     private BlockPos target;
     private int pending = -1;
     private int delay;

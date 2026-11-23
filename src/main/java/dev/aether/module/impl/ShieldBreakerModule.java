@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class ShieldBreakerModule extends Module {
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Passive", "Passive", "Auto"));
-    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", true));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Passive", "Passive", "Auto"));
+    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "Switch Back", true));
 
     public ShieldBreakerModule() {
         super("shield-breaker", "Swaps to an axe for any hit into a raised shield. Auto also makes the hit.", Category.COMBAT);

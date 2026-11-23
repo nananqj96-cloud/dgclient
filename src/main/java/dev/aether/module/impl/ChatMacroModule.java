@@ -10,9 +10,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class ChatMacroModule extends Module {
-    private final ModeSetting slots = this.addSetting(new ModeSetting("Slots", "3", "1", "2", "3", "4", "5"));
-    private final ModeSetting pressAction = this.addSetting(new ModeSetting("On Press", "Send", "Send", "Open in Chat"));
-    private final SliderSetting cooldown = this.addSetting(new SliderSetting("Cooldown (s)", 1.0, 1.0, 10.0, 0.5F));
+    private final ModeSetting slots = this.addSetting(new ModeSetting("Slots", "Slots", "3", "1", "2", "3", "4", "5"));
+    private final ModeSetting pressAction = this.addSetting(new ModeSetting("On Press", "On Press", "Send", "Send", "Open in Chat"));
+    private final SliderSetting cooldown = this.addSetting(new SliderSetting("Cooldown (s)", "Cooldown (s)", 1.0, 1.0, 10.0, 0.5F));
     private final KeybindSetting[] keys = new KeybindSetting[5];
     private final String[] texts = new String[5];
     private final long[] lastSent = new long[5];

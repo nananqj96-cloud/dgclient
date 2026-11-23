@@ -11,7 +11,7 @@ import dev.aether.settings.ModeSetting;
  */
 public class TotemCounterModule extends Module {
    public final ModeSetting style = this.addSetting(
-      new ModeSetting("Style", "HUD display style", "Auto", "Auto", "Native", "Classic")
+      new ModeSetting("Style", "Style", "HUD display style", "Auto", "Auto", "Native", "Classic")
    );
    public final BooleanSetting showLabel = this.addSetting(
       new BooleanSetting("Show Label", "Show the 'TOTEMS' label above the count", true)

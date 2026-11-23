@@ -30,7 +30,7 @@ public class TenacityVisualsModule extends Module {
       new BooleanSetting("Boxes", "Draw bounding boxes around entities", true)
    );
    public final ModeSetting boxMode = this.addSetting(
-      new ModeSetting("Box Mode", "Box rendering style", "Outline", "Outline", "Filled", "Glow")
+      new ModeSetting("Box Mode", "Box Mode", "Box rendering style", "Outline", "Outline", "Filled", "Glow")
    );
    public final ColorSetting playerColor = this.addSetting(
       new ColorSetting("Player Color", "Color for player visuals", 0xFF8B5CF6)

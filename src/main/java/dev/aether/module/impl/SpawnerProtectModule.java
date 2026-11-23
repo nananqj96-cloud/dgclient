@@ -41,16 +41,16 @@ public class SpawnerProtectModule extends Module {
     private static final int SHOP_END_CATEGORY_SLOT = 11;
     private static final int SHOP_ENDER_CHEST_SLOT = 9;
     private static final int SHOP_CONFIRM_SLOT = 25;
-    private final SliderSetting targetStackCount = this.addSetting(new SliderSetting("Stack To Deposit", 35.0, 1.0, 35.0, 1.0F));
-    private final SliderSetting scanRange = this.addSetting(new SliderSetting("Trigger Range", 64.0, 16.0, 128.0, 0.1F));
-    private final SliderSetting rotationSpeed = this.addSetting(new SliderSetting("Rotation Speed", 15.0, 1.0, 30.0, 0.1F));
-    private final BooleanSetting detectBlockUpdates = this.addSetting(new BooleanSetting("Detect Block Updates", true));
-    private final SliderSetting breakRange = this.addSetting(new SliderSetting("Break Range", 5.5, 1.0, 8.0, 0.1F));
+    private final SliderSetting targetStackCount = this.addSetting(new SliderSetting("Stack To Deposit", "Stack To Deposit", 35.0, 1.0, 35.0, 1.0F));
+    private final SliderSetting scanRange = this.addSetting(new SliderSetting("Trigger Range", "Trigger Range", 64.0, 16.0, 128.0, 0.1F));
+    private final SliderSetting rotationSpeed = this.addSetting(new SliderSetting("Rotation Speed", "Rotation Speed", 15.0, 1.0, 30.0, 0.1F));
+    private final BooleanSetting detectBlockUpdates = this.addSetting(new BooleanSetting("Detect Block Updates", "Detect Block Updates", true));
+    private final SliderSetting breakRange = this.addSetting(new SliderSetting("Break Range", "Break Range", 5.5, 1.0, 8.0, 0.1F));
     private final SliderSetting blockUpdateThreshold = this.addSetting(
-        "block-update-threshold", new SliderSetting("Block Update Threshold", 5.0, 1.0, 20.0, 1.0F)
+        "block-update-threshold", new SliderSetting("Block Update Threshold", "Block Update Threshold", 5.0, 1.0, 20.0, 1.0F)
     );
     private final SliderSetting blockUpdateWindow = this.addSetting(
-        "block-update-window", new SliderSetting("Block Update Window", 60.0, 1.0, 600.0, 1.0F)
+        "block-update-window", new SliderSetting("Block Update Window", "Block Update Window", 60.0, 1.0, 600.0, 1.0F)
     );
     private SpawnerProtectModule.State currentState = SpawnerProtectModule.State.WAITING_FOR_STRANGER;
     private BlockPos targetBlock;

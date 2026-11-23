@@ -40,8 +40,8 @@ public class XrayModule extends Module {
         "minecraft:nether_quartz_ore",
         "minecraft:ancient_debris"
     );
-    private final SliderSetting opacity = this.addSetting(new SliderSetting("Opacity", 10.0, 0.0, 100.0, 1.0F));
-    private final BooleanSetting exposedOnly = this.addSetting(new BooleanSetting("Exposed Only", false));
+    private final SliderSetting opacity = this.addSetting(new SliderSetting("Opacity", "Opacity", 10.0, 0.0, 100.0, 1.0F));
+    private final BooleanSetting exposedOnly = this.addSetting(new BooleanSetting("Exposed Only", "Exposed Only", false));
     public static volatile XrayModule.Snapshot active;
     public static final ThreadLocal<float[]> CURRENT_ALPHA = ThreadLocal.withInitial(() -> new float[]{1.0F});
     private static final int RELOAD_DELAY_TICKS = 6;

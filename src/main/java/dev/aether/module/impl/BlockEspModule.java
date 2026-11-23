@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class BlockEspModule extends Module {
-    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", false));
-    private final ColorSetting sBlockColor = this.addSetting(new ColorSetting("Block Color", -587246251));
+    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", "Tracers", false));
+    private final ColorSetting sBlockColor = this.addSetting(new ColorSetting("Block Color", "Block Color", -587246251));
     private final Map<Long, Block> layer = new HashMap<>();
     private Set<String> scannedIds = Set.of();
 

@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AutoTotemModule extends Module {
-    private final SliderSetting refillDelay = this.addSetting(new SliderSetting("Refill Delay", 3.0, 1.0, 10.0, 1.0F));
-    private final BooleanSetting useHotbar = this.addSetting(new BooleanSetting("Use Hotbar Totems", false));
+    private final SliderSetting refillDelay = this.addSetting(new SliderSetting("Refill Delay", "Refill Delay", 3.0, 1.0, 10.0, 1.0F));
+    private final BooleanSetting useHotbar = this.addSetting(new BooleanSetting("Use Hotbar Totems", "Use Hotbar Totems", false));
 
     public AutoTotemModule() {
         super("autototem", "Refills an empty offhand with a totem from your inventory, at a human pace you choose with Refill Delay.", Category.COMBAT);

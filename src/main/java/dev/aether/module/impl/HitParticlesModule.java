@@ -41,16 +41,16 @@ public class HitParticlesModule extends Module {
     private static final double LIFT = 0.25;
     private static final int PEEP_DUST = 16743112;
     private final ModeSetting type = this.addSetting(
-        "type", new ModeSetting("Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust")
+        "type", new ModeSetting("Type", "Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust")
     );
-    private final SliderSetting amount = this.addSetting(new SliderSetting("Amount", 10.0, 1.0, 40.0, 1.0F));
-    private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", 1.0, 0.25, 3.0, 0.25F));
-    private final ModeSetting origin = this.addSetting(new ModeSetting("Origin", "Impact", "Impact", "Body"));
-    private final BooleanSetting onlyCrits = this.addSetting(new BooleanSetting("Only Crits", false));
-    private final ModeSetting targets = this.addSetting(new ModeSetting("Targets", "Living", "Living", "Players", "All"));
-    private final ModeSetting dustColorMode = this.addSetting(new ModeSetting("Color", "Accent", "Custom", "Accent"));
-    private final ColorSetting dustColor = this.addSetting(new ColorSetting("Custom Color", -657929));
-    private final SliderSetting dustSize = this.addSetting(new SliderSetting("Dust Size", 1.0, 0.5, 2.0, 0.1F));
+    private final SliderSetting amount = this.addSetting(new SliderSetting("Amount", "Amount", 10.0, 1.0, 40.0, 1.0F));
+    private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", "Spread", 1.0, 0.25, 3.0, 0.25F));
+    private final ModeSetting origin = this.addSetting(new ModeSetting("Origin", "Origin", "Impact", "Impact", "Body"));
+    private final BooleanSetting onlyCrits = this.addSetting(new BooleanSetting("Only Crits", "Only Crits", false));
+    private final ModeSetting targets = this.addSetting(new ModeSetting("Targets", "Targets", "Living", "Living", "Players", "All"));
+    private final ModeSetting dustColorMode = this.addSetting(new ModeSetting("Color", "Color", "Accent", "Custom", "Accent"));
+    private final ColorSetting dustColor = this.addSetting(new ColorSetting("Custom Color", "Custom Color", -657929));
+    private final SliderSetting dustSize = this.addSetting(new SliderSetting("Dust Size", "Dust Size", 1.0, 0.5, 2.0, 0.1F));
     private final RandomSource random = RandomSource.create();
 
     public HitParticlesModule() {

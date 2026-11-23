@@ -10,7 +10,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class TenacityMouseClickSoundModule extends Module {
    public final ModeSetting sound = this.addSetting(
-      new ModeSetting("Sound", "Click sound style", "Gaming", "Gaming", "Creamy", "Office", "Silent")
+      new ModeSetting("Sound", "Sound", "Click sound style", "Gaming", "Gaming", "Creamy", "Office", "Silent")
    );
    public final SliderSetting volume = this.addSetting(
       new SliderSetting("Volume", "Click sound volume", 70.0, 0.0, 100.0, 5.0, "%")

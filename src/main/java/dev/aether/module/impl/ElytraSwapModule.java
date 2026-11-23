@@ -29,9 +29,9 @@ public class ElytraSwapModule extends Module {
     private static final int MAX_WAIT_TICKS = 20;
     private static final int CHEST_SLOT_ID = 6;
 //     private static final Component SWAP_FAILED = ModuleChat.body().danger("Swap failed").text(", the item didn't move into the chest slot").build();
-    private final KeybindSetting key = this.addSetting(new KeySetting("Key", -1));
-    private final BooleanSetting swapBackOnLanding = this.addSetting(new BooleanSetting("Swap Back on Landing", true));
-    private final SliderSetting landingDelay = this.addSetting(new SliderSetting("Landing Delay", 4.0, 0.0, 20.0, 1.0F));
+    private final KeybindSetting key = this.addSetting(new KeybindSetting("Key", "Key", -1));
+    private final BooleanSetting swapBackOnLanding = this.addSetting(new BooleanSetting("Swap Back on Landing", "Swap Back on Landing", true));
+    private final SliderSetting landingDelay = this.addSetting(new SliderSetting("Landing Delay", "Landing Delay", 4.0, 0.0, 20.0, 1.0F));
     private boolean pending;
     private int pendingTicks;
     private boolean armed;

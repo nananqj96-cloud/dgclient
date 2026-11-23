@@ -7,8 +7,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class PanicPayModule extends Module {
-    private final BooleanSetting sellArmor = this.addSetting(new BooleanSetting("Sell Armor", true));
-    private final BooleanSetting sellOffhand = this.addSetting(new BooleanSetting("Sell Offhand", true));
+    private final BooleanSetting sellArmor = this.addSetting(new BooleanSetting("Sell Armor", "Sell Armor", true));
+    private final BooleanSetting sellOffhand = this.addSetting(new BooleanSetting("Sell Offhand", "Sell Offhand", true));
 
     public PanicPayModule() {
         super("panic-pay", "Sells your whole inventory and armor with /sell, then pays all your money to one player.", Category.DONUT);

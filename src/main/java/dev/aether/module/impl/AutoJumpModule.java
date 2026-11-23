@@ -9,9 +9,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 
 public class AutoJumpModule extends Module {
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Jump", "Jump", "LowHop"));
-    private final ModeSetting jumpIf = this.addSetting(new ModeSetting("Jump If", "Always", "Sprinting", "Walking", "Always"));
-    private final SliderSetting velocityHeight = this.addSetting(new SliderSetting("Velocity Height", 0.25, 0.0, 2.0, 0.05F));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Jump", "Jump", "LowHop"));
+    private final ModeSetting jumpIf = this.addSetting(new ModeSetting("Jump If", "Jump If", "Always", "Sprinting", "Walking", "Always"));
+    private final SliderSetting velocityHeight = this.addSetting(new SliderSetting("Velocity Height", "Velocity Height", 0.25, 0.0, 2.0, 0.05F));
 
     public AutoJumpModule() {
         super("auto-jump", "Automatically jumps.", Category.MOVEMENT);

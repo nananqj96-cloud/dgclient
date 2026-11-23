@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class SpawnerNotifierModule extends Module {
     private static final String SPAWNER = "Spawner";
-    private final BooleanSetting sSound = this.addSetting(new BooleanSetting("Sound", true));
-    private final BooleanSetting sRender = this.addSetting(new BooleanSetting("Render", true));
-    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", -587246251));
+    private final BooleanSetting sSound = this.addSetting(new BooleanSetting("Sound", "Sound", true));
+    private final BooleanSetting sRender = this.addSetting(new BooleanSetting("Render", "Render", true));
+    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", "Color", -587246251));
     private final Map<Long, String> layer = new HashMap<>();
     private final Set<Long> notified = new HashSet<>();
 

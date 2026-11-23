@@ -5,7 +5,7 @@ import dev.aether.module.Category;
 import dev.aether.settings.SliderSetting;
 
 public class SlowSwingModule extends Module {
-    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 0.25, 0.1, 2.0, 0.05F));
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", "Speed", 0.25, 0.1, 2.0, 0.05F));
 
     public SlowSwingModule() {
         super("slow-swing", "Control hand swing animation speed.", Category.MISC);

@@ -196,7 +196,7 @@ public class ModuleManager {
    private final Map<Category, List<Module>> byCategory = new LinkedHashMap<>();
    public final Modules.ClickGuiModule clickGui;
    public final Modules.HudModule hud;
-   public final Modules.SpotifyModule spotify;
+   public final SpotifyHudModule spotify;
    public final Modules.BlockOutlineModule blockOutline;
    public final Modules.SusChunkFinderModule susChunkFinder;
    public ActivityInspectorModule activityInspector;

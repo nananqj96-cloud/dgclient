@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.PlayerSkin;
 
 public class SkinProtectModule extends Module {
    public final ModeSetting applyTo = this.addSetting(
-      new ModeSetting("Apply To", "Which players use the random skin locally.", "Self", "Everyone", "Others", "Self")
+      new ModeSetting("Apply To", "Apply To", "Which players use the random skin locally.", "Self", "Everyone", "Others", "Self")
    );
    private volatile PlayerSkin replacement;
 

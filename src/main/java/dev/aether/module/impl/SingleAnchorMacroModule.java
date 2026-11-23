@@ -9,11 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class SingleAnchorMacroModule extends Module {
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Single", "Single", "Double"));
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", 0.0, 0.0, 5.0, 1.0F));
-    private final BooleanSetting blastGuard = this.addSetting(new BooleanSetting("Safe Anchor", true));
-    private final ModeSetting withoutGuard = this.addSetting(new ModeSetting("If Unguarded", "Detonate", "Detonate", "Cancel"));
-    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", false));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Single", "Single", "Double"));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", "Delay", 0.0, 0.0, 5.0, 1.0F));
+    private final BooleanSetting blastGuard = this.addSetting(new BooleanSetting("Safe Anchor", "Safe Anchor", true));
+    private final ModeSetting withoutGuard = this.addSetting(new ModeSetting("If Unguarded", "If Unguarded", "Detonate", "Detonate", "Cancel"));
+    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "Switch Back", false));
 
     public SingleAnchorMacroModule() {
         super("anchor-macro", "Places, charges and blows up respawn anchors on right-click.", Category.COMBAT);

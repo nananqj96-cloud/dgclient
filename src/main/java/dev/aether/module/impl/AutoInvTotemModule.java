@@ -9,14 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AutoInvTotemModule extends Module {
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Inventory", "Inventory", "Hotbar Swap"));
-    private final BooleanSetting hotbarRefill = this.addSetting(new BooleanSetting("Hotbar Refill", false));
-    private final SliderSetting hotbarSlot = this.addSetting(new SliderSetting("Hotbar Slot", 1.0, 1.0, 9.0, 1.0F));
-    private final SliderSetting reactionDelay = this.addSetting(new SliderSetting("Reaction Delay", 0.0, 0.0, 10.0, 1.0F));
-    private final SliderSetting swapDelay = this.addSetting(new SliderSetting("Swap Delay", 1.0, 0.0, 10.0, 1.0F));
-    private final SliderSetting closeDelay = this.addSetting(new SliderSetting("Close Delay", 0.0, 0.0, 10.0, 1.0F));
-    private final SliderSetting switchBackDelay = this.addSetting(new SliderSetting("Switch Back Delay", 2.0, 0.0, 10.0, 1.0F));
-    private final BooleanSetting doubleHand = this.addSetting(new BooleanSetting("Double Hand", false));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "Inventory", "Inventory", "Hotbar Swap"));
+    private final BooleanSetting hotbarRefill = this.addSetting(new BooleanSetting("Hotbar Refill", "Hotbar Refill", false));
+    private final SliderSetting hotbarSlot = this.addSetting(new SliderSetting("Hotbar Slot", "Hotbar Slot", 1.0, 1.0, 9.0, 1.0F));
+    private final SliderSetting reactionDelay = this.addSetting(new SliderSetting("Reaction Delay", "Reaction Delay", 0.0, 0.0, 10.0, 1.0F));
+    private final SliderSetting swapDelay = this.addSetting(new SliderSetting("Swap Delay", "Swap Delay", 1.0, 0.0, 10.0, 1.0F));
+    private final SliderSetting closeDelay = this.addSetting(new SliderSetting("Close Delay", "Close Delay", 0.0, 0.0, 10.0, 1.0F));
+    private final SliderSetting switchBackDelay = this.addSetting(new SliderSetting("Switch Back Delay", "Switch Back Delay", 2.0, 0.0, 10.0, 1.0F));
+    private final BooleanSetting doubleHand = this.addSetting(new BooleanSetting("Double Hand", "Double Hand", false));
 
     public AutoInvTotemModule() {
         super("autoinvtotem", "Refills the offhand totem after a pop through the inventory or a hotbar swap; Double Hand also keeps one in the main hand while in danger.", Category.COMBAT);

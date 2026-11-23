@@ -9,14 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class FloatingRelicsModule extends Module {
-    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Ankh", "Ankh", "Scarab", "Sand", "Spark"));
-    private final SliderSetting trailLength = this.addSetting(new SliderSetting("Trail Length", 1.0, 0.2, 3.0, 0.1F));
-    private final SliderSetting count = this.addSetting(new SliderSetting("Count", 6.0, 1.0, 32.0, 1.0F));
-    private final SliderSetting size = this.addSetting(new SliderSetting("Size", 0.3, 0.15, 0.75, 0.05F));
-    private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", 2.6, 1.2, 6.0, 0.1F));
-    private final SliderSetting bounce = this.addSetting(new SliderSetting("Bounce", 0.6, 0.1, 0.95, 0.05F));
-    private final SliderSetting drift = this.addSetting(new SliderSetting("Drift", 0.5, 0.0, 2.5, 0.1F));
-    private final BooleanSetting blocks = this.addSetting(new BooleanSetting("Block Bounce", true));
+    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Ankh", "Ankh", "Scarab", "Sand", "Spark"));
+    private final SliderSetting trailLength = this.addSetting(new SliderSetting("Trail Length", "Trail Length", 1.0, 0.2, 3.0, 0.1F));
+    private final SliderSetting count = this.addSetting(new SliderSetting("Count", "Count", 6.0, 1.0, 32.0, 1.0F));
+    private final SliderSetting size = this.addSetting(new SliderSetting("Size", "Size", 0.3, 0.15, 0.75, 0.05F));
+    private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", "Spread", 2.6, 1.2, 6.0, 0.1F));
+    private final SliderSetting bounce = this.addSetting(new SliderSetting("Bounce", "Bounce", 0.6, 0.1, 0.95, 0.05F));
+    private final SliderSetting drift = this.addSetting(new SliderSetting("Drift", "Drift", 0.5, 0.0, 2.5, 0.1F));
+    private final BooleanSetting blocks = this.addSetting(new BooleanSetting("Block Bounce", "Block Bounce", true));
 
     public FloatingRelicsModule() {
         super("floating-relics", "Glowing orbs float around you and leave a trail as they move.", Category.VISUALS);

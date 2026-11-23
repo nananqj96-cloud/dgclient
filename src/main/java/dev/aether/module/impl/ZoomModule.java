@@ -17,11 +17,11 @@ public class ZoomModule extends Module {
     private static float target = 1.0F;
     private static float current = 1.0F;
     private static long lastNanos;
-    private final SliderSetting zoom = this.addSetting(new SliderSetting("Zoom", 4.0, 1.5, 20.0, 0.5F));
-    private final SliderSetting smoothness = this.addSetting(new SliderSetting("Smoothness", 60.0, 0.0, 100.0, 5.0F));
-    private final BooleanSetting scroll = this.addSetting(new BooleanSetting("Scroll", true));
-    private final BooleanSetting lowerSensitivity = this.addSetting(new BooleanSetting("Lower Sensitivity", true));
-    private final BooleanSetting cinematic = this.addSetting(new BooleanSetting("Cinematic Camera", false));
+    private final SliderSetting zoom = this.addSetting(new SliderSetting("Zoom", "Zoom", 4.0, 1.5, 20.0, 0.5F));
+    private final SliderSetting smoothness = this.addSetting(new SliderSetting("Smoothness", "Smoothness", 60.0, 0.0, 100.0, 5.0F));
+    private final BooleanSetting scroll = this.addSetting(new BooleanSetting("Scroll", "Scroll", true));
+    private final BooleanSetting lowerSensitivity = this.addSetting(new BooleanSetting("Lower Sensitivity", "Lower Sensitivity", true));
+    private final BooleanSetting cinematic = this.addSetting(new BooleanSetting("Cinematic Camera", "Cinematic Camera", false));
     private boolean smoothBefore;
     private boolean smoothPushed;
 

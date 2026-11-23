@@ -9,14 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class MaceModule extends Module {
-    private final BooleanSetting autoSwap = this.addSetting(new BooleanSetting("Auto Swap", true));
-    private final ModeSetting pick = this.addSetting(new ModeSetting("Pick", "Damage", "Damage", "Wind Burst"));
-    private final BooleanSetting breachSwap = this.addSetting(new BooleanSetting("Breach Swap", false));
-    private final BooleanSetting swapBack = this.addSetting(new BooleanSetting("Swap Back", true));
-    private final BooleanSetting smashAssist = this.addSetting(new BooleanSetting("Smash Assist", false));
-    private final ModeSetting smashTiming = this.addSetting(new ModeSetting("Smash Timing", "Delayed", "Direct", "Delayed"));
-    private final SliderSetting minFall = this.addSetting(new SliderSetting("Min Fall", 3.0, 1.5, 30.0, 0.5F));
-    private final BooleanSetting mobs = this.addSetting(new BooleanSetting("Mobs", false));
+    private final BooleanSetting autoSwap = this.addSetting(new BooleanSetting("Auto Swap", "Auto Swap", true));
+    private final ModeSetting pick = this.addSetting(new ModeSetting("Pick", "Pick", "Damage", "Damage", "Wind Burst"));
+    private final BooleanSetting breachSwap = this.addSetting(new BooleanSetting("Breach Swap", "Breach Swap", false));
+    private final BooleanSetting swapBack = this.addSetting(new BooleanSetting("Swap Back", "Swap Back", true));
+    private final BooleanSetting smashAssist = this.addSetting(new BooleanSetting("Smash Assist", "Smash Assist", false));
+    private final ModeSetting smashTiming = this.addSetting(new ModeSetting("Smash Timing", "Smash Timing", "Delayed", "Direct", "Delayed"));
+    private final SliderSetting minFall = this.addSetting(new SliderSetting("Min Fall", "Min Fall", 3.0, 1.5, 30.0, 0.5F));
+    private final BooleanSetting mobs = this.addSetting(new BooleanSetting("Mobs", "Mobs", false));
 
     public MaceModule() {
         super("mace", "Swaps to the strongest mace for smash hits, with an optional smash assist.", Category.COMBAT);

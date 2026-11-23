@@ -18,14 +18,14 @@ public class HandAuraModule extends Module {
     private static final float SHEEN_LIFT = 0.55F;
     private static final long BREATH_NANOS = 3200000000L;
     private static final long SHEEN_NANOS = 4400000000L;
-    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Theme", "Theme", "Manual"));
-    private final ColorSetting glowColor = this.addSetting(new ColorSetting("Glow Color", -13338378));
-    private final SliderSetting aura = this.addSetting(new SliderSetting("Aura", 65.0, 0.0, 100.0, 5.0F));
-    private final SliderSetting reach = this.addSetting(new SliderSetting("Reach", 8.0, 2.0, 20.0, 1.0F));
-    private final SliderSetting rim = this.addSetting(new SliderSetting("Rim", 40.0, 0.0, 100.0, 5.0F));
-    private final SliderSetting sheen = this.addSetting(new SliderSetting("Sheen", 25.0, 0.0, 100.0, 5.0F));
-    private final ColorSetting sheenColor = this.addSetting(new ColorSetting("Sheen Color", -3153665));
-    private final BooleanSetting breathe = this.addSetting(new BooleanSetting("Breathe", true));
+    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Color", "Theme", "Theme", "Manual"));
+    private final ColorSetting glowColor = this.addSetting(new ColorSetting("Glow Color", "Glow Color", -13338378));
+    private final SliderSetting aura = this.addSetting(new SliderSetting("Aura", "Aura", 65.0, 0.0, 100.0, 5.0F));
+    private final SliderSetting reach = this.addSetting(new SliderSetting("Reach", "Reach", 8.0, 2.0, 20.0, 1.0F));
+    private final SliderSetting rim = this.addSetting(new SliderSetting("Rim", "Rim", 40.0, 0.0, 100.0, 5.0F));
+    private final SliderSetting sheen = this.addSetting(new SliderSetting("Sheen", "Sheen", 25.0, 0.0, 100.0, 5.0F));
+    private final ColorSetting sheenColor = this.addSetting(new ColorSetting("Sheen Color", "Sheen Color", -3153665));
+    private final BooleanSetting breathe = this.addSetting(new BooleanSetting("Breathe", "Breathe", true));
 
     public HandAuraModule() {
         super("hand-aura", "Adds a glowing outline to your hand and held item.", Category.VISUALS);

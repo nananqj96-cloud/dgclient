@@ -9,10 +9,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class LightEspModule extends Module {
-    private final SliderSetting sRadius = this.addSetting(new SliderSetting("Render Radius", 8.0, 1.0, 16.0, 1.0F));
-    private final SliderSetting sMinLight = this.addSetting(new SliderSetting("Min Light", 5.0, 1.0, 15.0, 1.0F));
-    private final BooleanSetting sDenoise = this.addSetting(new BooleanSetting("Denoise", true));
-    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", -2130719744));
+    private final SliderSetting sRadius = this.addSetting(new SliderSetting("Render Radius", "Render Radius", 8.0, 1.0, 16.0, 1.0F));
+    private final SliderSetting sMinLight = this.addSetting(new SliderSetting("Min Light", "Min Light", 5.0, 1.0, 15.0, 1.0F));
+    private final BooleanSetting sDenoise = this.addSetting(new BooleanSetting("Denoise", "Denoise", true));
+    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", "Color", -2130719744));
 
     public LightEspModule() {
         super("light-debug", "Highlights artificial light underground.", Category.EXPLOIT);

@@ -7,15 +7,15 @@ import dev.aether.settings.ColorSetting;
 import dev.aether.settings.SliderSetting;
 
 public class RegionMapModule extends Module {
-    private final SliderSetting squareSize = this.addSetting(new SliderSetting("Cell Size", 6.0, 3.0, 16.0, 0.5F));
-    private final SliderSetting playerScale = this.addSetting(new SliderSetting("Player Scale", 1.0, 0.5, 3.0, 0.1F));
-    private final SliderSetting textScale = this.addSetting(new SliderSetting("Text Scale", 1.0, 0.1, 2.0, 0.1F));
-    private final SliderSetting opacity = this.addSetting(new SliderSetting("Opacity", 1.0, 0.1, 1.0, 0.05F));
-    private final BooleanSetting shadow = this.addSetting(new BooleanSetting("Shadow", true));
-    private final BooleanSetting showRegionIds = this.addSetting(new BooleanSetting("Show Goliath Numbers", true));
-    private final BooleanSetting showLegend = this.addSetting(new BooleanSetting("Show Legend", true));
-    private final BooleanSetting showCoordinates = this.addSetting(new BooleanSetting("Show Coordinates", true));
-    private final ColorSetting playerIndicatorColor = this.addSetting(new ColorSetting("Player Indicator", -52686));
+    private final SliderSetting squareSize = this.addSetting(new SliderSetting("Cell Size", "Cell Size", 6.0, 3.0, 16.0, 0.5F));
+    private final SliderSetting playerScale = this.addSetting(new SliderSetting("Player Scale", "Player Scale", 1.0, 0.5, 3.0, 0.1F));
+    private final SliderSetting textScale = this.addSetting(new SliderSetting("Text Scale", "Text Scale", 1.0, 0.1, 2.0, 0.1F));
+    private final SliderSetting opacity = this.addSetting(new SliderSetting("Opacity", "Opacity", 1.0, 0.1, 1.0, 0.05F));
+    private final BooleanSetting shadow = this.addSetting(new BooleanSetting("Shadow", "Shadow", true));
+    private final BooleanSetting showRegionIds = this.addSetting(new BooleanSetting("Show Goliath Numbers", "Show Goliath Numbers", true));
+    private final BooleanSetting showLegend = this.addSetting(new BooleanSetting("Show Legend", "Show Legend", true));
+    private final BooleanSetting showCoordinates = this.addSetting(new BooleanSetting("Show Coordinates", "Show Coordinates", true));
+    private final ColorSetting playerIndicatorColor = this.addSetting(new ColorSetting("Player Indicator", "Player Indicator", -52686));
 
     public RegionMapModule() {
         super("region-map", "DonutSMP goliath map with directional indicator.", Category.CLIENT);

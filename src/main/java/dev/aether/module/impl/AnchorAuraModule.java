@@ -9,12 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AnchorAuraModule extends Module {
-    private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", 6.0, 0.0, 20.0, 0.5F));
-    private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", 6.0, 0.0, 20.0, 0.5F));
-    private final BooleanSetting render = this.addSetting(new BooleanSetting("Render", true));
-    private final ColorSetting renderColor = this.addSetting(new ColorSetting("Render Color", -26052));
-    private final SliderSetting turnSpeed = this.addSetting(new SliderSetting("Turn Speed", 4.5, 1.0, 10.0, 0.5F));
-    private final BooleanSetting protectLoot = this.addSetting(new BooleanSetting("Protect Loot", true));
+    private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", "Min Damage", 6.0, 0.0, 20.0, 0.5F));
+    private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", "Max Self Damage", 6.0, 0.0, 20.0, 0.5F));
+    private final BooleanSetting render = this.addSetting(new BooleanSetting("Render", "Render", true));
+    private final ColorSetting renderColor = this.addSetting(new ColorSetting("Render Color", "Render Color", -26052));
+    private final SliderSetting turnSpeed = this.addSetting(new SliderSetting("Turn Speed", "Turn Speed", 4.5, 1.0, 10.0, 0.5F));
+    private final BooleanSetting protectLoot = this.addSetting(new BooleanSetting("Protect Loot", "Protect Loot", true));
 
     public AnchorAuraModule() {
         super("anchor-aura", "Places, charges and detonates respawn anchors on nearby enemies.", Category.COMBAT);

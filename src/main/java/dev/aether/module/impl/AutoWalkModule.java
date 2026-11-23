@@ -8,10 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AutoWalkModule extends Module {
-    private final ModeSetting direction = this.addSetting(new ModeSetting("Direction", "Forward", "Forward", "Backward", "Left", "Right"));
-    private final BooleanSetting disableOnInput = this.addSetting(new BooleanSetting("Disable On Input", false));
-    private final BooleanSetting disableOnY = this.addSetting(new BooleanSetting("Disable On Y Change", false));
-    private final BooleanSetting waitForChunks = this.addSetting(new BooleanSetting("No Unloaded Chunks", true));
+    private final ModeSetting direction = this.addSetting(new ModeSetting("Direction", "Direction", "Forward", "Forward", "Backward", "Left", "Right"));
+    private final BooleanSetting disableOnInput = this.addSetting(new BooleanSetting("Disable On Input", "Disable On Input", false));
+    private final BooleanSetting disableOnY = this.addSetting(new BooleanSetting("Disable On Y Change", "Disable On Y Change", false));
+    private final BooleanSetting waitForChunks = this.addSetting(new BooleanSetting("No Unloaded Chunks", "No Unloaded Chunks", true));
     private boolean wasWalking;
 
     public AutoWalkModule() {

@@ -8,13 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class BoatNoclipModule extends Module {
-    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 10.0, 0.0, 320.0, 0.5F));
-    private final SliderSetting speedInsideBlocks = this.addSetting(new SliderSetting("Speed Inside Blocks", 10.0, 0.0, 320.0, 0.5F));
-    private final SliderSetting verticalSpeed = this.addSetting(new SliderSetting("Vertical Speed", 6.0, 0.0, 320.0, 0.5F));
-    private final SliderSetting fallSpeed = this.addSetting(new SliderSetting("Fall Speed", 0.0, 0.0, 10.0, 0.1F));
-    private final BooleanSetting lavaProtection = this.addSetting(new BooleanSetting("Lava Protection", true));
-    private final BooleanSetting antiKick = this.addSetting(new BooleanSetting("Anti Fly Kick", true));
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", 40.0, 1.0, 80.0, 1.0F));
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", "Speed", 10.0, 0.0, 320.0, 0.5F));
+    private final SliderSetting speedInsideBlocks = this.addSetting(new SliderSetting("Speed Inside Blocks", "Speed Inside Blocks", 10.0, 0.0, 320.0, 0.5F));
+    private final SliderSetting verticalSpeed = this.addSetting(new SliderSetting("Vertical Speed", "Vertical Speed", 6.0, 0.0, 320.0, 0.5F));
+    private final SliderSetting fallSpeed = this.addSetting(new SliderSetting("Fall Speed", "Fall Speed", 0.0, 0.0, 10.0, 0.1F));
+    private final BooleanSetting lavaProtection = this.addSetting(new BooleanSetting("Lava Protection", "Lava Protection", true));
+    private final BooleanSetting antiKick = this.addSetting(new BooleanSetting("Anti Fly Kick", "Anti Fly Kick", true));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Delay", "Delay", 40.0, 1.0, 80.0, 1.0F));
 
     public BoatNoclipModule() {
         super("boat-noclip", "Fly your boat through blocks and entities.", Category.MOVEMENT);

@@ -10,15 +10,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class HoleEspModule extends Module {
-    private final ModeSetting sMode = this.addSetting(new ModeSetting("Mode", "Hole", "Hole", "Tunnel", "Stairs"));
-    private final SliderSetting sScanRadius = this.addSetting(new SliderSetting("Scan Radius", 8.0, 1.0, 24.0, 1.0F));
-    private final SliderSetting sChunksPerTick = this.addSetting(new SliderSetting("Chunks/Tick", 64.0, 1.0, 100.0, 1.0F));
-    private final SliderSetting sScanBudgetMs = this.addSetting(new SliderSetting("Scan Budget ms", 3.0, 1.0, 10.0, 1.0F));
-    private final BooleanSetting sAirOnly = this.addSetting(new BooleanSetting("Only Air Blocks", true));
-    private final SliderSetting sMinYOffset = this.addSetting(new SliderSetting("Min Y Offset", 0.0, 0.0, 319.0, 1.0F));
-    private final SliderSetting sMaxYOffset = this.addSetting(new SliderSetting("Max Y Offset", 0.0, 0.0, 319.0, 1.0F));
-    private final SliderSetting sMinHoleDepth = this.addSetting(new SliderSetting("Min Hole Depth", 4.0, 1.0, 20.0, 1.0F));
-    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", -26052));
+    private final ModeSetting sMode = this.addSetting(new ModeSetting("Mode", "Mode", "Hole", "Hole", "Tunnel", "Stairs"));
+    private final SliderSetting sScanRadius = this.addSetting(new SliderSetting("Scan Radius", "Scan Radius", 8.0, 1.0, 24.0, 1.0F));
+    private final SliderSetting sChunksPerTick = this.addSetting(new SliderSetting("Chunks/Tick", "Chunks/Tick", 64.0, 1.0, 100.0, 1.0F));
+    private final SliderSetting sScanBudgetMs = this.addSetting(new SliderSetting("Scan Budget ms", "Scan Budget ms", 3.0, 1.0, 10.0, 1.0F));
+    private final BooleanSetting sAirOnly = this.addSetting(new BooleanSetting("Only Air Blocks", "Only Air Blocks", true));
+    private final SliderSetting sMinYOffset = this.addSetting(new SliderSetting("Min Y Offset", "Min Y Offset", 0.0, 0.0, 319.0, 1.0F));
+    private final SliderSetting sMaxYOffset = this.addSetting(new SliderSetting("Max Y Offset", "Max Y Offset", 0.0, 0.0, 319.0, 1.0F));
+    private final SliderSetting sMinHoleDepth = this.addSetting(new SliderSetting("Min Hole Depth", "Min Hole Depth", 4.0, 1.0, 20.0, 1.0F));
+    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", "Color", -26052));
 
     public HoleEspModule() {
         super("hole-esp", "Highlights holes, tunnels, and staircases.", Category.RENDER);

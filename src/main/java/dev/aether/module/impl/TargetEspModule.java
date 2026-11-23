@@ -9,14 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class TargetEspModule extends Module {
-    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Ankh Circle", "Ankh Circle", "Horus Halo", "Sand Vortex", "Capstone"));
-    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Theme", "Theme", "Manual"));
-    private final ColorSetting mainColor = this.addSetting(new ColorSetting("Main Color", -12614409));
-    private final ColorSetting secondColor = this.addSetting(new ColorSetting("Second Color", -15189606));
-    private final ColorSetting hitColor = this.addSetting(new ColorSetting("Hit Color", -2233345));
-    private final SliderSetting scale = this.addSetting(new SliderSetting("Scale", 1.0, 0.6, 1.8, 0.1F));
-    private final SliderSetting tempo = this.addSetting(new SliderSetting("Tempo", 1.0, 0.3, 2.4, 0.1F));
-    private final SliderSetting opacity = this.addSetting(new SliderSetting("Opacity", 0.9, 0.2, 1.0, 0.05F));
+    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Ankh Circle", "Ankh Circle", "Horus Halo", "Sand Vortex", "Capstone"));
+    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Color", "Theme", "Theme", "Manual"));
+    private final ColorSetting mainColor = this.addSetting(new ColorSetting("Main Color", "Main Color", -12614409));
+    private final ColorSetting secondColor = this.addSetting(new ColorSetting("Second Color", "Second Color", -15189606));
+    private final ColorSetting hitColor = this.addSetting(new ColorSetting("Hit Color", "Hit Color", -2233345));
+    private final SliderSetting scale = this.addSetting(new SliderSetting("Scale", "Scale", 1.0, 0.6, 1.8, 0.1F));
+    private final SliderSetting tempo = this.addSetting(new SliderSetting("Tempo", "Tempo", 1.0, 0.3, 2.4, 0.1F));
+    private final SliderSetting opacity = this.addSetting(new SliderSetting("Opacity", "Opacity", 0.9, 0.2, 1.0, 0.05F));
 
     public TargetEspModule() {
         super("target-esp", "Draws an Egyptian mark on your combat target.", Category.VISUALS);

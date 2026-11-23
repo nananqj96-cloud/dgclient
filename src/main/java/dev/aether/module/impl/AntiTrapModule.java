@@ -15,10 +15,10 @@ import net.minecraft.world.entity.EntityType;
 
 public class AntiTrapModule extends Module {
     private static final int SWEEP_INTERVAL_TICKS = 20;
-    private final BooleanSetting removeExisting = this.addSetting(new BooleanSetting("Remove Existing", true));
-    private final BooleanSetting preventSpawn = this.addSetting(new BooleanSetting("Prevent Spawn", true));
-    private final BooleanSetting armorStands = this.addSetting(new BooleanSetting("Armor Stands", true));
-    private final BooleanSetting chestMinecarts = this.addSetting(new BooleanSetting("Chest Minecarts", true));
+    private final BooleanSetting removeExisting = this.addSetting(new BooleanSetting("Remove Existing", "Remove Existing", true));
+    private final BooleanSetting preventSpawn = this.addSetting(new BooleanSetting("Prevent Spawn", "Prevent Spawn", true));
+    private final BooleanSetting armorStands = this.addSetting(new BooleanSetting("Armor Stands", "Armor Stands", true));
+    private final BooleanSetting chestMinecarts = this.addSetting(new BooleanSetting("Chest Minecarts", "Chest Minecarts", true));
     private final List<Entity> pendingSpawns = new ArrayList<>();
 
     public AntiTrapModule() {

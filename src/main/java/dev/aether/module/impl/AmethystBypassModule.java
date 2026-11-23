@@ -9,9 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class AmethystBypassModule extends Module {
-    private final ModeSetting method = this.addSetting(new ModeSetting("Method", "Bypass", "Bypass", "Light", "ANBS+ Scan"));
-    private final SliderSetting minCells = this.addSetting(new SliderSetting("Min Cells", 12.0, 1.0, 100.0, 1.0F));
-    private final BooleanSetting tracer = this.addSetting(new BooleanSetting("Tracer", false));
+    private final ModeSetting method = this.addSetting(new ModeSetting("Method", "Method", "Bypass", "Bypass", "Light", "ANBS+ Scan"));
+    private final SliderSetting minCells = this.addSetting(new SliderSetting("Min Cells", "Min Cells", 12.0, 1.0, 100.0, 1.0F));
+    private final BooleanSetting tracer = this.addSetting(new BooleanSetting("Tracer", "Tracer", false));
 
     public AmethystBypassModule() {
         super("amethyst-bypass", "Shows amethyst geodes hidden by anti-xray.", Category.EXPLOIT);

@@ -16,7 +16,7 @@ import net.minecraft.world.InteractionHand;
  */
 public class AutoPotModule extends Module {
    public final ModeSetting mode = this.addSetting(
-      new ModeSetting("Mode", "When to throw a potion", "Auto", "Auto", "While Holding")
+      new ModeSetting("Mode", "Mode", "When to throw a potion", "Auto", "Auto", "While Holding")
    );
    public final SliderSetting health = this.addSetting(
       new SliderSetting("Health", "Throw once health is at or below this (Auto mode)", 10.0, 0.1, 20.0, 0.1)

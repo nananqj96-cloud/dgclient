@@ -14,8 +14,8 @@ import net.minecraft.world.item.component.PiercingWeapon;
 public class WTapRecodeModule extends Module {
     private static final String W_TAP = "W Tap";
     private static final String S_TAP = "S Tap";
-    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "W Tap", "W Tap", "S Tap"));
-    private final SliderSetting hold = this.addSetting(new SliderSetting("Hold", 1.0, 1.0, 3.0, 1.0F));
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Mode", "W Tap", "W Tap", "S Tap"));
+    private final SliderSetting hold = this.addSetting(new SliderSetting("Hold", "Hold", 1.0, 1.0, 3.0, 1.0F));
     private boolean sprintHit;
     private int taps;
     private int tapTick;

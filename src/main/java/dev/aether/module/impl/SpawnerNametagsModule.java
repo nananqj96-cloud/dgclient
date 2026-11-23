@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class SpawnerNametagsModule extends Module {
-    private final SliderSetting sRange = this.addSetting(new SliderSetting("Range", 64.0, 8.0, 256.0, 1.0F));
-    private final BooleanSetting sRadius = this.addSetting(new BooleanSetting("Activation Radius", true));
+    private final SliderSetting sRange = this.addSetting(new SliderSetting("Range", "Range", 64.0, 8.0, 256.0, 1.0F));
+    private final BooleanSetting sRadius = this.addSetting(new BooleanSetting("Activation Radius", "Activation Radius", true));
 
     public SpawnerNametagsModule() {
         super("spawner-nametags", "Shows each spawner's mob and activation range over the block.", Category.RENDER);

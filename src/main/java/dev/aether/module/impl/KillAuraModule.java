@@ -8,10 +8,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class KillAuraModule extends Module {
-    private final BooleanSetting players = this.addSetting(new BooleanSetting("Players", true));
-    private final BooleanSetting hostiles = this.addSetting(new BooleanSetting("Hostiles", false));
-    private final ModeSetting priority = this.addSetting(new ModeSetting("Priority", "Distance", "Distance", "Health", "Angle"));
-    private final ModeSetting crits = this.addSetting(new ModeSetting("Crits", "Wait", "Off", "Wait", "Jump"));
+    private final BooleanSetting players = this.addSetting(new BooleanSetting("Players", "Players", true));
+    private final BooleanSetting hostiles = this.addSetting(new BooleanSetting("Hostiles", "Hostiles", false));
+    private final ModeSetting priority = this.addSetting(new ModeSetting("Priority", "Priority", "Distance", "Distance", "Health", "Angle"));
+    private final ModeSetting crits = this.addSetting(new ModeSetting("Crits", "Crits", "Wait", "Off", "Wait", "Jump"));
 
     public KillAuraModule() {
         super("kill-aura", "Attacks nearby targets without moving your camera.", Category.COMBAT);

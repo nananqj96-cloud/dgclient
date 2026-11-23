@@ -10,7 +10,7 @@ import dev.aether.settings.ModeSetting;
  */
 public class WeatherChangerModule extends Module {
    public final ModeSetting weather = this.addSetting(
-      new ModeSetting("Weather", "Which weather to force on the client", "Clear", "Clear", "Rain", "Thunder")
+      new ModeSetting("Weather", "Weather", "Which weather to force on the client", "Clear", "Clear", "Rain", "Thunder")
    );
 
    public WeatherChangerModule() {

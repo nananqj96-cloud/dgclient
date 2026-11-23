@@ -7,8 +7,8 @@ import dev.aether.settings.SliderSetting;
 
 public class NoJumpDelayModule extends Module {
     public static volatile NoJumpDelayModule active;
-    private final SliderSetting cooldown = this.addSetting(new SliderSetting("Cooldown", 0.0, 0.0, 9.0, 1.0F));
-    private final SliderSetting variance = this.addSetting(new SliderSetting("Variance", 0.0, 0.0, 4.0, 1.0F));
+    private final SliderSetting cooldown = this.addSetting(new SliderSetting("Cooldown", "Cooldown", 0.0, 0.0, 9.0, 1.0F));
+    private final SliderSetting variance = this.addSetting(new SliderSetting("Variance", "Variance", 0.0, 0.0, 4.0, 1.0F));
 
     public NoJumpDelayModule() {
         super("no-jump-delay", "Removes the delay between jumps.", Category.MOVEMENT);

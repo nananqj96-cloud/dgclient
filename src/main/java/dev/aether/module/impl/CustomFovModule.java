@@ -8,7 +8,7 @@ import net.minecraft.client.Minecraft;
 public class CustomFovModule extends Module {
     public static volatile CustomFovModule active;
     private static float screenEffectScale = 1.0F;
-    private final SliderSetting fov = this.addSetting(new SliderSetting("FOV", 110.0, 30.0, 160.0, 1.0F));
+    private final SliderSetting fov = this.addSetting(new SliderSetting("FOV", "FOV", 110.0, 30.0, 160.0, 1.0F));
     private int culledFov = Integer.MIN_VALUE;
 
     public CustomFovModule() {

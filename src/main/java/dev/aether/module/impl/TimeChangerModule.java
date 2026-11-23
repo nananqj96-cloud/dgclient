@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class TimeChangerModule extends Module {
-    private final SliderSetting time = this.addSetting(new SliderSetting("Time", 0.0, -20000.0, 20000.0, 1.0F));
+    private final SliderSetting time = this.addSetting(new SliderSetting("Time", "Time", 0.0, -20000.0, 20000.0, 1.0F));
 
     public TimeChangerModule() {
         super("time-changer", "Makes you able to set a custom time.", Category.RENDER);

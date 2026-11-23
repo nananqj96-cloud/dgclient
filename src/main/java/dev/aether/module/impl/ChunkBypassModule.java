@@ -90,7 +90,7 @@ public class ChunkBypassModule extends Module {
       new BooleanSetting("Show on Radar", "Pulse chunk zones on the Radar; far zones clamp to the edge", true)
    );
    public final ModeSetting notifications = this.addSetting(
-      new ModeSetting("Notifications", "Announce each new zone once, with coords and distance", "Toast", "Toast", "Chat", "Off")
+      new ModeSetting("Notifications", "Notifications", "Announce each new zone once, with coords and distance", "Toast", "Toast", "Chat", "Off")
    );
    private final Map<Long, Integer> cells = new LinkedHashMap<>();
    private final Set<Long> alertedCells = new HashSet<>();

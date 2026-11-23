@@ -9,9 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class OrderAhSellerModule extends Module {
-    private final ModeSetting productSlot = this.addSetting(new ModeSetting("Product", "1", "1", "2", "3", "4", "5"));
-    private final SliderSetting minPrice = this.addSetting(new SliderSetting("Min Price", 1000.0, 1.0, 1000000.0, 100.0F));
-    private final SliderSetting restock = this.addSetting(new SliderSetting("Restock With Orders", 0.0, 0.0, 1.0, 1.0F));
+    private final ModeSetting productSlot = this.addSetting(new ModeSetting("Product", "Product", "1", "1", "2", "3", "4", "5"));
+    private final SliderSetting minPrice = this.addSetting(new SliderSetting("Min Price", "Min Price", 1000.0, 1.0, 1000000.0, 100.0F));
+    private final SliderSetting restock = this.addSetting(new SliderSetting("Restock With Orders", "Restock With Orders", 0.0, 0.0, 1.0, 1.0F));
 
     public OrderAhSellerModule() {
         super("order-ah-seller", "Sells an item on the Auction House, undercuts other sellers and restocks through orders.", Category.DONUT);

@@ -6,10 +6,10 @@ import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 
 public class PerformanceModule extends Module {
-    private final BooleanSetting optimize = this.addSetting(new BooleanSetting("Optimize Client", true));
-    private final BooleanSetting showStats = this.addSetting(new BooleanSetting("Show Stats", true));
-    private final BooleanSetting frustumCulling = this.addSetting(new BooleanSetting("Frustum Culling", true));
-    private final SliderSetting scanBudget = this.addSetting(new SliderSetting("Scan Budget ms", 2.0, 0.5, 8.0, 0.5F));
+    private final BooleanSetting optimize = this.addSetting(new BooleanSetting("Optimize Client", "Optimize Client", true));
+    private final BooleanSetting showStats = this.addSetting(new BooleanSetting("Show Stats", "Show Stats", true));
+    private final BooleanSetting frustumCulling = this.addSetting(new BooleanSetting("Frustum Culling", "Frustum Culling", true));
+    private final SliderSetting scanBudget = this.addSetting(new SliderSetting("Scan Budget ms", "Scan Budget ms", 2.0, 0.5, 8.0, 0.5F));
     private long smoothedNanos;
     private long nextStatsUpdate;
     private String statsText = "";

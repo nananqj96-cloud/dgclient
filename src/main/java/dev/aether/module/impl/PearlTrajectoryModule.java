@@ -9,16 +9,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class PearlTrajectoryModule extends Module {
-    private final BooleanSetting sPredict = this.addSetting(new BooleanSetting("Predict", true));
-    private final BooleanSetting sTrail = this.addSetting(new BooleanSetting("Trail", true));
-    private final BooleanSetting sOthers = this.addSetting(new BooleanSetting("Others' Pearls", false));
-    private final ModeSetting sLanding = this.addSetting(new ModeSetting("Landing", "Ring", "Ring", "Box", "None"));
-    private final BooleanSetting sInfo = this.addSetting(new BooleanSetting("Landing Info", true));
-    private final BooleanSetting sGlow = this.addSetting(new BooleanSetting("Glow", true));
-    private final BooleanSetting sGradient = this.addSetting(new BooleanSetting("Gradient", true));
-    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", -9524994));
-    private final ColorSetting sEndColor = this.addSetting(new ColorSetting("End Color", -3697942));
-    private final ColorSetting sHitColor = this.addSetting(new ColorSetting("Hit Color", -42406));
+    private final BooleanSetting sPredict = this.addSetting(new BooleanSetting("Predict", "Predict", true));
+    private final BooleanSetting sTrail = this.addSetting(new BooleanSetting("Trail", "Trail", true));
+    private final BooleanSetting sOthers = this.addSetting(new BooleanSetting("Others' Pearls", "Others' Pearls", false));
+    private final ModeSetting sLanding = this.addSetting(new ModeSetting("Landing", "Landing", "Ring", "Ring", "Box", "None"));
+    private final BooleanSetting sInfo = this.addSetting(new BooleanSetting("Landing Info", "Landing Info", true));
+    private final BooleanSetting sGlow = this.addSetting(new BooleanSetting("Glow", "Glow", true));
+    private final BooleanSetting sGradient = this.addSetting(new BooleanSetting("Gradient", "Gradient", true));
+    private final ColorSetting sColor = this.addSetting(new ColorSetting("Color", "Color", -9524994));
+    private final ColorSetting sEndColor = this.addSetting(new ColorSetting("End Color", "End Color", -3697942));
+    private final ColorSetting sHitColor = this.addSetting(new ColorSetting("Hit Color", "Hit Color", -42406));
 
     public PearlTrajectoryModule() {
         super("pearl-trajectory", "Predicts where a held pearl lands and previews the flight of thrown pearls.", Category.RENDER);

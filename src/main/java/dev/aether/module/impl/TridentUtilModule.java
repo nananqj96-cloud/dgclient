@@ -6,8 +6,8 @@ import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 
 public class TridentUtilModule extends Module {
-    private final SliderSetting chargeScale = this.addSetting(new SliderSetting("Charge Scale", 0.0, 0.0, 1.0, 0.1F));
-    private final BooleanSetting noWater = this.addSetting(new BooleanSetting("No Water", true));
+    private final SliderSetting chargeScale = this.addSetting(new SliderSetting("Charge Scale", "Charge Scale", 0.0, 0.0, 1.0, 0.1F));
+    private final BooleanSetting noWater = this.addSetting(new BooleanSetting("No Water", "No Water", true));
 
     public TridentUtilModule() {
         super("trident-util", "Use tridents out of water and charge them faster.", Category.MOVEMENT);

@@ -8,13 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class CrystalMacroModule extends Module {
-    private final SliderSetting breakDelay = this.addSetting(new SliderSetting("Break Delay", 0.0, 0.0, 10.0, 1.0F));
-    private final SliderSetting placeDelay = this.addSetting(new SliderSetting("Place Delay", 0.0, 0.0, 10.0, 1.0F));
-    private final BooleanSetting autoObsidian = this.addSetting(new BooleanSetting("Auto Obsidian", true));
-    private final SliderSetting obsidianDelay = this.addSetting(new SliderSetting("Obsidian Delay", 2.0, 0.0, 10.0, 1.0F));
-    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", true));
-    private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", 8.0, 0.0, 20.0, 0.5F));
-    private final BooleanSetting humanize = this.addSetting(new BooleanSetting("Human Pace", true));
+    private final SliderSetting breakDelay = this.addSetting(new SliderSetting("Break Delay", "Break Delay", 0.0, 0.0, 10.0, 1.0F));
+    private final SliderSetting placeDelay = this.addSetting(new SliderSetting("Place Delay", "Place Delay", 0.0, 0.0, 10.0, 1.0F));
+    private final BooleanSetting autoObsidian = this.addSetting(new BooleanSetting("Auto Obsidian", "Auto Obsidian", true));
+    private final SliderSetting obsidianDelay = this.addSetting(new SliderSetting("Obsidian Delay", "Obsidian Delay", 2.0, 0.0, 10.0, 1.0F));
+    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "Switch Back", true));
+    private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", "Max Self Damage", 8.0, 0.0, 20.0, 0.5F));
+    private final BooleanSetting humanize = this.addSetting(new BooleanSetting("Human Pace", "Human Pace", true));
 
     public CrystalMacroModule() {
         super("crystal-macro", "Breaks and places crystals while you hold right-click.", Category.COMBAT);

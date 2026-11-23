@@ -15,15 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShaderEspModule extends Module {
-    private final BooleanSetting players = this.addSetting(new BooleanSetting("Players", true));
-    private final BooleanSetting passives = this.addSetting(new BooleanSetting("Passives", false));
-    private final BooleanSetting items = this.addSetting(new BooleanSetting("Items", false));
-    private final BooleanSetting crystals = this.addSetting(new BooleanSetting("Crystals", true));
-    private final BooleanSetting markTarget = this.addSetting(new BooleanSetting("Mark Target", true));
-    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Theme", "Theme", "Manual"));
-    private final ColorSetting playerColor = this.addSetting(new ColorSetting("Player Color", -13338378));
-    private final ColorSetting friendColor = this.addSetting(new ColorSetting("Friend Color", -7358982));
-    private final SliderSetting range = this.addSetting(new SliderSetting("Range", 64.0, 16.0, 256.0, 8.0F));
+    private final BooleanSetting players = this.addSetting(new BooleanSetting("Players", "Players", true));
+    private final BooleanSetting passives = this.addSetting(new BooleanSetting("Passives", "Passives", false));
+    private final BooleanSetting items = this.addSetting(new BooleanSetting("Items", "Items", false));
+    private final BooleanSetting crystals = this.addSetting(new BooleanSetting("Crystals", "Crystals", true));
+    private final BooleanSetting markTarget = this.addSetting(new BooleanSetting("Mark Target", "Mark Target", true));
+    private final ModeSetting colorMode = this.addSetting(new ModeSetting("Color", "Color", "Theme", "Theme", "Manual"));
+    private final ColorSetting playerColor = this.addSetting(new ColorSetting("Player Color", "Player Color", -13338378));
+    private final ColorSetting friendColor = this.addSetting(new ColorSetting("Friend Color", "Friend Color", -7358982));
+    private final SliderSetting range = this.addSetting(new SliderSetting("Range", "Range", 64.0, 16.0, 256.0, 8.0F));
 
     public ShaderEspModule() {
         super("glow-esp", "Outlines entities through walls with a glow.", Category.RENDER);

@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class OrderDropperModule extends Module {
-    private final SliderSetting orderSlot = this.addSetting(new SliderSetting("Order Slot (0 = first)", 0.0, 0.0, 44.0, 1.0F));
-    private final SliderSetting pages = this.addSetting(new SliderSetting("Pages To Drop", 1.0, 1.0, 100.0, 1.0F));
-    private final SliderSetting delay = this.addSetting(new SliderSetting("Drop Delay (s)", 0.5, 0.25, 5.0, 0.25F));
+    private final SliderSetting orderSlot = this.addSetting(new SliderSetting("Order Slot (0 = first)", "Order Slot (0 = first)", 0.0, 0.0, 44.0, 1.0F));
+    private final SliderSetting pages = this.addSetting(new SliderSetting("Pages To Drop", "Pages To Drop", 1.0, 1.0, 100.0, 1.0F));
+    private final SliderSetting delay = this.addSetting(new SliderSetting("Drop Delay (s)", "Drop Delay (s)", 0.5, 0.25, 5.0, 0.25F));
 
     public OrderDropperModule() {
         super("order-dropper", "Opens one of your orders, collects it and drops the chosen number of pages, then turns off.", Category.DONUT);

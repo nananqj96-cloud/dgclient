@@ -31,16 +31,16 @@ public class FreecamModule extends Module {
     private static final int CHUNK_CAP = 32;
     private static final float SCROLL_STEP = 1.2F;
     public static volatile FreecamModule active;
-    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 1.0, 0.1, 50.0, 0.1F));
-    private final SliderSetting verticalSpeed = this.addSetting(new SliderSetting("Vertical", 1.0, 0.2, 5.0, 0.05F));
-    private final BooleanSetting smoothing = this.addSetting(new BooleanSetting("Smooth", true));
-    private final BooleanSetting showOwnBody = this.addSetting(new BooleanSetting("Body", true));
-    private final BooleanSetting showHands = this.addSetting(new BooleanSetting("Hands", true));
-    private final BooleanSetting bodyFollowsKeys = this.addSetting(new BooleanSetting("Keys Move Body", false));
-    private final BooleanSetting keepWalking = this.addSetting(new BooleanSetting("Keep Walking", true));
-    private final BooleanSetting scrollSpeed = this.addSetting(new BooleanSetting("Scroll Speed", true));
-    private final BooleanSetting scrollResets = this.addSetting(new BooleanSetting("Reset Scroll Speed", true));
-    private final SliderSetting chunkDistance = this.addSetting(new SliderSetting("Chunks", 12.0, 2.0, 32.0, 1.0F));
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", "Speed", 1.0, 0.1, 50.0, 0.1F));
+    private final SliderSetting verticalSpeed = this.addSetting(new SliderSetting("Vertical", "Vertical", 1.0, 0.2, 5.0, 0.05F));
+    private final BooleanSetting smoothing = this.addSetting(new BooleanSetting("Smooth", "Smooth", true));
+    private final BooleanSetting showOwnBody = this.addSetting(new BooleanSetting("Body", "Body", true));
+    private final BooleanSetting showHands = this.addSetting(new BooleanSetting("Hands", "Hands", true));
+    private final BooleanSetting bodyFollowsKeys = this.addSetting(new BooleanSetting("Keys Move Body", "Keys Move Body", false));
+    private final BooleanSetting keepWalking = this.addSetting(new BooleanSetting("Keep Walking", "Keep Walking", true));
+    private final BooleanSetting scrollSpeed = this.addSetting(new BooleanSetting("Scroll Speed", "Scroll Speed", true));
+    private final BooleanSetting scrollResets = this.addSetting(new BooleanSetting("Reset Scroll Speed", "Reset Scroll Speed", true));
+    private final SliderSetting chunkDistance = this.addSetting(new SliderSetting("Chunks", "Chunks", 12.0, 2.0, 32.0, 1.0F));
     private Vec3 pos = Vec3.ZERO;
     private Vec3 prev = Vec3.ZERO;
     private float yaw;
@@ -347,7 +347,7 @@ public class FreecamModule extends Module {
         FreecamModule module = active;
         if (module != null && module.scrollSpeed.get() && amount != 0.0) {
             float factor = amount > 0.0 ? 1.2F : 0.8333333F;
-            NumberSetting speed = module.speed;
+            float speed = module.speed.getFloat();
             if (module.scrollResets.get()) {
                 module.scrolled = Mth.clamp(module.scrolled * factor, speed.min() / speed.get(), speed.max() / speed.get());
             } else {
