@@ -7,6 +7,7 @@ import dev.aether.AetherClient;
 import dev.aether.hud.HudDragController;
 import dev.aether.hud.HudManager;
 import dev.aether.module.impl.CustomCrosshairModule;
+import dev.aether.module.impl.GreatColorsModule;
 import dev.aether.module.impl.MotionBlurModule;
 import dev.aether.notification.NotificationManager;
 import dev.aether.render.nanovg.GlStateSnapshot;
@@ -72,6 +73,12 @@ public final class OverlayRenderer {
             boolean drawToasts = mc.level != null && !mc.options.hideGui && !isPauseOrOpts;
             MotionBlurModule mb = AetherClient.modules() != null ? AetherClient.modules().motionBlur : null;
             boolean drawMotionBlur = mb != null && mb.isEnabled() && mc.level != null && !isNvgScreen;
+
+            // Apply saturation post-processing before overlay rendering
+            if (AetherClient.modules() != null && AetherClient.modules().greatColors != null && AetherClient.modules().greatColors.isActive()) {
+               int mainFbo = GL33C.glGetInteger(GL33C.GL_FRAMEBUFFER_BINDING);
+               SaturationPass.apply(glTex.glId(), target.width, target.height, mainFbo, AetherClient.modules().greatColors);
+            }
 
             if (isNvgScreen || drawHud || drawToasts || drawMotionBlur) {
                int prevFbo = GL33C.glGetInteger(GL33C.GL_FRAMEBUFFER_BINDING);

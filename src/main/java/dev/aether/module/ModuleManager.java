@@ -99,6 +99,8 @@ import dev.aether.module.impl.TenacityKeepSprintModule;
 import dev.aether.module.impl.TenacityLongJumpModule;
 import dev.aether.module.impl.TenacityMouseClickSoundModule;
 import dev.aether.module.impl.TenacityNameScramblerModule;
+import dev.aether.module.impl.AspectRatioModule;
+import dev.aether.module.impl.GreatColorsModule;
 import dev.aether.module.impl.TenacityAutoEatModule;
 import dev.aether.module.impl.TenacityAutoJumpModule;
 import dev.aether.module.impl.TenacityAutoRespawnModule;
@@ -333,6 +335,8 @@ public class ModuleManager {
    public TenacityTriggerBotModule tenacityTriggerBot;
    public TenacityMouseClickSoundModule tenacityClickSound;
    public TenacityNameScramblerModule tenacityNameScrambler;
+   public AspectRatioModule aspectRatio;
+   public GreatColorsModule greatColors;
    public TenacityKillAuraModule tenacityKillAura;
    public TenacityCriticalsModule tenacityCriticals;
    public TenacityVelocityModule tenacityVelocity;
@@ -783,6 +787,10 @@ public class ModuleManager {
       this.register(this.tenacityClickSound);
       this.tenacityNameScrambler = new TenacityNameScramblerModule();
       this.register(this.tenacityNameScrambler);
+      this.aspectRatio = new AspectRatioModule();
+      this.register(this.aspectRatio);
+      this.greatColors = new GreatColorsModule();
+      this.register(this.greatColors);
    }
 
    private void registerPlaceholders() {

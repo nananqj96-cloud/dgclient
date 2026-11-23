@@ -18,6 +18,7 @@
     "KeyMappingAccessor",
     "EntityNameTagMixin",
     "GameRendererMixin",
+    "GameRendererAspectRatioMixin",
     "GuiCrosshairMixin",
     "GuiNametagEquipmentMixin",
     "GuiSidebarMixin",
