@@ -17,7 +17,7 @@ public class TenacityTPAuraModule extends Module {
       
       Minecraft mc = Minecraft.getInstance();
       if (mc == null || mc.player == null || mc.player.connection == null) return;
-      for (var e : mc.level.entries().getEntities()) {
+      for (var e : mc.level.entitiesForRendering()) {
          if (e instanceof net.minecraft.world.entity.player.Player p && p != mc.player && mc.player.distanceTo(p) < range.get()) {
             mc.player.connection.sendChat("/tpa " + p.getName().getString());
          }

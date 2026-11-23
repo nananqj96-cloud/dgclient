@@ -20,7 +20,7 @@ public class TenacityAmbienceModule extends Module {
       
       Minecraft mc = Minecraft.getInstance();
       if (mc == null || mc.level == null) return;
-      mc.level.setWeather(net.minecraft.world.level.weather.WeatherStatistics.CLEAR, 0, false);
+      mc.player.setGlowingTag(true);
 
    }
 }

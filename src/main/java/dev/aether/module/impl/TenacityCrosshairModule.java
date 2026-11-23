@@ -20,7 +20,7 @@ public class TenacityCrosshairModule extends Module {
       
       Minecraft mc = Minecraft.getInstance();
       if (mc == null || mc.player == null) return;
-      mc.options.hideGui(toggle.get());
+      mc.options.hideGui = toggle.get();
 
    }
 }
