@@ -1,5 +1,6 @@
 package dev.aether.module.impl;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 
 import java.util.Arrays;
 import dev.aether.settings.BooleanSetting;
@@ -8,7 +9,7 @@ import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.util.ARGB;
 
-public class PharaohHeaddressModule extends HeadCosmeticModule {
+public class PharaohHeaddressModule extends Module {
     private static final String STYLE_NEMES = "Nemes";
     private static final String STYLE_KHEPRESH = "Khepresh";
     private static final String STYLE_SUN_DISC = "Sun Disc";
@@ -29,7 +30,7 @@ public class PharaohHeaddressModule extends HeadCosmeticModule {
     private long collarRevision = -1L;
 
     public PharaohHeaddressModule() {
-        super("pharaoh-headdress", "Pharaoh Headdress", "Puts a pharaoh headdress on your player model.");
+        super("pharaoh-headdress", "Pharaoh Headdress", "Puts a pharaoh headdress on your player model.", Category.VISUALS);
         this.stripes.visibleWhen(() -> this.style.is("Nemes"));
         this.gold.visibleWhen(() -> this.color.is("Manual"));
         this.inlay.visibleWhen(() -> this.color.is("Manual"));

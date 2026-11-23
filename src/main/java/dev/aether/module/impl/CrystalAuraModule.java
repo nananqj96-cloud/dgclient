@@ -3,7 +3,6 @@ package dev.aether.module.impl;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.KeySetting;
 import dev.aether.settings.KeybindSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
@@ -16,13 +15,13 @@ import net.minecraft.core.BlockPos;
 
 public class CrystalAuraModule extends Module {
     private final BooleanSetting requireHold = this.addSetting(new BooleanSetting("Require Hold", false));
-    private final KeybindSetting holdKey = this.addSetting(new KeySetting("Hold Key", 1003));
+    private final KeybindSetting holdKey = this.addSetting(new KeybindSetting("Hold Key", 1003));
     private final SliderSetting placeDelay = this.addSetting(new SliderSetting("Place Delay", 0.0, 0.0, 10.0, 1.0F));
     private final SliderSetting breakDelay = this.addSetting(new SliderSetting("Break Delay", 0.0, 0.0, 10.0, 1.0F));
     private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", 4.0, 0.0, 20.0, 0.5F));
     private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", 8.0, 0.0, 20.0, 0.5F));
     private final BooleanSetting facePlace = this.addSetting(new BooleanSetting("Face Place", true));
-    private final KeybindSetting forceFacePlace = this.addSetting(new KeySetting("Force Face Place", -1));
+    private final KeybindSetting forceFacePlace = this.addSetting(new KeybindSetting("Force Face Place", -1));
     private final BooleanSetting autoObsidian = this.addSetting(new BooleanSetting("Auto Obsidian", true));
     private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", true));
 
