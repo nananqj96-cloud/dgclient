@@ -22,19 +22,19 @@ public class RegionMapModule extends Module {
     }
 
     public float squareSize() {
-        return this.squareSize.get();
+        return this.squareSize.getFloat();
     }
 
     public float playerScale() {
-        return this.playerScale.get();
+        return this.playerScale.getFloat();
     }
 
     public float textScale() {
-        return this.textScale.get();
+        return this.textScale.getFloat();
     }
 
     public float opacity() {
-        return this.opacity.get();
+        return this.opacity.getFloat();
     }
 
     public boolean shadow() {

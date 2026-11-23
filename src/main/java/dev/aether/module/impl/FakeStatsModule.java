@@ -4,6 +4,7 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
+import dev.aether.settings.StringSetting;
 import dev.aether.util.Amounts;
 import java.util.Locale;
 import java.util.Objects;
@@ -75,6 +76,21 @@ public class FakeStatsModule extends Module {
    );
    public final BooleanSetting deductOnPay = this.addSetting(
       new BooleanSetting("Deduct On Pay", "FakePay subtracts what you pay from Money.", true)
+   );
+   public final StringSetting money = this.addSetting(
+      new StringSetting("Money Text", "Fake money value shown on the sidebar.", "0")
+   );
+   public final StringSetting shards = this.addSetting(
+      new StringSetting("Shards Text", "Fake shards value shown on the sidebar.", "0")
+   );
+   public final StringSetting kills = this.addSetting(
+      new StringSetting("Kills Text", "Fake kills value shown on the sidebar.", "0")
+   );
+   public final StringSetting deaths = this.addSetting(
+      new StringSetting("Deaths Text", "Fake deaths value shown on the sidebar.", "0")
+   );
+   public final StringSetting playtime = this.addSetting(
+      new StringSetting("Playtime Text", "Fake playtime value shown on the sidebar.", "0")
    );
    private String lastMoneyText;
    private double liveBalance;

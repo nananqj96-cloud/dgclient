@@ -7,6 +7,7 @@ import dev.aether.module.ModuleManager;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.ModeSetting;
+import dev.aether.settings.StringSetting;
 import dev.aether.util.Amounts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -43,6 +44,12 @@ public class FakePayModule extends Module {
    );
    public final BooleanSetting selfGuard = this.addSetting(
       new BooleanSetting("Self-Pay Guard", "Block paying your own name, like the real command.", true)
+   );
+   public final StringSetting command = this.addSetting(
+      new StringSetting("Command", "Command name to intercept (default: pay).", "pay")
+   );
+   public final StringSetting currency = this.addSetting(
+      new StringSetting("Currency Symbol", "Symbol shown after the amount. Leave empty for none.", "$")
    );
 
    public FakePayModule() {

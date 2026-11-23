@@ -21,7 +21,7 @@ public class ChatMacroModule extends Module {
         super("chat-macro", "Sends chat messages or commands with a key press.", Category.MISC);
         int count = Integer.parseInt(this.slots.get());
         for (int i = 0; i < count && i < 5; i++) {
-            this.keys[i] = this.addSetting(new KeybindSetting("Macro " + (i + 1) + " Key", -1));
+            this.keys[i] = this.addSetting(new KeybindSetting("Macro " + (i + 1) + " Key", "Macro " + (i + 1) + " Key", -1));
             this.texts[i] = "";
         }
     }
