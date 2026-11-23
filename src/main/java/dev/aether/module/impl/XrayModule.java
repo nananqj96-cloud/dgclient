@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import java.util.Set;
 
 public class XrayModule extends Module {
     private static final boolean SODIUM = FabricLoader.getInstance().isModLoaded("sodium");
@@ -92,17 +93,17 @@ public class XrayModule extends Module {
     }
 
     private void rebuildSnapshot() {
-        active = new XrayModule.Snapshot(new ReferenceOpenHashSet<>(this.blocks.enabledBlocks()), this.exposedOnly.get(), this.opacity.get() / 100.0F);
+        active = new XrayModule.Snapshot(new java.util.HashSet<>(this.blocks.enabledBlocks()), this.exposedOnly.get(), this.opacity.get() / 100.0F);
     }
 
         public static final class Snapshot {
         private static final Direction[] DIRECTIONS = Direction.values();
         private static final ThreadLocal<MutableBlockPos> SCRATCH_POS = ThreadLocal.withInitial(MutableBlockPos::new);
-        private final ReferenceOpenHashSet<Block> whitelist;
+        private final Set<Block> whitelist;
         private final boolean exposedOnly;
         private final float opacity;
 
-        private Snapshot(ReferenceOpenHashSet<Block> whitelist, boolean exposedOnly, float opacity) {
+        private Snapshot(Set<Block> whitelist, boolean exposedOnly, float opacity) {
             this.whitelist = whitelist;
             this.exposedOnly = exposedOnly;
             this.opacity = opacity;

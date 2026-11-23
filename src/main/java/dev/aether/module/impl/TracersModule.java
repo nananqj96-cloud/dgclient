@@ -9,8 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.ambient.Ambient;
-import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -56,13 +54,7 @@ public class TracersModule extends Module {
             if (entity instanceof Animal && !this.animals.get()) {
                 continue;
             }
-            if (entity instanceof WaterAnimal && !this.waterAnimals.get()) {
-                continue;
-            }
             if (entity instanceof Monster && !this.monsters.get()) {
-                continue;
-            }
-            if (entity instanceof Ambient && !this.ambient.get()) {
                 continue;
             }
         }
