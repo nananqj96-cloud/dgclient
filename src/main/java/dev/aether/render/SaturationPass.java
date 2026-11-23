@@ -52,8 +52,8 @@ public final class SaturationPass {
       ensureFbo(width, height);
       if (fbo == -1) return;
 
-      int[] viewport = GL33C.glGetInteger(GL33C.GL_VIEWPORT, 0);
-      int[] scissor = GL33C.glGetInteger(GL33C.GL_SCISSOR_BOX, 0);
+      int[] viewport = GL33C.glGetIntegers(GL33C.GL_VIEWPORT, 0, 4);
+      int[] scissor = GL33C.glGetIntegers(GL33C.GL_SCISSOR_BOX, 0, 4);
       boolean scissorEnabled = GL33C.glIsEnabled(GL33C.GL_SCISSOR_TEST);
 
       try {

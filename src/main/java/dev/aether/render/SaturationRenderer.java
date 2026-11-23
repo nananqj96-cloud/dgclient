@@ -76,32 +76,19 @@ public final class SaturationRenderer {
       int vs = GL33C.glCreateShader(GL33C.GL_VERTEX_SHADER);
       GL33C.glShaderSource(vs, vertSrc);
       GL33C.glCompileShader(vs);
-      if (GL33C.glGetShaderParameter(vs, GL33C.GL_COMPILE_STATUS) == 0) {
-         System.err.println("SaturationRenderer vertex shader compile error: " + GL33C.glGetShaderInfoLog(vs));
-         return;
-      }
 
       int fs = GL33C.glCreateShader(GL33C.GL_FRAGMENT_SHADER);
       GL33C.glShaderSource(fs, fragSrc);
       GL33C.glCompileShader(fs);
-      if (GL33C.glGetShaderParameter(fs, GL33C.GL_COMPILE_STATUS) == 0) {
-         System.err.println("SaturationRenderer fragment shader compile error: " + GL33C.glGetShaderInfoLog(fs));
-         return;
-      }
 
       program = GL33C.glCreateProgram();
       GL33C.glAttachShader(program, vs);
       GL33C.glAttachShader(program, fs);
       GL33C.glLinkProgram(program);
-      if (GL33C.glGetProgramParameter(program, GL33C.GL_LINK_STATUS) == 0) {
-         System.err.println("SaturationRenderer program link error: " + GL33C.glGetProgramInfoLog(program));
-         return;
-      }
 
       GL33C.glDeleteShader(vs);
       GL33C.glDeleteShader(fs);
 
-      // Fullscreen quad: two triangles covering [-1, 1]
       vao = GL33C.glGenVertexArrays();
       vbo = GL33C.glGenBuffers();
       GL33C.glBindVertexArray(vao);
