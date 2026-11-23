@@ -1,41 +1,98 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
+import net.minecraft.client.Minecraft;
 
 public class ZoomModule extends Module {
-   private static final double EASE_SPEED = 14.0;
-   public final SliderSetting factor = this.addSetting(
-      new SliderSetting("Factor", "Zoom factor", 4.0, 2.0, 10.0, 0.5, "x")
-   );
-   public final BooleanSetting smooth = this.addSetting(
-      new BooleanSetting("Smooth", "Smooth zoom in/out", true)
-   );
-   private double current = 1.0;
-   private long lastNanos = 0L;
+    private static final float MIN_ZOOM = 1.1F;
+    private static final float MAX_ZOOM = 50.0F;
+    private static final float SCROLL_STEP = 1.2F;
+    private static final float FAST_RATE = 30.0F;
+    private static final float SLOW_RATE = 5.0F;
+    private static final float MAX_FRAME_SECONDS = 0.1F;
+    private static volatile ZoomModule instance;
+    private static float target = 1.0F;
+    private static float current = 1.0F;
+    private static long lastNanos;
+    private final SliderSetting zoom = this.addSetting(new SliderSetting("Zoom", 4.0, 1.5, 20.0, 0.5F));
+    private final SliderSetting smoothness = this.addSetting(new SliderSetting("Smoothness", 60.0, 0.0, 100.0, 5.0F));
+    private final BooleanSetting scroll = this.addSetting(new BooleanSetting("Scroll", true));
+    private final BooleanSetting lowerSensitivity = this.addSetting(new BooleanSetting("Lower Sensitivity", true));
+    private final BooleanSetting cinematic = this.addSetting(new BooleanSetting("Cinematic Camera", false));
+    private boolean smoothBefore;
+    private boolean smoothPushed;
 
-   public ZoomModule() {
-      super("Zoom", "Optical zoom on a key", Category.MISC);
-   }
+    public ZoomModule() {
+        super("zoom", "Hold the key to zoom in.", Category.VISUALS);
+        this.setKeybind(67);
+        this.setHoldMode(true);
+        instance = this;
+    }
 
-   public double currentFactor() {
-      long now = System.nanoTime();
-      double dt = this.lastNanos == 0L ? 0.0 : (double)(now - this.lastNanos) / 1.0E9;
-      this.lastNanos = now;
-      double target = this.isEnabled() ? (double)this.factor.getFloat() : 1.0;
-      if (!this.smooth.get()) {
-         this.current = target;
-         return this.current;
-      } else {
-         double t = 1.0 - Math.exp(-14.0 * Math.max(0.0, dt));
-         this.current = this.current + (target - this.current) * t;
-         if (Math.abs(this.current - target) < 0.001) {
-            this.current = target;
-         }
+    @Override
+    protected void onEnable() {
+        target = this.zoom.get();
+        if (this.cinematic.get()) {
+            Minecraft mc = Minecraft.getInstance();
+            this.smoothBefore = mc.options.smoothCamera;
+            mc.options.smoothCamera = true;
+            this.smoothPushed = true;
+        }
+    }
 
-         return this.current;
-      }
-   }
+    @Override
+    protected void onDisable() {
+        target = 1.0F;
+        if (this.smoothPushed) {
+            Minecraft.getInstance().options.smoothCamera = this.smoothBefore;
+            this.smoothPushed = false;
+        }
+    }
+
+    public static float fov(float fov) {
+        float factor = advance();
+        return factor > 1.0001F ? fov / factor : fov;
+    }
+
+    public static double turnScale() {
+        ZoomModule module = instance;
+        return module != null && module.lowerSensitivity.get() && !(current <= 1.0001F) ? 1.0 / current : 1.0;
+    }
+
+    public static boolean scroll(double amount) {
+        ZoomModule module = instance;
+        if (module != null && module.isEnabled() && module.scroll.get() && amount != 0.0) {
+            float next = target * (amount > 0.0 ? 1.2F : 0.8333333F);
+            target = Math.max(1.1F, Math.min(50.0F, next));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static float advance() {
+        long now = System.nanoTime();
+        float seconds = lastNanos == 0L ? 0.0F : Math.min(0.1F, (float)(now - lastNanos) / 1.0E9F);
+        lastNanos = now;
+        ZoomModule module = instance;
+        float smooth = module == null ? 0.0F : module.smoothness.get() / 100.0F;
+        if (!(smooth <= 0.0F) && current != target) {
+            float rate = 30.0F + -25.0F * smooth;
+            float blend = 1.0F - (float)Math.exp(-seconds * rate);
+            double from = Math.log(current);
+            double to = Math.log(target);
+            current = (float)Math.exp(from + (to - from) * blend);
+            if (Math.abs(current - target) < 0.002F) {
+                current = target;
+            }
+
+            return current;
+        } else {
+            current = target;
+            return current;
+        }
+    }
 }

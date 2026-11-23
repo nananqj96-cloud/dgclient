@@ -19,7 +19,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 
-public final class ChunkFinderModule extends Module {
+public class ChunkFinderModule extends Module {
    private static final int MIN_CHUNK_AGE_TICKS = 200;
    private static final int CHUNKS_PER_TICK = 8;
    public final SliderSetting mergeRadius = this.addSetting(

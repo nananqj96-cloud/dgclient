@@ -4,7 +4,6 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
-import dev.aether.settings.StringSetting;
 import dev.aether.util.Amounts;
 import java.util.Locale;
 import java.util.Objects;
@@ -26,15 +25,6 @@ public class FakeStatsModule extends Module {
       "time played",
       "played"
    };
-   public final StringSetting money = this.addSetting(
-      new StringSetting(
-         "Money",
-         "Your fake balance (1m, 67k, 250000). Wired to FakePay. Blank = off.",
-         "1m",
-         32,
-         "e.g. 1m, 250k"
-      )
-   );
    public final SliderSetting moneyLine = this.addSetting(
       new SliderSetting(
             "Money Line",
@@ -46,57 +36,21 @@ public class FakeStatsModule extends Module {
          )
          .withLabel(FakeStatsModule::lineLabel)
    );
-   public final StringSetting shards = this.addSetting(
-      new StringSetting(
-         "Shards",
-         "Fake shard count. Blank = off.",
-         "",
-         32,
-         "e.g. 9,999"
-      )
-   );
    public final SliderSetting shardsLine = this.addSetting(
       new SliderSetting(
             "Shards Line", "Which sidebar line is shards. 0 = auto by name.", 2.0, 0.0, 15.0, 1.0
          )
          .withLabel(FakeStatsModule::lineLabel)
    );
-   public final StringSetting kills = this.addSetting(
-      new StringSetting(
-         "Kills",
-         "Fake kill count. Blank = off.",
-         "",
-         32,
-         "e.g. 1,000"
-      )
-   );
    public final SliderSetting killsLine = this.addSetting(
       new SliderSetting("Kills Line", "Which sidebar line is kills. 0 = auto by name.", 3.0, 0.0, 15.0, 1.0)
          .withLabel(FakeStatsModule::lineLabel)
-   );
-   public final StringSetting deaths = this.addSetting(
-      new StringSetting(
-         "Deaths",
-         "Fake death count. Blank = off.",
-         "",
-         32,
-         "e.g. 0"
-      )
    );
    public final SliderSetting deathsLine = this.addSetting(
       new SliderSetting(
             "Deaths Line", "Which sidebar line is deaths. 0 = auto by name.", 4.0, 0.0, 15.0, 1.0
          )
          .withLabel(FakeStatsModule::lineLabel)
-   );
-   public final StringSetting playtime = this.addSetting(
-      new StringSetting(
-         "Playtime",
-         "Fake playtime, any text. Blank = off.",
-         "",
-         32,
-         "e.g. 365d 12h"
-      )
    );
    public final SliderSetting playtimeLine = this.addSetting(
       new SliderSetting(

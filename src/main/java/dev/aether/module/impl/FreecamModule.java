@@ -1,9 +1,8 @@
 package dev.aether.module.impl;
 
-import dev.aether.AetherClient;
-import dev.aether.mixin.ClientInputAccessor;
-import dev.aether.module.Category;
+import com.example.client.mixin.AccessorMovementClientInput;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.CameraType;
@@ -12,384 +11,378 @@ import net.minecraft.client.Options;
 import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Input;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 public class FreecamModule extends Module {
-   private static FreecamModule instance;
-   private static final double SCROLL_SPEED_STEP = 0.1;
-   public final SliderSetting speed = this.addSetting(
-      new SliderSetting("Speed", "Camera fly speed", 1.0, 0.1, 50.0, 0.1, "x")
-   );
-   public final SliderSetting verticalMultiplier = this.addSetting(
-      new SliderSetting(
-         "Vertical speed",
-         "Up/down speed multiplier",
-         1.0,
-         0.2,
-         5.0,
-         0.05,
-         "x"
-      )
-   );
-   public final BooleanSetting smoothing = this.addSetting(
-      new BooleanSetting("Smoothing", "Ease camera movement", true)
-   );
-   public final BooleanSetting showPlayerModel = this.addSetting(
-      new BooleanSetting("Show own body", "Render your body while detached", true)
-   );
-   public final BooleanSetting showHands = this.addSetting(
-      new BooleanSetting("Show hands", "Keep first-person hands visible", true)
-   );
-   public final SliderSetting lookSensitivity = this.addSetting(
-      new SliderSetting("Look Sensitivity", "Camera look sensitivity", 0.5, 0.1, 2.0, 0.05)
-   );
-   public final SliderSetting freecamChunkDistance = this.addSetting(
-      new SliderSetting("Chunk distance", "Chunks to load around the camera", 12.0, 2.0, 32.0, 1.0)
-   );
-   private double currentX;
-   private double currentY;
-   private double currentZ;
-   private double prevX;
-   private double prevY;
-   private double prevZ;
-   private float currentYaw;
-   private float currentPitch;
-   private float prevYaw;
-   private float prevPitch;
-   private double savedX;
-   private double savedY;
-   private double savedZ;
-   private float savedYaw;
-   private float savedPitch;
-   private boolean savedAbilitiesFlying;
-   private boolean savedSmartCull;
-   private CameraType perspectiveBeforeFreecam;
-   private boolean switchedPerspectiveForBody;
-   private ChunkPos lastSyncedCamChunk;
-   private int lastSyncedLoadDistance = Integer.MIN_VALUE;
-   private boolean activationPending;
-   private boolean active = false;
-   private boolean latchedForward;
-   private boolean latchedBack;
-   private boolean latchedLeft;
-   private boolean latchedRight;
-   private boolean latchedJump;
-   private boolean latchedSneak;
-   private boolean latchedSprint;
+    private static final int WALK_FWD = 1;
+    private static final int WALK_BACK = 2;
+    private static final int WALK_LEFT = 4;
+    private static final int WALK_RIGHT = 8;
+    private static final int WALK_JUMP = 16;
+    private static final int WALK_SNEAK = 32;
+    private static final int WALK_SPRINT = 64;
+    private static final int WALK_FLAT = 15;
+    private static final int LEARN_TICKS = 40;
+    private static final int CHUNK_CAP = 32;
+    private static final float SCROLL_STEP = 1.2F;
+    public static volatile FreecamModule active;
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 1.0, 0.1, 50.0, 0.1F));
+    private final SliderSetting verticalSpeed = this.addSetting(new SliderSetting("Vertical", 1.0, 0.2, 5.0, 0.05F));
+    private final BooleanSetting smoothing = this.addSetting(new BooleanSetting("Smooth", true));
+    private final BooleanSetting showOwnBody = this.addSetting(new BooleanSetting("Body", true));
+    private final BooleanSetting showHands = this.addSetting(new BooleanSetting("Hands", true));
+    private final BooleanSetting bodyFollowsKeys = this.addSetting(new BooleanSetting("Keys Move Body", false));
+    private final BooleanSetting keepWalking = this.addSetting(new BooleanSetting("Keep Walking", true));
+    private final BooleanSetting scrollSpeed = this.addSetting(new BooleanSetting("Scroll Speed", true));
+    private final BooleanSetting scrollResets = this.addSetting(new BooleanSetting("Reset Scroll Speed", true));
+    private final SliderSetting chunkDistance = this.addSetting(new SliderSetting("Chunks", 12.0, 2.0, 32.0, 1.0F));
+    private Vec3 pos = Vec3.ZERO;
+    private Vec3 prev = Vec3.ZERO;
+    private float yaw;
+    private float pitch;
+    private boolean flyingBefore;
+    private boolean cullBefore;
+    private CameraType viewBefore;
+    private boolean viewPushed;
+    private ChunkPos focus;
+    private int radius = -1;
+    private boolean waiting;
+    private boolean live;
+    private int walk;
+    private int learn;
+    private float scrolled = 1.0F;
 
-   public FreecamModule() {
-      super(
-         "Freecam",
-         "Detached camera (WASD = fly). Body can keep walking; mining uses real aim.",
-         Category.MISC
-      );
-      instance = this;
-   }
+    public FreecamModule() {
+        super("freecam", "Detached camera.", Category.MISC);
+        this.scrollResets.visibleWhen(this.scrollSpeed::get);
+    }
 
-   public static FreecamModule get() {
-      return instance;
-   }
+    @Override
+    public boolean persistEnabled() {
+        return false;
+    }
 
-   public boolean adjustSpeedFromScroll(double d) {
-      if (this.isActive() && d != 0.0) {
-         this.speed.set(scrolledSpeed(this.speed.get(), d));
-         return true;
-      } else {
-         return false;
-      }
-   }
+    @Override
+    protected void onEnable() {
+        this.waiting = true;
+        this.live = false;
+    }
 
-   static double scrolledSpeed(double d, double e) {
-      return e == 0.0 ? d : d + Math.copySign(0.1, e);
-   }
+    @Override
+    protected void onDisable() {
+        Minecraft mc = Minecraft.getInstance();
+        boolean wasLive = this.live;
+        this.waiting = false;
+        this.live = false;
+        if (active == this) {
+            active = null;
+        }
 
-   @Override
-   protected void onEnable() {
-      this.clearMovementLatches();
-      Minecraft var1 = Minecraft.getInstance();
-      if (var1.player != null) {
-         this.captureMovementLatches(var1);
-      }
+        this.walk = 0;
+        this.learn = 0;
+        this.scrolled = 1.0F;
+        if (this.viewPushed) {
+            mc.options.setCameraType(this.viewBefore);
+            this.viewPushed = false;
+        }
 
-      this.activationPending = true;
-      this.active = false;
-   }
-
-   @Override
-   protected void onDisable() {
-      Minecraft var1 = Minecraft.getInstance();
-      this.clearMovementLatches();
-      this.activationPending = false;
-      this.active = false;
-      if (this.switchedPerspectiveForBody) {
-         var1.options.setCameraType(this.perspectiveBeforeFreecam);
-         this.switchedPerspectiveForBody = false;
-      }
-
-      this.restoreViewOnlyClientState(var1);
-      this.restoreVanillaChunkLoading(var1);
-      if (var1.player != null) {
-         var1.player.getAbilities().flying = this.savedAbilitiesFlying;
-      }
-   }
-
-   public void tryCompleteActivation(Minecraft minecraft) {
-      if (this.isEnabled() && this.activationPending && minecraft.player != null && minecraft.level != null) {
-         this.savedX = minecraft.player.getX();
-         this.savedY = minecraft.player.getY();
-         this.savedZ = minecraft.player.getZ();
-         this.savedYaw = minecraft.player.getYRot();
-         this.savedPitch = minecraft.player.getXRot();
-         this.currentX = this.prevX = this.savedX;
-         this.currentY = this.prevY = this.savedY + (double)minecraft.player.getEyeHeight();
-         this.currentZ = this.prevZ = this.savedZ;
-         this.currentYaw = this.prevYaw = this.savedYaw;
-         this.currentPitch = this.prevPitch = this.savedPitch;
-         this.savedAbilitiesFlying = minecraft.player.getAbilities().flying;
-         this.switchedPerspectiveForBody = false;
-         if (this.showPlayerModel.get()) {
-            this.perspectiveBeforeFreecam = minecraft.options.getCameraType();
-            if (this.perspectiveBeforeFreecam.isFirstPerson()) {
-               minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-               this.switchedPerspectiveForBody = true;
-            }
-         }
-
-         this.activationPending = false;
-         this.active = true;
-         this.lastSyncedCamChunk = null;
-         this.lastSyncedLoadDistance = Integer.MIN_VALUE;
-         this.applyViewOnlyClientState(minecraft);
-         this.syncFreecamChunkLoading(minecraft);
-         reapplyBodyInput(minecraft);
-      }
-   }
-
-   private void captureMovementLatches(Minecraft minecraft) {
-      Options var2 = minecraft.options;
-      LocalPlayer var3 = minecraft.player;
-      Input var4 = var3 != null ? var3.input.keyPresses : Input.EMPTY;
-      this.latchedForward = var2.keyUp.isDown() || var4.forward();
-      this.latchedBack = var2.keyDown.isDown() || var4.backward();
-      this.latchedLeft = var2.keyLeft.isDown() || var4.left();
-      this.latchedRight = var2.keyRight.isDown() || var4.right();
-      this.latchedJump = var2.keyJump.isDown() || var4.jump();
-      this.latchedSneak = var2.keyShift.isDown() || var4.shift() || var3 != null && var3.isShiftKeyDown();
-      this.latchedSprint = var2.keySprint.isDown() || var4.sprint();
-      this.mergeLatchFromAutoWalk();
-   }
-
-   private void mergeLatchFromAutoWalk() {
-      AutoWalkModule var1 = AetherClient.modules() != null ? AetherClient.modules().autoWalk : null;
-      if (var1 != null && var1.isEnabled()) {
-         this.latchedForward = true;
-      }
-   }
-
-   private void clearMovementLatches() {
-      this.latchedRight = false;
-      this.latchedLeft = false;
-      this.latchedBack = false;
-      this.latchedForward = false;
-      this.latchedSprint = false;
-      this.latchedSneak = false;
-      this.latchedJump = false;
-   }
-
-   @Override
-   public void onTick() {
-      Minecraft var1 = Minecraft.getInstance();
-      if (this.isEnabled()) {
-         this.tryCompleteActivation(var1);
-         if (this.active && var1.player != null) {
-            this.prevX = this.currentX;
-            this.prevY = this.currentY;
-            this.prevZ = this.currentZ;
-            this.prevYaw = this.currentYaw;
-            this.prevPitch = this.currentPitch;
-            float var2 = this.speed.getFloat();
-            float var3 = this.verticalMultiplier.getFloat();
-            float var4 = this.smoothing.get() ? 0.5F : 1.0F;
-            Options var5 = var1.options;
-            double var6 = 0.0;
-            double var8 = 0.0;
-            double var10 = 0.0;
-            if (var5.keyUp.isDown()) {
-               var6++;
+        if (wasLive) {
+            mc.smartCull = this.cullBefore;
+            if (mc.gameMode != null) {
+                mc.gameMode.stopDestroyBlock();
             }
 
-            if (var5.keyDown.isDown()) {
-               var6--;
+            this.releaseChunks(mc);
+            if (mc.player != null) {
+                mc.player.getAbilities().flying = this.flyingBefore;
+            }
+        }
+    }
+
+    public void onTick() {
+        Minecraft mc = Minecraft.getInstance();
+        this.open(mc);
+        LocalPlayer player = mc.player;
+        if (this.live && player != null) {
+            if (this.learn > 0) {
+                this.learn--;
+                this.absorb(player, false);
             }
 
-            if (var5.keyLeft.isDown()) {
-               var8++;
+            this.prev = this.pos;
+            if (player.getAbilities().instabuild) {
+                player.getAbilities().flying = false;
             }
 
-            if (var5.keyRight.isDown()) {
-               var8--;
+            this.stepCamera(mc.options);
+            this.followChunks(mc);
+        }
+    }
+
+    private void open(Minecraft mc) {
+        LocalPlayer player = mc.player;
+        if (this.waiting && player != null && mc.level != null) {
+            this.flyingBefore = player.getAbilities().flying;
+            this.pos = this.prev = new Vec3(player.getX(), player.getY() + player.getEyeHeight(Pose.STANDING), player.getZ());
+            this.yaw = player.getYRot();
+            this.pitch = player.getXRot();
+            this.viewPushed = false;
+            if (this.showOwnBody.get()) {
+                this.viewBefore = mc.options.getCameraType();
+                if (this.viewBefore.isFirstPerson()) {
+                    mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+                    this.viewPushed = true;
+                }
             }
 
-            if (var5.keyJump.isDown()) {
-               var10++;
+            this.waiting = false;
+            this.live = true;
+            active = this;
+            this.walk = 0;
+            this.absorb(player, true);
+            this.learn = 40;
+            this.focus = null;
+            this.radius = -1;
+            this.cullBefore = mc.smartCull;
+            mc.smartCull = false;
+            this.followChunks(mc);
+            drive(mc);
+        }
+    }
+
+    private void stepCamera(Options options) {
+        double ahead = (options.keyUp.isDown() ? 1 : 0) - (options.keyDown.isDown() ? 1 : 0);
+        double side = (options.keyLeft.isDown() ? 1 : 0) - (options.keyRight.isDown() ? 1 : 0);
+        double rise = (options.keyJump.isDown() ? 1 : 0) - (options.keyShift.isDown() ? 1 : 0);
+        double step = this.flySpeed() * (this.smoothing.get() ? 0.5 : 1.0);
+        Vec3 look = Vec3.directionFromRotation(0.0F, this.yaw);
+        Vec3 left = new Vec3(look.z, 0.0, -look.x);
+        this.pos = this.pos.add((look.x * ahead + left.x * side) * step, rise * step * this.verticalSpeed.get(), (look.z * ahead + left.z * side) * step);
+    }
+
+    private float flySpeed() {
+        return !this.scrollResets.get() ? this.speed.get() : Mth.clamp(this.speed.get() * this.scrolled, this.speed.min(), this.speed.max());
+    }
+
+    private void absorb(LocalPlayer player, boolean opening) {
+        Options options = Minecraft.getInstance().options;
+        Input keys = player.input.keyPresses;
+        boolean carry = this.keepWalking.get();
+        boolean typed = carry && (opening || this.bodyFollowsKeys.get());
+        if (typed) {
+            this.setWalk(1, options.keyUp.isDown() || keys.forward());
+            this.setWalk(2, options.keyDown.isDown() || keys.backward());
+            this.setWalk(4, options.keyLeft.isDown() || keys.left());
+            this.setWalk(8, options.keyRight.isDown() || keys.right());
+            this.setWalk(16, options.keyJump.isDown() || keys.jump());
+            this.setWalk(32, options.keyShift.isDown() || keys.shift() || opening && player.isShiftKeyDown());
+            this.setWalk(64, options.keySprint.isDown() || keys.sprint());
+        } else if (player.isShiftKeyDown()) {
+            this.walk |= 32;
+        }
+
+//         AutoWalkModule autoWalk = ModuleRegistry.get(AutoWalkModule.class);
+        if (autoWalk != null && autoWalk.isEnabled()) {
+            this.walk |= 1;
+        }
+
+        if (carry) {
+            if (player.zza > 0.02F) {
+                this.walk |= 1;
             }
 
-            if (var5.keyShift.isDown()) {
-               var10--;
+            if (player.zza < -0.02F) {
+                this.walk |= 2;
             }
 
-            LocalPlayer var12 = var1.player;
-            if (var12.getAbilities().instabuild) {
-               var12.getAbilities().flying = false;
+            if (player.xxa > 0.02F) {
+                this.walk |= 4;
             }
 
-            double var13 = Math.toRadians((double)this.currentYaw);
-            double var15 = -Math.sin(var13) * var6 * (double)var2 + Math.cos(var13) * var8 * (double)var2;
-            double var17 = Math.cos(var13) * var6 * (double)var2 + Math.sin(var13) * var8 * (double)var2;
-            double var19 = var10 * (double)var2 * (double)var3;
-            this.currentX += var15 * (double)var4;
-            this.currentY += var19 * (double)var4;
-            this.currentZ += var17 * (double)var4;
-            this.syncFreecamChunkLoading(var1);
-         }
-      }
-   }
-
-   public static void reapplyBodyInput(Minecraft minecraft) {
-      FreecamModule var1 = instance;
-      if (var1 != null && var1.isActive() && minecraft.player != null) {
-         LocalPlayer var2 = minecraft.player;
-         boolean var3 = var1.latchedForward;
-         boolean var4 = var1.latchedBack;
-         boolean var5 = var1.latchedLeft;
-         boolean var6 = var1.latchedRight;
-         boolean var7 = var1.latchedJump;
-         boolean var8 = var1.latchedSneak;
-         boolean var9 = var1.latchedSprint;
-         var2.input.keyPresses = new Input(var3, var4, var5, var6, var7, var8, var9);
-         float var10 = (var5 ? 1.0F : 0.0F) - (var6 ? 1.0F : 0.0F);
-         float var11 = (var3 ? 1.0F : 0.0F) - (var4 ? 1.0F : 0.0F);
-         Vec2 var12 = new Vec2(var10, var11).normalized();
-         ((ClientInputAccessor)var2.input).aetherclient$setMoveVector(var12);
-         var2.setShiftKeyDown(var8);
-      }
-   }
-
-   public boolean hasLatchedLocomotion() {
-      return this.latchedForward || this.latchedBack || this.latchedLeft || this.latchedRight || this.latchedJump || this.latchedSneak;
-   }
-
-   private void syncFreecamChunkLoading(Minecraft minecraft) {
-      if (this.active && minecraft.level != null && minecraft.player != null) {
-         ClientChunkCache var2 = minecraft.level.getChunkSource();
-         ChunkPos var3 = minecraft.player.chunkPosition();
-         int var4 = Math.min(32, Math.max(2, Math.round(this.freecamChunkDistance.getFloat())));
-         int var5 = Math.min(32, Math.max(var4, minecraft.options.getEffectiveRenderDistance()));
-         if (var5 != this.lastSyncedLoadDistance) {
-            var2.updateViewRadius(var5);
-            this.lastSyncedLoadDistance = var5;
-         }
-
-         if (this.lastSyncedCamChunk == null || var3.x != this.lastSyncedCamChunk.x || var3.z != this.lastSyncedCamChunk.z) {
-            var2.updateViewCenter(var3.x, var3.z);
-            this.lastSyncedCamChunk = var3;
-            if (minecraft.levelRenderer != null) {
-               minecraft.levelRenderer.needsUpdate();
+            if (player.xxa < -0.02F) {
+                this.walk |= 8;
             }
-         }
-      }
-   }
 
-   private void restoreVanillaChunkLoading(Minecraft minecraft) {
-      this.lastSyncedCamChunk = null;
-      this.lastSyncedLoadDistance = Integer.MIN_VALUE;
-      if (minecraft.level != null) {
-         ClientChunkCache var2 = minecraft.level.getChunkSource();
-         if (minecraft.player != null) {
-            ChunkPos var3 = minecraft.player.chunkPosition();
-            var2.updateViewCenter(var3.x, var3.z);
-         }
+            if (!opening || (this.walk & 15) == 0) {
+                this.aimFromMotion(player);
+            }
+        }
+    }
 
-         var2.updateViewRadius(minecraft.options.getEffectiveRenderDistance());
-         if (minecraft.levelRenderer != null) {
-            minecraft.levelRenderer.needsUpdate();
-         }
-      }
-   }
+    private void setWalk(int bit, boolean on) {
+        if (on) {
+            this.walk |= bit;
+        }
+    }
 
-   private void applyViewOnlyClientState(Minecraft minecraft) {
-      this.savedSmartCull = minecraft.smartCull;
-      minecraft.smartCull = false;
-   }
+    private void aimFromMotion(LocalPlayer player) {
+        Vec3 motion = player.getDeltaMovement();
+        double vx = motion.x;
+        double vz = motion.z;
+        if (!(vx * vx + vz * vz < 1.0E-8)) {
+            Vec3 look = Vec3.directionFromRotation(0.0F, player.getYRot());
+            double along = vx * look.x + vz * look.z;
+            double across = vz * look.x - vx * look.z;
+            if (Math.abs(along) >= Math.abs(across)) {
+                if (along > 0.01) {
+                    this.walk |= 1;
+                } else if (along < -0.01) {
+                    this.walk |= 2;
+                }
+            } else if (across > 0.01) {
+                this.walk |= 4;
+            } else if (across < -0.01) {
+                this.walk |= 8;
+            }
+        }
+    }
 
-   private void restoreViewOnlyClientState(Minecraft minecraft) {
-      minecraft.smartCull = this.savedSmartCull;
-      if (minecraft.gameMode != null) {
-         minecraft.gameMode.stopDestroyBlock();
-      }
-   }
+    public static void drive(Minecraft mc) {
+        FreecamModule module = active;
+        if (module != null && mc.player != null) {
+            module.pushWalk(mc);
+        }
+    }
 
-   public boolean isActive() {
-      return this.isEnabled() && this.active;
-   }
+    private void pushWalk(Minecraft mc) {
+        Options options = mc.options;
+        boolean liveKeys = this.bodyFollowsKeys.get();
+        boolean forward = this.on(1) || liveKeys && options.keyUp.isDown();
+        boolean back = this.on(2) || liveKeys && options.keyDown.isDown();
+        boolean left = this.on(4) || liveKeys && options.keyLeft.isDown();
+        boolean right = this.on(8) || liveKeys && options.keyRight.isDown();
+        boolean jump = this.on(16);
+        boolean sneak = this.on(32) || liveKeys && options.keyShift.isDown();
+        boolean sprint = this.on(64) || liveKeys && options.keySprint.isDown();
+        if (liveKeys) {
+            if (options.keyDown.isDown()) {
+                this.walk &= -2;
+            }
 
-   public boolean isShowPlayerModel() {
-      return this.showPlayerModel.get();
-   }
+            if (options.keyUp.isDown()) {
+                this.walk &= -3;
+            }
 
-   public boolean isShowHands() {
-      return this.showHands.get();
-   }
+            if (options.keyRight.isDown()) {
+                this.walk &= -5;
+            }
 
-   public boolean renderHands() {
-      return !this.isActive() || this.isShowHands();
-   }
+            if (options.keyLeft.isDown()) {
+                this.walk &= -9;
+            }
+        }
 
-   public boolean wasHoldingSneak() {
-      return this.latchedSneak;
-   }
+        LocalPlayer player = mc.player;
+        player.input.keyPresses = new Input(forward, back, left, right, jump, sneak, sprint);
+        float sideways = (left ? 1.0F : 0.0F) - (right ? 1.0F : 0.0F);
+        float ahead = (forward ? 1.0F : 0.0F) - (back ? 1.0F : 0.0F);
+        ((AccessorMovementClientInput)player.input).anubis$setMoveVector(new Vec2(sideways, ahead).normalized());
+        player.setShiftKeyDown(sneak);
+    }
 
-   public double getInterpolatedX(float f) {
-      return Mth.lerp((double)f, this.prevX, this.currentX);
-   }
+    private boolean on(int bit) {
+        return (this.walk & bit) != 0;
+    }
 
-   public double getInterpolatedY(float f) {
-      return Mth.lerp((double)f, this.prevY, this.currentY);
-   }
+    private void followChunks(Minecraft mc) {
+        if (this.live && mc.level != null && mc.player != null) {
+            ClientChunkCache cache = mc.level.getChunkSource();
+            ChunkPos camera = new ChunkPos(Mth.floor(this.pos.x) >> 4, Mth.floor(this.pos.z) >> 4);
+            ChunkPos feet = mc.player.chunkPosition();
+            int span = Math.max(Math.abs(camera.x - feet.x), Math.abs(camera.z - feet.z));
+            int preference = Mth.clamp(this.chunkDistance.getInt(), 2, 32);
+            ChunkPos next = span > preference ? new ChunkPos(feet.x + (camera.x - feet.x) / 2, feet.z + (camera.z - feet.z) / 2) : camera;
+            int needed = Mth.clamp(Math.max(preference, span / 2 + 3), 2, 32);
+            if (needed != this.radius) {
+                cache.updateViewRadius(needed);
+                this.radius = needed;
+            }
 
-   public double getInterpolatedZ(float f) {
-      return Mth.lerp((double)f, this.prevZ, this.currentZ);
-   }
+            if (this.focus == null || next.x != this.focus.x || next.z != this.focus.z) {
+                cache.updateViewCenter(next.x, next.z);
+                this.focus = next;
+                if (mc.levelRenderer != null) {
+                    mc.levelRenderer.needsUpdate();
+                }
+            }
+        }
+    }
 
-   public float getInterpolatedYaw(float f) {
-      return Mth.lerp(f, this.prevYaw, this.currentYaw);
-   }
+    private void releaseChunks(Minecraft mc) {
+        this.focus = null;
+        this.radius = -1;
+        if (mc.level != null) {
+            ClientChunkCache cache = mc.level.getChunkSource();
+            if (mc.player != null) {
+                ChunkPos feet = mc.player.chunkPosition();
+                cache.updateViewCenter(feet.x, feet.z);
+            }
 
-   public float getInterpolatedPitch(float f) {
-      return Mth.lerp(f, this.prevPitch, this.currentPitch);
-   }
+            cache.updateViewRadius(mc.options.getEffectiveRenderDistance());
+            if (mc.levelRenderer != null) {
+                mc.levelRenderer.needsUpdate();
+            }
+        }
+    }
 
-   public Vec3 getInterpolatedPos(float f) {
-      return new Vec3(this.getInterpolatedX(f), this.getInterpolatedY(f), this.getInterpolatedZ(f));
-   }
+    public boolean drawsSelf(Entity entity, Player viewer) {
+        Minecraft mc = Minecraft.getInstance();
+        return this.showOwnBody.get() && mc.player != null && entity == mc.player && viewer == mc.player;
+    }
 
-   public void setRotation(float f, float g) {
-      this.currentYaw = f;
-      this.currentPitch = Mth.clamp(g, -90.0F, 90.0F);
-   }
+    public boolean keepHands() {
+        return this.showHands.get();
+    }
 
-   public float getCurrentYaw() {
-      return this.currentYaw;
-   }
+    public boolean showBody() {
+        return this.showOwnBody.get();
+    }
 
-   public float getCurrentPitch() {
-      return this.currentPitch;
-   }
+    public static boolean scroll(double amount) {
+        FreecamModule module = active;
+        if (module != null && module.scrollSpeed.get() && amount != 0.0) {
+            float factor = amount > 0.0 ? 1.2F : 0.8333333F;
+            NumberSetting speed = module.speed;
+            if (module.scrollResets.get()) {
+                module.scrolled = Mth.clamp(module.scrolled * factor, speed.min() / speed.get(), speed.max() / speed.get());
+            } else {
+                speed.set(speed.get() * factor);
+            }
 
-   public float getLookSensitivity() {
-      return this.lookSensitivity.getFloat();
-   }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void turn(double yRot, double xRot) {
+        this.yaw += (float)yRot * 0.15F;
+        this.pitch = Mth.clamp(this.pitch + (float)xRot * 0.15F, -90.0F, 90.0F);
+    }
+
+    public double getX(float tickDelta) {
+        return Mth.lerp(tickDelta, this.prev.x, this.pos.x);
+    }
+
+    public double getY(float tickDelta) {
+        return Mth.lerp(tickDelta, this.prev.y, this.pos.y);
+    }
+
+    public double getZ(float tickDelta) {
+        return Mth.lerp(tickDelta, this.prev.z, this.pos.z);
+    }
+
+    public float getYaw() {
+        return this.yaw;
+    }
+
+    public float getPitch() {
+        return this.pitch;
+    }
 }

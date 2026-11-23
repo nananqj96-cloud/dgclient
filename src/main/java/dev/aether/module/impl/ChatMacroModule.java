@@ -1,72 +1,138 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
+import java.util.Locale;
 import dev.aether.module.Module;
-import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.KeybindSetting;
+import dev.aether.module.Category;
 import dev.aether.settings.ModeSetting;
-import dev.aether.settings.StringSetting;
+import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.util.StringUtil;
+import org.apache.commons.lang3.StringUtils;
 
 public class ChatMacroModule extends Module {
-   private static final int SLOTS = 3;
-   public final ModeSetting slot = this.addSetting(
-      new ModeSetting(
-         "Slot",
-         "Macro slot to edit.",
-         "1",
-         "1",
-         "2",
-         "3"
-      )
-   );
-   public final BooleanSetting sendInstantly = this.addSetting(
-      new BooleanSetting("Send Instantly", "Skip the chat preview and send immediately.", true)
-   );
-   private final StringSetting[] messages = new StringSetting[3];
-   private final KeybindSetting[] keys = new KeybindSetting[3];
+    public static final int MAX_MACROS = 8;
+    private static final String ACTION_SEND = "Send";
+    private static final String ACTION_OPEN = "Open in Chat";
+    private final ModeSetting slots = this.addSetting(new ModeSetting("Slots", "3", slotChoices()));
+    private final ModeSetting pressAction = this.addSetting(new ModeSetting("On Press", "Send", "Send", "Open in Chat"));
+    private final SliderSetting cooldown = this.addSetting(new SliderSetting("Cooldown (s)", 1.0, 1.0, 10.0, 0.5F));
+    private final KeySetting[] keys = new KeySetting[8];
+//     private final StringSetting[] texts = new StringSetting[8];
+    private int pendingSlot = -1;
+    private long lastSendNanos;
+    private boolean sentAny;
 
-   public ChatMacroModule() {
-      super("ChatMacro", "Bindable chat command macros.", Category.CLIENT);
+    public ChatMacroModule() {
+        super("chat-macro", "Sends chat messages or commands with a key press.", Category.MISC);
+        this.usesNotifications();
+        this.cooldown.visibleWhen(() -> this.pressAction.is("Send"));
 
-      for (int i = 0; i < 3; i++) {
-         String num = Integer.toString(i + 1);
-         this.messages[i] = this.addSetting(
-            new StringSetting("Message " + num, "Message or /command for slot " + num, "", 256, "/say hi")
-         );
-         this.keys[i] = this.addSetting(new KeybindSetting("Key " + num, "Key that runs slot " + num, -1));
-         this.messages[i].visibleWhen(() -> this.slot.is(num));
-         this.keys[i].visibleWhen(() -> this.slot.is(num));
-      }
-   }
+        for (int i = 0; i < 8; i++) {
+            int slot = i + 1;
+            this.keys[i] = this.addSetting("macro-" + slot + "-key", new KeySetting("Macro " + slot + " Key", -1));
+//             this.texts[i] = this.addSetting("macro-" + slot + "-text", new StringSetting("Macro " + slot + " Text", ""));
+            this.texts[i].privateValue();
+            this.keys[i].visibleWhen(() -> slot <= this.slotCount());
+            this.texts[i].visibleWhen(() -> slot <= this.slotCount());
+        }
+    }
 
-   @Override
-   public boolean onKeyPress(int keyCode) {
-      boolean handled = false;
+    @Override
+    public boolean inConfigs() {
+        return false;
+    }
 
-      for (int i = 0; i < 3; i++) {
-         if (this.keys[i].matches(keyCode)) {
-            this.run(this.messages[i].get());
-            handled = true;
-         }
-      }
+    @Override
+    protected void onEnable() {
+        this.pendingSlot = -1;
+    }
 
-      return handled;
-   }
+    @Override
+    protected void onDisable() {
+        this.pendingSlot = -1;
+    }
 
-   private void run(String message) {
-      if (message != null && !message.isBlank()) {
-         Minecraft mc = Minecraft.getInstance();
-         if (mc.player != null && mc.player.connection != null) {
-            if (!this.sendInstantly.get()) {
-               mc.setScreen(new ChatScreen(message, false));
-            } else if (message.startsWith("/")) {
-               mc.player.connection.sendCommand(message.substring(1));
-            } else {
-               mc.player.connection.sendChat(message);
+//     private void onKey(KeyInputEvent event) {
+        if (event.action == 1) {
+            this.onPress(event.key);
+        }
+    }
+
+//     private void onMouse(MouseInputEvent event) {
+        if (event.action == 1) {
+            this.onPress(1000 + event.button);
+        }
+    }
+
+    private void onPress(int pressed) {
+//         if (ModuleKeybinds.isBindable(pressed) && this.pendingSlot == -1) {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.screen == null && mc.player != null) {
+                int count = this.slotCount();
+
+                for (int i = 0; i < count; i++) {
+                    if (this.keys[i].value() == pressed && !this.texts[i].get().isBlank()) {
+                        this.pendingSlot = i;
+                        return;
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
+
+    public void onTick() {
+        int slot = this.pendingSlot;
+        if (slot >= 0) {
+            this.pendingSlot = -1;
+            Minecraft mc = Minecraft.getInstance();
+            ClientPacketListener connection = mc.getConnection();
+            if (mc.player != null && connection != null && mc.screen == null) {
+                String text = normalize(this.texts[slot].get());
+                if (!text.isEmpty() && !text.equals("/")) {
+                    if (this.pressAction.is("Open in Chat")) {
+                        mc.setScreen(new ChatScreen(text, false));
+                    } else {
+                        long now = System.nanoTime();
+                        long left = (long)(this.cooldown.get() * 1.0E9) - (now - this.lastSendNanos);
+                        if (this.sentAny && left > 0L) {
+                            double seconds = Math.ceil(left / 1.0E8) / 10.0;
+//                             ModuleChat.actionBar(
+//                                 this, ModuleChat.body().warn("On cooldown").text(", ").value(String.format(Locale.ROOT, "%.1fs", seconds)).text(" left")
+                            );
+                        } else {
+                            this.lastSendNanos = now;
+                            this.sentAny = true;
+                            mc.gui.getChat().addRecentChat(text);
+                            if (text.startsWith("/")) {
+                                connection.sendCommand(text.substring(1));
+                            } else {
+                                connection.sendChat(text);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    static String normalize(String raw) {
+        String allowed = StringUtil.filterText(raw);
+        return StringUtil.trimChatMessage(StringUtils.normalizeSpace(allowed.trim()));
+    }
+
+    private int slotCount() {
+        return Integer.parseInt(this.slots.get());
+    }
+
+    private static String[] slotChoices() {
+        String[] choices = new String[8];
+
+        for (int i = 0; i < 8; i++) {
+            choices[i] = Integer.toString(i + 1);
+        }
+
+        return choices;
+    }
 }

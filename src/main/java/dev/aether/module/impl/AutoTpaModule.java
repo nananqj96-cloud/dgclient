@@ -6,7 +6,6 @@ import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
-import dev.aether.settings.StringSetting;
 import java.util.concurrent.ThreadLocalRandom;
 import net.minecraft.client.Minecraft;
 
@@ -18,11 +17,6 @@ public class AutoTpaModule extends Module {
          "TPA",
          "TPA",
          "TPAHere"
-      )
-   );
-   public final StringSetting target = this.addSetting(
-      new StringSetting(
-         "Target", "Player to send the request to.", "", 32, "Steve"
       )
    );
    public final SliderSetting delay = this.addSetting(

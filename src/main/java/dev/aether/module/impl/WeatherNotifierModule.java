@@ -1,120 +1,68 @@
 package dev.aether.module.impl;
 
-import dev.aether.AetherClient;
-import dev.aether.module.Category;
 import dev.aether.module.Module;
-import dev.aether.notification.NotificationManager;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.ModeSetting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.gui.screens.LevelLoadingScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class WeatherNotifierModule extends Module {
-   public final BooleanSetting rain = this.addSetting(
-      new BooleanSetting("Rain", "Announce when rain starts/stops", true)
-   );
-   public final BooleanSetting thunder = this.addSetting(
-      new BooleanSetting("Thunder", "Announce when a thunderstorm starts/stops", true)
-   );
-   public final BooleanSetting sound = this.addSetting(
-      new BooleanSetting("Sound", "Play a ping on each change", true)
-   );
-   public final ModeSetting output = this.addSetting(
-      new ModeSetting(
-         "Output",
-         "How the change is shown",
-         "Notification",
-         "Notification",
-         "Chat",
-         "Action Bar"
-      )
-   );
-   private Boolean lastRaining;
-   private Boolean lastThundering;
+    private static final int STABLE_TICKS = 20;
+    private final BooleanSetting sound = this.addSetting(new BooleanSetting("Sound", true));
+    private ClientLevel level;
+    private boolean raining;
+    private int changedTicks;
 
-   public WeatherNotifierModule() {
-      super("WeatherNotifier", "Themed toast when the weather changes", Category.MISC);
-   }
+    public WeatherNotifierModule() {
+        super("weather-notifier", "Shows an advancement-style toast when it starts raining.", Category.MISC);
+    }
 
-   @Override
-   protected void onEnable() {
-      this.lastRaining = null;
-      this.lastThundering = null;
-   }
+    @Override
+    protected void onEnable() {
+        this.level = null;
+        this.raining = false;
+        this.changedTicks = 0;
+    }
 
-   @Override
-   public void onTick() {
-      Minecraft mc = Minecraft.getInstance();
-      Level level = mc.level;
-      if (level != null && mc.player != null) {
-         boolean raining = level.isRaining();
-         boolean thundering = level.isThundering();
-         if (this.lastRaining != null && this.lastThundering != null) {
-            if (thundering != this.lastThundering) {
-               this.lastThundering = thundering;
-               if (this.thunder.get()) {
-                  if (thundering) {
-                     this.notify(
-                        mc,
-                        "Thunderstorm",
-                        "A storm rolls in",
-                        NotificationManager.Weather.THUNDER,
-                        true
-                     );
-                  } else {
-                     this.notify(
-                        mc,
-                        "Storm cleared",
-                        "The thunder has passed",
-                        NotificationManager.Weather.CLEAR,
-                        false
-                     );
-                  }
-               }
+    @Override
+    protected void onDisable() {
+        this.level = null;
+    }
+
+    public void onTick() {
+        Minecraft mc = Minecraft.getInstance();
+        ClientLevel current = mc.level;
+        if (current != this.level) {
+            this.level = current;
+            this.raining = false;
+            this.changedTicks = 0;
+        }
+
+        if (current != null && !(mc.screen instanceof LevelLoadingScreen)) {
+            if (current.isRaining() == this.raining) {
+                this.changedTicks = 0;
+            } else if (++this.changedTicks >= 20) {
+                this.raining = !this.raining;
+                this.changedTicks = 0;
+                if (this.raining) {
+                    mc.getToastManager().addToast(new WeatherNotifierModule.WeatherToast(this.sound.get()));
+                }
             }
+        } else {
+            this.changedTicks = 0;
+        }
+    }
 
-            if (raining != this.lastRaining) {
-               this.lastRaining = raining;
-               if (this.rain.get() && !thundering) {
-                  if (raining) {
-                     this.notify(mc, "Rain", "Rain starts to fall", NotificationManager.Weather.RAIN, true);
-                  } else {
-                     this.notify(
-                        mc,
-                        "Skies cleared",
-                        "The rain has stopped",
-                        NotificationManager.Weather.CLEAR,
-                        false
-                     );
-                  }
-               }
-            }
-         } else {
-            this.lastRaining = raining;
-            this.lastThundering = thundering;
-         }
-      }
-   }
+//         public static final class WeatherToast extends ChallengeToast {
+        private static final Component TITLE = Component.literal("Weather Changed!");
+        private static final Component MESSAGE = Component.literal("It started raining.");
 
-   private void notify(Minecraft mc, String title, String subtitle, NotificationManager.Weather weather, boolean started) {
-      if (mc.player != null) {
-         if (this.output.is("Notification")) {
-            if (AetherClient.notifications() != null) {
-               AetherClient.notifications().pushWeather(title, subtitle, weather, started);
-            }
-         } else {
-            boolean actionBar = this.output.is("Action Bar");
-            mc.player.displayClientMessage(Component.literal("§b[Aether] §f" + title + " — " + subtitle), actionBar);
-         }
-
-         if (this.sound.get()) {
-            float pitch = started ? 1.2F : 0.8F;
-            mc.getSoundManager().play(SimpleSoundInstance.forUI((SoundEvent)SoundEvents.NOTE_BLOCK_BELL.value(), pitch, 0.6F));
-         }
-      }
-   }
+        WeatherToast(boolean sound) {
+            super(new ItemStack(Items.TRIDENT), TITLE, MESSAGE, sound);
+        }
+    }
 }

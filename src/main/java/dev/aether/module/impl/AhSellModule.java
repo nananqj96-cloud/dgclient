@@ -1,0 +1,187 @@
+package dev.aether.module.impl;
+
+import dev.aether.AetherClient;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import dev.aether.module.Module;
+import dev.aether.module.Category;
+import dev.aether.settings.ModeSetting;
+import dev.aether.settings.SliderSetting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class AhSellModule extends Module {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Anubis");
+    private static final int SLOTS = 9;
+    private static final String FIXED = "Fixed";
+    private static final String AUTO = "Auto (beat cheapest)";
+    private final ModeSetting count = this.addSetting(new ModeSetting("Items", "1", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+    private final ModeSetting pricing = this.addSetting(new ModeSetting("Pricing", "Fixed", "Fixed", "Auto (beat cheapest)"));
+//     private final StringSetting[] items = new StringSetting[9];
+//     private final StringSetting[] enchants = new StringSetting[9];
+//     private final StringSetting[] prices = new StringSetting[9];
+//     private final StringSetting undercut;
+    private final NumberSetting priceCheck;
+    private final NumberSetting relistGap;
+    private final NumberSetting ignoreDrops;
+    private final NumberSetting salesCheck;
+    private final NumberSetting perListing;
+    private final NumberSetting maxListings;
+    private final NumberSetting listingDelay;
+    private final MacroWorker worker = new MacroWorker("Anubis AH Sell");
+    private volatile AhSellBot bot;
+
+    public AhSellModule() {
+        super("ah-sell", "Lists up to 9 items from your inventory on the Auction House at your price or the cheapest price.", Category.DONUT);
+        this.usesNotifications();
+
+        for (int i = 0; i < 9; i++) {
+            int slot = i + 1;
+            int index = i;
+//             this.items[i] = this.addSetting("item-" + slot, new StringSetting("Item " + slot, "").hint("e.g. diamond_block").itemPicker());
+//             this.enchants[i] = this.addSetting("enchants-" + slot, new StringSetting("Enchantments " + slot, "").enchantsFor(this.items[i]));
+//             this.prices[i] = this.addSetting("price-" + slot, new StringSetting("Price " + slot + " (each)", "").hint("e.g. 5k (Auto: lowest price)"));
+            this.items[i].visibleWhen(() -> slot <= this.slotCount());
+            this.enchants[i].visibleWhen(() -> slot <= this.slotCount() && ItemEnchants.supports(Product.resolveItem(this.items[index].get())));
+            this.prices[i].visibleWhen(() -> slot <= this.slotCount());
+        }
+
+//         this.undercut = this.addSetting("undercut", new StringSetting("Undercut By", "100").hint("e.g. 100"));
+        this.priceCheck = this.addSetting("price-check", new SliderSetting("Price Check (s)", 120.0, 10.0, 600.0, 10.0F));
+        this.relistGap = this.addSetting("relist-gap", new SliderSetting("Relist Higher At (x undercut)", 3.0, 1.0, 20.0, 0.5F));
+        this.ignoreDrops = this.addSetting("ignore-drops", new SliderSetting("Ignore Drops Over (x undercut)", 20.0, 1.0, 100.0, 1.0F));
+        this.salesCheck = this.addSetting("sales-check", new SliderSetting("Sales Check (s)", 20.0, 5.0, 300.0, 5.0F));
+        this.perListing = this.addSetting("per-listing", new SliderSetting("Items Per Listing", 1.0, 1.0, 64.0, 1.0F));
+        this.maxListings = this.addSetting("max-listings", new SliderSetting("Max Listings", 25.0, 1.0, 50.0, 1.0F));
+        this.listingDelay = this.addSetting("listing-delay", new SliderSetting("Listing Delay (s)", 0.0, 0.0, 5.0, 0.25F));
+        this.undercut.visibleWhen(this::auto);
+        this.priceCheck.visibleWhen(this::auto);
+        this.relistGap.visibleWhen(this::auto);
+        this.ignoreDrops.visibleWhen(this::auto);
+    }
+
+    private int slotCount() {
+        return Integer.parseInt(this.count.get());
+    }
+
+    private boolean auto() {
+        return this.pricing.is("Auto (beat cheapest)");
+    }
+
+    @Override
+    public boolean persistEnabled() {
+        return false;
+    }
+
+    @Override
+    protected void onEnable() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && mc.getUser() != null) {
+            List<Product> products = new ArrayList<>();
+            String problem = this.buildProducts(products);
+            if (problem != null) {
+//                 this.info(ModuleChat.body().warn(problem));
+                this.requestDisable();
+            } else {
+                AuctionHouse.Config config = new AuctionHouse.Config(
+                    Math.max(0L, ServerText.parseMoney(this.undercut.get())),
+                    (long)(this.priceCheck.get() * 1000.0F),
+                    (long)(this.salesCheck.get() * 1000.0F),
+                    this.perListing.getInt(),
+                    this.maxListings.getInt(),
+                    (long)(this.listingDelay.get() * 1000.0F),
+                    this.relistGap.get(),
+                    this.ignoreDrops.get(),
+                    36,
+                    15000L
+                );
+                AhSellBot created = new AhSellBot(this, this.worker, products, !this.auto(), config, mc.getUser().getName());
+                this.bot = created;
+                this.worker.start(created::run, failure -> {
+                    LOGGER.error("[Anubis] AH Sell stopped", failure);
+//                     this.info(ModuleChat.body().danger("Stopped").text(": " + failure));
+                    mc.execute(() -> {
+                        if (this.bot == created) {
+                            this.setEnabled(false);
+                        }
+                    });
+                });
+            }
+        } else {
+//             this.info(ModuleChat.body().warn("Join a server first."));
+            this.requestDisable();
+        }
+    }
+
+    @Override
+    protected void onDisable() {
+        AhSellBot stopped = this.bot;
+        this.bot = null;
+        this.worker.stop();
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (stopped != null && player != null) {
+            if (player.containerMenu != player.inventoryMenu) {
+                player.closeContainer();
+            } else {
+                Dialogs.close(mc);
+            }
+
+//             this.info(ModuleChat.body().text(stopped.summary()));
+        }
+    }
+
+//     @EventHandler
+//     public void onPacket(PacketReceiveNettyEvent event) {
+        AhSellBot current = this.bot;
+        if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
+            current.onChat(chat.content().getString());
+        }
+    }
+
+    private String buildProducts(List<Product> out) {
+        if (this.auto() && ServerText.parseMoney(this.undercut.get()) < 0L) {
+            return "Undercut By must be a price like 100.";
+        }
+
+        Set<Item> seen = new HashSet<>();
+
+        for (int i = 0; i < this.slotCount(); i++) {
+            String raw = this.items[i].get().trim();
+            if (!raw.isEmpty()) {
+                Item item = Product.resolveItem(raw);
+                if (item == null) {
+                    return "Item " + (i + 1) + ": unknown item '" + raw + "'.";
+                }
+
+                if (!seen.add(item)) {
+                    return "Item " + (i + 1) + ": " + raw + " is listed twice.";
+                }
+
+                long price = ServerText.parseMoney(this.prices[i].get());
+                if (price <= 0L) {
+                    return "Item " + (i + 1) + ": set a price like 5k" + (this.auto() ? " (the lowest price Auto may use)." : ".");
+                }
+
+                List<Product.Enchant> wanted = ItemEnchants.supports(item) ? Product.parseEnchants(this.enchants[i].get()) : List.of();
+                out.add(
+                    new Product(item, raw, Product.searchText(item), new ItemStack(item).getHoverName().getString(), price, wanted, false, 1, true, 1L, 1L, 0L)
+                );
+            }
+        }
+
+        return out.isEmpty() ? "Set at least one item." : null;
+    }
+
+//     private void info(ModuleChat.Body body) {
+        AetherClient.chat(this, body);
+    }
+}

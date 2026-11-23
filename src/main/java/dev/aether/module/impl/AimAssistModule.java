@@ -1,92 +1,205 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
+import java.util.concurrent.ThreadLocalRandom;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class AimAssistModule extends Module {
-   public final SliderSetting range = this.addSetting(
-      new SliderSetting(
-         "Range", "Assist any target within this distance", 4.0, 1.0, 8.0, 0.5, "m"
-      )
-   );
-   public final SliderSetting speed = this.addSetting(
-      new SliderSetting(
-         "Speed", "How fast the aim is pulled (higher = snappier)", 4.0, 1.0, 10.0, 1.0
-      )
-   );
-   public final SliderSetting smoothness = this.addSetting(
-      new SliderSetting(
-         "Smoothness",
-         "How eased / human the pull is (higher = smoother)",
-         6.0,
-         1.0,
-         10.0,
-         1.0
-      )
-   );
-   public final ModeSetting targetPart = this.addSetting(
-      new ModeSetting(
-         "Target",
-         "Which part of the target to aim at",
-         "Body",
-         "Head",
-         "Body",
-         "Feet",
-         "Nearest"
-      )
-   );
-   public final SliderSetting fov = this.addSetting(
-      new SliderSetting(
-         "FOV",
-         "Only assist within this facing cone (180 = all around)",
-         180.0,
-         10.0,
-         180.0,
-         5.0,
-         "°"
-      )
-   );
-   public final BooleanSetting vertical = this.addSetting(
-      new BooleanSetting("Vertical", "Also correct pitch (up/down), not just yaw", true)
-   );
-   public final BooleanSetting players = this.addSetting(
-      new BooleanSetting("Players", "Target other players", true)
-   );
-   public final BooleanSetting hostiles = this.addSetting(
-      new BooleanSetting("Hostiles", "Target hostile mobs", false)
-   );
-   public final BooleanSetting passive = this.addSetting(
-      new BooleanSetting("Passive", "Target passive mobs", false)
-   );
-   public final BooleanSetting invisibles = this.addSetting(
-      new BooleanSetting("Invisibles", "Also target invisible entities", false)
-   );
-   public final BooleanSetting wallCheck = this.addSetting(
-      new BooleanSetting("Wall Check", "Only assist targets you can actually see", false)
-   );
-   public final BooleanSetting alwaysActive = this.addSetting(
-      new BooleanSetting(
-         "Always Active", "Assist all the time — off = only while attacking (holding left-click)", true
-      )
-   );
-   public final BooleanSetting sticky = this.addSetting(
-      new BooleanSetting("Sticky Target", "Keep one target until it leaves range", true)
-   );
+    private static final long LAST_HIT_MS = 1500L;
+    private static final double STICK_RANGE = 0.5;
+    private static final double STICK_FOV = 1.3;
+    private static final long MOUSE_IDLE_MS = 150L;
+    private static final double[] STILL = new double[]{0.0, 0.0};
+    private static final long MINING_QUIET_MS = 250L;
+    private final SliderSetting range = this.addSetting(new SliderSetting("Range", 4.0, 3.0, 6.0, 0.1F));
+    private final SliderSetting fov = this.addSetting(new SliderSetting("FOV", 60.0, 10.0, 180.0, 5.0F));
+    private final SliderSetting speed = this.addSetting(new SliderSetting("Speed", 60.0, 10.0, 180.0, 5.0F));
+    private final BooleanSetting weaponsOnly = this.addSetting(new BooleanSetting("Weapons Only", true));
+    private final BooleanSetting vertical = this.addSetting(new BooleanSetting("Vertical", true));
+    private Player target;
+    private double pace;
+    private double pendingYaw;
+    private double pendingPitch;
+    private long movedAt;
+    private double userYawSign;
+    private double userPitchSign;
+    private long minedAt;
 
-   public AimAssistModule() {
-      super(
-         "AimAssist", "Legit aim assist — smoothly pulls toward targets in range", Category.COMBAT
-      );
-   }
+    public AimAssistModule() {
+        super("aim-assist", "Eases your crosshair onto the nearest enemy player while you move the mouse.", Category.COMBAT);
+    }
 
-   @Override
-   public void onTick() {
-   }
+    @Override
+    public int settingsVersion() {
+        return 1;
+    }
 
-   public double[] computePixels(double dt, double userDX, double userDY) {
-      return null;
-   }
+    @Override
+    public void migrateSettings(int savedVersion) {
+        if (savedVersion < 1) {
+            this.speed.set(60.0F);
+        }
+    }
+
+    @Override
+    protected void onDisable() {
+        this.follow(null);
+    }
+
+//     @EventHandler
+    public void onTick() {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (mc.gameMode != null && mc.gameMode.isDestroying()) {
+            this.minedAt = Util.getMillis();
+        }
+
+        if (MeleeAttacks.canAct(mc)
+            && !player.isUsingItem()
+            && !mc.options.keyUse.isDown()
+            && (!this.weaponsOnly.get() || MeleeAttacks.isMeleeWeapon(player.getMainHandItem()))
+            && !ServerRotation.pending()
+            && !CombatMacroLock.heldByOther(this)
+            && Util.getMillis() - this.minedAt >= 250L) {
+            this.follow(this.choose(mc, player));
+        } else {
+            this.follow(null);
+        }
+    }
+
+    public double[] nudge(LocalPlayer player, double userYaw, double userPitch, double seconds) {
+        long now = Util.getMillis();
+        if (userYaw != 0.0 || userPitch != 0.0) {
+            this.movedAt = now;
+        }
+
+        if (userYaw != 0.0) {
+            this.userYawSign = Math.signum(userYaw);
+        }
+
+        if (userPitch != 0.0) {
+            this.userPitchSign = Math.signum(userPitch);
+        }
+
+        Rotation want = this.target != null && now - this.movedAt <= 150L ? this.aim(player, player.getEyePosition(), core(this.target)) : null;
+        if (want == null) {
+            this.pendingYaw = 0.0;
+            this.pendingPitch = 0.0;
+            this.userYawSign = 0.0;
+            this.userPitchSign = 0.0;
+            return STILL;
+        }
+
+        double dt = Math.min(seconds, 0.05);
+        float yawError = Mth.wrapDegrees(want.yaw() - player.getYRot());
+        float pitchError = this.vertical.get() ? want.pitch() - player.getXRot() : 0.0F;
+        if (this.userYawSign * yawError < 0.0) {
+            yawError = 0.0F;
+        }
+
+        if (this.userPitchSign * pitchError < 0.0) {
+            pitchError = 0.0F;
+        }
+
+        double cap = this.speed.get() * this.pace * dt;
+        double ease = 1.0 - Math.exp(-12.0 * dt);
+        double k = RotationUtils.mouseScale(Minecraft.getInstance(), player);
+        double degreesPerCount = (float)k * 0.15F;
+        this.pendingYaw = this.pendingYaw + Mth.clamp(yawError * ease, -cap, cap) / degreesPerCount;
+        this.pendingPitch = this.pendingPitch + Mth.clamp(pitchError * ease * 0.6, -cap, cap) / degreesPerCount;
+        long yawCounts = (long)this.pendingYaw;
+        long pitchCounts = (long)this.pendingPitch;
+        this.pendingYaw -= yawCounts;
+        this.pendingPitch -= pitchCounts;
+        return new double[]{yawCounts * k, pitchCounts * k};
+    }
+
+    private void follow(Player next) {
+        if (next != this.target) {
+            this.target = next;
+            this.pace = ThreadLocalRandom.current().nextDouble(0.85, 1.15);
+            this.pendingYaw = 0.0;
+            this.pendingPitch = 0.0;
+        }
+    }
+
+    private Player choose(Minecraft mc, LocalPlayer player) {
+        Vec3 eye = player.getEyePosition();
+        double halfFov = this.fov.get() / 2.0;
+        if (CombatTarget.lastHit(1500L) instanceof Player hit && this.offAngle(player, eye, hit, this.range.get()) <= halfFov) {
+            return hit;
+        } else {
+            if (this.target != null
+                && this.target.level() == player.level()
+                && this.offAngle(player, eye, this.target, this.range.get() + 0.5) <= halfFov * 1.3) {
+                return this.target;
+            }
+
+            Player best = null;
+            double bestAngle = halfFov;
+
+            for (Player candidate : mc.level.players()) {
+                double angle = this.offAngle(player, eye, candidate, this.range.get());
+                if (!(angle > bestAngle)) {
+                    best = candidate;
+                    bestAngle = angle;
+                }
+            }
+
+            return best;
+        }
+    }
+
+    private double offAngle(LocalPlayer player, Vec3 eye, Player candidate, double reach) {
+        if (MeleeAttacks.isEnemy(player, candidate) && (!candidate.isInvisible() || armourShows(candidate))) {
+            if (eye.distanceTo(TargetingUtils.closestPoint(eye, candidate.getBoundingBox())) > reach) {
+                return Double.MAX_VALUE;
+            }
+
+            AABB core = core(candidate);
+            if (!MeleeAttacks.lineIsClear(player, eye, core.getCenter())) {
+                return Double.MAX_VALUE;
+            }
+
+            Rotation want = this.aim(player, eye, core);
+            return want == null ? 0.0 : RotationUtils.angleTo(RotationUtils.entityRotation(player), want);
+        } else {
+            return Double.MAX_VALUE;
+        }
+    }
+
+    private Rotation aim(LocalPlayer player, Vec3 eye, AABB core) {
+        Vec3 view = player.getViewVector(1.0F);
+        if (core.clip(eye, eye.add(view.scale(this.range.get() + 1.0))).isPresent()) {
+            return null;
+        }
+
+        Vec3 near = TargetingUtils.closestPoint(eye.add(view.scale(eye.distanceTo(core.getCenter()))), core);
+        return RotationUtils.fromTo(eye, near);
+    }
+
+    private static boolean armourShows(Player player) {
+        for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+            if (slot.isArmor() && !player.getItemBySlot(slot).isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static AABB core(Player player) {
+        AABB box = player.getBoundingBox();
+        return box.deflate(box.getXsize() * 0.25, box.getYsize() * 0.1, box.getXsize() * 0.25);
+    }
 }

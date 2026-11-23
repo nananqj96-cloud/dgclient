@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.level.ChunkPos;
 
-public final class HomeMethodModule extends Module {
+public class HomeMethodModule extends Module {
    public final KeybindSetting trigger = this.addSetting(new KeybindSetting("Trigger", "Runs the home sequence while the module is enabled.", -1));
    public final BooleanSetting requireChunkFinder = this.addSetting(
       new BooleanSetting("Require Chunk Finder", "Only starts automatically while rising over a Chunk Finder result.", true)

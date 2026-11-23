@@ -1,132 +1,137 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ModeSetting;
-import dev.aether.settings.SliderSetting;
-import dev.aether.util.InventoryHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult.Type;
 
 public class ShieldBreakerModule extends Module {
-   public final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "", true));
-   public final ModeSetting axePriority = this.addSetting(
-      new ModeSetting(
-         "Axe Priority",
-         "",
-         "Best",
-         "Best",
-         "Nearest"
-      )
-   );
-   public final SliderSetting switchDelay = this.addSetting(
-      new SliderSetting("Switch Delay", "", 150.0, 0.0, 500.0, 10.0)
-   );
-   private int previousSlot = -1;
-   private int tickCounter;
-   private boolean waitingToSwapBack;
+    private static final String MODE_PASSIVE = "Passive";
+    private static final String MODE_AUTO = "Auto";
+    private static final int REARM_TICKS = 10;
+    private static final int MAX_LEAD_TICKS = 4;
+    private static final int HOLD_TICKS = 2;
+    private final ModeSetting mode = this.addSetting(new ModeSetting("Mode", "Passive", "Passive", "Auto"));
+    private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", true));
+    private final SlotReturn slots = new SlotReturn(this);
+    private int ticks;
+    private int rearmTick;
+    private int takenTick;
 
-   public ShieldBreakerModule() {
-      super("Shield Breaker", "Auto-switch to axe when target is blocking", Category.COMBAT);
-   }
+    public ShieldBreakerModule() {
+        super("shield-breaker", "Swaps to an axe for any hit into a raised shield. Auto also makes the hit.", Category.COMBAT);
+    }
 
-   @Override
-   protected void onEnable() {
-      this.resetState();
-   }
+    @Override
+    protected void onEnable() {
+        this.ticks = 0;
+        this.rearmTick = 0;
+    }
 
-   @Override
-   protected void onDisable() {
-      this.resetState();
-   }
+    @Override
+    protected void onDisable() {
+        this.slots.drop(Minecraft.getInstance(), this.switchBack.get());
+    }
 
-   @Override
-   public void onTick() {
-      Minecraft client = Minecraft.getInstance();
-      if (client.player != null && client.gameMode != null) {
-         if (this.waitingToSwapBack) {
-            this.tickCounter++;
-            int delayTicks = Math.max(1, this.switchDelay.getInt() / 50);
-            if (this.tickCounter >= delayTicks) {
-               InventoryHelper.swap(this.previousSlot);
-               this.resetState();
+    public void beforeAttack(LocalPlayer player, Entity target) {
+        if (target instanceof Player other && !MeleeAttacks.disablesShields(player.getMainHandItem())) {
+            if (fightingHand(player)) {
+                if (!MeleeAttacks.shieldBroken(other) && blocksSoon(player, other)) {
+                    int slot = bestAxe(player);
+                    if (slot >= 0 && this.slots.take(player, slot)) {
+                        this.takenTick = this.ticks;
+                        MeleeAttacks.noteShieldBroken(other);
+                    }
+                }
             }
-         } else if (client.hitResult != null
-            && client.hitResult.getType() == Type.ENTITY
-            && ((EntityHitResult)client.hitResult).getEntity() instanceof Player targetPlayer
-            && targetPlayer.isBlocking()
-            && !(client.player.getMainHandItem().getItem() instanceof AxeItem)) {
-            int axeSlot = this.findAxeSlot(client);
-            if (axeSlot != -1) {
-               this.previousSlot = client.player.getInventory().getSelectedSlot();
-               InventoryHelper.swap(axeSlot);
-               client.gameMode.attack(client.player, targetPlayer);
-               client.player.swing(InteractionHand.MAIN_HAND);
-               if (this.switchBack.get()) {
-                  this.waitingToSwapBack = true;
-                  this.tickCounter = 0;
-               } else {
-                  this.previousSlot = -1;
-               }
+        }
+    }
+
+    private static boolean fightingHand(LocalPlayer player) {
+        ItemStack main = player.getMainHandItem();
+        return main.isEmpty() || MeleeAttacks.isMeleeWeapon(main);
+    }
+
+//     @EventHandler(priority = EventPriority.HIGH)
+    public void onTick() {
+        this.ticks++;
+        if (this.ticks - this.takenTick >= 2) {
+            this.slots.tick(Minecraft.getInstance(), this.switchBack.get());
+        }
+    }
+
+//     @EventHandler
+    public void onAutoTick(TickEvent event) {
+        if (this.mode.is("Auto")) {
+            this.tryHit(Minecraft.getInstance());
+        }
+    }
+
+    private void tryHit(Minecraft mc) {
+        if (this.ticks >= this.rearmTick && MeleeAttacks.canAct(mc)) {
+            if (!CombatMacroLock.heldByOther(this) && !AutoInvTotemModule.wantsHotbar()) {
+                LocalPlayer player = mc.player;
+                if (!MeleeAttacks.actedThisTick(player) && !ServerRotation.pending() && !MeleeAttacks.clickPending(mc)) {
+                    EntityHitResult hit = MeleeAttacks.crosshairHit(mc);
+                    if (hit != null && hit.getEntity() instanceof Player target && MeleeAttacks.isEnemy(player, target)) {
+                        if (!MeleeAttacks.shieldBroken(target) && blocksSoon(player, target)) {
+                            if (MeleeAttacks.disablesShields(player.getMainHandItem()) || bestAxe(player) >= 0 && fightingHand(player)) {
+                                if (MeleeAttacks.attack(mc, hit)) {
+                                    this.rearmTick = this.ticks + 10;
+                                    MeleeAttacks.claimTick(mc);
+                                }
+                            }
+                        }
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
-   private int findAxeSlot(Minecraft client) {
-      if (this.axePriority.is("Nearest")) {
-         for (int i = 0; i < 9; i++) {
-            if (client.player.getInventory().getItem(i).getItem() instanceof AxeItem) {
-               return i;
+    private static boolean blocksSoon(LocalPlayer player, Player target) {
+        if (!target.isUsingItem()) {
+            return false;
+        }
+
+        ItemStack shield = target.getUseItem();
+        BlocksAttacks blocks = shield.get(DataComponents.BLOCKS_ATTACKS);
+        return blocks != null && target.getTicksUsingItem() + leadTicks(player) >= blocks.blockDelayTicks()
+            ? MeleeAttacks.shieldBlocks(target, player, shield)
+            : false;
+    }
+
+    private static int leadTicks(LocalPlayer player) {
+        PlayerInfo info = player.connection.getPlayerInfo(player.getUUID());
+        return info == null ? 0 : Mth.clamp(Math.round(info.getLatency() / 50.0F), 0, 4);
+    }
+
+    static int bestAxe(LocalPlayer player) {
+        Inventory inventory = player.getInventory();
+        int best = -1;
+        double bestDamage = Double.NEGATIVE_INFINITY;
+
+        for (int slot = 0; slot < Inventory.getSelectionSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (MeleeAttacks.disablesShields(stack) && !stack.nextDamageWillBreak()) {
+                double damage = MeleeAttacks.attackDamage(stack);
+                if (damage > bestDamage) {
+                    best = slot;
+                    bestDamage = damage;
+                }
             }
-         }
+        }
 
-         return -1;
-      } else {
-         int bestSlot = -1;
-         float bestDamage = -1.0F;
-
-         for (int ix = 0; ix < 9; ix++) {
-            ItemStack stack = client.player.getInventory().getItem(ix);
-            if (stack.getItem() instanceof AxeItem) {
-               float damage = this.getAxeTier(stack);
-               if (damage > bestDamage) {
-                  bestDamage = damage;
-                  bestSlot = ix;
-               }
-            }
-         }
-
-         return bestSlot;
-      }
-   }
-
-   private float getAxeTier(ItemStack stack) {
-      if (stack.is(Items.NETHERITE_AXE)) {
-         return 5.0F;
-      } else if (stack.is(Items.DIAMOND_AXE)) {
-         return 4.0F;
-      } else if (stack.is(Items.IRON_AXE)) {
-         return 3.0F;
-      } else if (stack.is(Items.GOLDEN_AXE)) {
-         return 2.0F;
-      } else if (stack.is(Items.STONE_AXE)) {
-         return 1.0F;
-      } else {
-         return stack.is(Items.WOODEN_AXE) ? 0.0F : -1.0F;
-      }
-   }
-
-   private void resetState() {
-      this.previousSlot = -1;
-      this.tickCounter = 0;
-      this.waitingToSwapBack = false;
-   }
+        return best;
+    }
 }

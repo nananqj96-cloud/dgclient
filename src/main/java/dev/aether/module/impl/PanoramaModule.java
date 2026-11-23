@@ -10,7 +10,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.repository.PackRepository;
 
-public final class PanoramaModule extends Module {
+public class PanoramaModule extends Module {
    private static final String PACK_FILE = "aether-panorama.zip";
    private static final String EMBEDDED_PACK = "/assets/aetherclient/embedded/aether-panorama.zip";
 

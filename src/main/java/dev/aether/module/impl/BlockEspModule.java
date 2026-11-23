@@ -1,64 +1,91 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
+import java.util.Set;
+import java.util.function.LongPredicate;
 import dev.aether.module.Module;
-import dev.aether.render.BlockEspRenderer;
-import dev.aether.settings.BlockListSetting;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.ColorSetting;
-import dev.aether.settings.ModeSetting;
-import dev.aether.settings.SliderSetting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class BlockEspModule extends Module {
-   public final BlockListSetting targets = this.addSetting(
-      new BlockListSetting("Target Blocks", "Pick which blocks to highlight")
-   );
-   public final ModeSetting shapeMode = this.addSetting(
-      new ModeSetting(
-         "Shape Mode",
-         "How highlights are drawn",
-         "Both",
-         "Both",
-         "Lines",
-         "Sides"
-      )
-   );
-   public final ColorSetting lineColor = this.addSetting(
-      new ColorSetting("Default Outline Color", "Color used for newly added blocks", -16711736)
-   );
-   public final ColorSetting sideColor = this.addSetting(
-      new ColorSetting("Fill Overlay", "Default fill tint", 419495880)
-   );
-   public final BooleanSetting tracers = this.addSetting(
-      new BooleanSetting("Tracers", "Draw lines from the crosshair to each block", false)
-   );
-   public final BooleanSetting tracer = this.addSetting(
-      new BooleanSetting("Tracer", "Secondary tracer enable", true)
-   );
-   public final ColorSetting tracerColor = this.addSetting(
-      new ColorSetting("Default Tracer Tint", "Tracer line color / alpha", 2097217480)
-   );
-   public final SliderSetting highlightAlpha = this.addSetting(
-      new SliderSetting("Highlight Alpha", "Box opacity", 255.0, 0.0, 255.0, 5.0)
-   );
-   public final SliderSetting rangeExtraChunks = this.addSetting(
-      new SliderSetting("Range Extra Chunks", "Extra scan radius beyond render distance", 8.0, 0.0, 24.0, 1.0)
-   );
+//     private final EspStyle style = new EspStyle(this::addSetting, "Outline", 0.2F, 2048.0F);
+    private final BooleanSetting sTracers = this.addSetting(new BooleanSetting("Tracers", false));
+//     private final BlockLayer layer = new BlockLayer(new BlockLayer.Palette() {
+        @Override
+        public int color(Object kind) {
+            return BlockEspModule.this.sBlockColors.colorArgb((Block)kind);
+        }
 
-   public BlockEspModule() {
-      super("BlockESP", "Highlights chosen blocks through walls", Category.RENDER);
-      this.targets.seedDefaults();
-      this.tracer.visibleWhen(this.tracers::get);
-      this.tracerColor.visibleWhen(this.tracers::get);
-   }
+        @Override
+        public int tracerColor(Object kind) {
+            return BlockEspModule.this.sBlockColors.tracerColorArgb((Block)kind);
+        }
+    }, () -> Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.dimension());
+    private Set<String> scannedIds = Set.of();
 
-   @Override
-   public void onTick() {
-      BlockEspRenderer.scan(this);
-   }
+    public BlockEspModule() {
+        super("block-esp", "Highlights chosen blocks; touching blocks merge into one shape.", Category.RENDER);
+    }
 
-   @Override
-   protected void onDisable() {
-      BlockEspRenderer.clear();
-   }
+    private void rescan() {
+        if (this.isEnabled()) {
+            Set<String> ids = this.sBlockColors.enabledIds();
+            if (!ids.equals(this.scannedIds)) {
+                boolean removed = !ids.containsAll(this.scannedIds);
+                this.scannedIds = ids;
+                if (removed) {
+                    this.layer.clear();
+                }
+
+//                 ChunkScanner.rescan();
+            }
+        }
+    }
+
+    @Override
+    protected void onEnable() {
+        this.scannedIds = this.sBlockColors.enabledIds();
+//         ChunkScanner.register(this);
+    }
+
+    @Override
+    protected void onDisable() {
+//         ChunkScanner.unregister(this);
+        this.layer.clear();
+    }
+
+    @Override
+    public boolean wants(BlockState state) {
+        return this.sBlockColors.isEnabled(state.getBlock());
+    }
+
+    @Override
+    public void found(long pos, BlockState state) {
+        this.layer.put(pos, state.getBlock());
+    }
+
+    @Override
+    public void removed(long pos) {
+        this.layer.remove(pos);
+    }
+
+    @Override
+    public void reset() {
+        this.layer.clear();
+    }
+
+    @Override
+    public void chunkScanned(long chunkKey, LongPredicate stillThere) {
+        this.layer.retainChunk(chunkKey, stillThere);
+    }
+
+//     @EventHandler
+//     public void onRender3D(Render3DEvent event) {
+        this.layer.render(event, this.style);
+        if (this.sTracers.get() && this.sBlockColors.hasAnyTracerEnabled()) {
+            this.layer.renderTracers(this.style);
+        }
+    }
 }

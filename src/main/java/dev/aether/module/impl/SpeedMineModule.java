@@ -4,7 +4,7 @@ import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.SliderSetting;
 
-public final class SpeedMineModule extends Module {
+public class SpeedMineModule extends Module {
    public final SliderSetting speed = this.addSetting(
       new SliderSetting("Speed", "Changes normal block-breaking progress. Servers may limit high values.", 140.0, 100.0, 250.0, 5.0, "%")
    );

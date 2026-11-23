@@ -1,7 +1,6 @@
 package dev.aether.module.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.aether.AetherClient;
 import dev.aether.donut.ActivityStore;
 import dev.aether.module.Category;
 import dev.aether.module.Module;

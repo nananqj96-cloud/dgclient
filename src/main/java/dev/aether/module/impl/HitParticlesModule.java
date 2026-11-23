@@ -1,283 +1,180 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
-import dev.aether.util.Colors;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class HitParticlesModule extends Module {
-   public static final int STYLE_SPARKS = 0;
-   public static final int STYLE_HEARTS = 1;
-   public static final int STYLE_LIGHTNING = 2;
-   public static final int STYLE_AETHER = 3;
-   public final ModeSetting style = this.addSetting(
-      new ModeSetting(
-         "Style",
-         "Burst style",
-         "Sparks",
-         "Sparks",
-         "Hearts",
-         "Lightning",
-         "Aether"
-      )
-   );
-   public final SliderSetting amount = this.addSetting(
-      new SliderSetting("Amount", "Particles spawned per hit", 14.0, 4.0, 40.0, 1.0)
-   );
-   public final SliderSetting size = this.addSetting(
-      new SliderSetting("Size", "Particle scale", 1.0, 0.3, 3.0, 0.1, "x")
-   );
-   public final SliderSetting lifetime = this.addSetting(
-      new SliderSetting(
-         "Lifetime", "How long the burst lingers", 0.7, 0.3, 2.0, 0.1, "s"
-      )
-   );
-   public final SliderSetting spread = this.addSetting(
-      new SliderSetting(
-         "Spread", "How far particles fly out", 1.0, 0.3, 2.5, 0.1, "x"
-      )
-   );
-   public final ColorSetting color = this.addSetting(new ColorSetting("Color", "Particle tint", -49508));
-   public final BooleanSetting rainbow = this.addSetting(
-      new BooleanSetting("Rainbow", "Cycle each burst through the rainbow", false)
-   );
-   public final SliderSetting glow = this.addSetting(
-      new SliderSetting("Glow", "Soft outer halo intensity", 65.0, 0.0, 100.0, 5.0, "%")
-   );
-   public final BooleanSetting shockwave = this.addSetting(
-      new BooleanSetting("Shockwave", "Expanding ring on each hit", true)
-   );
-   private final Deque<HitParticlesModule.HitParticle> particles = new ArrayDeque<>();
-   private final Deque<HitParticlesModule.Shock> shocks = new ArrayDeque<>();
-   private static final int MAX_PARTICLES = 600;
-   private static final int MAX_SHOCKS = 24;
+    private static final String TYPE_CRIT = "Crit";
+    private static final String TYPE_MAGIC_CRIT = "Magic Crit";
+    private static final String TYPE_SPARK = "Spark";
+    private static final String TYPE_FLAME = "Flame";
+    private static final String TYPE_SOUL_FLAME = "Soul Flame";
+    private static final String TYPE_END_ROD = "End Rod";
+    private static final String TYPE_TOTEM = "Totem";
+    private static final String TYPE_HEART = "Heart";
+    private static final String TYPE_DUST = "Dust";
+    private static final String ORIGIN_IMPACT = "Impact";
+    private static final String ORIGIN_BODY = "Body";
+    private static final String TARGETS_LIVING = "Living";
+    private static final String TARGETS_PLAYERS = "Players";
+    private static final String TARGETS_ALL = "All";
+    private static final String COLOR_CUSTOM = "Custom";
+    private static final String COLOR_ACCENT = "Accent";
+    private static final double LIFT = 0.25;
+    private static final int PEEP_DUST = 16743112;
+    private final ModeSetting type = this.addSetting(
+        "type", new ModeSetting("Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust")
+    );
+    private final SliderSetting amount = this.addSetting(new SliderSetting("Amount", 10.0, 1.0, 40.0, 1.0F));
+    private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", 1.0, 0.25, 3.0, 0.25F));
+    private final ModeSetting origin = this.addSetting(new ModeSetting("Origin", "Impact", "Impact", "Body"));
+    private final BooleanSetting onlyCrits = this.addSetting(new BooleanSetting("Only Crits", false));
+    private final ModeSetting targets = this.addSetting(new ModeSetting("Targets", "Living", "Living", "Players", "All"));
+    private final ModeSetting dustColorMode = this.addSetting(new ModeSetting("Color", "Accent", "Custom", "Accent"));
+    private final ColorSetting dustColor = this.addSetting(new ColorSetting("Custom Color", -657929));
+    private final SliderSetting dustSize = this.addSetting(new SliderSetting("Dust Size", 1.0, 0.5, 2.0, 0.1F));
+    private final RandomSource random = RandomSource.create();
 
-   public HitParticlesModule() {
-      super("HitParticles", "Themed particle bursts when you hit an entity", Category.VISUALS);
-   }
+    public HitParticlesModule() {
+        super("hit-particles", "Spawns particles where your hits land.", Category.VISUALS);
+        this.dustColorMode.visibleWhen(() -> this.type.is("Dust"));
+        this.dustColor.visibleWhen(() -> this.type.is("Dust") && this.dustColorMode.is("Custom"));
+        this.dustSize.visibleWhen(() -> this.type.is("Dust"));
+    }
 
-   public Deque<HitParticlesModule.HitParticle> particles() {
-      return this.particles;
-   }
+    @Override
+    protected void onEnable() {
+    }
 
-   public Deque<HitParticlesModule.Shock> shocks() {
-      return this.shocks;
-   }
-
-   @Override
-   protected void onDisable() {
-      this.clear();
-   }
-
-   public void clear() {
-      this.particles.clear();
-      this.shocks.clear();
-   }
-
-   private int currentRgb() {
-      if (this.rainbow.get()) {
-         float hue = (float)(System.currentTimeMillis() % 3500L) / 3500.0F * 360.0F;
-         return Colors.hsvToRgb(hue, 0.85F, 1.0F) & 16777215;
-      } else {
-         return this.color.get() & 16777215;
-      }
-   }
-
-   public void onHit(Entity target) {
-      if (this.isEnabled() && target != null) {
-         double cx = target.getX();
-         double cy = target.getY() + (double)target.getBbHeight() * 0.6;
-         double cz = target.getZ();
-         this.spawnAt(cx, cy, cz);
-      }
-   }
-
-   public void spawnAt(double cx, double cy, double cz) {
-      Minecraft mc = Minecraft.getInstance();
-      if (mc.level != null) {
-         RandomSource random = mc.level.random;
-         int styleId = this.styleId();
-         int rgb = this.currentRgb();
-         int count = this.amount.getInt();
-         float life = this.lifetime.getFloat();
-         float spreadScale = this.spread.getFloat();
-         float sizeScale = this.size.getFloat();
-         long now = System.nanoTime();
-
-         for (int i = 0; i < count; i++) {
-            this.spawnOne(random, styleId, rgb, cx, cy, cz, life, spreadScale, sizeScale, now);
-         }
-
-         if (this.shockwave.get()) {
-            this.shocks.addLast(new HitParticlesModule.Shock(cx, cy, cz, rgb, styleId, now));
-
-            while (this.shocks.size() > 24) {
-               this.shocks.removeFirst();
+//     private void onAttack(PlayerAttackEntityEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.isSameThread()) {
+            LocalPlayer player = mc.player;
+            ClientLevel level = mc.level;
+            Entity target = event.target;
+            if (player != null && level != null && target != null && target != player) {
+                if (target.isAttackable() && this.accepts(target)) {
+                    if (!this.onlyCrits.get() || isCritical(player, target)) {
+                        this.spawnBurst(mc, level, player, target);
+                    }
+                }
             }
-         }
+        }
+    }
 
-         while (this.particles.size() > 600) {
-            this.particles.removeFirst();
-         }
-      }
-   }
+    private boolean accepts(Entity target) {
+        return switch (this.targets.get()) {
+            case "Players" -> target instanceof Player;
+            case "All" -> true;
+            default -> target instanceof LivingEntity;
+        };
+    }
 
-   private void spawnOne(RandomSource random, int styleId, int rgb, double cx, double cy, double cz, float life, float spreadScale, float sizeScale, long now) {
-      double theta = random.nextDouble() * Math.PI * 2.0;
-      double cosPhi = 2.0 * random.nextDouble() - 1.0;
-      double sinPhi = Math.sqrt(Math.max(0.0, 1.0 - cosPhi * cosPhi));
-      float dx = (float)(sinPhi * Math.cos(theta));
-      float dy = (float)cosPhi;
-      float dz = (float)(sinPhi * Math.sin(theta));
-      float particleLife = life * (0.75F + random.nextFloat() * 0.25F);
-      float pSize = sizeScale * (0.7F + random.nextFloat() * 0.6F);
-      float speed;
-      float gravity;
-      switch (styleId) {
-         case 1:
-            dx *= 0.5F;
-            dz *= 0.5F;
-            dy = 0.4F + Math.abs(dy) * 0.5F;
-            speed = (1.6F + random.nextFloat() * 1.0F) * spreadScale;
-            gravity = 1.2F;
-            particleLife = life * (1.0F + random.nextFloat() * 0.3F);
-            break;
-         case 2:
-            dy *= 0.25F;
-            float horiz = Mth.sqrt(Math.max(1.0E-4F, dx * dx + dz * dz));
-            dx /= horiz;
-            dz /= horiz;
-            speed = (5.0F + random.nextFloat() * 3.0F) * spreadScale;
-            gravity = 0.6F;
-            particleLife = life * (0.45F + random.nextFloat() * 0.25F);
-            break;
-         case 3:
-            dy = 0.12F + dy * 0.35F;
-            speed = (1.9F + random.nextFloat() * 1.4F) * spreadScale;
-            gravity = 1.3F;
-            particleLife = life * (1.0F + random.nextFloat() * 0.25F);
-            break;
-         default:
-            dy = dy * 0.7F + 0.3F;
-            speed = (4.0F + random.nextFloat() * 3.5F) * spreadScale;
-            gravity = 6.5F;
-      }
+    private static boolean isCritical(LocalPlayer player, Entity target) {
+        return player.getAttackStrengthScale(0.5F) > 0.9F
+            && player.fallDistance > 0.0
+            && !player.onGround()
+            && !player.onClimbable()
+            && !player.isInWater()
+            && !player.isMobilityRestricted()
+            && !player.isPassenger()
+            && !player.isSprinting()
+            && target instanceof LivingEntity;
+    }
 
-      float vx = dx * speed;
-      float vy = dy * speed;
-      float vz = dz * speed;
-      float rot = random.nextFloat() * (float) (Math.PI * 2);
-      float rotSpeed = (random.nextFloat() - 0.5F) * 8.0F;
-      this.particles.addLast(new HitParticlesModule.HitParticle(cx, cy, cz, vx, vy, vz, rgb, styleId, pSize, rot, rotSpeed, gravity, particleLife, now));
-   }
+    private void spawnBurst(Minecraft mc, ClientLevel level, LocalPlayer player, Entity target) {
+        HitParticlesModule.Burst burst = this.burst();
+        AABB box = target.getBoundingBox();
+        Vec3 center = box.getCenter();
+        boolean body = this.origin.is("Body");
+        Vec3 impact = body ? null : impactPoint(mc, player, target, box);
+        Vec3 fallbackOut = player.getLookAngle().reverse();
+        double spreadScale = this.spread.get();
+        double jitter = burst.jitter() * spreadScale;
+        int count = this.amount.getInt();
+//         float pink = this.type.is("Dust") ? 0.0F : ThemeTint.world();
+        ParticleOptions pinkDust = pink > 0.0F ? new DustParticleOptions(16743112, 0.9F) : null;
 
-   private int styleId() {
-      if (this.style.is("Hearts")) {
-         return 1;
-      } else if (this.style.is("Lightning")) {
-         return 2;
-      } else {
-         return this.style.is("Aether") ? 3 : 0;
-      }
-   }
+        for (int i = 0; i < count; i++) {
+            Vec3 from = body ? this.randomPointIn(box) : impact;
+            Vec3 out = from.subtract(center);
+            out = out.lengthSqr() < 1.0E-6 ? fallbackOut : out.normalize();
+            Vec3 dir = out.scale(0.8).add(this.randomUnit()).add(0.0, 0.25, 0.0).normalize();
+            double speed = burst.speed() * spreadScale * (0.6 + 0.4 * this.random.nextDouble());
+            ParticleOptions particle = pinkDust != null && this.random.nextFloat() < pink ? pinkDust : burst.particle();
+            level.addParticle(
+                particle,
+                true,
+                false,
+                from.x + this.random.nextGaussian() * jitter,
+                from.y + this.random.nextGaussian() * jitter,
+                from.z + this.random.nextGaussian() * jitter,
+                dir.x * speed,
+                dir.y * speed,
+                dir.z * speed
+            );
+        }
+    }
 
-   public float glowStrength() {
-      return this.glow.getFloat() / 100.0F;
-   }
+    private HitParticlesModule.Burst burst() {
+        return switch (this.type.get()) {
+            case "Magic Crit" -> new HitParticlesModule.Burst(ParticleTypes.ENCHANTED_HIT, 0.8, 0.1);
+            case "Spark" -> new HitParticlesModule.Burst(ParticleTypes.ELECTRIC_SPARK, 0.16, 0.1);
+            case "Flame" -> new HitParticlesModule.Burst(ParticleTypes.FLAME, 0.035, 0.12);
+            case "Soul Flame" -> new HitParticlesModule.Burst(ParticleTypes.SOUL_FIRE_FLAME, 0.035, 0.12);
+            case "End Rod" -> new HitParticlesModule.Burst(ParticleTypes.END_ROD, 0.09, 0.1);
+            case "Totem" -> new HitParticlesModule.Burst(ParticleTypes.TOTEM_OF_UNDYING, 0.45, 0.1);
+            case "Heart" -> new HitParticlesModule.Burst(ParticleTypes.HEART, 0.0, 0.35);
+            case "Dust" -> new HitParticlesModule.Burst(new DustParticleOptions(this.dustRgb(), this.dustSize.get()), 1.0, 0.3);
+            default -> new HitParticlesModule.Burst(ParticleTypes.CRIT, 0.8, 0.1);
+        };
+    }
 
-   public static final class HitParticle {
-      public final double ox;
-      public final double oy;
-      public final double oz;
-      public final float vx;
-      public final float vy;
-      public final float vz;
-      public final int rgb;
-      public final int styleId;
-      public final float size;
-      public final float rot;
-      public final float rotSpeed;
-      public final float gravity;
-      public final float lifetime;
-      public final long spawnNanos;
+    private int dustRgb() {
+//         int argb = this.dustColorMode.is("Accent") ? CosmeticAccent.argb() : ThemeTint.world(this.dustColor.argb());
+        return argb & 16777215;
+    }
 
-      HitParticle(
-         double ox,
-         double oy,
-         double oz,
-         float vx,
-         float vy,
-         float vz,
-         int rgb,
-         int styleId,
-         float size,
-         float rot,
-         float rotSpeed,
-         float gravity,
-         float lifetime,
-         long spawnNanos
-      ) {
-         this.ox = ox;
-         this.oy = oy;
-         this.oz = oz;
-         this.vx = vx;
-         this.vy = vy;
-         this.vz = vz;
-         this.rgb = rgb;
-         this.styleId = styleId;
-         this.size = size;
-         this.rot = rot;
-         this.rotSpeed = rotSpeed;
-         this.gravity = gravity;
-         this.lifetime = lifetime;
-         this.spawnNanos = spawnNanos;
-      }
+    private static Vec3 impactPoint(Minecraft mc, LocalPlayer player, Entity target, AABB box) {
+        if (mc.hitResult instanceof EntityHitResult hit && hit.getEntity() == target) {
+            return hit.getLocation();
+        } else {
+            Vec3 eye = player.getEyePosition();
+            return new Vec3(Mth.clamp(eye.x, box.minX, box.maxX), Mth.clamp(eye.y, box.minY, box.maxY), Mth.clamp(eye.z, box.minZ, box.maxZ));
+        }
+    }
 
-      public float ageSeconds(long nowNanos) {
-         return (float)(nowNanos - this.spawnNanos) / 1.0E9F;
-      }
+    private Vec3 randomPointIn(AABB box) {
+        return new Vec3(
+            box.minX + box.getXsize() * (0.1 + 0.8 * this.random.nextDouble()),
+            box.minY + box.getYsize() * (0.1 + 0.8 * this.random.nextDouble()),
+            box.minZ + box.getZsize() * (0.1 + 0.8 * this.random.nextDouble())
+        );
+    }
 
-      public double x(float age) {
-         return this.ox + (double)(this.vx * age);
-      }
+    private Vec3 randomUnit() {
+        Vec3 v = new Vec3(this.random.nextGaussian(), this.random.nextGaussian(), this.random.nextGaussian());
+        return v.lengthSqr() < 1.0E-9 ? new Vec3(0.0, 1.0, 0.0) : v.normalize();
+    }
 
-      public double y(float age) {
-         return this.oy + (double)(this.vy * age) - 0.5 * (double)this.gravity * (double)age * (double)age;
-      }
-
-      public double z(float age) {
-         return this.oz + (double)(this.vz * age);
-      }
-   }
-
-   public static final class Shock {
-      public final double x;
-      public final double y;
-      public final double z;
-      public final int rgb;
-      public final int styleId;
-      public final long spawnNanos;
-
-      Shock(double x, double y, double z, int rgb, int styleId, long spawnNanos) {
-         this.x = x;
-         this.y = y;
-         this.z = z;
-         this.rgb = rgb;
-         this.styleId = styleId;
-         this.spawnNanos = spawnNanos;
-      }
-
-      public float ageSeconds(long nowNanos) {
-         return (float)(nowNanos - this.spawnNanos) / 1.0E9F;
-      }
-   }
+        private record Burst(ParticleOptions particle, double speed, double jitter) {
+    }
 }

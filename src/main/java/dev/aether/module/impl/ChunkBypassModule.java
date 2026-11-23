@@ -38,7 +38,7 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
  * underground. Presented with the main SusChunkFinder design (flat chunk quads, smart zones,
  * centroid markers, radar blips) but drawn in purple.
  */
-public final class ChunkBypassModule extends Module {
+public class ChunkBypassModule extends Module {
    private static final int[] SENSITIVITY_MIN_HITS = {1, 2, 3, 3, 4, 5, 6, 7, 9, 11, 14, 18, 23, 28, 35};
    private static final int REBUILD_INTERVAL_TICKS = 20;
    private static final int MAX_RECENT = 4000;

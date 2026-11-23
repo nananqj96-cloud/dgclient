@@ -1,160 +1,158 @@
 package dev.aether.module.impl;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.InputConstants.Key;
 import com.mojang.blaze3d.platform.InputConstants.Type;
-import dev.aether.mixin.KeyMappingAccessor;
-import dev.aether.module.Category;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ModeSetting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.SectionPos;
+import org.lwjgl.glfw.GLFW;
 
 public class AutoWalkModule extends Module {
-   public final ModeSetting mode = this.addSetting(
-      new ModeSetting(
-         "Mode",
-         "Walking mode.",
-         "Simple",
-         "Simple",
-         "Smart"
-      )
-   );
-   public final ModeSetting direction = this.addSetting(
-      new ModeSetting(
-         "Direction",
-         "The direction to walk in Simple mode.",
-         "Forwards",
-         "Forwards",
-         "Backwards",
-         "Left",
-         "Right"
-      )
-   );
-   public final BooleanSetting disableOnInput = this.addSetting(
-      new BooleanSetting(
-         "Disable On Input", "Disable the module on manual movement input.", false
-      )
-   );
-   public final BooleanSetting disableOnY = this.addSetting(
-      new BooleanSetting(
-         "Disable On Y Change", "Disable the module if you move vertically.", false
-      )
-   );
-   public final BooleanSetting waitForChunks = this.addSetting(
-      new BooleanSetting("No Unloaded Chunks", "Do not walk into unloaded chunks.", true)
-   );
+    private final ModeSetting direction = this.addSetting(
+        "simple-direction", new ModeSetting("Simple Direction", "Forwards", "Forwards", "Backwards", "Left", "Right")
+    );
+    private final BooleanSetting disableOnInput = this.addSetting(new BooleanSetting("Disable On Input", false));
+    private final BooleanSetting disableOnY = this.addSetting(new BooleanSetting("Disable On Y Change", false));
+    private final BooleanSetting waitForChunks = this.addSetting(new BooleanSetting("No Unloaded Chunks", true));
 
-   public AutoWalkModule() {
-      super("AutoWalk", "Automatically walks forward.", Category.MISC);
-      this.direction.visibleWhen(() -> this.mode.is("Simple"));
-      this.disableOnY.visibleWhen(() -> this.mode.is("Simple"));
-      this.waitForChunks.visibleWhen(() -> this.mode.is("Simple"));
-   }
-
-   @Override
-   protected void onDisable() {
-      this.release(Minecraft.getInstance());
-   }
-
-   @Override
-   public void onTick() {
-      Minecraft mc = Minecraft.getInstance();
-      if (mc.player != null && mc.level != null) {
-         this.release(mc);
-         if (this.mode.is("Smart")) {
-            mc.options.keyUp.setDown(true);
-            mc.options.keySprint.setDown(true);
-            if (mc.player.horizontalCollision && mc.player.onGround()) {
-               mc.options.keyJump.setDown(true);
+    public AutoWalkModule() {
+        super("auto-walk", "Automatically walks forward.", Category.MOVEMENT);
             }
-         } else if (this.disableOnY.get() && mc.player.yo != mc.player.getY()) {
-            this.toggle();
-         } else if (!this.waitForChunks.get() || this.chunkAheadLoaded(mc)) {
-            String var2 = this.direction.get();
-            switch (var2) {
-               case "Forwards":
-                  mc.options.keyUp.setDown(true);
-                  break;
-               case "Backwards":
-                  mc.options.keyDown.setDown(true);
-                  break;
-               case "Left":
-                  mc.options.keyLeft.setDown(true);
-                  break;
-               case "Right":
-                  mc.options.keyRight.setDown(true);
+        });
+    }
+
+    @Override
+    public boolean persistEnabled() {
+        return false;
+    }
+
+    @Override
+    protected void onEnable() {
+    }
+
+    @Override
+    protected void onDisable() {
+        releaseKeys();
+    }
+
+    public void onTick() {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player != null && mc.level != null) {
+            if (this.disableOnY.get() && player.yo != player.getY()) {
+                this.requestDisable();
+            } else {
+                this.keyFor(mc.options).setDown(true);
             }
-         }
-      } else {
-         this.release(mc);
-      }
-   }
+        }
+    }
 
-   @Override
-   public boolean onKeyPress(int keyCode) {
-      Minecraft mc = Minecraft.getInstance();
-      if (this.disableOnInput.get() && mc.screen == null && this.isMovementKey(mc, keyCode)) {
-         this.toggle();
-      }
+//     private void onKey(KeyInputEvent event) {
+        if (event.action == 1 && this.disableOnInput.get()) {
+            if (event.key != -1) {
+                Options options = Minecraft.getInstance().options;
+                KeyEvent key = new KeyEvent(event.key, event.scancode, event.mods);
+                if (options.keyUp.matches(key)
+                    || options.keyDown.matches(key)
+                    || options.keyLeft.matches(key)
+                    || options.keyRight.matches(key)
+                    || options.keyShift.matches(key)
+                    || options.keyJump.matches(key)) {
+                    this.onMovementInput();
+                }
+            }
+        }
+    }
 
-      return false;
-   }
+//     private void onMouseButton(MouseInputEvent event) {
+        if (event.action == 1 && this.disableOnInput.get()) {
+            Options options = Minecraft.getInstance().options;
+            MouseButtonEvent click = new MouseButtonEvent(0.0, 0.0, new MouseButtonInfo(event.button, event.mods));
+            if (options.keyUp.matchesMouse(click)
+                || options.keyDown.matchesMouse(click)
+                || options.keyLeft.matchesMouse(click)
+                || options.keyRight.matchesMouse(click)
+                || options.keyShift.matchesMouse(click)
+                || options.keyJump.matchesMouse(click)) {
+                this.onMovementInput();
+            }
+        }
+    }
 
-   private boolean chunkAheadLoaded(Minecraft mc) {
-      double yawRad = Math.toRadians((double)mc.player.getYRot());
-      double fx = -Math.sin(yawRad);
-      double fz = Math.cos(yawRad);
-      String direction = this.direction.get();
-      double dx;
-      double dz;
-      switch (direction) {
-         case "Backwards":
-            dx = -fx;
-            dz = -fz;
-            break;
-         case "Left":
-            dx = -fz;
-            dz = fx;
-            break;
-         case "Right":
-            dx = fz;
-            dz = -fx;
-            break;
-         default:
-            dx = fx;
-            dz = fz;
-      }
+    private void onMovementInput() {
+        if (Minecraft.getInstance().screen == null) {
+            this.requestDisable();
+        }
+    }
 
-      int bx = (int)Math.floor(mc.player.getX() + dx * 2.0);
-      int bz = (int)Math.floor(mc.player.getZ() + dz * 2.0);
-      return mc.level.getChunkSource().hasChunk(bx >> 4, bz >> 4);
-   }
+//     private void onPlayerMove(PlayerMoveEvent event) {
+        if (this.waitForChunks.get()) {
+            Minecraft mc = Minecraft.getInstance();
+            LocalPlayer player = mc.player;
+            ClientLevel level = mc.level;
+            if (player != null && level != null) {
+                int chunkX = SectionPos.blockToSectionCoord(player.getX() + event.x * 2.0);
+                int chunkZ = SectionPos.blockToSectionCoord(player.getZ() + event.z * 2.0);
+                if (!level.getChunkSource().hasChunk(chunkX, chunkZ)) {
+                    event.x = 0.0;
+                    event.z = 0.0;
+                }
+            }
+        }
+    }
 
-   private void release(Minecraft mc) {
-      if (mc.options != null) {
-         mc.options.keyUp.setDown(false);
-         mc.options.keyDown.setDown(false);
-         mc.options.keyLeft.setDown(false);
-         mc.options.keyRight.setDown(false);
-         mc.options.keyJump.setDown(false);
-         mc.options.keySprint.setDown(false);
-      }
-   }
+    private KeyMapping keyFor(Options options) {
+        return switch (this.direction.get()) {
+            case "Backwards" -> options.keyDown;
+            case "Left" -> options.keyLeft;
+            case "Right" -> options.keyRight;
+            default -> options.keyUp;
+        };
+    }
 
-   private boolean isMovementKey(Minecraft mc, int keyCode) {
-      Options o = mc.options;
-      return matches(o.keyUp, keyCode)
-         || matches(o.keyDown, keyCode)
-         || matches(o.keyLeft, keyCode)
-         || matches(o.keyRight, keyCode)
-         || matches(o.keyJump, keyCode)
-         || matches(o.keyShift, keyCode);
-   }
+    private static void releaseKeys() {
+        Minecraft mc = Minecraft.getInstance();
+        Options options = mc.options;
+        if (options != null) {
+            boolean inGame = mc.screen == null && !isFreecamActive();
+            restore(mc, options.keyUp, inGame);
+            restore(mc, options.keyDown, inGame);
+            restore(mc, options.keyLeft, inGame);
+            restore(mc, options.keyRight, inGame);
+        }
+    }
 
-   private static boolean matches(KeyMapping km, int keyCode) {
-      Key key = ((KeyMappingAccessor)km).aetherclient$getKey();
-      return key.getType() == Type.KEYSYM && key.getValue() == keyCode;
-   }
+    private static boolean isFreecamActive() {
+//         FreecamModule freecam = ModuleRegistry.get(FreecamModule.class);
+        return freecam != null && freecam.isEnabled();
+    }
+
+    private static void restore(Minecraft mc, KeyMapping mapping, boolean inGame) {
+        mapping.setDown(inGame && isPhysicallyHeld(mc, mapping));
+    }
+
+    private static boolean isPhysicallyHeld(Minecraft mc, KeyMapping mapping) {
+        if (mapping.isUnbound()) {
+            return false;
+        } else {
+            Key key = InputConstants.getKey(mapping.saveString());
+            Type type = key.getType();
+            if (type == Type.KEYSYM) {
+//                 return AnubisKeyPolling.isKeyDown(mc.getWindow(), key.getValue());
+            } else {
+                return type == Type.MOUSE ? GLFW.glfwGetMouseButton(mc.getWindow().handle(), key.getValue()) == 1 : false;
+            }
+        }
+    }
 }

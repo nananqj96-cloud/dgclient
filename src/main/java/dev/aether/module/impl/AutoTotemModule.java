@@ -1,155 +1,241 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import dev.aether.module.Module;
+import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.SliderSetting;
-import dev.aether.util.InventoryHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundEntityEventPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.GameType;
 
 public class AutoTotemModule extends Module {
-   public final SliderSetting delay = this.addSetting(new SliderSetting("Delay", "", 4.0, 1.0, 40.0, 1.0));
-   public final BooleanSetting forceTotem = this.addSetting(new BooleanSetting("Force Totem", "", false));
-   public final BooleanSetting hotbarTotem = this.addSetting(new BooleanSetting("Hotbar Totem", "", false));
-   public final SliderSetting hotbarSlot = this.addSetting(new SliderSetting("Hotbar Slot", "", 1.0, 1.0, 9.0, 1.0));
-   public final SliderSetting hotbarDelay = this.addSetting(new SliderSetting("Hotbar Delay", "", 4.0, 1.0, 40.0, 1.0));
-   private int tickCounter;
-   private int pendingHotbarSlot = -1;
-
-   public AutoTotemModule() {
-      super(
-         "Auto Totem",
-         "Totem to offhand/hotbar — hotbar select + F swap (+ SWAP from main inv when needed)",
-         Category.COMBAT
-      );
-   }
-
-   @Override
-   protected void onEnable() {
-      this.tickCounter = 0;
-      this.pendingHotbarSlot = -1;
-   }
-
-   @Override
-   protected void onDisable() {
-      this.tickCounter = 0;
-      this.pendingHotbarSlot = -1;
-   }
-
-   @Override
-   public void onTick() {
-      Minecraft client = Minecraft.getInstance();
-      if (client.player != null && client.gameMode != null && canRun(client)) {
-         this.tickCounter++;
-         int wait = this.hotbarTotem.get() && this.needsHotbarWork(client) && !this.needsOffhandWork(client) ? this.hotbarDelay.getInt() : this.delay.getInt();
-         if (this.tickCounter >= wait) {
-            this.tickCounter = 0;
-            LocalPlayer player = client.player;
-            int configuredHotbar = this.hotbarSlot.getInt() - 1;
-            if (this.hotbarTotem.get() && this.needsHotbarWork(client)) {
-               if (player.getInventory().getItem(configuredHotbar).is(Items.TOTEM_OF_UNDYING)) {
-                  InventoryHelper.selectHotbarSlot(configuredHotbar);
-               } else {
-                  int source = findTotemInMainInventory(client);
-                  if (source != -1 && canContainerClick(client)) {
-                     InventoryHelper.swapInventoryToHotbar(source, configuredHotbar);
-                  }
-               }
-            } else if (!this.needsOffhandWork(client)) {
-               this.pendingHotbarSlot = -1;
-            } else if (!player.getOffhandItem().is(Items.TOTEM_OF_UNDYING) || this.forceTotem.get()) {
-               int hotbarTotemSlot = findTotemInHotbar(client);
-               if (hotbarTotemSlot != -1) {
-                  this.pendingHotbarSlot = hotbarTotemSlot;
-                  InventoryHelper.selectHotbarSlot(hotbarTotemSlot);
-                  if (player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)) {
-                     InventoryHelper.swapOffhand();
-                  }
-               } else if (this.pendingHotbarSlot >= 0) {
-                  InventoryHelper.selectHotbarSlot(this.pendingHotbarSlot);
-                  if (player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)) {
-                     InventoryHelper.swapOffhand();
-                     this.pendingHotbarSlot = -1;
-                  }
-               } else {
-                  int mainInvTotem = findTotemInMainInventory(client);
-                  if (mainInvTotem != -1 && canContainerClick(client)) {
-                     int targetHotbar = configuredHotbar;
-                     if (!this.hotbarTotem.get()) {
-                        targetHotbar = player.getInventory().getSelectedSlot();
-                     }
-
-                     InventoryHelper.swapInventoryToHotbar(mainInvTotem, targetHotbar);
-                     this.pendingHotbarSlot = targetHotbar;
-                  } else if (player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)) {
-                     InventoryHelper.swapOffhand();
-                  }
-               }
+    private static final int OFFHAND_BUTTON = 40;
+    private static final int OFFHAND_MENU_SLOT = 45;
+    private static final int TOTEM_POP_EVENT = 35;
+    private static final int NEAREST_CHOICES = 3;
+    private static AutoTotemModule instance;
+    private final SliderSetting refillDelay = this.addSetting(new SliderSetting("Refill Delay", 3.0, 1.0, 10.0, 1.0F));
+    private final BooleanSetting useHotbar = this.addSetting(new BooleanSetting("Use Hotbar Totems", false));
+    private final OffhandRefill refill = new OffhandRefill(
+        new OffhandRefill.Driver() {
+            @Override
+            public boolean needsTotem() {
+                return AutoTotemModule.player().getOffhandItem().isEmpty();
             }
-         }
-      }
-   }
 
-   private static boolean canRun(Minecraft client) {
-      return client.screen == null || client.screen instanceof InventoryScreen;
-   }
+            @Override
+            public boolean canInteract() {
+                Minecraft mc = Minecraft.getInstance();
+                LocalPlayer player = mc.player;
+                return mc.gameMode.getPlayerMode() == GameType.SURVIVAL
+                    && player.containerMenu == player.inventoryMenu
+                    && player.inventoryMenu.getCarried().isEmpty();
+            }
 
-   private static boolean canContainerClick(Minecraft client) {
-      return client.screen != null || !isMoving(client);
-   }
+            @Override
+            public int findSource() {
+                return AutoTotemModule.this.findSource(AutoTotemModule.player().getInventory());
+            }
 
-   private static boolean isMoving(Minecraft client) {
-      if (client.player == null) {
-         return false;
-      } else if (!client.options.keyUp.isDown()
-         && !client.options.keyDown.isDown()
-         && !client.options.keyLeft.isDown()
-         && !client.options.keyRight.isDown()
-         && !client.options.keyJump.isDown()
-         && !client.player.isSprinting()
-         && !client.player.isShiftKeyDown()) {
-         double vx = client.player.getDeltaMovement().x;
-         double vz = client.player.getDeltaMovement().z;
-         return vx * vx + vz * vz > 0.0025;
-      } else {
-         return true;
-      }
-   }
+            @Override
+            public boolean validSource(int index) {
+                LocalPlayer player = AutoTotemModule.player();
+                if (!AutoTotemModule.isSource(player.getInventory(), index, AutoTotemModule.this.useHotbar.get())) {
+                    return false;
+                }
 
-   private boolean needsOffhandWork(Minecraft client) {
-      boolean hasTotemOffhand = client.player.getOffhandItem().is(Items.TOTEM_OF_UNDYING);
-      return this.forceTotem.get() || !hasTotemOffhand;
-   }
+                Slot slot = player.inventoryMenu.getSlot(AutoTotemModule.menuSlot(index));
+                return slot.container == player.getInventory() && slot.getContainerSlot() == index && slot.mayPickup(player);
+            }
 
-   private boolean needsHotbarWork(Minecraft client) {
-      if (!this.hotbarTotem.get()) {
-         return false;
-      } else {
-         int slot = this.hotbarSlot.getInt() - 1;
-         return !client.player.getInventory().getItem(slot).is(Items.TOTEM_OF_UNDYING);
-      }
-   }
+            @Override
+            public void swap(int index) {
+                Minecraft mc = Minecraft.getInstance();
+                LocalPlayer player = mc.player;
+                mc.gameMode.handleInventoryMouseClick(player.inventoryMenu.containerId, AutoTotemModule.menuSlot(index), 40, ClickType.SWAP, player);
+                AutoTotemModule.this.previousSource = index;
+            }
 
-   private static int findTotemInMainInventory(Minecraft client) {
-      for (int i = 9; i < 36; i++) {
-         if (client.player.getInventory().getItem(i).is(Items.TOTEM_OF_UNDYING)) {
-            return i;
-         }
-      }
+            @Override
+            public int containerId() {
+                return AutoTotemModule.player().inventoryMenu.containerId;
+            }
 
-      return -1;
-   }
+            @Override
+            public int stateId() {
+                return AutoTotemModule.player().inventoryMenu.getStateId();
+            }
 
-   private static int findTotemInHotbar(Minecraft client) {
-      for (int i = 0; i < 9; i++) {
-         if (client.player.getInventory().getItem(i).is(Items.TOTEM_OF_UNDYING)) {
-            return i;
-         }
-      }
+            @Override
+            public int latencyMillis() {
+                ClientPacketListener connection = Minecraft.getInstance().getConnection();
+                PlayerInfo info = connection == null ? null : connection.getPlayerInfo(AutoTotemModule.player().getUUID());
+                return info == null ? 0 : info.getLatency();
+            }
+        },
+        ThreadLocalRandom.current()
+    );
+    private int previousSource = -1;
 
-      return -1;
-   }
+    public AutoTotemModule() {
+        super("autototem", "Refills an empty offhand with a totem from your inventory, at a human pace you choose with Refill Delay.", Category.COMBAT);
+        instance = this;
+    }
+
+    public static boolean wantsHotbar() {
+        return false;
+    }
+
+    public static boolean busy() {
+        AutoTotemModule module = instance;
+        LocalPlayer player = Minecraft.getInstance().player;
+        return module != null && module.isEnabled() && player != null && !player.isSpectator() && !player.hasInfiniteMaterials()
+            ? module.refill.busy() || player.getOffhandItem().isEmpty() && module.findSource(player.getInventory()) >= 0
+            : false;
+    }
+
+    @Override
+    protected void onEnable() {
+//         AutoInvTotemModule other = ModuleRegistry.get(AutoInvTotemModule.class);
+        if (other != null) {
+            other.setEnabled(false);
+        }
+
+        this.reset();
+    }
+
+    @Override
+    protected void onDisable() {
+        this.reset();
+    }
+
+//     @EventHandler(stage = Stage.POST)
+    public void onTick() {
+        this.update();
+    }
+
+//     @EventHandler
+//     public void onRender2D(Render2DEvent event) {
+        this.update();
+    }
+
+//     @EventHandler
+//     public void onPacketApplied(PacketAppliedEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null && mc.player != null) {
+            if (event.packet instanceof ClientboundEntityEventPacket status && status.getEventId() == 35 && status.getEntity(mc.level) == mc.player) {
+                this.reset();
+            }
+        }
+    }
+
+//     @EventHandler
+//     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
+        long now = System.nanoTime();
+        if (event.packet instanceof ClientboundSetPlayerInventoryPacket update) {
+            if (update.slot() == 40) {
+                this.observe(-1, -1, offhand(update.contents()), now);
+            }
+        } else if (event.packet instanceof ClientboundContainerSetSlotPacket update) {
+            if (update.getSlot() == 45) {
+                this.observe(update.getContainerId(), update.getStateId(), offhand(update.getItem()), now);
+            }
+        } else if (event.packet instanceof ClientboundContainerSetContentPacket update && update.items().size() > 45) {
+            this.observe(update.containerId(), update.stateId(), offhand(update.items().get(45)), now);
+        }
+    }
+
+    private void observe(int containerId, int stateId, OffhandRefill.Offhand offhand, long receivedAt) {
+        Minecraft.getInstance().execute(() -> {
+            if (this.isEnabled()) {
+                this.refill.observe(containerId, stateId, offhand, receivedAt);
+            }
+        });
+    }
+
+    private void update() {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (mc.level != null && player != null && mc.gameMode != null && player.isAlive() && !player.isRemoved() && !(player.getHealth() <= 0.0F)) {
+            this.refill, this.refillDelay.getInt());
+        } else {
+            this.reset();
+        }
+    }
+
+    private void reset() {
+        this.refill.reset();
+        this.previousSource = -1;
+    }
+
+    private int findSource(Inventory inventory) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        if (this.useHotbar.get()) {
+            List<Integer> hotbar = new ArrayList<>();
+
+            for (int i = 0; i < 9; i++) {
+                if (isSource(inventory, i, true)) {
+                    hotbar.add(i);
+                }
+            }
+
+            if (!hotbar.isEmpty()) {
+                return hotbar.get(random.nextInt(hotbar.size()));
+            }
+        }
+
+        List<Integer> stored = new ArrayList<>();
+
+        for (int i = 9; i < 36; i++) {
+            if (isSource(inventory, i, false)) {
+                stored.add(i);
+            }
+        }
+
+        if (stored.isEmpty()) {
+            return -1;
+        }
+
+        int anchor = this.previousSource >= 9 && this.previousSource < 36 ? this.previousSource - 9 : random.nextInt(27);
+        stored.sort(Comparator.comparingInt(index -> {
+            int offset = index - 9;
+            return Math.abs(offset % 9 - anchor % 9) + Math.abs(offset / 9 - anchor / 9);
+        }));
+        return stored.get(random.nextInt(Math.min(3, stored.size())));
+    }
+
+    private static boolean isSource(Inventory inventory, int index, boolean hotbar) {
+        return index >= (hotbar ? 0 : 9) && index < 36 && inventory.getItem(index).is(Items.TOTEM_OF_UNDYING);
+    }
+
+    private static int menuSlot(int index) {
+        return index < 9 ? index + 36 : index;
+    }
+
+    private static OffhandRefill.Offhand offhand(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return OffhandRefill.Offhand.EMPTY;
+        } else {
+            return stack.is(Items.TOTEM_OF_UNDYING) ? OffhandRefill.Offhand.TOTEM : OffhandRefill.Offhand.OTHER;
+        }
+    }
+
+    private static LocalPlayer player() {
+        return Minecraft.getInstance().player;
+    }
 }

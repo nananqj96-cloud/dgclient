@@ -1,66 +1,44 @@
 package dev.aether.module.impl;
 
-import dev.aether.AetherClient;
-import dev.aether.module.Category;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.aether.module.Module;
-import dev.aether.render.MotionBlurRenderer;
-import dev.aether.settings.BooleanSetting;
+import dev.aether.module.Category;
 import dev.aether.settings.SliderSetting;
+import net.minecraft.client.Minecraft;
 
 public class MotionBlurModule extends Module {
-   public final SliderSetting strength = this.addSetting(
-      new SliderSetting("Strength", "Blur strength", 30.0, 5.0, 100.0, 5.0, "%")
-         .withLabel(
-            v -> {
-               int pct = (int)Math.round(v);
-               String tier = pct <= 20
-                  ? "Subtle"
-                  : (
-                     pct <= 45
-                        ? "Balanced"
-                        : (
-                           pct <= 70
-                              ? "Smooth"
-                              : (pct <= 90 ? "Heavy" : "Cinematic")
-                        )
-                  );
-               return pct + "% · " + tier;
-            }
-         )
-   );
-   public final BooleanSetting pinkTrails = this.addSetting(
-      new BooleanSetting(
-         "Pink Trails", "Tint the trails with your theme accent (Aether look)", true
-      )
-   );
-   public final SliderSetting tint = this.addSetting(
-      new SliderSetting(
-         "Tint", "How strongly trails take the theme color", 30.0, 0.0, 100.0, 5.0, "%"
-      )
-   );
-   public final BooleanSetting fpsCompensated = this.addSetting(
-      new BooleanSetting("FPS Compensated", "Keep the blur consistent across framerates", true)
-   );
+    public static volatile MotionBlurModule active;
+    private final SliderSetting strength = this.addSetting(new SliderSetting("Strength", 50.0, 10.0, 90.0, 5.0F));
 
-   public MotionBlurModule() {
-      super("MotionBlur", "Cinematic motion blur", Category.VISUALS);
-      this.tint.visibleWhen(this.pinkTrails::get);
-   }
+    public MotionBlurModule() {
+        super("motion-blur", "Adds motion blur when you turn.", Category.VISUALS);
+    }
 
-   @Override
-   protected void onDisable() {
-      MotionBlurRenderer.reset();
-   }
+    @Override
+    protected void onEnable() {
+        active = this;
+    }
 
-   public double retention() {
-      return Math.clamp((double)this.strength.getFloat() / 100.0, 0.05, 0.95);
-   }
+    @Override
+    protected void onDisable() {
+        active = null;
+        if (RenderSystem.isOnRenderThread()) {
+            MotionBlurPass.release();
+        } else {
+            Minecraft.getInstance().execute(MotionBlurModule::releaseIfOff);
+        }
+    }
 
-   public float tintAmount() {
-      return this.pinkTrails.get() ? (float)Math.clamp((double)this.tint.getFloat() / 100.0, 0.0, 1.0) : 0.0F;
-   }
+    private static void releaseIfOff() {
+        if (active == null) {
+            MotionBlurPass.release();
+        }
+    }
 
-   public int accentColor() {
-      return AetherClient.themes().current().accent();
-   }
+    public static void afterWorld(boolean worldRendered) {
+        MotionBlurModule module = active;
+        if (module != null) {
+            MotionBlurPass.apply(worldRendered, module.strength.get() / 100.0F);
+        }
+    }
 }

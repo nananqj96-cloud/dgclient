@@ -1,107 +1,216 @@
 package dev.aether.module.impl;
 
-import dev.aether.module.Category;
-import dev.aether.module.Module;
-import dev.aether.settings.ColorSetting;
+import com.example.client.mixin.AccessorSpawnerNametagsBaseSpawner;
+import imgui.ImDrawList;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.LongPredicate;
+import dev.aether.module.Module;
+import dev.aether.module.Category;
+import dev.aether.settings.BooleanSetting;
+import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SpawnData;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
-import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
-public final class SpawnerNametagsModule extends Module {
-   public final ColorSetting color = this.addSetting(new ColorSetting("Color", "Spawner beam color", -44976));
-   private final CopyOnWriteArrayList<BlockPos> spawners = new CopyOnWriteArrayList<>();
-   private final Set<BlockPos> known = ConcurrentHashMap.newKeySet();
-   private long lastSoundAt;
-   private int ticks;
+public class SpawnerNametagsModule extends Module {
+    private static final int MAX_LABELS = 48;
+    private static final int RING_SEGMENTS = 64;
+    private static final float RING_WIDTH = 1.5F;
+    private static final float RING_ALPHA_INSIDE = 0.8F;
+    private static final float RING_ALPHA_OUTSIDE = 0.4F;
+    private static final double LABEL_HEIGHT = 1.2;
+    private static final double FADE_SHARE = 0.125;
+    private static final String SEPARATOR = "  ·  ";
+    private final SliderSetting sRange = this.addSetting(new SliderSetting("Range", 64.0, 8.0, 256.0, 1.0F));
+    private final BooleanSetting sRadius = this.addSetting(new BooleanSetting("Activation Radius", true));
+    private final LongOpenHashSet spawners = new LongOpenHashSet();
 
-   public SpawnerNametagsModule() {
-      super("Spawner Notifier", "Finds loaded mob spawners and marks them with a beam", Category.RENDER);
-   }
+    public SpawnerNametagsModule() {
+        super("spawner-nametags", "Shows each spawner's mob and activation range over the block.", Category.RENDER);
+    }
 
-   @Override
-   protected void onEnable() {
-      this.spawners.clear();
-      this.known.clear();
-      this.ticks = 0;
-   }
+    @Override
+    protected void onEnable() {
+//         ChunkScanner.register(this);
+    }
 
-   @Override
-   protected void onDisable() {
-      this.spawners.clear();
-      this.known.clear();
-   }
+    @Override
+    protected void onDisable() {
+//         ChunkScanner.unregister(this);
+        this.spawners.clear();
+    }
 
-   @Override
-   public void onTick() {
-      Minecraft var1 = Minecraft.getInstance();
-      if (var1.level != null && var1.player != null && ++this.ticks % 40 == 0) {
-         this.ticks = 0;
-         ChunkPos var2 = var1.player.chunkPosition();
-         int var3 = Math.min(8, (Integer)var1.options.renderDistance().get());
-         ArrayList var4 = new ArrayList();
+    public static String mobName(SpawnerBlockEntity spawner) {
+        SpawnData data = ((AccessorSpawnerNametagsBaseSpawner)spawner.getSpawner()).anubis$spawnerNametagsNextSpawnData();
+        if (data == null) {
+            return null;
+        }
 
-         for (int var5 = -var3; var5 <= var3; var5++) {
-            for (int var6 = -var3; var6 <= var3; var6++) {
-               LevelChunk var7 = var1.level.getChunkSource().getChunk(var2.x + var5, var2.z + var6, false);
-               if (var7 != null) {
-                  for (BlockEntity var9 : var7.getBlockEntities().values()) {
-                     if (var9 instanceof SpawnerBlockEntity) {
-                        BlockPos var10 = var9.getBlockPos();
-                        BlockPos var11 = new BlockPos(var10.getX(), var10.getY(), var10.getZ());
-                        var4.add(var11);
-                        if (this.known.add(var11)) {
-                           this.announce(var1, var11);
-                        }
-                     }
-                  }
-               }
+        String id = data.entityToSpawn().getStringOr("id", "");
+        return id.isEmpty() ? null : EntityType.byString(id).map(type -> type.getDescription().getString()).orElse(null);
+    }
+
+    public static int activationRange(SpawnerBlockEntity spawner) {
+        return ((AccessorSpawnerNametagsBaseSpawner)spawner.getSpawner()).anubis$spawnerNametagsRequiredPlayerRange();
+    }
+
+    @Override
+    public boolean wants(BlockState state) {
+        return state.is(Blocks.SPAWNER);
+    }
+
+    @Override
+    public void found(long pos, BlockState state) {
+        this.spawners.add(pos);
+    }
+
+    @Override
+    public void removed(long pos) {
+        this.spawners.remove(pos);
+    }
+
+    @Override
+    public void reset() {
+        this.spawners.clear();
+    }
+
+    @Override
+    public void chunkScanned(long chunkKey, LongPredicate stillThere) {
+        LongIterator it = this.spawners.iterator();
+
+        while (it.hasNext()) {
+            long pos = it.nextLong();
+            if (ChunkPos.asLong(BlockPos.getX(pos) >> 4, BlockPos.getZ(pos) >> 4) == chunkKey && !stillThere.test(pos)) {
+                it.remove();
             }
-         }
+        }
+    }
 
-         this.known.retainAll(new HashSet(var4));
-         this.spawners.clear();
-         this.spawners.addAll(var4);
-      }
-   }
+    private List<SpawnerNametagsModule.Shown> inRange(Minecraft mc) {
+        List<SpawnerNametagsModule.Shown> shown = new ArrayList<>();
+        if (!this.spawners.isEmpty() && mc.level != null && mc.player != null) {
+            Level level = mc.level;
+            Vec3 player = mc.player.position();
+            double range = this.sRange.get();
+            LongIterator it = this.spawners.iterator();
 
-   private void announce(Minecraft minecraft, BlockPos blockPos) {
-      long var3 = System.currentTimeMillis();
-      if (var3 - this.lastSoundAt > 5000L) {
-         this.lastSoundAt = var3;
-         minecraft.player.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.0F, 1.2F);
-      }
+            while (it.hasNext()) {
+                BlockPos pos = BlockPos.of(it.nextLong());
+                double distanceSq = player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+                if (!(distanceSq > range * range) && level.getBlockEntity(pos) instanceof SpawnerBlockEntity spawner) {
+                    int activation = activationRange(spawner);
+                    boolean inside = activation < 0 || distanceSq < (double)activation * activation;
+                    shown.add(new SpawnerNametagsModule.Shown(pos, Math.sqrt(distanceSq), mobName(spawner), activation, inside));
+                }
+            }
 
-      String var5 = "§a[SpawnerNotifier] §fSpawner found at §e" + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ();
+            shown.sort(Comparator.comparingDouble(SpawnerNametagsModule.Shown::distance));
+            return shown.size() > 48 ? shown.subList(0, 48) : shown;
+        } else {
+            return shown;
+        }
+    }
 
-      for (int var6 = 0; var6 < 4; var6++) {
-         minecraft.gui.getChat().addMessage(Component.literal(var5));
-      }
-   }
+    private float fade(double distance) {
+        double range = this.sRange.get();
+        return (float)Math.max(0.0, Math.min(1.0, (range - distance) / (range * 0.125)));
+    }
 
-   public List<BlockPos> visiblePositions() {
-      return List.copyOf(this.spawners);
-   }
+    @Override
+    public boolean isHudOverlayEnabled() {
+        return this.isEnabled() && !this.spawners.isEmpty();
+    }
 
-   public void markDirty() {
-   }
+    @Override
+    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+        Minecraft mc = Minecraft.getInstance();
+        if (!mc.options.hideGui) {
+            List<SpawnerNametagsModule.Shown> shown = this.inRange(mc);
+//             int accent = WorldText.hudAccent();
 
-   public void markChunkDirty(int i, int j) {
-   }
+            for (int i = shown.size() - 1; i >= 0; i--) {
+                SpawnerNametagsModule.Shown spawner = shown.get(i);
+                float[] screen = labelAnchor(mc, spawner.pos(), screenW, screenH);
+                if (screen != null) {
+                    String name = spawner.mob() == null ? "Spawner" : spawner.mob() + " Spawner";
+                    String distance = Math.round(spawner.distance()) + "m";
+                    String[] runs;
+                    int[] colors;
+                    if (this.sRadius.get() && spawner.range() > 0) {
+                        runs = new String[]{distance, "  ·  ", spawner.range() + "m range"};
+//                         colors = new int[]{WorldText.LABEL, WorldText.LABEL, spawner.inside() ? accent : WorldText.LABEL};
+                    } else {
+                        runs = new String[]{distance};
+//                         colors = new int[]{WorldText.LABEL};
+                    }
 
-   public void clear() {
-      this.spawners.clear();
-      this.known.clear();
-      this.ticks = 0;
-   }
+//                     WorldText.draw(dl, screen[0], screen[1], name, runs, colors, this.fade(spawner.distance()));
+                }
+            }
+        }
+    }
+
+    public static float[] labelAnchor(Minecraft mc, BlockPos pos, float screenW, float screenH) {
+//         float[] anchor = WorldLabel.project(mc, new Vec3(pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5), screenW, screenH);
+        if (anchor == null) {
+            return null;
+        }
+
+        for (int corner = 0; corner < 4; corner++) {
+//             float[] top = WorldLabel.project(mc, new Vec3(pos.getX() + (corner & 1), pos.getY() + 1.0, pos.getZ() + (corner >> 1)), screenW, screenH);
+            if (top != null) {
+                anchor[1] = Math.min(anchor[1], top[1]);
+            }
+        }
+
+        return anchor;
+    }
+
+//     @EventHandler
+//     public void onRender3D(Render3DEvent event) {
+        if (this.sRadius.get()) {
+            Minecraft mc = Minecraft.getInstance();
+            List<SpawnerNametagsModule.Shown> shown = this.inRange(mc);
+            if (!shown.isEmpty()) {
+//                 int accent = GuiPalette.abgr(WorldText.hudAccent()) & 16777215;
+
+                for (SpawnerNametagsModule.Shown spawner : shown) {
+                    if (spawner.range() > 0) {
+                        float alpha = (spawner.inside() ? 0.8F : 0.4F) * this.fade(spawner.distance());
+                        int color = Math.round(alpha * 255.0F) << 24 | accent;
+                        if (color >>> 24 >= 4) {
+                            drawRing(Vec3.atCenterOf(spawner.pos()), spawner.range(), color);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void drawRing(Vec3 centre, double radius, int color) {
+        Vec3 previous = null;
+
+        for (int i = 0; i <= 64; i++) {
+            double angle = (Math.PI * 2) * i / 64.0;
+            Vec3 point = centre.add(Math.cos(angle) * radius, 0.0, Math.sin(angle) * radius);
+            if (previous != null) {
+                Gizmos.line(previous, point, color, 1.5F).setAlwaysOnTop();
+            }
+
+            previous = point;
+        }
+    }
+
+        private record Shown(BlockPos pos, double distance, String mob, int range, boolean inside) {
+    }
 }

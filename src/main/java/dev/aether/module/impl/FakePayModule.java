@@ -7,7 +7,6 @@ import dev.aether.module.ModuleManager;
 import dev.aether.settings.BooleanSetting;
 import dev.aether.settings.ColorSetting;
 import dev.aether.settings.ModeSetting;
-import dev.aether.settings.StringSetting;
 import dev.aether.util.Amounts;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -19,15 +18,6 @@ import net.minecraft.sounds.SoundEvents;
 public class FakePayModule extends Module {
    private static final int WHITE = 16777215;
    private static final int RED = 16733525;
-   public final StringSetting command = this.addSetting(
-      new StringSetting(
-         "Command",
-         "Command name to hijack, without the slash.",
-         "pay",
-         32,
-         "pay"
-      )
-   );
    public final ModeSetting feedback = this.addSetting(
       new ModeSetting(
          "Feedback",
@@ -36,15 +26,6 @@ public class FakePayModule extends Module {
          "Both",
          "Action Bar",
          "Chat"
-      )
-   );
-   public final StringSetting currency = this.addSetting(
-      new StringSetting(
-         "Currency",
-         "Symbol before the amount (colored).",
-         "$",
-         4,
-         "$"
       )
    );
    public final ColorSetting currencyColor = this.addSetting(

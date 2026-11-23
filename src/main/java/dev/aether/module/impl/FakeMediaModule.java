@@ -3,20 +3,15 @@ package dev.aether.module.impl;
 import dev.aether.module.Category;
 import dev.aether.module.Module;
 import dev.aether.settings.BooleanSetting;
-import dev.aether.settings.StringSetting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.FontDescription.Resource;
 import net.minecraft.resources.Identifier;
 
-public final class FakeMediaModule extends Module {
+public class FakeMediaModule extends Module {
    public final BooleanSetting mediaBadge = this.addSetting(new BooleanSetting("Media Badge", "Show the media badge beside your own nametag.", true));
    public final BooleanSetting bluePlus = this.addSetting(new BooleanSetting("Blue Plus", "Show the blue plus beside your own nametag.", false));
-   public final StringSetting displayName = this.addSetting(
-      new StringSetting("Display Name", "Optional local display name. Leave blank to use your Minecraft name.", "", 32, "Minecraft name")
-   );
-
    public FakeMediaModule() {
       super("Fake Media", "Adds local media styling to your own nametag.", Category.MISC);
    }
