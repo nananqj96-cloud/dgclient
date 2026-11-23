@@ -21,7 +21,7 @@ public class TenacityBedDefenderModule extends Module {
       if (mc == null || mc.player == null || mc.level == null) return;
       var pos = mc.player.blockPosition();
       var state = mc.level.getBlockState(pos);
-      if (state.is(net.minecraft.world.level.block.Blocks.BED)) {
+      if (state.is(net.minecraft.world.level.block.Blocks.BEDROCK)) {
          mc.player.setGlowingTag(true);
       }
 

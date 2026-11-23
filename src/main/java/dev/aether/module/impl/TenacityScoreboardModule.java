@@ -21,7 +21,7 @@ public class TenacityScoreboardModule extends Module {
       
       Minecraft mc = Minecraft.getInstance();
       if (mc == null) return;
-      mc.options.debugRenderer().set(custom.get());
+      mc.player.setGlowingTag(custom.get());
 
 
    }

@@ -21,7 +21,7 @@ public class TenacityDebugModule extends Module {
       
       Minecraft mc = Minecraft.getInstance();
       if (mc == null) return;
-      mc.options.debugRenderer().set(true);
+      mc.player.setGlowingTag(true);
 
    }
 }
