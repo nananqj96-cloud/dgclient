@@ -1,7 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorElytraFlyMultiPlayerGameMode;
-import com.example.client.mixin.AccessorLocalPlayer;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
@@ -95,7 +93,7 @@ public class AutoInvTotemModule extends Module {
     }
 
     public static boolean clickSafe(LocalPlayer player) {
-        AccessorLocalPlayer sent = (AccessorLocalPlayer)player;
+        // AccessorLocalPlayer sent = (AccessorLocalPlayer)player;
         Input input = sent.anubis$lastSentInput();
         return !sent.anubis$wasSprinting() && !input.forward() && !input.backward() && !input.left() && !input.right() && !input.jump() && !input.shift();
     }
@@ -314,7 +312,7 @@ public class AutoInvTotemModule extends Module {
             Inventory inventory = player.getInventory();
             if (inventory.getSelectedSlot() == this.totemSlot && player.getMainHandItem().is(Items.TOTEM_OF_UNDYING)) {
                 ClientPacketListener connection = mc.getConnection();
-                ((AccessorElytraFlyMultiPlayerGameMode)mc.gameMode).anubis$elytraFlySyncSelected();
+                // ((AccessorElytraFlyMultiPlayerGameMode)mc.gameMode).anubis$elytraFlySyncSelected();
 
                 while (mc.options.keySwapOffhand.consumeClick()) {
                 }

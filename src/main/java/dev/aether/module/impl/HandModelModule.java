@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorHandPlayerModel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.aether.module.Module;
 import dev.aether.module.Category;

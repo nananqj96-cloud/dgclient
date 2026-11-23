@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import imgui.ImDrawList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -102,7 +101,7 @@ public class TracersModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         Minecraft mc = Minecraft.getInstance();
         float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
         float blink = this.blinkOffscreen.get() ? this.blinkAlpha() : 1.0F;
@@ -233,7 +232,7 @@ public class TracersModule extends Module {
         return (float)Math.abs(time % 1000.0 - 500.0) / 500.0F;
     }
 
-    private static void arrow(ImDrawList dl, float x, float y, float size, float angle, int abgr) {
+    // private static void arrow(ImDrawList dl, float x, float y, float size, float angle, int abgr) {
         float cos = (float)Math.cos(angle);
         float sin = (float)Math.sin(angle);
         float cx = x - size * 1.26795F / 3.0F;

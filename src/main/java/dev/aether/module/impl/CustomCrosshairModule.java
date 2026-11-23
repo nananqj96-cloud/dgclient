@@ -1,7 +1,5 @@
 package dev.aether.module.impl;
 
-import imgui.ImDrawList;
-import imgui.ImGui;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
@@ -88,11 +86,11 @@ public class CustomCrosshairModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null && isVisible(mc)) {
-            float dt = Math.min(Math.max(ImGui.getIO().getDeltaTime(), 0.0F), 0.1F);
+            // float dt = Math.min(Math.max(ImGui.getIO().getDeltaTime(), 0.0F), 0.1F);
 //             float scale = ImGuiManager.getInstance().uiScale();
             this.updateMotion(mc, player, dt);
             CustomCrosshairModule.Geometry geometry = this.geometry(screenW * 0.5F, screenH * 0.5F, scale);
@@ -186,7 +184,7 @@ public class CustomCrosshairModule extends Module {
         return (this.style.is("Cross") || this.style.is("T")) && g.open() < 1.0F;
     }
 
-    private void drawShape(ImDrawList dl, CustomCrosshairModule.Geometry g, int color, float grow) {
+    // private void drawShape(ImDrawList dl, CustomCrosshairModule.Geometry g, int color, float grow) {
         switch (this.style.get()) {
             case "Dot":
                 dl.addCircleFilled(g.cx(), g.cy(), Math.max(1.0F, g.size() * 0.5F) + grow, color, 0);
@@ -208,7 +206,7 @@ public class CustomCrosshairModule extends Module {
         }
     }
 
-    private static void drawArms(ImDrawList dl, CustomCrosshairModule.Geometry g, int color, float grow, boolean top) {
+    // private static void drawArms(ImDrawList dl, CustomCrosshairModule.Geometry g, int color, float grow, boolean top) {
         float x0 = (float)Math.floor(g.cx() - g.thick() * 0.5F);
         float x1 = x0 + g.thick();
         float y0 = (float)Math.floor(g.cy() - g.thick() * 0.5F);
@@ -231,7 +229,7 @@ public class CustomCrosshairModule extends Module {
         }
     }
 
-    private static void drawDiagonals(ImDrawList dl, CustomCrosshairModule.Geometry g, int color, float grow) {
+    // private static void drawDiagonals(ImDrawList dl, CustomCrosshairModule.Geometry g, int color, float grow) {
         float near = Math.max(0.0F, g.open() - grow) * 0.70710677F;
         float far = (g.open() + g.size() + grow) * 0.70710677F;
         float width = g.thick() + grow * 2.0F;
@@ -243,11 +241,11 @@ public class CustomCrosshairModule extends Module {
         }
     }
 
-    private static void rect(ImDrawList dl, float x0, float y0, float x1, float y1, int color, float grow) {
+    // private static void rect(ImDrawList dl, float x0, float y0, float x1, float y1, int color, float grow) {
         dl.addRectFilled(x0 - grow, y0 - grow, x1 + grow, y1 + grow, color);
     }
 
-    private void drawCooldown(ImDrawList dl, Minecraft mc, LocalPlayer player, CustomCrosshairModule.Geometry g, int fill, float edge, float scale, float dt) {
+    // private void drawCooldown(ImDrawList dl, Minecraft mc, LocalPlayer player, CustomCrosshairModule.Geometry g, int fill, float edge, float scale, float dt) {
         boolean wanted = mc.options.attackIndicator().get() == AttackIndicatorStatus.CROSSHAIR;
         float charge = player.getAttackStrengthScale(0.0F);
         boolean ready = wanted && readyOnTarget(mc, player, charge);

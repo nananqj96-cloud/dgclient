@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import imgui.ImDrawList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -288,7 +287,7 @@ public class PearlTrajectoryModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         if (!this.labels.isEmpty() && System.nanoTime() - this.labelsAt <= 250000000L) {
             Minecraft mc = Minecraft.getInstance();
 

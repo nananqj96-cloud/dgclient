@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import imgui.ImDrawList;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -162,7 +161,7 @@ public class AnchorAuraModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         this.view.label(dl, screenW, screenH);
     }
 

@@ -1,7 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorBlockOverlayMultiPlayerGameMode;
-import com.example.client.mixin.AccessorGameRenderer;
 import java.util.ArrayList;
 import java.util.List;
 import dev.aether.module.Module;

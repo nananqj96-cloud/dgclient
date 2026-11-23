@@ -2,7 +2,6 @@ package dev.aether.module.impl;
 
 import dev.aether.AetherClient;
 
-import imgui.ImDrawList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -286,7 +285,7 @@ public class MediaBaseFinderModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
 //         List<HudPanel.Line> lines = new ArrayList<>();
         if (this.settle > 0) {
 //             lines.add(new HudPanel.Line("Checking…", -19648));

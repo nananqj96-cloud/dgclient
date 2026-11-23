@@ -2,8 +2,6 @@ package dev.aether.module.impl;
 
 import dev.aether.AetherClient;
 
-import com.example.client.mixin.AccessorElytraFlyMultiPlayerGameMode;
-import com.example.client.mixin.AccessorLocalPlayer;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
@@ -132,7 +130,7 @@ public class ElytraSwapModule extends Module {
         } else if (player.isUsingItem()) {
             return "you kept using an item";
         } else {
-            return ((AccessorLocalPlayer)player).anubis$lastSentInput().shift() ? "you kept sneaking" : null;
+            // return ((AccessorLocalPlayer)player).anubis$lastSentInput().shift() ? "you kept sneaking" : null;
         }
     }
 
@@ -244,7 +242,7 @@ public class ElytraSwapModule extends Module {
 
     private static boolean equip(Minecraft mc, LocalPlayer player, int index) {
         Item item = player.getInventory().getItem(index).getItem();
-        ((AccessorElytraFlyMultiPlayerGameMode)mc.gameMode).anubis$elytraFlySyncSelected();
+        // ((AccessorElytraFlyMultiPlayerGameMode)mc.gameMode).anubis$elytraFlySyncSelected();
         if (!Inventory.isHotbarSlot(index) && index != 40) {
             ElytraFlyInventory.moveToChest(index);
         } else {

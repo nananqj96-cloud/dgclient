@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import imgui.ImDrawList;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -271,7 +270,7 @@ public class CrystalAuraModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         this.view.label(dl, screenW, screenH);
     }
 

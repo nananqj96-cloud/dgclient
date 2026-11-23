@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorAtmosphereClientLevel;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dev.aether.module.Module;

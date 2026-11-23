@@ -1,7 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorSpawnerNametagsBaseSpawner;
-import imgui.ImDrawList;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -132,7 +130,7 @@ public class SpawnerNametagsModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         Minecraft mc = Minecraft.getInstance();
         if (!mc.options.hideGui) {
             List<SpawnerNametagsModule.Shown> shown = this.inRange(mc);

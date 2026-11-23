@@ -1,6 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorCombatMinecraft;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;

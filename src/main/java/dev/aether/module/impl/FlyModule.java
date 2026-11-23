@@ -1,7 +1,5 @@
 package dev.aether.module.impl;
 
-import com.example.client.mixin.AccessorLocalPlayer;
-import com.example.client.mixin.AccessorServerboundMovePlayerPacket;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
@@ -236,7 +234,7 @@ public class FlyModule extends Module {
 
     private void antiKickPacket(LocalPlayer player, ServerboundMovePlayerPacket packet, double currentY) {
         if (this.delayLeft <= 0 && this.lastPacketY != Double.MAX_VALUE && shouldFlyDown(currentY, this.lastPacketY) && isOnAir(player)) {
-            ((AccessorServerboundMovePlayerPacket)packet).anubis$setY(this.lastPacketY - 0.0313);
+            // ((AccessorServerboundMovePlayerPacket)packet).anubis$setY(this.lastPacketY - 0.0313);
         } else {
             this.lastPacketY = currentY;
         }
@@ -263,7 +261,7 @@ public class FlyModule extends Module {
     }
 
     private static void forcePositionPacket(LocalPlayer player) {
-        ((AccessorLocalPlayer)player).anubis$setPositionReminder(20);
+        // ((AccessorLocalPlayer)player).anubis$setPositionReminder(20);
     }
 
     private static boolean isOnAir(LocalPlayer player) {

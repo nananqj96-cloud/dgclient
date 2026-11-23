@@ -1,7 +1,5 @@
 package dev.aether.module.impl;
 
-import imgui.ImDrawList;
-import imgui.ImGui;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import dev.aether.settings.BooleanSetting;
@@ -71,9 +69,9 @@ public class LowHealthWarningModule extends Module {
     }
 
     @Override
-    public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
+    // public void renderHudOverlay(ImDrawList dl, float screenW, float screenH) {
         Minecraft mc = Minecraft.getInstance();
-        float dt = Math.min(Math.max(ImGui.getIO().getDeltaTime(), 0.0F), 0.1F);
+        // float dt = Math.min(Math.max(ImGui.getIO().getDeltaTime(), 0.0F), 0.1F);
         long now = System.nanoTime();
         if (now - this.lastFrame > 250000000L) {
             this.level = 0.0F;
@@ -152,7 +150,7 @@ public class LowHealthWarningModule extends Module {
         return abgr & 16777215 | a << 24;
     }
 
-    private static void frame(ImDrawList dl, float w, float h, float depth, int edge) {
+    // private static void frame(ImDrawList dl, float w, float h, float depth, int edge) {
         if (!(depth < 1.0F) && edge >>> 24 != 0) {
             int clear = edge & 16777215;
             dl.addRectFilledMultiColor(0.0F, 0.0F, w, depth, edge, edge, clear, clear);
