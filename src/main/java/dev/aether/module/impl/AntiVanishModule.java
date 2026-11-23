@@ -1438,8 +1438,8 @@ public class AntiVanishModule extends Module {
 
         Component how() {
             return this.spectator
-//                 ? StaffListModule.switchedTo(ModuleChat.body(), GameType.SPECTATOR.getName()).build()
-//                 : ModuleChat.body().danger("vanished").build();
+                ? Component.literal("Switched to spectator")
+                : Component.literal("Vanished");
         }
     }
 

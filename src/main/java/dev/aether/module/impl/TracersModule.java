@@ -119,13 +119,14 @@ public class TracersModule extends Module {
                 double angle = Math.atan2(-clip.y * screenH, clip.x * screenW);
                 int color = this.colorOf(mc, entity);
                 int alpha = (int)((color >>> 24) * blink);
+                int tracerColor = (alpha << 24) | (color & 16777215);
                 arrow(
                     dl,
                     screenW * 0.5F + reach * (float)Math.cos(angle),
                     screenH * 0.5F + reach * (float)Math.sin(angle),
                     size,
                     (float)angle,
-//                     GuiPalette.abgr(alpha << 24 | color & 16777215)
+                    tracerColor
                 );
             }
         }

@@ -86,16 +86,16 @@ public class ElytraSwapModule extends Module {
         // }
     // }
 
-    private void onPress(int pressed) {
-        int bound = this.key.value();
+    // private void onPress(int pressed) {
+        // int bound = this.key.value();
 //         if (ModuleKeybinds.isBindable(bound) && pressed == bound) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.screen == null && mc.player != null) {
-                this.pending = true;
-                this.pendingTicks = 0;
-            }
-        }
-    }
+            // Minecraft mc = Minecraft.getInstance();
+            // if (mc.screen == null && mc.player != null) {
+                // this.pending = true;
+                // this.pendingTicks = 0;
+            // }
+        // }
+    // }
 
     public void onTick() {
         Minecraft mc = Minecraft.getInstance();

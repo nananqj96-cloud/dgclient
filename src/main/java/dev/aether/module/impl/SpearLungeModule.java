@@ -60,20 +60,20 @@ public class SpearLungeModule extends Module {
         // }
     // }
 
-    private void onPress(int pressed) {
-        int bound = this.key.value();
+    // private void onPress(int pressed) {
+        // int bound = this.key.value();
 //         if (ModuleKeybinds.isBindable(bound) && pressed == bound) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.screen == null && mc.player != null && mc.level != null) {
-                if (bestSpear(mc.player.getInventory(), true) < 0) {
+            // Minecraft mc = Minecraft.getInstance();
+            // if (mc.screen == null && mc.player != null && mc.level != null) {
+                // if (bestSpear(mc.player.getInventory(), true) < 0) {
 //                     ModuleChat.actionBar(this, ModuleChat.body().warn("No Lunge spear").text(" in your hotbar"));
-                } else {
-                    this.pending = true;
-                    this.pendingTicks = 0;
-                }
-            }
-        }
-    }
+                // } else {
+                    // this.pending = true;
+                    // this.pendingTicks = 0;
+                // }
+            // }
+        // }
+    // }
 
     public void onTick() {
         Minecraft mc = Minecraft.getInstance();

@@ -128,15 +128,7 @@ public class OrderDropperModule extends Module {
 
         this.worker.sleep(300L);
         gui.closeAll();
-        this.say(
-//             ModuleChat.body()
-                .good("Dropped " + dropped + (dropped == 1 ? " page" : " pages"))
-                .text(" (")
-                .value(items)
-                .text(" items) from ")
-                .name(orderName)
-                .text(".")
-        );
+        this.say("Dropped " + dropped + (dropped == 1 ? " page" : " pages") + " (" + items + " items) from " + orderName + ".");
     }
 
     private String openCollect(Gui gui, int slot, ItemStack[] first) {

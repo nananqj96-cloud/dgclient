@@ -422,17 +422,7 @@ public class NameProtectModule extends Module {
                 this.refusalNoticeDelay--;
             } else if (mc.player != null) {
                 this.noticedAlias = this.refusedAlias;
-                AetherClient.chat(
-                    this,
-//                     ModuleChat.body()
-                        .text("Alias ")
-                        .name(this.refusedAlias)
-                        .text(" ")
-                        .danger("not used")
-                        .text(": " + this.refusalReason.reason() + ", showing ")
-                        .name("You")
-                        .text(" instead")
-                );
+                AetherClient.chat(this, "Alias " + this.refusedAlias + " not used: " + this.refusalReason.reason() + ", showing You instead");
             }
         }
     }
