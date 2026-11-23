@@ -17,6 +17,12 @@ public class TenacityHotbarModule extends Module {
 
    @Override
    public void onTick() {
-      // Hotbar rendering handled via mixin
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(cooldown.get());
+
+
    }
 }

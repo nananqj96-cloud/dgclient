@@ -17,6 +17,12 @@ public class TenacityScoreboardModule extends Module {
 
    @Override
    public void onTick() {
-      // Scoreboard rendering handled by mixin
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null) return;
+      mc.debugOverlayRendererEnabled = custom.get();
+
+
    }
 }

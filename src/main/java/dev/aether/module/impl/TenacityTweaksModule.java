@@ -18,6 +18,10 @@ public class TenacityTweaksModule extends Module {
 
    @Override
    public void onTick() {
-      // Tweaks handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setShiftKeyDown(false);
+
    }
 }

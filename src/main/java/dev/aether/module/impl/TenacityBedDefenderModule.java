@@ -16,6 +16,14 @@ public class TenacityBedDefenderModule extends Module {
 
    @Override
    public void onTick() {
-      // Bed defender handled via block interaction mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.level == null) return;
+      var pos = mc.player.blockPosition();
+      var state = mc.level.getBlockState(pos);
+      if (state.is(net.minecraft.world.level.block.Blocks.BED)) {
+         mc.player.setGlowingTag(true);
+      }
+
    }
 }

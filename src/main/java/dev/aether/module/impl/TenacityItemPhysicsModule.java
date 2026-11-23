@@ -17,6 +17,12 @@ public class TenacityItemPhysicsModule extends Module {
 
    @Override
    public void onTick() {
-      // Item physics rendering handled via mixin
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(1.0, 0.0, 1.0));
+
+
    }
 }

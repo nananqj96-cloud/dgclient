@@ -17,6 +17,12 @@ public class TenacityArrayListModule extends Module {
 
    @Override
    public void onTick() {
-      // ArrayList rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null) return;
+      // ArrayList rendered by HUD overlay — state active when enabled
+
+
    }
 }

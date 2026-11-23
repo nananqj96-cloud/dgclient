@@ -16,6 +16,10 @@ public class TenacityFakeLagModule extends Module {
 
    @Override
    public void onTick() {
-      // Fake lag handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(0.0, 0.0, 0.0));
+
    }
 }

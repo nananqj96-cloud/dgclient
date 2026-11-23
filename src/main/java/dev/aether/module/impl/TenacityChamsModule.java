@@ -19,6 +19,14 @@ public class TenacityChamsModule extends Module {
 
    @Override
    public void onTick() {
-      // Chams rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      for (var e : mc.level.entitiesForRendering()) {
+         if (e instanceof net.minecraft.world.entity.LivingEntity) {
+            e.setGlowingTag(true);
+         }
+      }
+
    }
 }

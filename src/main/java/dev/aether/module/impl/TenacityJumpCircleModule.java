@@ -17,6 +17,12 @@ public class TenacityJumpCircleModule extends Module {
 
    @Override
    public void onTick() {
-      // Jump circle rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      if (mc.player.onGround()) mc.player.jumpFromGround();
+
+
    }
 }

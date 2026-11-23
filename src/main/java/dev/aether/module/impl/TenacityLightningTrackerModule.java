@@ -16,6 +16,12 @@ public class TenacityLightningTrackerModule extends Module {
 
    @Override
    public void onTick() {
-      // Lightning tracking handled via entity event mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      for (var e : mc.level.entitiesForRendering()) {
+         if (e instanceof net.minecraft.world.entity.LightningBolt) e.setGlowingTag(true);
+      }
+
    }
 }

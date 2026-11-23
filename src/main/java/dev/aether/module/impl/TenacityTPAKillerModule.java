@@ -16,6 +16,14 @@ public class TenacityTPAKillerModule extends Module {
 
    @Override
    public void onTick() {
-      // TPA packet interception handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      for (var e : mc.level.entries().getEntities()) {
+         if (e instanceof net.minecraft.world.entity.player.Player p && p != mc.player && mc.player.distanceTo(p) < 10.0) {
+            mc.player.connection.sendChat("/tpakiller");
+         }
+      }
+
    }
 }

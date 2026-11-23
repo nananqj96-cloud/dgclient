@@ -17,6 +17,10 @@ public class TenacityDragonWingsModule extends Module {
 
    @Override
    public void onTick() {
-      // Dragon wings rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      if (mc.player.onGround()) mc.player.getAbilities().mayfly = true;
+
    }
 }

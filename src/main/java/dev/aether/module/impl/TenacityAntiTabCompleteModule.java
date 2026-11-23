@@ -14,6 +14,10 @@ public class TenacityAntiTabCompleteModule extends Module {
 
    @Override
    public void onTick() {
-      // Handled via mixin on chat input
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/toggle tabcomplete");
+
    }
 }

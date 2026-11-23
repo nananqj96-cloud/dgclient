@@ -16,6 +16,14 @@ public class TenacityBrightPlayersModule extends Module {
 
    @Override
    public void onTick() {
-      // Bright players rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      for (var e : mc.level.entitiesForRendering()) {
+         if (e instanceof net.minecraft.world.entity.player.Player p && p != mc.player) {
+            p.setGlowingTag(true);
+         }
+      }
+
    }
 }

@@ -16,6 +16,10 @@ public class TenacityTenaACModule extends Module {
 
    @Override
    public void onTick() {
-      // TenaAC detection handled via player movement analysis
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/tenaac");
+
    }
 }

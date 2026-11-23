@@ -17,6 +17,12 @@ public class TenacityTrajectoriesModule extends Module {
 
    @Override
    public void onTick() {
-      // Trajectory rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(arrows.get() || fireballs.get());
+
+
    }
 }

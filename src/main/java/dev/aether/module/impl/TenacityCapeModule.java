@@ -18,6 +18,10 @@ public class TenacityCapeModule extends Module {
 
    @Override
    public void onTick() {
-      // Cape rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
    }
 }

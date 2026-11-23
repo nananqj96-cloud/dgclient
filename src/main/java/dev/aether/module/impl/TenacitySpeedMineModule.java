@@ -16,6 +16,10 @@ public class TenacitySpeedMineModule extends Module {
 
    @Override
    public void onTick() {
-      // Speed mine handled via mixin on block break progress
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.getAbilities().mayfly = true;
+
    }
 }

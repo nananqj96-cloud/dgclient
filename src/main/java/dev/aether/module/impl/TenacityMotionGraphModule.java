@@ -17,6 +17,13 @@ public class TenacityMotionGraphModule extends Module {
 
    @Override
    public void onTick() {
-      // Motion graph rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      var d = mc.player.getDeltaMovement();
+      mc.player.setDeltaMovement(d.x, d.y * (velocity.get() ? 1.02f : 1.0f), d.z);
+
+
    }
 }

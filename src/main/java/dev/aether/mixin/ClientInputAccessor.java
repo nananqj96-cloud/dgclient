@@ -11,6 +11,9 @@ public interface ClientInputAccessor {
    @Accessor("keyPresses")
    void aetherclient$setKeyPresses(Input input);
 
+   @Accessor("keyPresses")
+   Input aetherclient$getKeyPresses();
+
    @Accessor("moveVector")
    void aetherclient$setMoveVector(Vec2 vec2);
 }

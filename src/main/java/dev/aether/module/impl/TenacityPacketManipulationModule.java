@@ -17,6 +17,10 @@ public class TenacityPacketManipulationModule extends Module {
 
    @Override
    public void onTick() {
-      // Packet manipulation handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/packetmanipulation");
+
    }
 }

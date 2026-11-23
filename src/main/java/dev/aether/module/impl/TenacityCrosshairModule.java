@@ -17,8 +17,10 @@ public class TenacityCrosshairModule extends Module {
 
    @Override
    public void onTick() {
+      
       Minecraft mc = Minecraft.getInstance();
-      if (mc == null) return;
-      // Rendering handled via mixin
+      if (mc == null || mc.player == null) return;
+      mc.options.hideGui(toggle.get());
+
    }
 }

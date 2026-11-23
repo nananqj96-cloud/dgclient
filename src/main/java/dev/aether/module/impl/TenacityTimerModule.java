@@ -14,7 +14,11 @@ public class TenacityTimerModule extends Module {
 
    @Override
    public void onTick() {
-      // Timer is handled via mixin; this module is a toggle/setting holder
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(1.01, 1.0, 1.01));
+
    }
 
    public float getSpeed() { return speed.getFloat(); }

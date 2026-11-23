@@ -18,6 +18,12 @@ public class TenacityNotificationsModule extends Module {
 
    @Override
    public void onTick() {
-      // Notification rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(connect.get() || disconnect.get() || death.get());
+
+
    }
 }

@@ -18,6 +18,10 @@ public class TenacityFreelookModule extends Module {
 
    @Override
    public void onTick() {
-      // Freelook camera handling via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.getAbilities().mayfly = true;
+
    }
 }

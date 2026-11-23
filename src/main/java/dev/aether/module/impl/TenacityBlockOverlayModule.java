@@ -19,6 +19,14 @@ public class TenacityBlockOverlayModule extends Module {
 
    @Override
    public void onTick() {
-      // Block overlay rendering handled via mixin
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.level == null) return;
+      var pos = mc.player.blockPosition();
+      if (mc.level.getBlockState(pos).isAir()) return;
+      mc.player.setGlowingTag(true);
+
+
    }
 }

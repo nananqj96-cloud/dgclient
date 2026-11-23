@@ -17,6 +17,14 @@ public class TenacityMurderMysteryModule extends Module {
 
    @Override
    public void onTick() {
-      // Murder mystery overlay handled by HUD overlay
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      for (var e : mc.level.entries().getEntities()) {
+         if (e instanceof net.minecraft.world.entity.player.Player p && p != mc.player) {
+            p.setGlowingTag(true);
+         }
+      }
+
    }
 }

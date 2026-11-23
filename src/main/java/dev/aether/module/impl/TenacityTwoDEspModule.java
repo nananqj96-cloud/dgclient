@@ -20,6 +20,14 @@ public class TenacityTwoDEspModule extends Module {
 
    @Override
    public void onTick() {
-      // 2D ESP rendering handled by HUD overlay
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      for (var e : mc.level.entitiesForRendering()) {
+         if (e instanceof net.minecraft.world.entity.LivingEntity && e != mc.player) {
+            e.setGlowingTag(true);
+         }
+      }
+
    }
 }

@@ -17,6 +17,10 @@ public class TenacityMCPModule extends Module {
 
    @Override
    public void onTick() {
-      // MCP overlay rendering handled by HUD overlay
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/mcp");
+
    }
 }

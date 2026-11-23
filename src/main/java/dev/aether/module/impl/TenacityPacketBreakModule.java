@@ -16,6 +16,10 @@ public class TenacityPacketBreakModule extends Module {
 
    @Override
    public void onTick() {
-      // Packet break handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/toggle packetbreak");
+
    }
 }

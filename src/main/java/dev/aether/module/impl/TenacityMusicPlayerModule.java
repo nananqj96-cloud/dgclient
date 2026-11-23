@@ -17,6 +17,8 @@ public class TenacityMusicPlayerModule extends Module {
 
    @Override
    public void onTick() {
-      // Music player handled via mixin
+      
+      // Music player handled by SpotifyService
+
    }
 }

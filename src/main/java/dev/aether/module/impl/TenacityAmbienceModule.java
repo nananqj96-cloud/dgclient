@@ -17,6 +17,10 @@ public class TenacityAmbienceModule extends Module {
 
    @Override
    public void onTick() {
-      // Ambience rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      mc.level.setWeather(net.minecraft.world.level.weather.WeatherStatistics.CLEAR, 0, false);
+
    }
 }

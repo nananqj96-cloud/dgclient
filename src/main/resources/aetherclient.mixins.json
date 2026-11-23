@@ -23,6 +23,7 @@
     "GuiSidebarMixin",
     "ItemStackGlintMixin",
     "KeyboardInputFreecamMixin",
+    "KeyboardInputSnapTapMixin",
     "KeyboardHandlerMixin",
     "LevelAccessor",
     "LevelRendererMixin",

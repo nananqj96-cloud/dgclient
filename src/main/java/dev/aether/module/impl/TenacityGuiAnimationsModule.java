@@ -18,6 +18,12 @@ public class TenacityGuiAnimationsModule extends Module {
 
    @Override
    public void onTick() {
-      // GUI animations handled by ClickGui rendering
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null) return;
+      mc.options.bobView().set(!slide.get());
+
+
    }
 }

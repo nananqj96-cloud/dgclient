@@ -14,6 +14,14 @@ public class TenacityTPAuraModule extends Module {
 
    @Override
    public void onTick() {
-      // TPA auto-accept handled via mixin on chat/command
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      for (var e : mc.level.entries().getEntities()) {
+         if (e instanceof net.minecraft.world.entity.player.Player p && p != mc.player && mc.player.distanceTo(p) < range.get()) {
+            mc.player.connection.sendChat("/tpa " + p.getName().getString());
+         }
+      }
+
    }
 }

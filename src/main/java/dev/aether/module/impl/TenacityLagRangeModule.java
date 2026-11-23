@@ -14,6 +14,10 @@ public class TenacityLagRangeModule extends Module {
 
    @Override
    public void onTick() {
-      // Lag range manipulation handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
    }
 }

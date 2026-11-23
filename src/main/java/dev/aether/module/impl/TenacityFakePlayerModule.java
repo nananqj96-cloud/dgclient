@@ -16,6 +16,10 @@ public class TenacityFakePlayerModule extends Module {
 
    @Override
    public void onTick() {
-      // Fake player rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
    }
 }

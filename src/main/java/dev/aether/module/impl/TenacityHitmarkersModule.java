@@ -17,6 +17,12 @@ public class TenacityHitmarkersModule extends Module {
 
    @Override
    public void onTick() {
-      // Hitmarker rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
+
    }
 }

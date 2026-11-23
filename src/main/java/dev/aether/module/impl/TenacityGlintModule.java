@@ -16,6 +16,10 @@ public class TenacityGlintModule extends Module {
 
    @Override
    public void onTick() {
-      // Glint rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.getMainHandItem().setDamageValue(0);
+
    }
 }

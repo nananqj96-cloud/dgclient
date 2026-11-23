@@ -17,6 +17,12 @@ public class TenacityClickGuiModule extends Module {
 
    @Override
    public void onTick() {
-      // ClickGUI rendering handled by ClickGuiScreen
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null) return;
+      mc.options.bobView().set(!animations.get());
+
+
    }
 }

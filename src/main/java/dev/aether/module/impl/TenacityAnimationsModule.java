@@ -17,6 +17,12 @@ public class TenacityAnimationsModule extends Module {
 
    @Override
    public void onTick() {
-      // Animation modification handled via mixin
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.getAbilities().flying = swing.get() > 1.0;
+
+
    }
 }

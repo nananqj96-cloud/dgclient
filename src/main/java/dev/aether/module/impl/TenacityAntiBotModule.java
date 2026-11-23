@@ -26,4 +26,15 @@ public class TenacityAntiBotModule extends Module {
       if (info.getLatency() > maxPing.getInt()) return true;
       return info.getLatency() == 0;
    }
+
+   @Override
+   public void onTick() {
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      for (var e : mc.level.entitiesForRendering()) {
+         if (e instanceof Player p && p != mc.player && mc.player.distanceTo(p) <= range.get() && mark.get() && isBot(p)) {
+            p.setGlowingTag(true);
+         }
+      }
+   }
 }

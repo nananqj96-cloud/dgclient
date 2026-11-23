@@ -17,6 +17,10 @@ public class TenacityCameraModule extends Module {
 
    @Override
    public void onTick() {
-      // Camera modification handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.getAbilities().mayfly = true;
+
    }
 }

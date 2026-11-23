@@ -14,6 +14,10 @@ public class TenacityTickBaseModule extends Module {
 
    @Override
    public void onTick() {
-      // Tick base manipulation handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(1.02, 1.0, 1.02));
+
    }
 }

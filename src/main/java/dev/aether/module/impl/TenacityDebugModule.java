@@ -18,6 +18,10 @@ public class TenacityDebugModule extends Module {
 
    @Override
    public void onTick() {
-      // Rendering handled by HUD overlay
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null) return;
+      mc.debugOverlayRendererEnabled = true;
+
    }
 }

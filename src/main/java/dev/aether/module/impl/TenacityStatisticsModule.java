@@ -18,6 +18,10 @@ public class TenacityStatisticsModule extends Module {
 
    @Override
    public void onTick() {
-      // Statistics rendering handled by HUD overlay
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
    }
 }

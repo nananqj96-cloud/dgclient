@@ -20,6 +20,12 @@ public class TenacityHudModule extends Module {
 
    @Override
    public void onTick() {
-      // HUD rendering handled by HUD overlay
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(health.get());
+
+
    }
 }

@@ -17,6 +17,10 @@ public class TenacitySoundPortModule extends Module {
 
    @Override
    public void onTick() {
-      // Sound port handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/soundport");
+
    }
 }

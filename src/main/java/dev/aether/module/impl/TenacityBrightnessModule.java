@@ -14,8 +14,10 @@ public class TenacityBrightnessModule extends Module {
 
    @Override
    public void onTick() {
+      
       Minecraft mc = Minecraft.getInstance();
-      if (mc == null) return;
-      // Brightness rendering handled via mixin
+      if (mc == null || mc.player == null) return;
+      mc.options.gamma().set(brightness.getFloat() / 100.0 * 100.0);
+
    }
 }

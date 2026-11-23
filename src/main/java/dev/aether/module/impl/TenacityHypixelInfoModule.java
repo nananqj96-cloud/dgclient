@@ -18,6 +18,10 @@ public class TenacityHypixelInfoModule extends Module {
 
    @Override
    public void onTick() {
-      // Hypixel info rendering handled by HUD overlay
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      // Hypixel info displayed via HUD overlay
+
    }
 }

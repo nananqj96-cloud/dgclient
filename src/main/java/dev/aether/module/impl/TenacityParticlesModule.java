@@ -17,6 +17,10 @@ public class TenacityParticlesModule extends Module {
 
    @Override
    public void onTick() {
-      // Particle rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.level == null) return;
+      mc.level.setWeather(net.minecraft.world.level.weather.WeatherStatistics.SUNNY, 0, false);
+
    }
 }

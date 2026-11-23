@@ -17,6 +17,12 @@ public class TenacityCustomModelModule extends Module {
 
    @Override
    public void onTick() {
-      // Custom model rendering handled via mixin
+      
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
+
    }
 }

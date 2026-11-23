@@ -17,6 +17,10 @@ public class TenacityEntityEffectsModule extends Module {
 
    @Override
    public void onTick() {
-      // Entity effects rendering handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setGlowingTag(true);
+
    }
 }

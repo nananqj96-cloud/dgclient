@@ -17,6 +17,10 @@ public class TenacityDisablerModule extends Module {
 
    @Override
    public void onTick() {
-      // Disabler is handled via packet mixin; this module is a settings holder
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null || mc.player.connection == null) return;
+      mc.player.connection.sendChat("/disabler");
+
    }
 }

@@ -16,6 +16,10 @@ public class TenacityKnockbackDisplacementModule extends Module {
 
    @Override
    public void onTick() {
-      // Knockback displacement handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null || mc.player == null) return;
+      mc.player.setDeltaMovement(mc.player.getDeltaMovement().multiply(0.5, 0.0, 0.5));
+
    }
 }

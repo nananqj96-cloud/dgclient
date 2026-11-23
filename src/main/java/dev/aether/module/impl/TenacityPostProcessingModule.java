@@ -18,6 +18,10 @@ public class TenacityPostProcessingModule extends Module {
 
    @Override
    public void onTick() {
-      // Post processing handled via mixin
+      
+      Minecraft mc = Minecraft.getInstance();
+      if (mc == null) return;
+      mc.options.bobView().set(false);
+
    }
 }
