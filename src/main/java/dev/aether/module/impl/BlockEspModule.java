@@ -64,6 +64,6 @@ public class BlockEspModule extends Module {
     }
 
     public int getBlockColor() {
-        return this.sBlockColor.argb();
+        return this.sBlockColor.get();
     }
 }

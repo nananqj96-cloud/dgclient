@@ -40,7 +40,7 @@ public class RadarModule extends Module {
     }
 
     public int dotColor() {
-        return this.dotColor.argb();
+        return this.dotColor.get();
     }
 
     public boolean shows(Player player) {

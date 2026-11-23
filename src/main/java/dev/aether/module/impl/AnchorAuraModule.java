@@ -44,6 +44,6 @@ public class AnchorAuraModule extends Module {
     }
 
     public int getRenderColor() {
-        return this.renderColor.argb();
+        return this.renderColor.get();
     }
 }

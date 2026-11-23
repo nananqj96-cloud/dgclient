@@ -42,6 +42,6 @@ public class StorageEspModule extends Module {
     }
 
     public int getChestColor() {
-        return this.sChestColor.argb();
+        return this.sChestColor.get();
     }
 }

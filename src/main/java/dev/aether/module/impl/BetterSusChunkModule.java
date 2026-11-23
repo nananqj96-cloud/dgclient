@@ -36,7 +36,7 @@ public class BetterSusChunkModule extends Module {
     }
 
     public int getChunkColor() {
-        return this.chunkColor.argb();
+        return this.chunkColor.get();
     }
 
     public float getSensitivity() {

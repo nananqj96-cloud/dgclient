@@ -42,6 +42,6 @@ public class LightEspModule extends Module {
     }
 
     public int getColor() {
-        return this.sColor.argb();
+        return this.sColor.get();
     }
 }

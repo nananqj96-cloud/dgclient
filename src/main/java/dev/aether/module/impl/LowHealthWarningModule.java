@@ -63,6 +63,6 @@ public class LowHealthWarningModule extends Module {
     }
 
     public int getGlowColor() {
-        return this.glowColor.argb();
+        return this.glowColor.get();
     }
 }

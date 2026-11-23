@@ -44,14 +44,14 @@ public class AtmosphereModule extends Module {
     }
 
     public int getNightColor() {
-        return this.nightColor.argb();
+        return this.nightColor.get();
     }
 
     public int getSunsetColor() {
-        return this.sunsetColor.argb();
+        return this.sunsetColor.get();
     }
 
     public int getAuroraColor() {
-        return this.auroraColor.argb();
+        return this.auroraColor.get();
     }
 }

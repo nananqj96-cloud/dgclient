@@ -59,7 +59,7 @@ public class BlockOverlayModule extends Module {
     }
 
     public int getColor() {
-        return this.color.argb();
+        return this.color.get();
     }
 
     public float getFillOpacity() {

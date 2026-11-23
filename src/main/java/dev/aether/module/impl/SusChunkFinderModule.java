@@ -38,10 +38,10 @@ public class SusChunkFinderModule extends Module {
     }
 
     public int getChunkColor() {
-        return this.chunkColor.argb();
+        return this.chunkColor.get();
     }
 
     public int getMinedColor() {
-        return this.minedColor.argb();
+        return this.minedColor.get();
     }
 }

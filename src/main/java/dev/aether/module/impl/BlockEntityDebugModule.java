@@ -74,7 +74,7 @@ public class BlockEntityDebugModule extends Module {
     }
 
     public int getTracerColor() {
-        return this.sTracerColor.argb();
+        return this.sTracerColor.get();
     }
 
     public int getBlockColor() {

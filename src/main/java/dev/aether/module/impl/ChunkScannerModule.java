@@ -40,6 +40,6 @@ public class ChunkScannerModule extends Module {
     }
 
     public int getChunkColor() {
-        return this.chunkColor.argb();
+        return this.chunkColor.get();
     }
 }

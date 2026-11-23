@@ -207,10 +207,10 @@ public class EspModule extends Module {
 //                     yield this.sFriendColor.argb();
 //                 }
 
-                yield this.sPlayerColor.argb();
+                yield this.sPlayerColor.get();
             }
-            case HOSTILE -> this.sMobColor.argb();
-            case PASSIVE -> this.sAnimalColor.argb();
+            case HOSTILE -> this.sMobColor.get();
+            case PASSIVE -> this.sAnimalColor.get();
         };
     }
 

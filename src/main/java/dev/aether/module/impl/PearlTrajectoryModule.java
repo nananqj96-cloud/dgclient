@@ -48,14 +48,14 @@ public class PearlTrajectoryModule extends Module {
     }
 
     public int getColor() {
-        return this.sColor.argb();
+        return this.sColor.get();
     }
 
     public int getEndColor() {
-        return this.sEndColor.argb();
+        return this.sEndColor.get();
     }
 
     public int getHitColor() {
-        return this.sHitColor.argb();
+        return this.sHitColor.get();
     }
 }

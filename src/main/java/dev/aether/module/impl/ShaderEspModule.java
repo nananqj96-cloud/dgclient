@@ -60,10 +60,10 @@ public class ShaderEspModule extends Module {
     }
 
     public int getPlayerColor() {
-        return this.playerColor.argb();
+        return this.playerColor.get();
     }
 
     public int getFriendColor() {
-        return this.friendColor.argb();
+        return this.friendColor.get();
     }
 }

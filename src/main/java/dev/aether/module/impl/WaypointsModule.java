@@ -41,7 +41,7 @@ public class WaypointsModule extends Module {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player != null && mc.level != null) {
-            this.waypoints.add(new Waypoint(player.getBlockX(), player.getBlockY(), player.getBlockZ(), this.color.argb()));
+            this.waypoints.add(new Waypoint(player.getBlockX(), player.getBlockY(), player.getBlockZ(), this.color.get()));
         }
     }
 
@@ -54,11 +54,11 @@ public class WaypointsModule extends Module {
     }
 
     public int getColor() {
-        return this.color.argb();
+        return this.color.get();
     }
 
     public int getDeathColor() {
-        return this.deathColor.argb();
+        return this.deathColor.get();
     }
 
     public record Waypoint(int x, int y, int z, int color) {

@@ -44,6 +44,6 @@ public class HoleEspModule extends Module {
     }
 
     public int getColor() {
-        return this.sColor.argb();
+        return this.sColor.get();
     }
 }

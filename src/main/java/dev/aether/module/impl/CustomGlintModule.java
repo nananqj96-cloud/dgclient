@@ -84,8 +84,8 @@ public class CustomGlintModule extends Module {
     private void refresh() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.getOverlay() == null && RenderSystem.tryGetDevice() != null) {
-            int itemRgb = this.colorMode.is("Accent") ? CosmeticAccent.argb() & 16777215 : this.itemColor.rgb();
-            int armorRgb = this.colorMode.is("Custom") && this.separateArmor.get() ? this.armorColor.rgb() : itemRgb;
+            int itemRgb = this.colorMode.is("Accent") ? (this.itemColor.get() & 16777215) : (this.itemColor.get() & 16777215);
+            int armorRgb = this.colorMode.is("Custom") && this.separateArmor.get() ? (this.armorColor.get() & 16777215) : itemRgb;
             float strength = this.intensity.get().floatValue();
             this.items.tint(mc, itemRgb, strength);
             this.armor.tint(mc, armorRgb, strength);

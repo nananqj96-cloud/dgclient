@@ -42,15 +42,15 @@ public class TargetEspModule extends Module {
     }
 
     public int getMainColor() {
-        return this.mainColor.argb();
+        return this.mainColor.get();
     }
 
     public int getSecondColor() {
-        return this.secondColor.argb();
+        return this.secondColor.get();
     }
 
     public int getHitColor() {
-        return this.hitColor.argb();
+        return this.hitColor.get();
     }
 
     public float getScale() {

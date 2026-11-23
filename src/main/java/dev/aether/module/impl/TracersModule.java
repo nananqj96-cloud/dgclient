@@ -61,6 +61,6 @@ public class TracersModule extends Module {
     }
 
     public int getColor() {
-        return this.color.argb();
+        return this.color.get();
     }
 }

@@ -89,11 +89,11 @@ public class HandAuraModule extends Module {
     }
 
     private int glowArgb() {
-        return this.manual() ? this.glowColor.argb() : CosmeticAccent.argb();
+        return this.manual() ? this.glowColor.get() : this.glowColor.get();
     }
 
     private int sheenArgb(int glow) {
-        return this.manual() ? this.sheenColor.argb() : ARGB.srgbLerp(0.55F, glow, -1);
+        return this.manual() ? this.sheenColor.get() : ARGB.srgbLerp(0.55F, glow, -1);
     }
 
     private boolean shows() {

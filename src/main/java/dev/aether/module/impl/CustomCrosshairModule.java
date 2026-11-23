@@ -53,10 +53,10 @@ public class CustomCrosshairModule extends Module {
     }
 
     public int getColor() {
-        return this.color.argb();
+        return this.color.get();
     }
 
     public int getTargetColor() {
-        return this.targetColor.argb();
+        return this.targetColor.get();
     }
 }

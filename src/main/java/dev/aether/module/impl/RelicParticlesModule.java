@@ -45,10 +45,10 @@ public class RelicParticlesModule extends Module {
     }
 
     public int getFirstColor() {
-        return this.firstColor.argb();
+        return this.firstColor.get();
     }
 
     public int getSecondColor() {
-        return this.secondColor.argb();
+        return this.secondColor.get();
     }
 }

@@ -53,14 +53,14 @@ public class PharaohHeaddressModule extends Module {
     }
 
     public int getGoldColor() {
-        return this.gold.argb();
+        return this.gold.get();
     }
 
     public int getInlayColor() {
-        return this.inlay.argb();
+        return this.inlay.get();
     }
 
     public int getGemColor() {
-        return this.gem.argb();
+        return this.gem.get();
     }
 }
