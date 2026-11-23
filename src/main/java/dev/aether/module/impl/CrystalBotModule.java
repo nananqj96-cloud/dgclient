@@ -258,47 +258,47 @@ public class CrystalBotModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        LocalPlayer player = this.mc.player;
-        if (player != null && this.mc.level != null) {
-            if (event.packet instanceof ClientboundEntityEventPacket status && status.getEventId() == 35) {
-                if (status.getEntity(this.mc.level) == player) {
-                    this.popStreak = this.tick - this.ownPopAt <= 600 ? this.popStreak + 1 : 1;
-                    this.ownPopAt = this.tick;
-                } else if (this.fought != null && status.getEntity(this.mc.level) == this.fought) {
-                    this.theirPopAt = this.tick;
-                    this.openerPops++;
-                }
-            }
-        }
-    }
+        // LocalPlayer player = this.mc.player;
+        // if (player != null && this.mc.level != null) {
+            // if (event.packet instanceof ClientboundEntityEventPacket status && status.getEventId() == 35) {
+                // if (status.getEntity(this.mc.level) == player) {
+                    // this.popStreak = this.tick - this.ownPopAt <= 600 ? this.popStreak + 1 : 1;
+                    // this.ownPopAt = this.tick;
+                // } else if (this.fought != null && status.getEntity(this.mc.level) == this.fought) {
+                    // this.theirPopAt = this.tick;
+                    // this.openerPops++;
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onPacketReceive(PacketReceiveEvent event) {
-        LocalPlayer player = this.mc.player;
-        if (player != null) {
-            if (event.packet instanceof ClientboundPlayerPositionPacket moved) {
-                Vec3 to = moved.change().position();
-                Vec3 from = player.position();
-                Set<Relative> relative = moved.relatives();
-                this.pause
-                    .moved(
-                        new Vec3(
-                            relative.contains(Relative.X) ? from.x + to.x : to.x,
-                            relative.contains(Relative.Y) ? from.y + to.y : to.y,
-                            relative.contains(Relative.Z) ? from.z + to.z : to.z
-                        ),
-                        this.tick - this.pearlAt
-                    );
-            } else if (event.packet instanceof ClientboundSetTimePacket time) {
-                this.pause.time(time.gameTime());
-            } else if (event.packet instanceof ClientboundExplodePacket blast) {
-                this.air.blast(blast.center());
-            } else if (event.packet instanceof ClientboundDamageEventPacket hurt && hurt.entityId() == player.getId() && hurt.sourceCauseId() >= 0) {
-                this.attackedBy = hurt.sourceCauseId();
-                this.attackedAt = this.tick;
-            }
-        }
-    }
+        // LocalPlayer player = this.mc.player;
+        // if (player != null) {
+            // if (event.packet instanceof ClientboundPlayerPositionPacket moved) {
+                // Vec3 to = moved.change().position();
+                // Vec3 from = player.position();
+                // Set<Relative> relative = moved.relatives();
+                // this.pause
+                    // .moved(
+                        // new Vec3(
+                            // relative.contains(Relative.X) ? from.x + to.x : to.x,
+                            // relative.contains(Relative.Y) ? from.y + to.y : to.y,
+                            // relative.contains(Relative.Z) ? from.z + to.z : to.z
+                        // ),
+                        // this.tick - this.pearlAt
+                    // );
+            // } else if (event.packet instanceof ClientboundSetTimePacket time) {
+                // this.pause.time(time.gameTime());
+            // } else if (event.packet instanceof ClientboundExplodePacket blast) {
+                // this.air.blast(blast.center());
+            // } else if (event.packet instanceof ClientboundDamageEventPacket hurt && hurt.entityId() == player.getId() && hurt.sourceCauseId() >= 0) {
+                // this.attackedBy = hurt.sourceCauseId();
+                // this.attackedAt = this.tick;
+            // }
+        // }
+    // }
 
     private void tick() {
         this.tick++;

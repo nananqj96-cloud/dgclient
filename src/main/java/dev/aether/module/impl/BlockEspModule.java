@@ -83,9 +83,9 @@ public class BlockEspModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        this.layer.render(event, this.style);
-        if (this.sTracers.get() && this.sBlockColors.hasAnyTracerEnabled()) {
-            this.layer.renderTracers(this.style);
-        }
-    }
+        // this.layer.render(event, this.style);
+        // if (this.sTracers.get() && this.sBlockColors.hasAnyTracerEnabled()) {
+            // this.layer.renderTracers(this.style);
+        // }
+    // }
 }

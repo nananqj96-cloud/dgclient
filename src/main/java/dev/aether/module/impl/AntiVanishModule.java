@@ -172,8 +172,8 @@ public class AntiVanishModule extends Module {
 
 //     @EventHandler
 //     public void onPacketSend(PacketSendEvent event) {
-        this.handleOutbound(event.packet);
-    }
+        // this.handleOutbound(event.packet);
+    // }
 
     private void handleOutbound(Packet<?> packet) {
         if (packet != null) {
@@ -233,10 +233,10 @@ public class AntiVanishModule extends Module {
 
 //     @EventHandler
 //     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        if (this.handleInbound(event.packet)) {
-            event.setCancelled(true);
-        }
-    }
+        // if (this.handleInbound(event.packet)) {
+            // event.setCancelled(true);
+        // }
+    // }
 
     private boolean handleInbound(Packet<?> packet) {
         if (packet instanceof ClientboundBundlePacket bundle) {

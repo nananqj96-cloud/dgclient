@@ -179,38 +179,38 @@ public class LightEspModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null && mc.level == this.sessionLevel) {
-            Map<Integer, List<AABB>> data = this.renderData;
-            if (!data.isEmpty() && this.sColor != null) {
-                int base = this.sColor.argb();
-                int baseA = base >>> 24 & 0xFF;
-                int baseR = base >> 16 & 0xFF;
-                int baseG = base >> 8 & 0xFF;
-                int baseB = base & 0xFF;
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null && mc.level == this.sessionLevel) {
+            // Map<Integer, List<AABB>> data = this.renderData;
+            // if (!data.isEmpty() && this.sColor != null) {
+                // int base = this.sColor.argb();
+                // int baseA = base >>> 24 & 0xFF;
+                // int baseR = base >> 16 & 0xFF;
+                // int baseG = base >> 8 & 0xFF;
+                // int baseB = base & 0xFF;
 
-                for (Entry<Integer, List<AABB>> entry : data.entrySet()) {
-                    float t = clamp01(entry.getKey().intValue() / 15.0F);
-                    int r = lerp(baseR, 255, t);
-                    int g = lerp(baseG, 255, t);
-                    int b = lerp(baseB, 255, t);
-                    int fillA = clampByte(Math.round(baseA * (0.5F + 0.5F * t)));
-                    int fill = fillA << 24 | r << 16 | g << 8 | b;
-                    int stroke = 0xFF000000 | Math.round(r * 0.45F) << 16 | Math.round(g * 0.45F) << 8 | Math.round(b * 0.45F);
-                    GizmoStyle style = GizmoStyle.strokeAndFill(stroke, 1.5F, fill);
+                // for (Entry<Integer, List<AABB>> entry : data.entrySet()) {
+                    // float t = clamp01(entry.getKey().intValue() / 15.0F);
+                    // int r = lerp(baseR, 255, t);
+                    // int g = lerp(baseG, 255, t);
+                    // int b = lerp(baseB, 255, t);
+                    // int fillA = clampByte(Math.round(baseA * (0.5F + 0.5F * t)));
+                    // int fill = fillA << 24 | r << 16 | g << 8 | b;
+                    // int stroke = 0xFF000000 | Math.round(r * 0.45F) << 16 | Math.round(g * 0.45F) << 8 | Math.round(b * 0.45F);
+                    // GizmoStyle style = GizmoStyle.strokeAndFill(stroke, 1.5F, fill);
 
-                    for (AABB box : entry.getValue()) {
-                        int cx = (int)box.minX >> 4;
-                        int cz = (int)box.minZ >> 4;
-                        if (mc.level.getChunkSource().hasChunk(cx, cz)) {
-                            GizmoProperties props = Gizmos.cuboid(box, style);
-                            props.setAlwaysOnTop();
-                        }
-                    }
-                }
-            }
-        }
-    }
+                    // for (AABB box : entry.getValue()) {
+                        // int cx = (int)box.minX >> 4;
+                        // int cz = (int)box.minZ >> 4;
+                        // if (mc.level.getChunkSource().hasChunk(cx, cz)) {
+                            // GizmoProperties props = Gizmos.cuboid(box, style);
+                            // props.setAlwaysOnTop();
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private boolean isDenoise() {
         return this.sDenoise != null && this.sDenoise.value().get();

@@ -151,10 +151,10 @@ public class BlockEntityDebugModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (this.lightLeaksOn()) {
-            this.lightScanner.onPacketApplied(event.packet);
-        }
-    }
+        // if (this.lightLeaksOn()) {
+            // this.lightScanner.onPacketApplied(event.packet);
+        // }
+    // }
 
 //     @EventHandler
     public void onTick() {
@@ -270,41 +270,41 @@ public class BlockEntityDebugModule extends Module {
 
 //     @EventHandler
 //     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
-            if (BlockEntityLeakTracker.containsReal(packet.getPos())) {
-                BlockState state = packet.getBlockState();
-                if (state.isAir() || state.is(Blocks.STONE) || state.is(Blocks.DEEPSLATE)) {
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
+        // if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
+            // if (BlockEntityLeakTracker.containsReal(packet.getPos())) {
+                // BlockState state = packet.getBlockState();
+                // if (state.isAir() || state.is(Blocks.STONE) || state.is(Blocks.DEEPSLATE)) {
+                    // event.setCancelled(true);
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        this.layer.render(event, this.style);
-        if (this.sTracers.get()) {
-            this.layer.renderTracers(this.style);
-        }
+        // this.layer.render(event, this.style);
+        // if (this.sTracers.get()) {
+            // this.layer.renderTracers(this.style);
+        // }
 
-        if (!this.spawners.isEmpty()) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.player != null) {
-                Vec3 eye = mc.player.getEyePosition(event.partialTick);
-                double rangeSq = (double)this.style.range.get() * this.style.range.get();
-                int color = this.sBlockColors.colorArgb(Blocks.SPAWNER);
-                GizmoStyle beam = GizmoStyle.stroke(color, this.style.lineWidth.get());
+        // if (!this.spawners.isEmpty()) {
+            // Minecraft mc = Minecraft.getInstance();
+            // if (mc.player != null) {
+                // Vec3 eye = mc.player.getEyePosition(event.partialTick);
+                // double rangeSq = (double)this.style.range.get() * this.style.range.get();
+                // int color = this.sBlockColors.colorArgb(Blocks.SPAWNER);
+                // GizmoStyle beam = GizmoStyle.stroke(color, this.style.lineWidth.get());
 
-                for (long packed : this.spawners) {
-                    BlockPos pos = BlockPos.of(packed);
-                    if (!(eye.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5) > rangeSq)) {
-                        Gizmos.cuboid(
-                                new AABB(pos.getX() + 0.3, pos.getY() + 1.0, pos.getZ() + 0.3, pos.getX() + 0.7, pos.getY() + 257.0, pos.getZ() + 0.7), beam
-                            )
-                            .setAlwaysOnTop();
-                    }
-                }
-            }
-        }
-    }
+                // for (long packed : this.spawners) {
+                    // BlockPos pos = BlockPos.of(packed);
+                    // if (!(eye.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5) > rangeSq)) {
+                        // Gizmos.cuboid(
+                                // new AABB(pos.getX() + 0.3, pos.getY() + 1.0, pos.getZ() + 0.3, pos.getX() + 0.7, pos.getY() + 257.0, pos.getZ() + 0.7), beam
+                            // )
+                            // .setAlwaysOnTop();
+                    // }
+                // }
+            // }
+        // }
+    // }
 }

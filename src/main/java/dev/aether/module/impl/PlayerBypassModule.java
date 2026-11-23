@@ -409,64 +409,64 @@ public class PlayerBypassModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null) {
-            LongOpenHashSet bases = new LongOpenHashSet();
-            LongOpenHashSet suspects = new LongOpenHashSet();
-            Long2ObjectMap<ChunkLightSnapshot> snapshots = PlayerBypassLightTracker.snapshots();
-            if (!snapshots.isEmpty()) {
-                int centerX = mc.player.blockPosition().getX() >> 4;
-                int centerZ = mc.player.blockPosition().getZ() >> 4;
-                if (PerformanceModule.optimizationsEnabled()) {
-                    this.visibleChunks
-                        .update(
-                            PlayerBypassLightTracker.visibilityRevision(),
-                            centerX,
-                            centerZ,
-                            snapshots,
-                            PlayerBypassLightTracker::isFlagged,
-                            PlayerBypassLightTracker::isSuspect
-                        );
-                    bases.addAll(this.visibleChunks.bases());
-                    suspects.addAll(this.visibleChunks.suspects());
-                } else {
-                    this.visibleChunks.invalidate();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null) {
+            // LongOpenHashSet bases = new LongOpenHashSet();
+            // LongOpenHashSet suspects = new LongOpenHashSet();
+            // Long2ObjectMap<ChunkLightSnapshot> snapshots = PlayerBypassLightTracker.snapshots();
+            // if (!snapshots.isEmpty()) {
+                // int centerX = mc.player.blockPosition().getX() >> 4;
+                // int centerZ = mc.player.blockPosition().getZ() >> 4;
+                // if (PerformanceModule.optimizationsEnabled()) {
+                    // this.visibleChunks
+                        // .update(
+                            // PlayerBypassLightTracker.visibilityRevision(),
+                            // centerX,
+                            // centerZ,
+                            // snapshots,
+                            // PlayerBypassLightTracker::isFlagged,
+                            // PlayerBypassLightTracker::isSuspect
+                        // );
+                    // bases.addAll(this.visibleChunks.bases());
+                    // suspects.addAll(this.visibleChunks.suspects());
+                // } else {
+                    // this.visibleChunks.invalidate();
 
-                    for (Entry<ChunkLightSnapshot> entry : snapshots.long2ObjectEntrySet()) {
-                        long key = entry.getLongKey();
-                        if (Math.abs(ChunkPos.getX(key) - centerX) <= 16
-                            && Math.abs(ChunkPos.getZ(key) - centerZ) <= 16
-                            && PlayerBypassLightTracker.isFlagged(key, entry.getValue())) {
-                            (PlayerBypassLightTracker.isSuspect(key) ? suspects : bases).add(key);
-                        }
-                    }
-                }
-            }
+                    // for (Entry<ChunkLightSnapshot> entry : snapshots.long2ObjectEntrySet()) {
+                        // long key = entry.getLongKey();
+                        // if (Math.abs(ChunkPos.getX(key) - centerX) <= 16
+                            // && Math.abs(ChunkPos.getZ(key) - centerZ) <= 16
+                            // && PlayerBypassLightTracker.isFlagged(key, entry.getValue())) {
+                            // (PlayerBypassLightTracker.isSuspect(key) ? suspects : bases).add(key);
+                        // }
+                    // }
+                // }
+            // }
 
-            LongOpenHashSet activity = new LongOpenHashSet();
-            if (!netherOrEnd(mc.level)) {
-                for (long key : this.shown) {
-                    if (!bases.contains(key) && !suspects.contains(key)) {
-                        activity.add(key);
-                    }
-                }
-            }
+            // LongOpenHashSet activity = new LongOpenHashSet();
+            // if (!netherOrEnd(mc.level)) {
+                // for (long key : this.shown) {
+                    // if (!bases.contains(key) && !suspects.contains(key)) {
+                        // activity.add(key);
+                    // }
+                // }
+            // }
 
-            if (!bases.isEmpty() || !suspects.isEmpty() || !activity.isEmpty()) {
-                FoglessLines lines = FoglessLines.forFrame(event.partialTick);
-                double bottom = mc.level.getMinY();
-                double top = mc.level.getMaxY() + 1;
-                this.mark(lines, suspects, -5766, bottom, top);
-                this.mark(lines, activity, -11205, bottom, top);
-                this.mark(lines, bases, -2516480, bottom, top);
-                if (this.tracers.get()) {
-                    this.chunkAreas.drawTracers(bases, 64.0, ARGB.opaque(-2516480));
-                    this.chunkAreas.drawTracers(suspects, 64.0, ARGB.opaque(-5766));
-                    this.chunkAreas.drawTracers(activity, 64.0, ARGB.opaque(-11205));
-                }
-            }
-        }
-    }
+            // if (!bases.isEmpty() || !suspects.isEmpty() || !activity.isEmpty()) {
+                // FoglessLines lines = FoglessLines.forFrame(event.partialTick);
+                // double bottom = mc.level.getMinY();
+                // double top = mc.level.getMaxY() + 1;
+                // this.mark(lines, suspects, -5766, bottom, top);
+                // this.mark(lines, activity, -11205, bottom, top);
+                // this.mark(lines, bases, -2516480, bottom, top);
+                // if (this.tracers.get()) {
+                    // this.chunkAreas.drawTracers(bases, 64.0, ARGB.opaque(-2516480));
+                    // this.chunkAreas.drawTracers(suspects, 64.0, ARGB.opaque(-5766));
+                    // this.chunkAreas.drawTracers(activity, 64.0, ARGB.opaque(-11205));
+                // }
+            // }
+        // }
+    // }
 
     private void mark(FoglessLines lines, LongOpenHashSet chunks, int color, double bottom, double top) {
         if (!chunks.isEmpty()) {

@@ -244,114 +244,114 @@ public class ElytraFlyModule extends Module {
     }
 
 //     private void onPacketSend(PacketSendEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        ElytraFlightMode mode = this.currentMode;
-        if (mc.isSameThread() && mc.player != null && mode != null) {
-            mode.onPacketSend(event.packet);
-        }
-    }
+        // Minecraft mc = Minecraft.getInstance();
+        // ElytraFlightMode mode = this.currentMode;
+        // if (mc.isSameThread() && mc.player != null && mode != null) {
+            // mode.onPacketSend(event.packet);
+        // }
+    // }
 
 //     private void onPacketReceive(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundPlayerPositionPacket) {
-            this.positionPacketReceived = true;
-        }
-    }
+        // if (event.packet instanceof ClientboundPlayerPositionPacket) {
+            // this.positionPacketReceived = true;
+        // }
+    // }
 
 //     private void captureMoveAliasing(PlayerMoveEvent event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) {
-            this.moveIsVelocity = false;
-        } else {
-            Vec3 velocity = player.getDeltaMovement();
-            this.moveIsVelocity = velocity.x == event.x && velocity.y == event.y && velocity.z == event.z;
-        }
-    }
+        // LocalPlayer player = Minecraft.getInstance().player;
+        // if (player == null) {
+            // this.moveIsVelocity = false;
+        // } else {
+            // Vec3 velocity = player.getDeltaMovement();
+            // this.moveIsVelocity = velocity.x == event.x && velocity.y == event.y && velocity.z == event.z;
+        // }
+    // }
 
 //     private void onPlayerMove(PlayerMoveEvent event) {
-        boolean aliased = this.moveIsVelocity;
-        this.moveIsVelocity = false;
-        Minecraft mc = Minecraft.getInstance();
-        LocalPlayer player = mc.player;
-        ElytraFlightMode mode = this.currentMode;
-        if (player != null && mc.level != null && mode != null) {
-            if (player.getItemBySlot(EquipmentSlot.CHEST).has(DataComponents.GLIDER)) {
-                mode.autoTakeoff();
-                boolean bounce = this.modeType == ElytraFlightModes.Bounce;
-                if (player.isFallFlying()) {
-                    if (!bounce) {
-                        mode.velX = 0.0;
-                        mode.velY = event.y;
-                        mode.velZ = 0.0;
-                        mode.forward = Vec3.directionFromRotation(0.0F, player.getYRot()).scale(0.1);
-                        mode.right = Vec3.directionFromRotation(0.0F, player.getYRot() + 90.0F).scale(0.1);
-                        if (player.isInWater() && this.stopInWater.get()) {
-                            player.connection.send(new ServerboundPlayerCommandPacket(player, Action.START_FALL_FLYING));
-                            return;
-                        }
+        // boolean aliased = this.moveIsVelocity;
+        // this.moveIsVelocity = false;
+        // Minecraft mc = Minecraft.getInstance();
+        // LocalPlayer player = mc.player;
+        // ElytraFlightMode mode = this.currentMode;
+        // if (player != null && mc.level != null && mode != null) {
+            // if (player.getItemBySlot(EquipmentSlot.CHEST).has(DataComponents.GLIDER)) {
+                // mode.autoTakeoff();
+                // boolean bounce = this.modeType == ElytraFlightModes.Bounce;
+                // if (player.isFallFlying()) {
+                    // if (!bounce) {
+                        // mode.velX = 0.0;
+                        // mode.velY = event.y;
+                        // mode.velZ = 0.0;
+                        // mode.forward = Vec3.directionFromRotation(0.0F, player.getYRot()).scale(0.1);
+                        // mode.right = Vec3.directionFromRotation(0.0F, player.getYRot() + 90.0F).scale(0.1);
+                        // if (player.isInWater() && this.stopInWater.get()) {
+                            // player.connection.send(new ServerboundPlayerCommandPacket(player, Action.START_FALL_FLYING));
+                            // return;
+                        // }
 
-                        mode.handleFallMultiplier();
-                        mode.handleAutopilot();
-                        mode.handleAcceleration();
-                        mode.handleHorizontalSpeed(event);
-                        mode.handleVerticalSpeed(event);
-                    }
+                        // mode.handleFallMultiplier();
+                        // mode.handleAutopilot();
+                        // mode.handleAcceleration();
+                        // mode.handleHorizontalSpeed(event);
+                        // mode.handleVerticalSpeed(event);
+                    // }
 
-                    if (!bounce) {
-                        int chunkX = (int)((player.getX() + mode.velX) / 16.0);
-                        int chunkZ = (int)((player.getZ() + mode.velZ) / 16.0);
-                        if (this.dontGoIntoUnloadedChunks.get()) {
-                            if (mc.level.getChunkSource().hasChunk(chunkX, chunkZ)) {
-                                setMovement(player, aliased, event, mode.velX, mode.velY, mode.velZ);
-                            } else {
-                                mode.zeroAcceleration();
-                                setMovement(player, aliased, event, 0.0, mode.velY, 0.0);
-                            }
-                        } else {
-                            setMovement(player, aliased, event, mode.velX, mode.velY, mode.velZ);
-                        }
+                    // if (!bounce) {
+                        // int chunkX = (int)((player.getX() + mode.velX) / 16.0);
+                        // int chunkZ = (int)((player.getZ() + mode.velZ) / 16.0);
+                        // if (this.dontGoIntoUnloadedChunks.get()) {
+                            // if (mc.level.getChunkSource().hasChunk(chunkX, chunkZ)) {
+                                // setMovement(player, aliased, event, mode.velX, mode.velY, mode.velZ);
+                            // } else {
+                                // mode.zeroAcceleration();
+                                // setMovement(player, aliased, event, 0.0, mode.velY, 0.0);
+                            // }
+                        // } else {
+                            // setMovement(player, aliased, event, mode.velX, mode.velY, mode.velZ);
+                        // }
 
-                        mode.onPlayerMove();
-                    }
-                } else if (mode.lastForwardPressed && !bounce) {
-                    mc.options.keyUp.setDown(false);
-                    mode.lastForwardPressed = false;
-                }
+                        // mode.onPlayerMove();
+                    // }
+                // } else if (mode.lastForwardPressed && !bounce) {
+                    // mc.options.keyUp.setDown(false);
+                    // mode.lastForwardPressed = false;
+                // }
 
-                if (this.noCrash.get() && player.isFallFlying() && !bounce) {
-                    Vec3 position = player.position();
-                    Vec3 lookAheadPos = position.add(player.getDeltaMovement().normalize().scale(this.crashLookAhead.getInt()));
-                    ClipContext context = new ClipContext(position, new Vec3(lookAheadPos.x, player.getY(), lookAheadPos.z), Block.COLLIDER, Fluid.NONE, player);
-                    BlockHitResult hitResult = mc.level.clip(context);
-                    if (hitResult != null && hitResult.getType() == Type.BLOCK) {
-                        setMovement(player, aliased, event, 0.0, mode.velY, 0.0);
-                    }
-                }
+                // if (this.noCrash.get() && player.isFallFlying() && !bounce) {
+                    // Vec3 position = player.position();
+                    // Vec3 lookAheadPos = position.add(player.getDeltaMovement().normalize().scale(this.crashLookAhead.getInt()));
+                    // ClipContext context = new ClipContext(position, new Vec3(lookAheadPos.x, player.getY(), lookAheadPos.z), Block.COLLIDER, Fluid.NONE, player);
+                    // BlockHitResult hitResult = mc.level.clip(context);
+                    // if (hitResult != null && hitResult.getType() == Type.BLOCK) {
+                        // setMovement(player, aliased, event, 0.0, mode.velY, 0.0);
+                    // }
+                // }
 
-                if (this.autoHover.get() && player.input.keyPresses.shift() && !isFreecamActive() && player.isFallFlying() && !bounce) {
-                    BlockPos below = player.blockPosition().below();
-                    BlockState underState = mc.level.getBlockState(below);
-                    BlockState under2State = mc.level.getBlockState(below.below());
-                    boolean underCollidable = ((AccessorElytraFlyBlockBehaviour)underState.getBlock()).anubis$elytraFlyHasCollision()
-                        || !underState.getFluidState().isEmpty();
-                    boolean under2Collidable = ((AccessorElytraFlyBlockBehaviour)under2State.getBlock()).anubis$elytraFlyHasCollision()
-                        || !under2State.getFluidState().isEmpty();
-                    if (!underCollidable && under2Collidable) {
-                        setMovement(player, aliased, event, event.x, -0.1F, event.z);
-                        player.setXRot(Mth.clamp(player.getXRot(0.0F), -50.0F, 20.0F));
-                    }
+                // if (this.autoHover.get() && player.input.keyPresses.shift() && !isFreecamActive() && player.isFallFlying() && !bounce) {
+                    // BlockPos below = player.blockPosition().below();
+                    // BlockState underState = mc.level.getBlockState(below);
+                    // BlockState under2State = mc.level.getBlockState(below.below());
+                    // boolean underCollidable = ((AccessorElytraFlyBlockBehaviour)underState.getBlock()).anubis$elytraFlyHasCollision()
+                        // || !underState.getFluidState().isEmpty();
+                    // boolean under2Collidable = ((AccessorElytraFlyBlockBehaviour)under2State.getBlock()).anubis$elytraFlyHasCollision()
+                        // || !under2State.getFluidState().isEmpty();
+                    // if (!underCollidable && under2Collidable) {
+                        // setMovement(player, aliased, event, event.x, -0.1F, event.z);
+                        // player.setXRot(Mth.clamp(player.getXRot(0.0F), -50.0F, 20.0F));
+                    // }
 
-                    if (underCollidable) {
-                        setMovement(player, aliased, event, event.x, -0.03F, event.z);
-                        player.setXRot(Mth.clamp(player.getXRot(0.0F), -50.0F, 20.0F));
-                        if (player.position().y <= below.getY() + 1.34F) {
-                            setMovement(player, aliased, event, event.x, 0.0, event.z);
-                            player.setShiftKeyDown(false);
-                        }
-                    }
-                }
-            }
-        }
-    }
+                    // if (underCollidable) {
+                        // setMovement(player, aliased, event, event.x, -0.03F, event.z);
+                        // player.setXRot(Mth.clamp(player.getXRot(0.0F), -50.0F, 20.0F));
+                        // if (player.position().y <= below.getY() + 1.34F) {
+                            // setMovement(player, aliased, event, event.x, 0.0, event.z);
+                            // player.setShiftKeyDown(false);
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
 //     private static void setMovement(LocalPlayer player, boolean aliased, PlayerMoveEvent event, double x, double y, double z) {
         event.x = x;

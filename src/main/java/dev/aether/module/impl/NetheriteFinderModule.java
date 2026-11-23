@@ -128,45 +128,45 @@ public class NetheriteFinderModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null && NetheriteChunkTracker.isNether(mc.level)) {
-            Vec3 eye = mc.player.getEyePosition(event.partialTick);
-            double maxDistance = this.range.get();
-            List<NetheriteVisuals.Section> sections = new ArrayList<>();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null && NetheriteChunkTracker.isNether(mc.level)) {
+            // Vec3 eye = mc.player.getEyePosition(event.partialTick);
+            // double maxDistance = this.range.get();
+            // List<NetheriteVisuals.Section> sections = new ArrayList<>();
 
-            for (NetheriteChunkTracker.Candidate candidate : NetheriteChunkTracker.snapshot()) {
-                if (!this.advancedFinder.isDone(candidate)) {
-                    double x = candidate.chunkX() * 16.0;
-                    double y = candidate.sectionY() * 16.0;
-                    double z = candidate.chunkZ() * 16.0;
-                    AABB box = new AABB(x, y, z, x + 16.0, y + 16.0, z + 16.0);
-                    double distance = Math.sqrt(distanceSq(box, eye));
-                    if (distance <= maxDistance) {
-                        sections.add(new NetheriteVisuals.Section(box, distance, this.advancedFinder.progress(candidate)));
-                    }
-                }
-            }
+            // for (NetheriteChunkTracker.Candidate candidate : NetheriteChunkTracker.snapshot()) {
+                // if (!this.advancedFinder.isDone(candidate)) {
+                    // double x = candidate.chunkX() * 16.0;
+                    // double y = candidate.sectionY() * 16.0;
+                    // double z = candidate.chunkZ() * 16.0;
+                    // AABB box = new AABB(x, y, z, x + 16.0, y + 16.0, z + 16.0);
+                    // double distance = Math.sqrt(distanceSq(box, eye));
+                    // if (distance <= maxDistance) {
+                        // sections.add(new NetheriteVisuals.Section(box, distance, this.advancedFinder.progress(candidate)));
+                    // }
+                // }
+            // }
 
-            sections.sort(Comparator.comparingDouble(NetheriteVisuals.Section::distance));
-            if (sections.size() > 128) {
-                sections = sections.subList(0, 128);
-            }
+            // sections.sort(Comparator.comparingDouble(NetheriteVisuals.Section::distance));
+            // if (sections.size() > 128) {
+                // sections = sections.subList(0, 128);
+            // }
 
-            NetheriteVisuals.Options options = new NetheriteVisuals.Options(
-                this.color.argb(),
-                this.farColor.argb(),
-                this.fade.get(),
-                maxDistance,
-                this.probeStyle.get(),
-                this.missingFrom.get() / 100.0F,
-                this.tracers.get() ? this.tracerCount.getInt() : 0,
-                this.showProbes.get()
-            );
-            this.visuals.render(mc, event.partialTick, eye, sections, List.copyOf(this.advancedFinder.revealed()), this.advancedFinder, options);
-        } else {
-            this.visuals.clear();
-        }
-    }
+            // NetheriteVisuals.Options options = new NetheriteVisuals.Options(
+                // this.color.argb(),
+                // this.farColor.argb(),
+                // this.fade.get(),
+                // maxDistance,
+                // this.probeStyle.get(),
+                // this.missingFrom.get() / 100.0F,
+                // this.tracers.get() ? this.tracerCount.getInt() : 0,
+                // this.showProbes.get()
+            // );
+            // this.visuals.render(mc, event.partialTick, eye, sections, List.copyOf(this.advancedFinder.revealed()), this.advancedFinder, options);
+        // } else {
+            // this.visuals.clear();
+        // }
+    // }
 
     @Override
     public boolean isHudOverlayEnabled() {

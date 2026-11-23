@@ -257,18 +257,18 @@ public class StaffListModule extends Module {
     }
 
 //     private void onPacketNetty(PacketReceiveNettyEvent event) {
-        if (this.regionAlert.get()) {
-            if (event.packet instanceof ClientboundPlayerInfoUpdatePacket info) {
-                this.queueSwitches(info);
-            } else if (event.packet instanceof ClientboundBundlePacket bundle) {
-                for (Packet<?> packet : bundle.subPackets()) {
-                    if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
-                        this.queueSwitches(info);
-                    }
-                }
-            }
-        }
-    }
+        // if (this.regionAlert.get()) {
+            // if (event.packet instanceof ClientboundPlayerInfoUpdatePacket info) {
+                // this.queueSwitches(info);
+            // } else if (event.packet instanceof ClientboundBundlePacket bundle) {
+                // for (Packet<?> packet : bundle.subPackets()) {
+                    // if (packet instanceof ClientboundPlayerInfoUpdatePacket info) {
+                        // this.queueSwitches(info);
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private void queueSwitches(ClientboundPlayerInfoUpdatePacket info) {
         EnumSet<Action> actions = info.actions();

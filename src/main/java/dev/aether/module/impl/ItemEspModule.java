@@ -51,16 +51,16 @@ public class ItemEspModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (this.sTracers.get() && this.sItemColors.hasAnyEnabled()) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level != null) {
-                for (Entity entity : mc.level.entitiesForRendering()) {
-                    if (entity instanceof ItemEntity item && this.wants(item, event.partialTick)) {
-                        Vec3 pos = item.getPosition(event.partialTick);
-                        TracerEngine.draw(pos, this.sItemColors.colorArgb(item.getItem().getItem()));
-                    }
-                }
-            }
-        }
-    }
+        // if (this.sTracers.get() && this.sItemColors.hasAnyEnabled()) {
+            // Minecraft mc = Minecraft.getInstance();
+            // if (mc.level != null) {
+                // for (Entity entity : mc.level.entitiesForRendering()) {
+                    // if (entity instanceof ItemEntity item && this.wants(item, event.partialTick)) {
+                        // Vec3 pos = item.getPosition(event.partialTick);
+                        // TracerEngine.draw(pos, this.sItemColors.colorArgb(item.getItem().getItem()));
+                    // }
+                // }
+            // }
+        // }
+    // }
 }

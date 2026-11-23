@@ -69,17 +69,17 @@ public class SpeedModule extends Module {
     }
 
 //     private void onPacketReceive(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundPlayerPositionPacket) {
-            this.rubberband = true;
-        } else if (event.packet instanceof ClientboundBundlePacket bundle) {
-            for (Packet<?> packet : bundle.subPackets()) {
-                if (packet instanceof ClientboundPlayerPositionPacket) {
-                    this.rubberband = true;
-                    break;
-                }
-            }
-        }
-    }
+        // if (event.packet instanceof ClientboundPlayerPositionPacket) {
+            // this.rubberband = true;
+        // } else if (event.packet instanceof ClientboundBundlePacket bundle) {
+            // for (Packet<?> packet : bundle.subPackets()) {
+                // if (packet instanceof ClientboundPlayerPositionPacket) {
+                    // this.rubberband = true;
+                    // break;
+                // }
+            // }
+        // }
+    // }
 
     public Vec3 onSelfMove(LocalPlayer player, Vec3 movement) {
         if (player == Minecraft.getInstance().player && !this.stopSpeed(player)) {

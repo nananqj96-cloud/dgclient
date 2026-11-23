@@ -785,31 +785,31 @@ public class BetterSusChunkModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
-            this.scheduleScan(ChunkPos.asLong(chunk.getX(), chunk.getZ()));
-        } else if (event.packet instanceof ClientboundLoginPacket) {
-            this.resetState();
-            this.worldKey = null;
-        }
-    }
+        // if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
+            // this.scheduleScan(ChunkPos.asLong(chunk.getX(), chunk.getZ()));
+        // } else if (event.packet instanceof ClientboundLoginPacket) {
+            // this.resetState();
+            // this.worldKey = null;
+        // }
+    // }
 
 //     @EventHandler
 //     public void onBlockUpdate(BlockUpdateEvent event) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null && this.counted[0] && event.newState.is(Blocks.KELP) && donutServer()) {
-            int age = event.newState.getValue(BlockStateProperties.AGE_25);
-            if (this.seenKelp.add(event.pos.asLong())) {
-                if (age > 0 && age < 25) {
-                    if (level.getBlockState(event.pos.above()).is(Blocks.WATER)) {
-                        long key = ChunkPos.asLong(event.pos.getX() >> 4, event.pos.getZ() >> 4);
-                        if (this.kelpChunks.add(key)) {
-                            this.scheduleScan(key);
-                        }
-                    }
-                }
-            }
-        }
-    }
+        // ClientLevel level = Minecraft.getInstance().level;
+        // if (level != null && this.counted[0] && event.newState.is(Blocks.KELP) && donutServer()) {
+            // int age = event.newState.getValue(BlockStateProperties.AGE_25);
+            // if (this.seenKelp.add(event.pos.asLong())) {
+                // if (age > 0 && age < 25) {
+                    // if (level.getBlockState(event.pos.above()).is(Blocks.WATER)) {
+                        // long key = ChunkPos.asLong(event.pos.getX() >> 4, event.pos.getZ() >> 4);
+                        // if (this.kelpChunks.add(key)) {
+                            // this.scheduleScan(key);
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
     public void onTick() {
@@ -929,10 +929,10 @@ public class BetterSusChunkModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (Minecraft.getInstance().level != null) {
-            this.primaryOverlay.drawTiles(this.primary, this.chunkColor.argbWithAlpha(100), this.chunkColor.argbWithAlpha(255), event.partialTick);
-        }
-    }
+        // if (Minecraft.getInstance().level != null) {
+            // this.primaryOverlay.drawTiles(this.primary, this.chunkColor.argbWithAlpha(100), this.chunkColor.argbWithAlpha(255), event.partialTick);
+        // }
+    // }
 
         private static final class BlockReader {
         private final ClientLevel level;

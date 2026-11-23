@@ -123,13 +123,13 @@ public class SpawnerProtectModule extends Module {
     }
 
 //     private void onBlockUpdate(BlockUpdateEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (!this.strangerDetected && mc.player != null && mc.level != null && !this.isNearSpawn() && this.detectBlockUpdates.get()) {
-            if (!event.oldState.isAir() && !(event.oldState.getBlock() instanceof ShulkerBoxBlock)) {
-                this.checkBlockUpdate(event.pos, event.newState);
-            }
-        }
-    }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (!this.strangerDetected && mc.player != null && mc.level != null && !this.isNearSpawn() && this.detectBlockUpdates.get()) {
+            // if (!event.oldState.isAir() && !(event.oldState.getBlock() instanceof ShulkerBoxBlock)) {
+                // this.checkBlockUpdate(event.pos, event.newState);
+            // }
+        // }
+    // }
 
     private void checkBlockUpdate(BlockPos pos, BlockState newState) {
         Minecraft mc = Minecraft.getInstance();

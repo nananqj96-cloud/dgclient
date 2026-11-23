@@ -198,41 +198,41 @@ public class FlyModule extends Module {
     }
 
 //     private void onPacketSend(PacketSendEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.isSameThread()) {
-            if (event.packet instanceof ServerboundAcceptTeleportationPacket) {
-                this.lastPacketY = Double.MAX_VALUE;
-            } else if (event.packet instanceof ServerboundMovePlayerPacket packet && this.antiKickMode.is("Packet")) {
-                LocalPlayer player = mc.player;
-                ClientPacketListener connection = mc.getConnection();
-                if (player != null && connection != null) {
-                    double currentY = packet.getY(Double.MAX_VALUE);
-                    if (currentY != Double.MAX_VALUE) {
-                        this.antiKickPacket(player, packet, currentY);
-                    } else {
-                        ServerboundMovePlayerPacket fullPacket;
-                        if (packet.hasRotation()) {
-                            fullPacket = new PosRot(
-                                player.getX(),
-                                player.getY(),
-                                player.getZ(),
-                                packet.getYRot(0.0F),
-                                packet.getXRot(0.0F),
-                                packet.isOnGround(),
-                                player.horizontalCollision
-                            );
-                        } else {
-                            fullPacket = new Pos(player.getX(), player.getY(), player.getZ(), packet.isOnGround(), player.horizontalCollision);
-                        }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.isSameThread()) {
+            // if (event.packet instanceof ServerboundAcceptTeleportationPacket) {
+                // this.lastPacketY = Double.MAX_VALUE;
+            // } else if (event.packet instanceof ServerboundMovePlayerPacket packet && this.antiKickMode.is("Packet")) {
+                // LocalPlayer player = mc.player;
+                // ClientPacketListener connection = mc.getConnection();
+                // if (player != null && connection != null) {
+                    // double currentY = packet.getY(Double.MAX_VALUE);
+                    // if (currentY != Double.MAX_VALUE) {
+                        // this.antiKickPacket(player, packet, currentY);
+                    // } else {
+                        // ServerboundMovePlayerPacket fullPacket;
+                        // if (packet.hasRotation()) {
+                            // fullPacket = new PosRot(
+                                // player.getX(),
+                                // player.getY(),
+                                // player.getZ(),
+                                // packet.getYRot(0.0F),
+                                // packet.getXRot(0.0F),
+                                // packet.isOnGround(),
+                                // player.horizontalCollision
+                            // );
+                        // } else {
+                            // fullPacket = new Pos(player.getX(), player.getY(), player.getZ(), packet.isOnGround(), player.horizontalCollision);
+                        // }
 
-                        event.setCancelled(true);
-                        this.antiKickPacket(player, fullPacket, player.getY());
-                        connection.send(fullPacket);
-                    }
-                }
-            }
-        }
-    }
+                        // event.setCancelled(true);
+                        // this.antiKickPacket(player, fullPacket, player.getY());
+                        // connection.send(fullPacket);
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private void antiKickPacket(LocalPlayer player, ServerboundMovePlayerPacket packet, double currentY) {
         if (this.delayLeft <= 0 && this.lastPacketY != Double.MAX_VALUE && shouldFlyDown(currentY, this.lastPacketY) && isOnAir(player)) {
@@ -243,20 +243,20 @@ public class FlyModule extends Module {
     }
 
 //     private void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundPlayerAbilitiesPacket packet && this.mode.is("Abilities")) {
-            event.setCancelled(true);
-            Minecraft mc = Minecraft.getInstance();
-            mc.execute(() -> {
-                LocalPlayer player = mc.player;
-                if (player != null) {
-                    Abilities abilities = player.getAbilities();
-                    abilities.invulnerable = packet.isInvulnerable();
-                    abilities.instabuild = packet.canInstabuild();
-                    abilities.setWalkingSpeed(packet.getWalkingSpeed());
-                }
-            });
-        }
-    }
+        // if (event.packet instanceof ClientboundPlayerAbilitiesPacket packet && this.mode.is("Abilities")) {
+            // event.setCancelled(true);
+            // Minecraft mc = Minecraft.getInstance();
+            // mc.execute(() -> {
+                // LocalPlayer player = mc.player;
+                // if (player != null) {
+                    // Abilities abilities = player.getAbilities();
+                    // abilities.invulnerable = packet.isInvulnerable();
+                    // abilities.instabuild = packet.canInstabuild();
+                    // abilities.setWalkingSpeed(packet.getWalkingSpeed());
+                // }
+            // });
+        // }
+    // }
 
     private static boolean shouldFlyDown(double currentY, double lastY) {
         return currentY >= lastY ? true : lastY - currentY < 0.0313;

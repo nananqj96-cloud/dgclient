@@ -45,34 +45,34 @@ public class DonutNoFallModule extends Module {
 
 //     @EventHandler
 //     public void onPacketSend(PacketSendEvent event) {
-        if (!this.sendingReplacement && event.packet instanceof ServerboundMovePlayerPacket move) {
-            Minecraft mc = Minecraft.getInstance();
-            LocalPlayer player = mc.player;
-            ClientPacketListener connection = mc.getConnection();
-            if (player != null && connection != null) {
-                event.setCancelled(true);
-                if (this.noFall && move.isOnGround()) {
-                    this.groundTicks++;
-                }
+        // if (!this.sendingReplacement && event.packet instanceof ServerboundMovePlayerPacket move) {
+            // Minecraft mc = Minecraft.getInstance();
+            // LocalPlayer player = mc.player;
+            // ClientPacketListener connection = mc.getConnection();
+            // if (player != null && connection != null) {
+                // event.setCancelled(true);
+                // if (this.noFall && move.isOnGround()) {
+                    // this.groundTicks++;
+                // }
 
-                if (this.groundTicks % 2 == 1) {
-                    player.setPosRaw(player.getX(), player.getY() + 1.0E-8, player.getZ());
-                }
+                // if (this.groundTicks % 2 == 1) {
+                    // player.setPosRaw(player.getX(), player.getY() + 1.0E-8, player.getZ());
+                // }
 
-                boolean onGround = !this.noFall && player.onGround();
-                this.sendingReplacement = true;
+                // boolean onGround = !this.noFall && player.onGround();
+                // this.sendingReplacement = true;
 
-                try {
-                    connection.send(new PosRot(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot(), onGround, false));
-                } finally {
-                    this.sendingReplacement = false;
-                }
+                // try {
+                    // connection.send(new PosRot(player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot(), onGround, false));
+                // } finally {
+                    // this.sendingReplacement = false;
+                // }
 
-                if (this.groundTicks == 4) {
-                    this.noFall = false;
-                    this.groundTicks = 0;
-                }
-            }
-        }
-    }
+                // if (this.groundTicks == 4) {
+                    // this.noFall = false;
+                    // this.groundTicks = 0;
+                // }
+            // }
+        // }
+    // }
 }

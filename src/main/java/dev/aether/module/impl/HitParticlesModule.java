@@ -65,20 +65,20 @@ public class HitParticlesModule extends Module {
     }
 
 //     private void onAttack(PlayerAttackEntityEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.isSameThread()) {
-            LocalPlayer player = mc.player;
-            ClientLevel level = mc.level;
-            Entity target = event.target;
-            if (player != null && level != null && target != null && target != player) {
-                if (target.isAttackable() && this.accepts(target)) {
-                    if (!this.onlyCrits.get() || isCritical(player, target)) {
-                        this.spawnBurst(mc, level, player, target);
-                    }
-                }
-            }
-        }
-    }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.isSameThread()) {
+            // LocalPlayer player = mc.player;
+            // ClientLevel level = mc.level;
+            // Entity target = event.target;
+            // if (player != null && level != null && target != null && target != player) {
+                // if (target.isAttackable() && this.accepts(target)) {
+                    // if (!this.onlyCrits.get() || isCritical(player, target)) {
+                        // this.spawnBurst(mc, level, player, target);
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private boolean accepts(Entity target) {
         return switch (this.targets.get()) {

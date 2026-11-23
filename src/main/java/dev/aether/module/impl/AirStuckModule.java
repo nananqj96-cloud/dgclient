@@ -28,8 +28,8 @@ public class AirStuckModule extends Module {
     }
 
 //     private void onPacketSend(PacketSendEvent event) {
-        if (event.packet instanceof ServerboundClientTickEndPacket || event.packet instanceof ServerboundMovePlayerPacket) {
-            event.setCancelled(true);
-        }
-    }
+        // if (event.packet instanceof ServerboundClientTickEndPacket || event.packet instanceof ServerboundMovePlayerPacket) {
+            // event.setCancelled(true);
+        // }
+    // }
 }

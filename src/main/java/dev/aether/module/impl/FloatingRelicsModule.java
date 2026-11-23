@@ -310,34 +310,34 @@ public class FloatingRelicsModule extends Module {
     }
 
 //     private void onRender3D(Render3DEvent event) {
-        if (this.live != 0) {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.level != null && mc.player != null) {
-                this.canvas.begin(mc.gameRenderer.getMainCamera());
-                float pt = event.partialTick;
-                float time = (float)(System.nanoTime() - EPOCH) / 1.0E9F;
-                int samples = Math.max(2, Math.min(60, Math.round(this.trailLength.get() * 20.0F)));
-                String look = this.style.get();
+        // if (this.live != 0) {
+            // Minecraft mc = Minecraft.getInstance();
+            // if (mc.level != null && mc.player != null) {
+                // this.canvas.begin(mc.gameRenderer.getMainCamera());
+                // float pt = event.partialTick;
+                // float time = (float)(System.nanoTime() - EPOCH) / 1.0E9F;
+                // int samples = Math.max(2, Math.min(60, Math.round(this.trailLength.get() * 20.0F)));
+                // String look = this.style.get();
 
-                for (int i = 0; i < this.live; i++) {
-                    FloatingRelicsModule.Relic r = this.relics[i];
-                    if (r.placed) {
-                        float since = this.age - r.placedAt + pt;
-                        float grow = appear(since / 12.0F);
-                        float extent = this.size.get() * 0.5F * r.grain * grow;
-                        if (!(extent < 0.004F)) {
-                            int n = this.trail(r, pt, samples);
-                            this.drawTrail(look, i, n, extent, time);
-                            int h = (n - 1) * 3;
-                            this.drawHead(look, this.points[h], this.points[h + 1], this.points[h + 2], extent, time, r.phase);
-                        }
-                    }
-                }
+                // for (int i = 0; i < this.live; i++) {
+                    // FloatingRelicsModule.Relic r = this.relics[i];
+                    // if (r.placed) {
+                        // float since = this.age - r.placedAt + pt;
+                        // float grow = appear(since / 12.0F);
+                        // float extent = this.size.get() * 0.5F * r.grain * grow;
+                        // if (!(extent < 0.004F)) {
+                            // int n = this.trail(r, pt, samples);
+                            // this.drawTrail(look, i, n, extent, time);
+                            // int h = (n - 1) * 3;
+                            // this.drawHead(look, this.points[h], this.points[h + 1], this.points[h + 2], extent, time, r.phase);
+                        // }
+                    // }
+                // }
 
-                this.canvas.submit(false);
-            }
-        }
-    }
+                // this.canvas.submit(false);
+            // }
+        // }
+    // }
 
     private int trail(FloatingRelicsModule.Relic r, float pt, int samples) {
         int m = Math.min(r.filled, samples + 2);

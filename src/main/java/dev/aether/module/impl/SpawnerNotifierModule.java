@@ -115,8 +115,8 @@ public class SpawnerNotifierModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (this.sRender.get()) {
-            this.layer.render(event, this.style);
-        }
-    }
+        // if (this.sRender.get()) {
+            // this.layer.render(event, this.style);
+        // }
+    // }
 }

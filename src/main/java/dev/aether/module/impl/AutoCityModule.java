@@ -187,10 +187,10 @@ public class AutoCityModule extends Module {
     }
 
 //     private void note(ModuleChat.Body body) {
-        if (this.notificationsOn()) {
+        // if (this.notificationsOn()) {
 //             ModuleChat.actionBar(this, body);
-        }
-    }
+        // }
+    // }
 
     private static int toolSlot(Inventory inventory, BlockState state) {
         int best = -1;

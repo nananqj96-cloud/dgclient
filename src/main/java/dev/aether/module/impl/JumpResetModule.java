@@ -22,16 +22,16 @@ public class JumpResetModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (event.packet instanceof ClientboundSetEntityMotionPacket motion) {
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (player != null && motion.getId() == player.getId()) {
-                Vec3 knockback = motion.getMovement();
-                if (knockback.horizontalDistance() >= 0.1 && knockback.y > 0.0) {
-                    this.pending = true;
-                }
-            }
-        }
-    }
+        // if (event.packet instanceof ClientboundSetEntityMotionPacket motion) {
+            // LocalPlayer player = Minecraft.getInstance().player;
+            // if (player != null && motion.getId() == player.getId()) {
+                // Vec3 knockback = motion.getMovement();
+                // if (knockback.horizontalDistance() >= 0.1 && knockback.y > 0.0) {
+                    // this.pending = true;
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
     public void onTick() {

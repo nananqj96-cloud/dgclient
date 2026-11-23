@@ -113,10 +113,10 @@ public class RelicParticlesModule extends Module {
     }
 
 //     private void onPacket(PacketReceiveEvent event) {
-        if (this.pops.get()) {
-            TotemPops.scan(event.packet, this.popSink);
-        }
-    }
+        // if (this.pops.get()) {
+            // TotemPops.scan(event.packet, this.popSink);
+        // }
+    // }
 
     public void onTick() {
         Minecraft mc = Minecraft.getInstance();
@@ -134,24 +134,24 @@ public class RelicParticlesModule extends Module {
     }
 
 //     private void onRender(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (this.bind(mc.level)) {
-            long now = System.nanoTime();
-            float dt = this.lastFrame == 0L ? 0.0F : Math.min(0.1F, (float)(now - this.lastFrame) / 1.0E9F);
-            this.lastFrame = now;
-            if (mc.isPaused()) {
-                dt = 0.0F;
-            }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (this.bind(mc.level)) {
+            // long now = System.nanoTime();
+            // float dt = this.lastFrame == 0L ? 0.0F : Math.min(0.1F, (float)(now - this.lastFrame) / 1.0E9F);
+            // this.lastFrame = now;
+            // if (mc.isPaused()) {
+                // dt = 0.0F;
+            // }
 
-            this.swarm.trim(this.particleLimit());
-            this.swarm;
-            if (this.swarm.count() != 0) {
-                this.canvas.begin(mc.gameRenderer.getMainCamera());
-                this.swarm.draw(this.canvas, 1.0F, this.halo.get());
-                this.canvas.submit(false);
-            }
-        }
-    }
+            // this.swarm.trim(this.particleLimit());
+            // this.swarm;
+            // if (this.swarm.count() != 0) {
+                // this.canvas.begin(mc.gameRenderer.getMainCamera());
+                // this.swarm.draw(this.canvas, 1.0F, this.halo.get());
+                // this.canvas.submit(false);
+            // }
+        // }
+    // }
 
     private void burst(LivingEntity entity) {
         Minecraft mc = Minecraft.getInstance();

@@ -39,10 +39,10 @@ public class EntityControlModule extends Module {
     }
 
 //     private void onPacketReceive(PacketReceiveNettyEvent event) {
-        if (this.cancelServerPackets.get() && event.packet instanceof ClientboundMoveVehiclePacket) {
-            event.setCancelled(true);
-        }
-    }
+        // if (this.cancelServerPackets.get() && event.packet instanceof ClientboundMoveVehiclePacket) {
+            // event.setCancelled(true);
+        // }
+    // }
 
     public static boolean spoofSaddle() {
         EntityControlModule module = active;

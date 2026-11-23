@@ -161,10 +161,10 @@ public class CrystalMacroModule extends Module {
 
 //     @EventHandler
 //     public void onAttack(PlayerAttackEntityEvent event) {
-        if (event.target instanceof EndCrystal crystal && crystal.level().isClientSide()) {
-            this.markBreak(crystal);
-        }
-    }
+        // if (event.target instanceof EndCrystal crystal && crystal.level().isClientSide()) {
+            // this.markBreak(crystal);
+        // }
+    // }
 
     private boolean holdActive(Minecraft mc, LocalPlayer player) {
         return MeleeAttacks.canAct(mc) && mc.isWindowActive() && !player.isSpectator() && Crystals.isPhysicallyDown(mc, mc.options.keyUse);

@@ -131,34 +131,34 @@ public class AutoTotemModule extends Module {
 
 //     @EventHandler
 //     public void onRender2D(Render2DEvent event) {
-        this.update();
-    }
+        // this.update();
+    // }
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null) {
-            if (event.packet instanceof ClientboundEntityEventPacket status && status.getEventId() == 35 && status.getEntity(mc.level) == mc.player) {
-                this.reset();
-            }
-        }
-    }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null) {
+            // if (event.packet instanceof ClientboundEntityEventPacket status && status.getEventId() == 35 && status.getEntity(mc.level) == mc.player) {
+                // this.reset();
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        long now = System.nanoTime();
-        if (event.packet instanceof ClientboundSetPlayerInventoryPacket update) {
-            if (update.slot() == 40) {
-                this.observe(-1, -1, offhand(update.contents()), now);
-            }
-        } else if (event.packet instanceof ClientboundContainerSetSlotPacket update) {
-            if (update.getSlot() == 45) {
-                this.observe(update.getContainerId(), update.getStateId(), offhand(update.getItem()), now);
-            }
-        } else if (event.packet instanceof ClientboundContainerSetContentPacket update && update.items().size() > 45) {
-            this.observe(update.containerId(), update.stateId(), offhand(update.items().get(45)), now);
-        }
-    }
+        // long now = System.nanoTime();
+        // if (event.packet instanceof ClientboundSetPlayerInventoryPacket update) {
+            // if (update.slot() == 40) {
+                // this.observe(-1, -1, offhand(update.contents()), now);
+            // }
+        // } else if (event.packet instanceof ClientboundContainerSetSlotPacket update) {
+            // if (update.getSlot() == 45) {
+                // this.observe(update.getContainerId(), update.getStateId(), offhand(update.getItem()), now);
+            // }
+        // } else if (event.packet instanceof ClientboundContainerSetContentPacket update && update.items().size() > 45) {
+            // this.observe(update.containerId(), update.stateId(), offhand(update.items().get(45)), now);
+        // }
+    // }
 
     private void observe(int containerId, int stateId, OffhandRefill.Offhand offhand, long receivedAt) {
         Minecraft.getInstance().execute(() -> {

@@ -78,31 +78,31 @@ public class FakeLagModule extends Module {
 
 //     @EventHandler
 //     public void onPacketSend(PacketSendEvent event) {
-        if (!this.releasing) {
-            Packet<?> packet = event.packet;
-            if (this.lagNow && !acts(packet)) {
-                synchronized (this.held) {
-                    if (this.held.isEmpty()) {
-                        this.heldFor = this.mc.getConnection();
-                    }
+        // if (!this.releasing) {
+            // Packet<?> packet = event.packet;
+            // if (this.lagNow && !acts(packet)) {
+                // synchronized (this.held) {
+                    // if (this.held.isEmpty()) {
+                        // this.heldFor = this.mc.getConnection();
+                    // }
 
-                    this.held.addLast(new FakeLagModule.Held(packet, System.currentTimeMillis()));
-                }
+                    // this.held.addLast(new FakeLagModule.Held(packet, System.currentTimeMillis()));
+                // }
 
-                event.setCancelled(true);
-            } else {
-                this.releaseAll();
-                this.track(packet);
-            }
-        }
-    }
+                // event.setCancelled(true);
+            // } else {
+                // this.releaseAll();
+                // this.track(packet);
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onPacketReceive(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundPlayerPositionPacket) {
-            this.mc.execute(this::releaseAll);
-        }
-    }
+        // if (event.packet instanceof ClientboundPlayerPositionPacket) {
+            // this.mc.execute(this::releaseAll);
+        // }
+    // }
 
     private void tick() {
         if (this.mc.getConnection() != null && this.mc.player != null) {

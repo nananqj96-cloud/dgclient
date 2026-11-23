@@ -93,47 +93,47 @@ public class PearlTrajectoryModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        this.labels.clear();
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && mc.level != null) {
-            long now = System.nanoTime();
-            this.labelsAt = now;
-            float time = (float)(now - EPOCH) / 1.0E9F;
-            float width = this.sLineWidth.get();
-            Vec3 eye = mc.player.getEyePosition(event.partialTick);
-            if (this.sPredict.get() && PearlTrajectorySimulator.isHoldingPearl(mc.player)) {
-                if (this.predictionShownAt < 0L) {
-                    this.predictionShownAt = now;
-                }
+        // this.labels.clear();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.player != null && mc.level != null) {
+            // long now = System.nanoTime();
+            // this.labelsAt = now;
+            // float time = (float)(now - EPOCH) / 1.0E9F;
+            // float width = this.sLineWidth.get();
+            // Vec3 eye = mc.player.getEyePosition(event.partialTick);
+            // if (this.sPredict.get() && PearlTrajectorySimulator.isHoldingPearl(mc.player)) {
+                // if (this.predictionShownAt < 0L) {
+                    // this.predictionShownAt = now;
+                // }
 
-                float pop = easeOutBack(Math.min(1.0F, (float)(now - this.predictionShownAt) / 1.0E9F / 0.22F));
-                PearlTrajectorySimulator.SimulationResult result = PearlTrajectorySimulator.simulate(mc.level, mc.player, event.partialTick);
-                this.drawPath(result.points(), width, true, false, 1.0F);
-                this.drawLanding(result, pop, time, width, 1.0F);
-                this.addLabel(result, eye, null);
-            } else {
-                this.predictionShownAt = -1L;
-            }
+                // float pop = easeOutBack(Math.min(1.0F, (float)(now - this.predictionShownAt) / 1.0E9F / 0.22F));
+                // PearlTrajectorySimulator.SimulationResult result = PearlTrajectorySimulator.simulate(mc.level, mc.player, event.partialTick);
+                // this.drawPath(result.points(), width, true, false, 1.0F);
+                // this.drawLanding(result, pop, time, width, 1.0F);
+                // this.addLabel(result, eye, null);
+            // } else {
+                // this.predictionShownAt = -1L;
+            // }
 
-            for (Entity entity : mc.level.entitiesForRendering()) {
-                if (entity instanceof ThrownEnderpearl pearl && this.isTracked(pearl, mc)) {
-                    Vec3 head = pearl.getPosition(event.partialTick);
-                    if (this.sTrail.get()) {
-                        this.drawTrail(this.trails.get(pearl.getId()), head, width);
-                    }
+            // for (Entity entity : mc.level.entitiesForRendering()) {
+                // if (entity instanceof ThrownEnderpearl pearl && this.isTracked(pearl, mc)) {
+                    // Vec3 head = pearl.getPosition(event.partialTick);
+                    // if (this.sTrail.get()) {
+                        // this.drawTrail(this.trails.get(pearl.getId()), head, width);
+                    // }
 
-                    PearlTrajectorySimulator.SimulationResult rest = PearlTrajectorySimulator.simulate(mc.level, pearl);
-                    List<Vec3> ahead = new ArrayList<>(rest.points());
-                    ahead.set(0, head);
-                    this.drawPath(ahead, width * 0.8F, false, true, 0.7F);
-                    this.drawLanding(rest, 1.0F, time, width, 0.75F);
-                    Entity owner = pearl.getOwner();
-                    boolean own = owner == null || owner == mc.player;
-                    this.addLabel(rest, eye, own ? null : NameProtectModule.protect(owner.getName()).getString());
-                }
-            }
-        }
-    }
+                    // PearlTrajectorySimulator.SimulationResult rest = PearlTrajectorySimulator.simulate(mc.level, pearl);
+                    // List<Vec3> ahead = new ArrayList<>(rest.points());
+                    // ahead.set(0, head);
+                    // this.drawPath(ahead, width * 0.8F, false, true, 0.7F);
+                    // this.drawLanding(rest, 1.0F, time, width, 0.75F);
+                    // Entity owner = pearl.getOwner();
+                    // boolean own = owner == null || owner == mc.player;
+                    // this.addLabel(rest, eye, own ? null : NameProtectModule.protect(owner.getName()).getString());
+                // }
+            // }
+        // }
+    // }
 
     private void drawPath(List<Vec3> points, float width, boolean fadeIn, boolean dashed, float alphaMul) {
         if (points.size() >= 2) {

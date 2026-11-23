@@ -143,18 +143,18 @@ public class AnchorAuraModule extends Module {
 
 //     @EventHandler
 //     public void onPacketReceive(PacketReceiveEvent event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            HurtClock.note(player, event.packet);
-        }
-    }
+        // LocalPlayer player = Minecraft.getInstance().player;
+        // if (player != null) {
+            // HurtClock.note(player, event.packet);
+        // }
+    // }
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (this.render.get()) {
-            this.view.draw();
-        }
-    }
+        // if (this.render.get()) {
+            // this.view.draw();
+        // }
+    // }
 
     @Override
     public boolean isHudOverlayEnabled() {

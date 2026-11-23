@@ -286,10 +286,10 @@ public class AutoTpaHereModule extends Module {
 
 //     @EventHandler
 //     public void onPacket(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null && this.chatLines.size() < 256) {
-            this.chatLines.offer(chat.content().getString());
-        }
-    }
+        // if (event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null && this.chatLines.size() < 256) {
+            // this.chatLines.offer(chat.content().getString());
+        // }
+    // }
 
 //     @EventHandler
     public void onTick() {
@@ -1431,8 +1431,8 @@ public class AutoTpaHereModule extends Module {
     }
 
 //     private void info(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 
         private static final class Bucket {
         List<String> names = List.of();

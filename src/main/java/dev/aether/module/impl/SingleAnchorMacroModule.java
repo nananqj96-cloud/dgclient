@@ -150,21 +150,21 @@ public class SingleAnchorMacroModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (this.step == SingleAnchorMacroModule.Step.AWAIT_GUARD && this.guard != null) {
-            BlockPos spot = this.guard.pos();
-            if (event.packet instanceof ClientboundBlockUpdatePacket update) {
-                if (update.getPos().equals(spot)) {
-                    this.guardReported = update.getBlockState();
-                }
-            } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket section) {
-                section.runUpdates((pos, state) -> {
-                    if (pos.equals(spot)) {
-                        this.guardReported = state;
-                    }
-                });
-            }
-        }
-    }
+        // if (this.step == SingleAnchorMacroModule.Step.AWAIT_GUARD && this.guard != null) {
+            // BlockPos spot = this.guard.pos();
+            // if (event.packet instanceof ClientboundBlockUpdatePacket update) {
+                // if (update.getPos().equals(spot)) {
+                    // this.guardReported = update.getBlockState();
+                // }
+            // } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket section) {
+                // section.runUpdates((pos, state) -> {
+                    // if (pos.equals(spot)) {
+                        // this.guardReported = state;
+                    // }
+                // });
+            // }
+        // }
+    // }
 
     private boolean tryStart(Minecraft mc, LocalPlayer player) {
         if (MeleeAttacks.rightClickComing(mc) && !CombatMacroLock.heldByOther(this)) {

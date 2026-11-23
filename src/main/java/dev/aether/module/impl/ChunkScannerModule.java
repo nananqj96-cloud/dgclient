@@ -183,46 +183,46 @@ public class ChunkScannerModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (this.advanced != null && event.packet instanceof ClientboundLevelChunkWithLightPacket arrived) {
-            this.advanced.chunkArrived(arrived.getX(), arrived.getZ());
-        }
+        // if (this.advanced != null && event.packet instanceof ClientboundLevelChunkWithLightPacket arrived) {
+            // this.advanced.chunkArrived(arrived.getX(), arrived.getZ());
+        // }
 
-        if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
-            this.shownDirty = true;
-            this.enqueue(ChunkPos.asLong(chunk.getX(), chunk.getZ()));
+        // if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
+            // this.shownDirty = true;
+            // this.enqueue(ChunkPos.asLong(chunk.getX(), chunk.getZ()));
 
-            for (int dx = -1; dx <= 1; dx++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    if (dx != 0 || dz != 0) {
-                        this.enqueue(ChunkPos.asLong(chunk.getX() + dx, chunk.getZ() + dz));
-                    }
-                }
-            }
-        }
-    }
+            // for (int dx = -1; dx <= 1; dx++) {
+                // for (int dz = -1; dz <= 1; dz++) {
+                    // if (dx != 0 || dz != 0) {
+                        // this.enqueue(ChunkPos.asLong(chunk.getX() + dx, chunk.getZ() + dz));
+                    // }
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onBlockUpdate(BlockUpdateEvent event) {
-        if (this.scanning && event.pos != null) {
-            if (this.advanced != null) {
-                this.advanced.blockChanged(event.pos);
-            }
+        // if (this.scanning && event.pos != null) {
+            // if (this.advanced != null) {
+                // this.advanced.blockChanged(event.pos);
+            // }
 
-            int y = event.pos.getY();
-            if (y >= this.appliedConfig.minY() - 1 && y <= this.appliedConfig.maxY() + 1) {
-                if (matters(event.oldState) || matters(event.newState)) {
-                    int x = event.pos.getX();
-                    int z = event.pos.getZ();
+            // int y = event.pos.getY();
+            // if (y >= this.appliedConfig.minY() - 1 && y <= this.appliedConfig.maxY() + 1) {
+                // if (matters(event.oldState) || matters(event.newState)) {
+                    // int x = event.pos.getX();
+                    // int z = event.pos.getZ();
 
-                    for (int cx = x - 2 >> 4; cx <= x + 1 >> 4; cx++) {
-                        for (int cz = z - 2 >> 4; cz <= z + 2 >> 4; cz++) {
-                            this.enqueue(ChunkPos.asLong(cx, cz));
-                        }
-                    }
-                }
-            }
-        }
-    }
+                    // for (int cx = x - 2 >> 4; cx <= x + 1 >> 4; cx++) {
+                        // for (int cz = z - 2 >> 4; cz <= z + 2 >> 4; cz++) {
+                            // this.enqueue(ChunkPos.asLong(cx, cz));
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
     public void onTick() {
@@ -791,13 +791,13 @@ public class ChunkScannerModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (Minecraft.getInstance().level != null) {
-            this.chunkOverlay.draw(this.shown, this.chunkColor.argb(), event.partialTick);
-            if (this.tracers.get()) {
-                this.chunkAreas.drawTracers(this.shown, 63.0, ARGB.opaque(this.chunkColor.argb()));
-            }
-        }
-    }
+        // if (Minecraft.getInstance().level != null) {
+            // this.chunkOverlay.draw(this.shown, this.chunkColor.argb(), event.partialTick);
+            // if (this.tracers.get()) {
+                // this.chunkAreas.drawTracers(this.shown, 63.0, ARGB.opaque(this.chunkColor.argb()));
+            // }
+        // }
+    // }
 
         private record Find(long pos, int height, long[] stacks) {
         boolean sameAs(ChunkScannerModule.Find other) {

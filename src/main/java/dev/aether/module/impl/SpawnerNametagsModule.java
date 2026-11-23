@@ -178,24 +178,24 @@ public class SpawnerNametagsModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (this.sRadius.get()) {
-            Minecraft mc = Minecraft.getInstance();
-            List<SpawnerNametagsModule.Shown> shown = this.inRange(mc);
-            if (!shown.isEmpty()) {
+        // if (this.sRadius.get()) {
+            // Minecraft mc = Minecraft.getInstance();
+            // List<SpawnerNametagsModule.Shown> shown = this.inRange(mc);
+            // if (!shown.isEmpty()) {
 //                 int accent = GuiPalette.abgr(WorldText.hudAccent()) & 16777215;
 
-                for (SpawnerNametagsModule.Shown spawner : shown) {
-                    if (spawner.range() > 0) {
-                        float alpha = (spawner.inside() ? 0.8F : 0.4F) * this.fade(spawner.distance());
-                        int color = Math.round(alpha * 255.0F) << 24 | accent;
-                        if (color >>> 24 >= 4) {
-                            drawRing(Vec3.atCenterOf(spawner.pos()), spawner.range(), color);
-                        }
-                    }
-                }
-            }
-        }
-    }
+                // for (SpawnerNametagsModule.Shown spawner : shown) {
+                    // if (spawner.range() > 0) {
+                        // float alpha = (spawner.inside() ? 0.8F : 0.4F) * this.fade(spawner.distance());
+                        // int color = Math.round(alpha * 255.0F) << 24 | accent;
+                        // if (color >>> 24 >= 4) {
+                            // drawRing(Vec3.atCenterOf(spawner.pos()), spawner.range(), color);
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private static void drawRing(Vec3 centre, double radius, int color) {
         Vec3 previous = null;

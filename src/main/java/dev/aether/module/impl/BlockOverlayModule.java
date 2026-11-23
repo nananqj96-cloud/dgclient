@@ -109,45 +109,45 @@ public class BlockOverlayModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null) {
-            if (mc.level != this.level) {
-                this.reset();
-                this.level = mc.level;
-            }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null) {
+            // if (mc.level != this.level) {
+                // this.reset();
+                // this.level = mc.level;
+            // }
 
-            long now = System.nanoTime();
-            float dt = this.lastFrame == 0L ? 0.0F : Math.min((float)(now - this.lastFrame) / 1.0E9F, 0.1F);
-            this.lastFrame = now;
-            BlockHitResult hit = target(mc);
-            if (hit != null && this.adopt(mc, hit)) {
-                if (this.box != null && !(this.presence < 0.02F) && this.smooth.get() && !(this.box.getCenter().distanceTo(this.goal.getCenter()) > 6.0)) {
-                    this.box = lerp(this.box, this.goal, 1.0F - (float)Math.exp(-this.smoothSpeed.get() * dt));
-                } else {
-                    this.box = this.goal;
-                }
+            // long now = System.nanoTime();
+            // float dt = this.lastFrame == 0L ? 0.0F : Math.min((float)(now - this.lastFrame) / 1.0E9F, 0.1F);
+            // this.lastFrame = now;
+            // BlockHitResult hit = target(mc);
+            // if (hit != null && this.adopt(mc, hit)) {
+                // if (this.box != null && !(this.presence < 0.02F) && this.smooth.get() && !(this.box.getCenter().distanceTo(this.goal.getCenter()) > 6.0)) {
+                    // this.box = lerp(this.box, this.goal, 1.0F - (float)Math.exp(-this.smoothSpeed.get() * dt));
+                // } else {
+                    // this.box = this.goal;
+                // }
 
-                this.presence = Math.min(1.0F, this.presence + dt / 0.12F);
-            } else {
-                hit = null;
-                this.presence = Math.max(0.0F, this.presence - dt / 0.2F);
-                if (this.presence == 0.0F) {
-                    this.reset();
-                    this.level = mc.level;
-                    return;
-                }
-            }
+                // this.presence = Math.min(1.0F, this.presence + dt / 0.12F);
+            // } else {
+                // hit = null;
+                // this.presence = Math.max(0.0F, this.presence - dt / 0.2F);
+                // if (this.presence == 0.0F) {
+                    // this.reset();
+                    // this.level = mc.level;
+                    // return;
+                // }
+            // }
 
-            if (this.box != null) {
-                this.updateProgress(mc, dt, hit != null);
-                this.eye = mc.gameRenderer.getMainCamera().position();
-                this.time = now % 3600000000000L / 1.0E9;
-                this.draw();
-            }
-        } else {
-            this.reset();
-        }
-    }
+            // if (this.box != null) {
+                // this.updateProgress(mc, dt, hit != null);
+                // this.eye = mc.gameRenderer.getMainCamera().position();
+                // this.time = now % 3600000000000L / 1.0E9;
+                // this.draw();
+            // }
+        // } else {
+            // this.reset();
+        // }
+    // }
 
     private static BlockHitResult target(Minecraft mc) {
         if (!(mc.hitResult instanceof BlockHitResult hit && hit.getType() == Type.BLOCK && !hit.isInside())) {

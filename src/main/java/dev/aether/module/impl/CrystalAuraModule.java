@@ -260,10 +260,10 @@ public class CrystalAuraModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (this.render.get()) {
-            this.view.draw();
-        }
-    }
+        // if (this.render.get()) {
+            // this.view.draw();
+        // }
+    // }
 
     @Override
     public boolean isHudOverlayEnabled() {
@@ -277,26 +277,26 @@ public class CrystalAuraModule extends Module {
 
 //     @EventHandler
 //     public void onAttack(PlayerAttackEntityEvent event) {
-        if (event.target instanceof EndCrystal crystal && crystal.level().isClientSide()) {
-            this.markBreak(crystal);
-        }
-    }
+        // if (event.target instanceof EndCrystal crystal && crystal.level().isClientSide()) {
+            // this.markBreak(crystal);
+        // }
+    // }
 
 //     @EventHandler
 //     public void onPacketReceive(PacketReceiveEvent event) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            if (event.packet instanceof ClientboundBundlePacket bundle) {
-                for (Packet<?> packet : bundle.subPackets()) {
-                    this.note(player, packet);
-                }
-            } else {
-                this.note(player, event.packet);
-            }
+        // LocalPlayer player = Minecraft.getInstance().player;
+        // if (player != null) {
+            // if (event.packet instanceof ClientboundBundlePacket bundle) {
+                // for (Packet<?> packet : bundle.subPackets()) {
+                    // this.note(player, packet);
+                // }
+            // } else {
+                // this.note(player, event.packet);
+            // }
 
-            HurtClock.note(player, event.packet);
-        }
-    }
+            // HurtClock.note(player, event.packet);
+        // }
+    // }
 
     private void note(LocalPlayer player, Packet<?> packet) {
         if (packet instanceof ClientboundAddEntityPacket spawn && spawn.getType() == EntityType.END_CRYSTAL) {

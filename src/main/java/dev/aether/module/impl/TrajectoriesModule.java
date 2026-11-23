@@ -380,34 +380,34 @@ public class TrajectoriesModule extends Module {
     }
 
 //     private void onRender(Render3DEvent event) {
-        this.labels.clear();
-        Minecraft mc = Minecraft.getInstance();
-        ClientLevel world = mc.level;
-        LocalPlayer player = mc.player;
-        this.syncLevel(world);
-        if (world != null && player != null) {
-            long now = System.nanoTime();
-            this.labelsAt = now;
-            float time = (float)(now - EPOCH) / 1.0E9F;
-            float partialTick = event.partialTick;
-            this.choosePalette();
-            this.onTop = this.throughWalls.get();
-            this.canvas.begin(mc.gameRenderer.getMainCamera());
-            this.camera = mc.gameRenderer.getMainCamera().position();
-            LivingEntity focus = this.targetBox.get() ? CombatTarget.current(6000L) : null;
-            if (this.aimPreview.get()) {
-                this.drawAim(world, player, partialTick, now, time, focus);
-            } else if (this.aimItem != null || this.volleySize > 0) {
-                this.forgetAim();
-            }
+        // this.labels.clear();
+        // Minecraft mc = Minecraft.getInstance();
+        // ClientLevel world = mc.level;
+        // LocalPlayer player = mc.player;
+        // this.syncLevel(world);
+        // if (world != null && player != null) {
+            // long now = System.nanoTime();
+            // this.labelsAt = now;
+            // float time = (float)(now - EPOCH) / 1.0E9F;
+            // float partialTick = event.partialTick;
+            // this.choosePalette();
+            // this.onTop = this.throughWalls.get();
+            // this.canvas.begin(mc.gameRenderer.getMainCamera());
+            // this.camera = mc.gameRenderer.getMainCamera().position();
+            // LivingEntity focus = this.targetBox.get() ? CombatTarget.current(6000L) : null;
+            // if (this.aimPreview.get()) {
+                // this.drawAim(world, player, partialTick, now, time, focus);
+            // } else if (this.aimItem != null || this.volleySize > 0) {
+                // this.forgetAim();
+            // }
 
-            if (this.inFlight.get()) {
-                this.drawTracks(player, partialTick, time, focus);
-            }
+            // if (this.inFlight.get()) {
+                // this.drawTracks(player, partialTick, time, focus);
+            // }
 
-            this.canvas.submit(this.onTop);
-        }
-    }
+            // this.canvas.submit(this.onTop);
+        // }
+    // }
 
     private void drawTracks(LocalPlayer player, float partialTick, float time, LivingEntity focus) {
         for (TrajectoriesModule.Track track : this.tracks.values()) {

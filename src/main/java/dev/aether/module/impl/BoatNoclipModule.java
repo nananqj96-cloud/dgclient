@@ -115,14 +115,14 @@ public class BoatNoclipModule extends Module {
     }
 
 //     private void onPacketSend(PacketSendEvent event) {
-        if (this.antiKick.get() && event.packet instanceof ServerboundMoveVehiclePacket packet) {
-            if (this.sendingStops) {
-                this.antiKicker.observe(packet);
-            } else if (this.antiKicker.onPacketSend(packet, this.delay.getInt())) {
-                event.setCancelled(true);
-            }
-        }
-    }
+        // if (this.antiKick.get() && event.packet instanceof ServerboundMoveVehiclePacket packet) {
+            // if (this.sendingStops) {
+                // this.antiKicker.observe(packet);
+            // } else if (this.antiKicker.onPacketSend(packet, this.delay.getInt())) {
+                // event.setCancelled(true);
+            // }
+        // }
+    // }
 
     public void onVehicleSetback() {
         this.antiKicker.forget();

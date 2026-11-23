@@ -66,16 +66,16 @@ public class CoordSnapperModule extends Module {
     }
 
 //     private void onKey(KeyInputEvent event) {
-        if (event.action == 1) {
-            this.onPress(event.key);
-        }
-    }
+        // if (event.action == 1) {
+            // this.onPress(event.key);
+        // }
+    // }
 
 //     private void onMouse(MouseInputEvent event) {
-        if (event.action == 1) {
-            this.onPress(1000 + event.button);
-        }
-    }
+        // if (event.action == 1) {
+            // this.onPress(1000 + event.button);
+        // }
+    // }
 
     private void onPress(int pressed) {
         int bound = this.key.value();

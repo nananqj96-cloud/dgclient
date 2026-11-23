@@ -245,10 +245,10 @@ public class HoleEspModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
-            this.invalidateAround(chunk.getX(), chunk.getZ());
-        }
-    }
+        // if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
+            // this.invalidateAround(chunk.getX(), chunk.getZ());
+        // }
+    // }
 
     private void invalidateAround(int cx, int cz) {
         Minecraft mc = Minecraft.getInstance();
@@ -277,46 +277,46 @@ public class HoleEspModule extends Module {
 
 //     @EventHandler
 //     public void onBlockUpdate(BlockUpdateEvent event) {
-        if (event.pos != null) {
-            this.invalidateAround(event.pos.getX() >> 4, event.pos.getZ() >> 4);
-        }
-    }
+        // if (event.pos != null) {
+            // this.invalidateAround(event.pos.getX() >> 4, event.pos.getZ() >> 4);
+        // }
+    // }
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            boolean fill = this.sFill == null || this.sFill.value().get();
-            boolean outline = this.sOutline == null || this.sOutline.value().get();
-            if (fill || outline) {
-                int px = mc.player.getBlockX() >> 4;
-                int pz = mc.player.getBlockZ() >> 4;
-                int radius = this.scanRadius(mc);
-                float lineWidth = value(this.sLineWidth, 1.5F);
-                int rendered = 0;
-
-                for (Entry<Long, List<HoleEspModule.Hit>> entry : this.chunkCache.entrySet()) {
-                    long key = entry.getKey();
-                    if (Math.abs(chunkX(key) - px) <= radius && Math.abs(chunkZ(key) - pz) <= radius) {
-                        for (HoleEspModule.Hit hit : entry.getValue()) {
-                            if (++rendered > 8192) {
-                                return;
-                            }
-
-                            GizmoStyle style = !fill
-                                ? GizmoStyle.stroke(this.lineColor(hit.type()), lineWidth)
-                                : (
-                                    !outline
-                                        ? GizmoStyle.fill(this.fillColor(hit.type()))
-                                        : GizmoStyle.strokeAndFill(this.lineColor(hit.type()), lineWidth, this.fillColor(hit.type()))
-                                );
-                            Gizmos.cuboid(hit.box(), style).setAlwaysOnTop();
-                        }
-                    }
-                }
-            }
-        }
-    }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.player != null) {
+            // boolean fill = this.sFill == null || this.sFill.value().get();
+            // boolean outline = this.sOutline == null || this.sOutline.value().get();
+            // if (fill || outline) {
+                // int px = mc.player.getBlockX() >> 4;
+                // int pz = mc.player.getBlockZ() >> 4;
+                // int radius = this.scanRadius(mc);
+                // float lineWidth = value(this.sLineWidth, 1.5F);
+                // int rendered = 0;
+ // 
+                // for (Entry<Long, List<HoleEspModule.Hit>> entry : this.chunkCache.entrySet()) {
+                    // long key = entry.getKey();
+                    // if (Math.abs(chunkX(key) - px) <= radius && Math.abs(chunkZ(key) - pz) <= radius) {
+                        // for (HoleEspModule.Hit hit : entry.getValue()) {
+                            // if (++rendered > 8192) {
+                                // return;
+                            // }
+ // 
+                            // GizmoStyle style = !fill
+                                // ? GizmoStyle.stroke(this.lineColor(hit.type()), lineWidth)
+                                // : (
+                                    // !outline
+                                        // ? GizmoStyle.fill(this.fillColor(hit.type()))
+                                        // : GizmoStyle.strokeAndFill(this.lineColor(hit.type()), lineWidth, this.fillColor(hit.type()))
+                                // );
+                            // Gizmos.cuboid(hit.box(), style).setAlwaysOnTop();
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private void scanChunk(ClientLevel level, int chunkX, int chunkZ, long chunkKey) {
         LevelChunk chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);

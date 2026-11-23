@@ -141,11 +141,11 @@ public class AhSellModule extends Module {
 
 //     @EventHandler
 //     public void onPacket(PacketReceiveNettyEvent event) {
-        AhSellBot current = this.bot;
-        if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
-            current.onChat(chat.content().getString());
-        }
-    }
+        // AhSellBot current = this.bot;
+        // if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
+            // current.onChat(chat.content().getString());
+        // }
+    // }
 
     private String buildProducts(List<Product> out) {
         if (this.auto() && ServerText.parseMoney(this.undercut.get()) < 0L) {
@@ -182,6 +182,6 @@ public class AhSellModule extends Module {
     }
 
 //     private void info(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 }

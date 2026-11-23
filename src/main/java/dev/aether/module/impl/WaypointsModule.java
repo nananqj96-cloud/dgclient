@@ -144,31 +144,31 @@ public class WaypointsModule extends Module {
 
 //     @EventHandler
 //     public void onRender2D(Render2DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null && !mc.options.hideGui) {
-            Camera camera = mc.gameRenderer.getMainCamera();
-            if (camera != null && camera.isInitialized()) {
-                Vec3 eye = camera.position();
-                ResourceKey<Level> here = mc.level.dimension();
-                double limit = this.maxDistance.get();
-                List<WaypointsModule.Shown> visible = new ArrayList<>();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null && !mc.options.hideGui) {
+            // Camera camera = mc.gameRenderer.getMainCamera();
+            // if (camera != null && camera.isInitialized()) {
+                // Vec3 eye = camera.position();
+                // ResourceKey<Level> here = mc.level.dimension();
+                // double limit = this.maxDistance.get();
+                // List<WaypointsModule.Shown> visible = new ArrayList<>();
 
-                for (WaypointsModule.Point point : this.parsed()) {
-                    WaypointsModule.Shown shown = this.place(point, here, eye);
-                    if (shown != null && (!(limit > 0.0) || !(shown.distance() > limit))) {
-                        visible.add(shown);
-                    }
-                }
+                // for (WaypointsModule.Point point : this.parsed()) {
+                    // WaypointsModule.Shown shown = this.place(point, here, eye);
+                    // if (shown != null && (!(limit > 0.0) || !(shown.distance() > limit))) {
+                        // visible.add(shown);
+                    // }
+                // }
 
-                visible.sort(Comparator.comparingDouble(WaypointsModule.Shown::distance).reversed());
-                GuiGraphics graphics = event.graphics;
+                // visible.sort(Comparator.comparingDouble(WaypointsModule.Shown::distance).reversed());
+                // GuiGraphics graphics = event.graphics;
 
-                for (WaypointsModule.Shown shown : visible) {
-                    this.draw(graphics, mc, eye, shown);
-                }
-            }
-        }
-    }
+                // for (WaypointsModule.Shown shown : visible) {
+                    // this.draw(graphics, mc, eye, shown);
+                // }
+            // }
+        // }
+    // }
 
     private WaypointsModule.Shown place(WaypointsModule.Point point, ResourceKey<Level> here, Vec3 eye) {
         double x = point.x() + 0.5;
@@ -340,8 +340,8 @@ public class WaypointsModule extends Module {
     }
 
 //     private void say(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 
         private record Point(String name, int x, Integer y, int z, ResourceKey<Level> dimension, boolean death) {
     }

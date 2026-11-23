@@ -65,16 +65,16 @@ public class TpMacroModule extends Module {
 
 //     @EventHandler
 //     public void onPacket(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
-            Matcher wait = RATE_LIMIT.matcher(ServerText.normalize(chat.content().getString()));
-            if (wait.find()) {
-                try {
-                    this.holdUntil = System.currentTimeMillis() + (long)Math.ceil(Math.min(30.0, Double.parseDouble(wait.group(1))) * 1000.0) + 80L;
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
-    }
+        // if (event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
+            // Matcher wait = RATE_LIMIT.matcher(ServerText.normalize(chat.content().getString()));
+            // if (wait.find()) {
+                // try {
+                    // this.holdUntil = System.currentTimeMillis() + (long)Math.ceil(Math.min(30.0, Double.parseDouble(wait.group(1))) * 1000.0) + 80L;
+                // } catch (NumberFormatException ignored) {
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler
     public void onTick() {

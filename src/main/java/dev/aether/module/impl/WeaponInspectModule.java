@@ -116,16 +116,16 @@ public class WeaponInspectModule extends Module {
     }
 
 //     private void onKey(KeyInputEvent event) {
-        if (event.action != 0 && this.pressed(event.key, event.action == 2)) {
-            event.setCancelled(true);
-        }
-    }
+        // if (event.action != 0 && this.pressed(event.key, event.action == 2)) {
+            // event.setCancelled(true);
+        // }
+    // }
 
 //     private void onMouse(MouseInputEvent event) {
-        if (event.action == 1 && this.pressed(1000 + event.button, false)) {
-            event.setCancelled(true);
-        }
-    }
+        // if (event.action == 1 && this.pressed(1000 + event.button, false)) {
+            // event.setCancelled(true);
+        // }
+    // }
 
     private boolean pressed(int pressed, boolean repeat) {
         int bound = this.key.value();

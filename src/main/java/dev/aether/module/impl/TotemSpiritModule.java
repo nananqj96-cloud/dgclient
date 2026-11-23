@@ -125,8 +125,8 @@ public class TotemSpiritModule extends Module {
     }
 
 //     private void onPacket(PacketReceiveEvent event) {
-        TotemPops.scan(event.packet, this.popSink);
-    }
+        // TotemPops.scan(event.packet, this.popSink);
+    // }
 
     private void capture(LivingEntity entity) {
         Minecraft mc = Minecraft.getInstance();
@@ -159,30 +159,30 @@ public class TotemSpiritModule extends Module {
     }
 
 //     private void onRender(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (this.bind(mc.level) && this.count != 0) {
-            long now = System.nanoTime();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (this.bind(mc.level) && this.count != 0) {
+            // long now = System.nanoTime();
 
-            float life;
-            for (life = this.kaTime.get() * 1.0E9F; this.count > 0 && (float)(now - this.spirits[this.head].born) >= life; this.count--) {
-                this.head = (this.head + 1) % 12;
-            }
+            // float life;
+            // for (life = this.kaTime.get() * 1.0E9F; this.count > 0 && (float)(now - this.spirits[this.head].born) >= life; this.count--) {
+                // this.head = (this.head + 1) % 12;
+            // }
 
-            if (this.count != 0) {
-                this.palette.resolve(this.colorMode.get(), CosmeticAccent.argb(), this.bodyColor.argb(), this.auraColor.argb());
-                this.canvas.begin(mc.gameRenderer.getMainCamera());
+            // if (this.count != 0) {
+                // this.palette.resolve(this.colorMode.get(), CosmeticAccent.argb(), this.bodyColor.argb(), this.auraColor.argb());
+                // this.canvas.begin(mc.gameRenderer.getMainCamera());
 
-                for (int n = 0; n < this.count; n++) {
-                    TotemSpiritModule.Spirit spirit = this.spirits[(this.head + n) % 12];
-                    if ((!spirit.mine || this.own.get()) && !(this.canvas.distanceSqr(spirit.x, spirit.y, spirit.z) > 9216.0)) {
-                        this.draw(spirit, Math.min(1.0F, (float)(now - spirit.born) / life));
-                    }
-                }
+                // for (int n = 0; n < this.count; n++) {
+                    // TotemSpiritModule.Spirit spirit = this.spirits[(this.head + n) % 12];
+                    // if ((!spirit.mine || this.own.get()) && !(this.canvas.distanceSqr(spirit.x, spirit.y, spirit.z) > 9216.0)) {
+                        // this.draw(spirit, Math.min(1.0F, (float)(now - spirit.born) / life));
+                    // }
+                // }
 
-                this.canvas.submit(this.throughWalls.get());
-            }
-        }
-    }
+                // this.canvas.submit(this.throughWalls.get());
+            // }
+        // }
+    // }
 
     private void draw(TotemSpiritModule.Spirit s, float t) {
         float alpha = this.opacity.get() * Math.min(1.0F, t / 0.06F);

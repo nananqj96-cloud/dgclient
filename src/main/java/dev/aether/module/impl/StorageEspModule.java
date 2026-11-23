@@ -261,58 +261,58 @@ public class StorageEspModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null) {
-            if (level.dimension() != this.shownDimension) {
-                this.rescan();
-            }
+        // ClientLevel level = Minecraft.getInstance().level;
+        // if (level != null) {
+            // if (level.dimension() != this.shownDimension) {
+                // this.rescan();
+            // }
 
-            if (event.packet instanceof ClientboundLevelChunkWithLightPacket packet) {
-                packet.getChunkData()
-                    .getBlockEntitiesTagsConsumer(packet.getX(), packet.getZ())
-                    .accept((pos, type, tag) -> this.found(pos, this.typeOf(type, tag)));
-                LevelChunk chunk = level.getChunkSource().getChunkNow(packet.getX(), packet.getZ());
-                if (chunk != null) {
-                    this.scanBlockEntities(chunk);
-                }
-            } else if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
-                this.blockChanged(packet.getPos(), packet.getBlockState());
-            } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
-                packet.runUpdates(this::blockChanged);
-            } else if (event.packet instanceof ClientboundLoginPacket) {
-                this.detections.clear();
-                this.layer.clear();
-            }
-        }
-    }
+            // if (event.packet instanceof ClientboundLevelChunkWithLightPacket packet) {
+                // packet.getChunkData()
+                    // .getBlockEntitiesTagsConsumer(packet.getX(), packet.getZ())
+                    // .accept((pos, type, tag) -> this.found(pos, this.typeOf(type, tag)));
+                // LevelChunk chunk = level.getChunkSource().getChunkNow(packet.getX(), packet.getZ());
+                // if (chunk != null) {
+                    // this.scanBlockEntities(chunk);
+                // }
+            // } else if (event.packet instanceof ClientboundBlockUpdatePacket packet) {
+                // this.blockChanged(packet.getPos(), packet.getBlockState());
+            // } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket packet) {
+                // packet.runUpdates(this::blockChanged);
+            // } else if (event.packet instanceof ClientboundLoginPacket) {
+                // this.detections.clear();
+                // this.layer.clear();
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        if (event.packet instanceof ClientboundBlockEntityDataPacket packet) {
-            BlockPos pos = packet.getPos();
-            StorageEspModule.Type type = this.typeOf(packet.getType(), packet.getTag());
-            if (type != null) {
-                Minecraft.getInstance().execute(() -> {
-                    if (this.isEnabled()) {
-                        this.found(pos, type);
-                    }
-                });
-            }
-        }
-    }
+        // if (event.packet instanceof ClientboundBlockEntityDataPacket packet) {
+            // BlockPos pos = packet.getPos();
+            // StorageEspModule.Type type = this.typeOf(packet.getType(), packet.getTag());
+            // if (type != null) {
+                // Minecraft.getInstance().execute(() -> {
+                    // if (this.isEnabled()) {
+                        // this.found(pos, type);
+                    // }
+                // });
+            // }
+        // }
+    // }
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level != null && level.dimension() != this.shownDimension) {
-            this.rescan();
-        }
+        // ClientLevel level = Minecraft.getInstance().level;
+        // if (level != null && level.dimension() != this.shownDimension) {
+            // this.rescan();
+        // }
 
-        this.layer.render(event, this.style);
-        if (this.anyTracer()) {
-            this.layer.renderTracers(this.style);
-        }
-    }
+        // this.layer.render(event, this.style);
+        // if (this.anyTracer()) {
+            // this.layer.renderTracers(this.style);
+        // }
+    // }
 
         private final class Type {
         final BooleanSetting enabled;

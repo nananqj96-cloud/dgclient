@@ -140,13 +140,13 @@ public class AhSniperModule extends Module {
 
 //     @EventHandler
 //     public void onPacket(PacketReceiveNettyEvent event) {
-        SniperBot current = this.bot;
-        if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
-            current.onChat(chat.content().getString());
-        }
-    }
+        // SniperBot current = this.bot;
+        // if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
+            // current.onChat(chat.content().getString());
+        // }
+    // }
 
 //     private void say(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 }

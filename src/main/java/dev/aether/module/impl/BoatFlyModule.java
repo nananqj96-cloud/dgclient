@@ -50,16 +50,16 @@ public class BoatFlyModule extends Module {
     }
 
 //     private void onPacketSend(PacketSendEvent event) {
-        if (this.antiKick.get() && event.packet instanceof ServerboundMoveVehiclePacket packet && this.antiKicker.onPacketSend(packet, this.delay.getInt())) {
-            event.setCancelled(true);
-        }
-    }
+        // if (this.antiKick.get() && event.packet instanceof ServerboundMoveVehiclePacket packet && this.antiKicker.onPacketSend(packet, this.delay.getInt())) {
+            // event.setCancelled(true);
+        // }
+    // }
 
 //     private void onPacketReceive(PacketReceiveNettyEvent event) {
-        if (this.cancelServerPackets.get() && event.packet instanceof ClientboundMoveVehiclePacket) {
-            event.setCancelled(true);
-        }
-    }
+        // if (this.cancelServerPackets.get() && event.packet instanceof ClientboundMoveVehiclePacket) {
+            // event.setCancelled(true);
+        // }
+    // }
 
     public void onVehicleSetback() {
         this.antiKicker.forget();

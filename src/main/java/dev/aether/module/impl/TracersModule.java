@@ -76,25 +76,25 @@ public class TracersModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (!mc.options.hideGui && this.style.is("Lines")) {
-            for (Entity entity : this.targets(mc)) {
-                int color = this.colorOf(mc, entity);
-                Vec3 feet = entity.getPosition(event.partialTick);
-                double height = entity.getBoundingBox().getYsize();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (!mc.options.hideGui && this.style.is("Lines")) {
+            // for (Entity entity : this.targets(mc)) {
+                // int color = this.colorOf(mc, entity);
+                // Vec3 feet = entity.getPosition(event.partialTick);
+                // double height = entity.getBoundingBox().getYsize();
 
-                double up = switch (this.target.get()) {
-                    case "Head" -> height;
-                    case "Body" -> height / 2.0;
-                    default -> 0.0;
-                };
-                TracerEngine.draw(feet.add(0.0, up, 0.0), color);
-                if (this.stem.get()) {
-                    TracerEngine.stem(feet, height, color);
-                }
-            }
-        }
-    }
+                // double up = switch (this.target.get()) {
+                    // case "Head" -> height;
+                    // case "Body" -> height / 2.0;
+                    // default -> 0.0;
+                // };
+                // TracerEngine.draw(feet.add(0.0, up, 0.0), color);
+                // if (this.stem.get()) {
+                    // TracerEngine.stem(feet, height, color);
+                // }
+            // }
+        // }
+    // }
 
     @Override
     public boolean isHudOverlayEnabled() {

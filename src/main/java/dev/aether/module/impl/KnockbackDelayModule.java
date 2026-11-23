@@ -49,29 +49,29 @@ public class KnockbackDelayModule extends Module {
 
 //     @EventHandler
 //     public void onPacketReceive(PacketReceiveNettyEvent event) {
-        LocalPlayer player = this.mc.player;
-        if (player != null && pushesMe(event.packet, player)) {
-            boolean waiting;
-            synchronized (this.held) {
-                waiting = !this.held.isEmpty();
-            }
+        // LocalPlayer player = this.mc.player;
+        // if (player != null && pushesMe(event.packet, player)) {
+            // boolean waiting;
+            // synchronized (this.held) {
+                // waiting = !this.held.isEmpty();
+            // }
 
-            if (waiting || this.delays(player)) {
-                boolean ground = player.onGround();
-                long wait = waiting ? 0L : randomBetween(ground ? this.groundMin.get() : this.airMin.get(), ground ? this.groundMax.get() : this.airMax.get());
-                synchronized (this.held) {
-                    if (this.held.isEmpty()) {
-                        this.heldFor = player.connection;
-                    }
+            // if (waiting || this.delays(player)) {
+                // boolean ground = player.onGround();
+                // long wait = waiting ? 0L : randomBetween(ground ? this.groundMin.get() : this.airMin.get(), ground ? this.groundMax.get() : this.airMax.get());
+                // synchronized (this.held) {
+                    // if (this.held.isEmpty()) {
+                        // this.heldFor = player.connection;
+                    // }
 
-                    long due = Math.max(System.currentTimeMillis() + wait, this.held.isEmpty() ? 0L : this.held.peekLast().due());
-                    this.held.addLast(new KnockbackDelayModule.Held(event.packet, due));
-                }
+                    // long due = Math.max(System.currentTimeMillis() + wait, this.held.isEmpty() ? 0L : this.held.peekLast().due());
+                    // this.held.addLast(new KnockbackDelayModule.Held(event.packet, due));
+                // }
 
-                event.setCancelled(true);
-            }
-        }
-    }
+                // event.setCancelled(true);
+            // }
+        // }
+    // }
 
     private static boolean pushesMe(Packet<?> packet, LocalPlayer player) {
         return packet instanceof ClientboundSetEntityMotionPacket motion

@@ -133,82 +133,82 @@ public class JesusModule extends Module {
     }
 
 //     private void captureMoveAliasing(PlayerMoveEvent event) {
-        this.moveIsVelocity = false;
-        if (this.ncpBypass.get()) {
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (player != null) {
-                Vec3 v = player.getDeltaMovement();
-                this.moveIsVelocity = v.x == event.x && v.y == event.y && v.z == event.z;
-            }
-        }
-    }
+        // this.moveIsVelocity = false;
+        // if (this.ncpBypass.get()) {
+            // LocalPlayer player = Minecraft.getInstance().player;
+            // if (player != null) {
+                // Vec3 v = player.getDeltaMovement();
+                // this.moveIsVelocity = v.x == event.x && v.y == event.y && v.z == event.z;
+            // }
+        // }
+    // }
 
 //     private void onMove(PlayerMoveEvent event) {
-        if (this.ncpBypass.get()) {
-            boolean aliased = this.moveIsVelocity;
-            this.moveIsVelocity = false;
-            Minecraft mc = Minecraft.getInstance();
-            LocalPlayer player = mc.player;
-            if (player != null && mc.level != null) {
-                int over = overLiquid(player);
-                boolean water = (over & 1) != 0 && this.waterShouldBeSolid(player);
-                boolean lava = (over & 2) != 0 && this.lavaShouldBeSolid(player);
-                if (!water && !lava) {
-                    this.swimmingTicks = 0;
-                } else if (++this.swimmingTicks < 15) {
-                    if (player.onGround()) {
-                        applyStrafe(mc, player, event, isMoving(player) ? 0.2873 : 0.0);
-                        if (aliased) {
-                            setVelocityXZ(player, event.x, event.z);
-                        }
-                    }
-                } else {
-                    this.swimmingTicks = 0;
-                    if (this.slowDown.get()) {
-                        event.x = 0.0;
-                        event.z = 0.0;
-                        if (aliased) {
-                            setVelocityXZ(player, 0.0, 0.0);
-                        }
-                    }
+        // if (this.ncpBypass.get()) {
+            // boolean aliased = this.moveIsVelocity;
+            // this.moveIsVelocity = false;
+            // Minecraft mc = Minecraft.getInstance();
+            // LocalPlayer player = mc.player;
+            // if (player != null && mc.level != null) {
+                // int over = overLiquid(player);
+                // boolean water = (over & 1) != 0 && this.waterShouldBeSolid(player);
+                // boolean lava = (over & 2) != 0 && this.lavaShouldBeSolid(player);
+                // if (!water && !lava) {
+                    // this.swimmingTicks = 0;
+                // } else if (++this.swimmingTicks < 15) {
+                    // if (player.onGround()) {
+                        // applyStrafe(mc, player, event, isMoving(player) ? 0.2873 : 0.0);
+                        // if (aliased) {
+                            // setVelocityXZ(player, event.x, event.z);
+                        // }
+                    // }
+                // } else {
+                    // this.swimmingTicks = 0;
+                    // if (this.slowDown.get()) {
+                        // event.x = 0.0;
+                        // event.z = 0.0;
+                        // if (aliased) {
+                            // setVelocityXZ(player, 0.0, 0.0);
+                        // }
+                    // }
 
-                    setVelocityY(player, 0.08);
-                    if (aliased) {
-                        event.y = 0.08;
-                    }
-                }
-            }
-        }
-    }
+                    // setVelocityY(player, 0.08);
+                    // if (aliased) {
+                        // event.y = 0.08;
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private static void setVelocityXZ(Entity entity, double x, double z) {
         entity.setDeltaMovement(x, entity.getDeltaMovement().y, z);
     }
 
 //     private void onPacketSend(PacketSendEvent event) {
-        if (event.packet instanceof ServerboundMovePlayerPacket packet) {
-            if (this.ncpBypass.get()) {
-                Minecraft mc = Minecraft.getInstance();
-                if (mc.isSameThread()) {
-                    LocalPlayer player = mc.player;
-                    if (player != null && mc.level != null) {
-                        if (!player.isInWater() || this.waterShouldBeSolid(player)) {
-                            if (!player.isInLava() || this.lavaShouldBeSolid(player)) {
-                                int over = overLiquid(player);
-                                boolean shouldWork = (over & 1) != 0 && this.waterShouldBeSolid(player) || (over & 2) != 0 && this.lavaShouldBeSolid(player);
-                                if (!player.isInWater() && !player.isInLava() && !(player.fallDistance > 3.0) && shouldWork) {
-                                    ((AccessorJesusServerboundMovePlayerPacket)packet).anubis$jesusSetOnGround(false);
-                                    if (player.onGround() && packet.hasPosition()) {
-                                        ((AccessorServerboundMovePlayerPacket)packet).anubis$setY(packet.getY(0.0) - (0.02 + 1.0E-4 * this.swimmingTicks));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+        // if (event.packet instanceof ServerboundMovePlayerPacket packet) {
+            // if (this.ncpBypass.get()) {
+                // Minecraft mc = Minecraft.getInstance();
+                // if (mc.isSameThread()) {
+                    // LocalPlayer player = mc.player;
+                    // if (player != null && mc.level != null) {
+                        // if (!player.isInWater() || this.waterShouldBeSolid(player)) {
+                            // if (!player.isInLava() || this.lavaShouldBeSolid(player)) {
+                                // int over = overLiquid(player);
+                                // boolean shouldWork = (over & 1) != 0 && this.waterShouldBeSolid(player) || (over & 2) != 0 && this.lavaShouldBeSolid(player);
+                                // if (!player.isInWater() && !player.isInLava() && !(player.fallDistance > 3.0) && shouldWork) {
+                                    // ((AccessorJesusServerboundMovePlayerPacket)packet).anubis$jesusSetOnGround(false);
+                                    // if (player.onGround() && packet.hasPosition()) {
+                                        // ((AccessorServerboundMovePlayerPacket)packet).anubis$setY(packet.getY(0.0) - (0.02 + 1.0E-4 * this.swimmingTicks));
+                                    // }
+                                // }
+                            // }
+                        // }
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private static boolean isMoving(LocalPlayer player) {
         return player.zza != 0.0F || player.xxa != 0.0F;

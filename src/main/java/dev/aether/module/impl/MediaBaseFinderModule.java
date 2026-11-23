@@ -93,16 +93,16 @@ public class MediaBaseFinderModule extends Module {
 
 //     @EventHandler
 //     public void onPacketSend(PacketSendEvent event) {
-        String command = event.packet instanceof ServerboundChatCommandPacket plain
-            ? plain.command()
-            : (event.packet instanceof ServerboundChatCommandSignedPacket signed ? signed.command() : null);
-        if (command != null) {
-            String text = command.trim().toLowerCase(Locale.ROOT);
-            if (text.equals("rtp") || text.startsWith("rtp ")) {
-                this.rtpAt = System.nanoTime();
-            }
-        }
-    }
+        // String command = event.packet instanceof ServerboundChatCommandPacket plain
+            // ? plain.command()
+            // : (event.packet instanceof ServerboundChatCommandSignedPacket signed ? signed.command() : null);
+        // if (command != null) {
+            // String text = command.trim().toLowerCase(Locale.ROOT);
+            // if (text.equals("rtp") || text.startsWith("rtp ")) {
+                // this.rtpAt = System.nanoTime();
+            // }
+        // }
+    // }
 
 //     @EventHandler(stage = Stage.POST)
     public void onTick() {
@@ -167,8 +167,8 @@ public class MediaBaseFinderModule extends Module {
 
 //     @EventHandler
 //     public void onPacketReceiveNetty(PacketReceiveNettyEvent event) {
-        this.collect(event.packet);
-    }
+        // this.collect(event.packet);
+    // }
 
     private void collect(Packet<?> packet) {
         if (!(packet instanceof ClientboundBundlePacket bundle)) {
@@ -311,6 +311,6 @@ public class MediaBaseFinderModule extends Module {
 
 //     @EventHandler
 //     public void onRender2D(Render2DEvent event) {
-        this.screenText.render(event.graphics);
-    }
+        // this.screenText.render(event.graphics);
+    // }
 }

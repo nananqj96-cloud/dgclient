@@ -136,52 +136,52 @@ public class NametagsModule extends Module {
 
 //     @EventHandler
 //     public void onRender2D(Render2DEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.player != null && !mc.options.hideGui) {
-            Camera camera = mc.gameRenderer.getMainCamera();
-            if (camera != null && camera.isInitialized()) {
-                float partialTick = event.partialTick;
-                Vec3 eye = mc.player.getEyePosition(partialTick);
-                double range = Math.max(1.0F, this.sRange.get());
-                double rangeSq = range * range;
-                int budget = Math.max(1, Math.min(64, this.sMaxTags.getInt()));
-                List<NametagsModule.Nearby> players = new ArrayList<>();
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.level != null && mc.player != null && !mc.options.hideGui) {
+            // Camera camera = mc.gameRenderer.getMainCamera();
+            // if (camera != null && camera.isInitialized()) {
+                // float partialTick = event.partialTick;
+                // Vec3 eye = mc.player.getEyePosition(partialTick);
+                // double range = Math.max(1.0F, this.sRange.get());
+                // double rangeSq = range * range;
+                // int budget = Math.max(1, Math.min(64, this.sMaxTags.getInt()));
+                // List<NametagsModule.Nearby> players = new ArrayList<>();
 
-                for (AbstractClientPlayer player : mc.level.players()) {
-                    if (player != mc.player && !player.isRemoved() && !player.isDeadOrDying()) {
-                        double distanceSq = player.getPosition(partialTick).distanceToSqr(eye);
-                        if (distanceSq <= rangeSq) {
-                            players.add(new NametagsModule.Nearby(player, distanceSq));
-                        }
-                    }
-                }
+                // for (AbstractClientPlayer player : mc.level.players()) {
+                    // if (player != mc.player && !player.isRemoved() && !player.isDeadOrDying()) {
+                        // double distanceSq = player.getPosition(partialTick).distanceToSqr(eye);
+                        // if (distanceSq <= rangeSq) {
+                            // players.add(new NametagsModule.Nearby(player, distanceSq));
+                        // }
+                    // }
+                // }
 
-                players = nearest(players, budget);
-                int itemBudget = budget - players.size();
-                List<NametagsModule.Nearby> items = new ArrayList<>();
-                if (this.sItems.get() && itemBudget > 0) {
-                    for (Entity entity : mc.level.entitiesForRendering()) {
-                        if (entity instanceof ItemEntity item && !item.isRemoved() && !item.getItem().isEmpty()) {
-                            double distanceSq = item.getPosition(partialTick).distanceToSqr(eye);
-                            if (distanceSq <= rangeSq) {
-                                items.add(new NametagsModule.Nearby(item, distanceSq));
-                            }
-                        }
-                    }
+                // players = nearest(players, budget);
+                // int itemBudget = budget - players.size();
+                // List<NametagsModule.Nearby> items = new ArrayList<>();
+                // if (this.sItems.get() && itemBudget > 0) {
+                    // for (Entity entity : mc.level.entitiesForRendering()) {
+                        // if (entity instanceof ItemEntity item && !item.isRemoved() && !item.getItem().isEmpty()) {
+                            // double distanceSq = item.getPosition(partialTick).distanceToSqr(eye);
+                            // if (distanceSq <= rangeSq) {
+                                // items.add(new NametagsModule.Nearby(item, distanceSq));
+                            // }
+                        // }
+                    // }
 
-                    items = nearest(items, itemBudget);
-                }
+                    // items = nearest(items, itemBudget);
+                // }
 
-                for (int i = items.size() - 1; i >= 0; i--) {
-                    this.renderItemTag(event.graphics, mc, camera, (ItemEntity)items.get(i).entity(), partialTick);
-                }
+                // for (int i = items.size() - 1; i >= 0; i--) {
+                    // this.renderItemTag(event.graphics, mc, camera, (ItemEntity)items.get(i).entity(), partialTick);
+                // }
 
-                for (int i = players.size() - 1; i >= 0; i--) {
-                    this.renderTag(event.graphics, mc, camera, (AbstractClientPlayer)players.get(i).entity(), partialTick);
-                }
-            }
-        }
-    }
+                // for (int i = players.size() - 1; i >= 0; i--) {
+                    // this.renderTag(event.graphics, mc, camera, (AbstractClientPlayer)players.get(i).entity(), partialTick);
+                // }
+            // }
+        // }
+    // }
 
     private static List<NametagsModule.Nearby> nearest(List<NametagsModule.Nearby> candidates, int limit) {
         candidates.sort(NEAREST);

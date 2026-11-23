@@ -244,27 +244,27 @@ public class SusChunkFinderModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        ClientLevel level = Minecraft.getInstance().level;
-        if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
-            if (level != null) {
-                this.serverLight.onChunk(level, chunk.getX(), chunk.getZ(), chunk.getLightData());
-            }
+        // ClientLevel level = Minecraft.getInstance().level;
+        // if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
+            // if (level != null) {
+                // this.serverLight.onChunk(level, chunk.getX(), chunk.getZ(), chunk.getLightData());
+            // }
 
-            this.enqueue(ChunkPos.asLong(chunk.getX(), chunk.getZ()));
-            this.markLightDirty(chunk.getX(), chunk.getZ());
-        } else if (event.packet instanceof ClientboundLightUpdatePacket light) {
-            if (level != null) {
-                this.serverLight.onLight(level, light.getX(), light.getZ(), light.getLightData());
-            }
+            // this.enqueue(ChunkPos.asLong(chunk.getX(), chunk.getZ()));
+            // this.markLightDirty(chunk.getX(), chunk.getZ());
+        // } else if (event.packet instanceof ClientboundLightUpdatePacket light) {
+            // if (level != null) {
+                // this.serverLight.onLight(level, light.getX(), light.getZ(), light.getLightData());
+            // }
 
-            this.markLightDirty(light.getX(), light.getZ());
-        }
-    }
+            // this.markLightDirty(light.getX(), light.getZ());
+        // }
+    // }
 
 //     @EventHandler
 //     public void onBlockUpdate(BlockUpdateEvent event) {
-        this.serverLight.onBlockChanged(event.pos);
-    }
+        // this.serverLight.onBlockChanged(event.pos);
+    // }
 
     private void markLightDirty(int chunkX, int chunkZ) {
         for (int dx = -1; dx <= 1; dx++) {
@@ -1071,18 +1071,18 @@ public class SusChunkFinderModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        if (Minecraft.getInstance().level != null) {
-            this.chunkOverlay.draw(this.visible.keySet(), this.chunkColor.argb(), event.partialTick);
-            if (this.tracers.get()) {
-                this.chunkAreas.drawTracers(this.visible.keySet(), 63.0, ARGB.opaque(this.chunkColor.argb()));
-            }
+        // if (Minecraft.getInstance().level != null) {
+            // this.chunkOverlay.draw(this.visible.keySet(), this.chunkColor.argb(), event.partialTick);
+            // if (this.tracers.get()) {
+                // this.chunkAreas.drawTracers(this.visible.keySet(), 63.0, ARGB.opaque(this.chunkColor.argb()));
+            // }
 
-            this.minedOverlay.draw(this.minedChunks, this.minedColor.argb(), event.partialTick);
-            if (this.tracers.get()) {
-                this.minedAreas.drawTracers(this.minedChunks, 63.0, ARGB.opaque(this.minedColor.argb()));
-            }
-        }
-    }
+            // this.minedOverlay.draw(this.minedChunks, this.minedColor.argb(), event.partialTick);
+            // if (this.tracers.get()) {
+                // this.minedAreas.drawTracers(this.minedChunks, 63.0, ARGB.opaque(this.minedColor.argb()));
+            // }
+        // }
+    // }
 
         private record ChunkScore(int[] grown, int ungrown, int lightClusters, int lightBuds) {
     }

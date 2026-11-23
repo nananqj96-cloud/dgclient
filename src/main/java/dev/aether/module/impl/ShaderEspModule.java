@@ -117,12 +117,12 @@ public class ShaderEspModule extends Module {
     }
 
 //     private void onRender3D(Render3DEvent event) {
-        this.pick(event.frustum);
+        // this.pick(event.frustum);
 //         this.pickedFrame = Render3DEvent.frame();
-        if (this.count > 0 && ShaderOverlay.shaderPackInUse()) {
-            this.sketch(event.partialTick);
-        }
-    }
+        // if (this.count > 0 && ShaderOverlay.shaderPackInUse()) {
+            // this.sketch(event.partialTick);
+        // }
+    // }
 
     private void present(Camera camera, Matrix4f viewRotation, Matrix4f projection) {
         int drawn = this.count;

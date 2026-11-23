@@ -87,53 +87,53 @@ public class CrystalOptimizerModule extends Module {
 
 //     @EventHandler
 //     public void onPacketReceive(PacketReceiveEvent event) {
-        if (event.packet instanceof ClientboundRemoveEntitiesPacket remove) {
-            for (int id : remove.getEntityIds()) {
-                this.ghosts.remove(id);
-                this.stubborn.remove(id);
-                if (this.pendingRemoval != null && this.pendingRemoval.getId() == id) {
-                    this.pendingRemoval = null;
-                }
+        // if (event.packet instanceof ClientboundRemoveEntitiesPacket remove) {
+            // for (int id : remove.getEntityIds()) {
+                // this.ghosts.remove(id);
+                // this.stubborn.remove(id);
+                // if (this.pendingRemoval != null && this.pendingRemoval.getId() == id) {
+                    // this.pendingRemoval = null;
+                // }
 
-                if (this.trackedLevel != null && this.trackedLevel.getEntity(id) instanceof EndCrystal) {
-                    this.serverRemoved.add(id);
-                }
-            }
-        }
-    }
+                // if (this.trackedLevel != null && this.trackedLevel.getEntity(id) instanceof EndCrystal) {
+                    // this.serverRemoved.add(id);
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler(priority = EventPriority.LOWEST)
 //     public void onPacketSend(PacketSendEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.isSameThread()) {
-            if (event.packet instanceof ServerboundInteractPacket interact) {
-                this.attackSent = this.attackProbe.isAttack(interact);
-            } else if (event.packet instanceof ServerboundSetCarriedItemPacket carried) {
-                LocalPlayer player = mc.player;
-                if (player != null && player == this.trackedPlayer && Inventory.isHotbarSlot(carried.getSlot())) {
-                    this.sample(player.getInventory().getItem(carried.getSlot()));
-                }
-            }
-        }
-    }
+        // Minecraft mc = Minecraft.getInstance();
+        // if (mc.isSameThread()) {
+            // if (event.packet instanceof ServerboundInteractPacket interact) {
+                // this.attackSent = this.attackProbe.isAttack(interact);
+            // } else if (event.packet instanceof ServerboundSetCarriedItemPacket carried) {
+                // LocalPlayer player = mc.player;
+                // if (player != null && player == this.trackedPlayer && Inventory.isHotbarSlot(carried.getSlot())) {
+                    // this.sample(player.getInventory().getItem(carried.getSlot()));
+                // }
+            // }
+        // }
+    // }
 
 //     @EventHandler(priority = EventPriority.LOWEST)
 //     public void onAttack(PlayerAttackEntityEvent event) {
-        boolean sent = this.attackSent;
-        this.attackSent = false;
-        if (sent && event.target instanceof EndCrystal crystal) {
-            Minecraft mc = Minecraft.getInstance();
-            LocalPlayer player = mc.player;
-            ClientLevel level = mc.level;
-            if (player != null && level != null && player == this.trackedPlayer && crystal.level() == level) {
-                if (!this.stubborn.contains(crystal.getId())
-                    && !this.serverRemoved.contains(crystal.getId())
-                    && this.breaksOnServer(mc, player, level, crystal)) {
-                    this.pendingRemoval = crystal;
-                }
-            }
-        }
-    }
+        // boolean sent = this.attackSent;
+        // this.attackSent = false;
+        // if (sent && event.target instanceof EndCrystal crystal) {
+            // Minecraft mc = Minecraft.getInstance();
+            // LocalPlayer player = mc.player;
+            // ClientLevel level = mc.level;
+            // if (player != null && level != null && player == this.trackedPlayer && crystal.level() == level) {
+                // if (!this.stubborn.contains(crystal.getId())
+                    // && !this.serverRemoved.contains(crystal.getId())
+                    // && this.breaksOnServer(mc, player, level, crystal)) {
+                    // this.pendingRemoval = crystal;
+                // }
+            // }
+        // }
+    // }
 
     private void restoreGhosts(Minecraft mc, LocalPlayer player, ClientLevel level) {
         if (!this.ghosts.isEmpty()) {

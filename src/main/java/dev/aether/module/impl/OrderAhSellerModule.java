@@ -162,11 +162,11 @@ public class OrderAhSellerModule extends Module {
 
 //     @EventHandler
 //     public void onPacket(PacketReceiveNettyEvent event) {
-        OrderAhBot current = this.bot;
-        if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
-            current.onChat(chat.content().getString());
-        }
-    }
+        // OrderAhBot current = this.bot;
+        // if (current != null && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
+            // current.onChat(chat.content().getString());
+        // }
+    // }
 
     private String validate() {
         int i = this.selected();
@@ -237,6 +237,6 @@ public class OrderAhSellerModule extends Module {
     }
 
 //     private void info(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 }

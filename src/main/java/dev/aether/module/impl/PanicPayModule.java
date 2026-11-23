@@ -133,48 +133,48 @@ public class PanicPayModule extends Module {
 
 //     @EventHandler
 //     public void onPacket(PacketReceiveNettyEvent event) {
-        if (this.running && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
-            String raw = chat.content().getString();
-            String line = ServerText.normalize(raw);
-            long now = System.currentTimeMillis();
-            Matcher wait = RATE_LIMIT.matcher(line);
-            if (wait.find()) {
-                try {
-                    this.holdUntil = now + (long)Math.ceil(Math.min(30.0, Double.parseDouble(wait.group(1))) * 1000.0) + 100L;
-                    this.limitedAt = now;
-                } catch (NumberFormatException ignored) {
-                }
-            } else {
-                if (line.startsWith("you paid ")) {
-                    this.paidText = line;
-                    this.paidAt = now;
-                } else if (line.contains("enough money")) {
-                    this.poorAt = now;
-                } else if (!line.startsWith("you have $") && (!line.startsWith("balance") || !line.contains("$"))) {
-                    if (line.contains("not online")
-                        || line.contains("not found")
-                        || line.contains("cannot pay")
-                        || line.contains("can't pay")
-                        || line.contains("not a valid")
-                        || line.contains("invalid")
-                        || line.contains("doesn't exist")
-                        || line.contains("does not exist")) {
-                        this.errorText = raw;
-                        this.errorAt = now;
-                    }
-                } else {
-                    String shown = line.substring(line.indexOf(36));
-                    List<Double> values = ServerText.moneyAll(shown);
-                    String token = ServerText.moneyToken(shown);
-                    if (!values.isEmpty() && token != null) {
-                        this.balance = values.get(0);
-                        this.balanceText = token;
-                        this.balanceAt = now;
-                    }
-                }
-            }
-        }
-    }
+        // if (this.running && event.packet instanceof ClientboundSystemChatPacket chat && chat.content() != null) {
+            // String raw = chat.content().getString();
+            // String line = ServerText.normalize(raw);
+            // long now = System.currentTimeMillis();
+            // Matcher wait = RATE_LIMIT.matcher(line);
+            // if (wait.find()) {
+                // try {
+                    // this.holdUntil = now + (long)Math.ceil(Math.min(30.0, Double.parseDouble(wait.group(1))) * 1000.0) + 100L;
+                    // this.limitedAt = now;
+                // } catch (NumberFormatException ignored) {
+                // }
+            // } else {
+                // if (line.startsWith("you paid ")) {
+                    // this.paidText = line;
+                    // this.paidAt = now;
+                // } else if (line.contains("enough money")) {
+                    // this.poorAt = now;
+                // } else if (!line.startsWith("you have $") && (!line.startsWith("balance") || !line.contains("$"))) {
+                    // if (line.contains("not online")
+                        // || line.contains("not found")
+                        // || line.contains("cannot pay")
+                        // || line.contains("can't pay")
+                        // || line.contains("not a valid")
+                        // || line.contains("invalid")
+                        // || line.contains("doesn't exist")
+                        // || line.contains("does not exist")) {
+                        // this.errorText = raw;
+                        // this.errorAt = now;
+                    // }
+                // } else {
+                    // String shown = line.substring(line.indexOf(36));
+                    // List<Double> values = ServerText.moneyAll(shown);
+                    // String token = ServerText.moneyToken(shown);
+                    // if (!values.isEmpty() && token != null) {
+                        // this.balance = values.get(0);
+                        // this.balanceText = token;
+                        // this.balanceAt = now;
+                    // }
+                // }
+            // }
+        // }
+    // }
 
     private void run(Gui gui, String target, boolean armor, boolean offhand) {
         gui.closeAll();
@@ -552,8 +552,8 @@ public class PanicPayModule extends Module {
     }
 
 //     private void say(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 
         private enum Payment {
         PAID,

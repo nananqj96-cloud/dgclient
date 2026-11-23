@@ -59,36 +59,36 @@ public class AutoWalkModule extends Module {
     }
 
 //     private void onKey(KeyInputEvent event) {
-        if (event.action == 1 && this.disableOnInput.get()) {
-            if (event.key != -1) {
-                Options options = Minecraft.getInstance().options;
-                KeyEvent key = new KeyEvent(event.key, event.scancode, event.mods);
-                if (options.keyUp.matches(key)
-                    || options.keyDown.matches(key)
-                    || options.keyLeft.matches(key)
-                    || options.keyRight.matches(key)
-                    || options.keyShift.matches(key)
-                    || options.keyJump.matches(key)) {
-                    this.onMovementInput();
-                }
-            }
-        }
-    }
+        // if (event.action == 1 && this.disableOnInput.get()) {
+            // if (event.key != -1) {
+                // Options options = Minecraft.getInstance().options;
+                // KeyEvent key = new KeyEvent(event.key, event.scancode, event.mods);
+                // if (options.keyUp.matches(key)
+                    // || options.keyDown.matches(key)
+                    // || options.keyLeft.matches(key)
+                    // || options.keyRight.matches(key)
+                    // || options.keyShift.matches(key)
+                    // || options.keyJump.matches(key)) {
+                    // this.onMovementInput();
+                // }
+            // }
+        // }
+    // }
 
 //     private void onMouseButton(MouseInputEvent event) {
-        if (event.action == 1 && this.disableOnInput.get()) {
-            Options options = Minecraft.getInstance().options;
-            MouseButtonEvent click = new MouseButtonEvent(0.0, 0.0, new MouseButtonInfo(event.button, event.mods));
-            if (options.keyUp.matchesMouse(click)
-                || options.keyDown.matchesMouse(click)
-                || options.keyLeft.matchesMouse(click)
-                || options.keyRight.matchesMouse(click)
-                || options.keyShift.matchesMouse(click)
-                || options.keyJump.matchesMouse(click)) {
-                this.onMovementInput();
-            }
-        }
-    }
+        // if (event.action == 1 && this.disableOnInput.get()) {
+            // Options options = Minecraft.getInstance().options;
+            // MouseButtonEvent click = new MouseButtonEvent(0.0, 0.0, new MouseButtonInfo(event.button, event.mods));
+            // if (options.keyUp.matchesMouse(click)
+                // || options.keyDown.matchesMouse(click)
+                // || options.keyLeft.matchesMouse(click)
+                // || options.keyRight.matchesMouse(click)
+                // || options.keyShift.matchesMouse(click)
+                // || options.keyJump.matchesMouse(click)) {
+                // this.onMovementInput();
+            // }
+        // }
+    // }
 
     private void onMovementInput() {
         if (Minecraft.getInstance().screen == null) {
@@ -97,20 +97,20 @@ public class AutoWalkModule extends Module {
     }
 
 //     private void onPlayerMove(PlayerMoveEvent event) {
-        if (this.waitForChunks.get()) {
-            Minecraft mc = Minecraft.getInstance();
-            LocalPlayer player = mc.player;
-            ClientLevel level = mc.level;
-            if (player != null && level != null) {
-                int chunkX = SectionPos.blockToSectionCoord(player.getX() + event.x * 2.0);
-                int chunkZ = SectionPos.blockToSectionCoord(player.getZ() + event.z * 2.0);
-                if (!level.getChunkSource().hasChunk(chunkX, chunkZ)) {
-                    event.x = 0.0;
-                    event.z = 0.0;
-                }
-            }
-        }
-    }
+        // if (this.waitForChunks.get()) {
+            // Minecraft mc = Minecraft.getInstance();
+            // LocalPlayer player = mc.player;
+            // ClientLevel level = mc.level;
+            // if (player != null && level != null) {
+                // int chunkX = SectionPos.blockToSectionCoord(player.getX() + event.x * 2.0);
+                // int chunkZ = SectionPos.blockToSectionCoord(player.getZ() + event.z * 2.0);
+                // if (!level.getChunkSource().hasChunk(chunkX, chunkZ)) {
+                    // event.x = 0.0;
+                    // event.z = 0.0;
+                // }
+            // }
+        // }
+    // }
 
     private KeyMapping keyFor(Options options) {
         return switch (this.direction.get()) {

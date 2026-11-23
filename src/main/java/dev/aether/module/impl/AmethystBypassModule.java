@@ -222,26 +222,26 @@ public class AmethystBypassModule extends Module {
 
 //     @EventHandler
 //     public void onPacketApplied(PacketAppliedEvent event) {
-        if (!this.method.is("Bypass")) {
-            if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
-                this.dirtyAround(chunk.getX(), chunk.getZ());
-            } else if (event.packet instanceof ClientboundLightUpdatePacket light) {
-                this.dirtyAround(light.getX(), light.getZ());
-            } else if (event.packet instanceof ClientboundBlockUpdatePacket update) {
-                this.dirtyAround(update.getPos().getX() >> 4, update.getPos().getZ() >> 4);
-            } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket sectionUpdate) {
-                sectionUpdate.runUpdates((pos, state) -> this.dirtyAround(pos.getX() >> 4, pos.getZ() >> 4));
-            }
-        } else {
-            if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
-                this.dirtyBypassChunk(chunk.getX(), chunk.getZ());
-            } else if (event.packet instanceof ClientboundBlockUpdatePacket update) {
-                this.dirtyBypassChunk(update.getPos().getX() >> 4, update.getPos().getZ() >> 4);
-            } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket sectionUpdate) {
-                sectionUpdate.runUpdates((pos, state) -> this.dirtyBypassChunk(pos.getX() >> 4, pos.getZ() >> 4));
-            }
-        }
-    }
+        // if (!this.method.is("Bypass")) {
+            // if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
+                // this.dirtyAround(chunk.getX(), chunk.getZ());
+            // } else if (event.packet instanceof ClientboundLightUpdatePacket light) {
+                // this.dirtyAround(light.getX(), light.getZ());
+            // } else if (event.packet instanceof ClientboundBlockUpdatePacket update) {
+                // this.dirtyAround(update.getPos().getX() >> 4, update.getPos().getZ() >> 4);
+            // } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket sectionUpdate) {
+                // sectionUpdate.runUpdates((pos, state) -> this.dirtyAround(pos.getX() >> 4, pos.getZ() >> 4));
+            // }
+        // } else {
+            // if (event.packet instanceof ClientboundLevelChunkWithLightPacket chunk) {
+                // this.dirtyBypassChunk(chunk.getX(), chunk.getZ());
+            // } else if (event.packet instanceof ClientboundBlockUpdatePacket update) {
+                // this.dirtyBypassChunk(update.getPos().getX() >> 4, update.getPos().getZ() >> 4);
+            // } else if (event.packet instanceof ClientboundSectionBlocksUpdatePacket sectionUpdate) {
+                // sectionUpdate.runUpdates((pos, state) -> this.dirtyBypassChunk(pos.getX() >> 4, pos.getZ() >> 4));
+            // }
+        // }
+    // }
 
     private void dirtyAround(int chunkX, int chunkZ) {
         for (int dx = -1; dx <= 1; dx++) {
@@ -339,25 +339,25 @@ public class AmethystBypassModule extends Module {
 
 //     @EventHandler
 //     public void onRender3D(Render3DEvent event) {
-        ClientLevel level = Minecraft.getInstance().level;
-        long[] current = this.hits;
-        if (level != null && current.length != 0) {
-            GizmoStyle style = GizmoStyle.strokeAndFill(-3636481, 1.5F, -3636481);
-            boolean drawTracers = this.tracer.get();
+        // ClientLevel level = Minecraft.getInstance().level;
+        // long[] current = this.hits;
+        // if (level != null && current.length != 0) {
+            // GizmoStyle style = GizmoStyle.strokeAndFill(-3636481, 1.5F, -3636481);
+            // boolean drawTracers = this.tracer.get();
 
-            for (long packed : current) {
-                BlockPos pos = BlockPos.of(packed);
-                if (LevelUtil.isLoaded(level, pos.getX() >> 4, pos.getZ() >> 4)) {
-                    AABB box = new AABB(pos);
-                    if (event.frustum == null || event.frustum.isVisible(box)) {
-                        Gizmos.cuboid(box, style).setAlwaysOnTop();
-                    }
+            // for (long packed : current) {
+                // BlockPos pos = BlockPos.of(packed);
+                // if (LevelUtil.isLoaded(level, pos.getX() >> 4, pos.getZ() >> 4)) {
+                    // AABB box = new AABB(pos);
+                    // if (event.frustum == null || event.frustum.isVisible(box)) {
+                        // Gizmos.cuboid(box, style).setAlwaysOnTop();
+                    // }
 
-                    if (drawTracers) {
-                        TracerEngine.draw(Vec3.atCenterOf(pos), -3636481);
-                    }
-                }
-            }
-        }
-    }
+                    // if (drawTracers) {
+                        // TracerEngine.draw(Vec3.atCenterOf(pos), -3636481);
+                    // }
+                // }
+            // }
+        // }
+    // }
 }

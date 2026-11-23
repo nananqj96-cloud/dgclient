@@ -223,6 +223,6 @@ public class OrderDropperModule extends Module {
     }
 
 //     private void say(ModuleChat.Body body) {
-        AetherClient.chat(this, body);
-    }
+        // AetherClient.chat(this, body);
+    // }
 }
