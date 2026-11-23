@@ -3,7 +3,7 @@ package dev.aether.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
-import com.mojang.math.Vector3f;
+import org.joml.Vector3f;
 import net.minecraft.world.phys.Vec3;
 
 public final class HitParticleRenderer {
