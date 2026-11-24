@@ -84,7 +84,7 @@ public class EspModule extends Module {
     }
 
     private Map<Entity, Integer> glowing() {
-//         long frame = Render3DEvent.frame();
+        long frame = System.nanoTime();
         if (frame != this.glowFrame) {
             this.glowFrame = frame;
             this.glowing.clear();
