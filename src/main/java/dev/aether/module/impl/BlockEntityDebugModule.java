@@ -44,8 +44,6 @@ public class BlockEntityDebugModule extends Module {
     }
 
     @Override
-
-    @Override
     protected void onEnable() {
     }
 

@@ -50,7 +50,8 @@ public class AutoRelogModule extends Module {
         this.disconnected = false;
     }
 
-    private void onTick() {
+    @Override
+    public void onTick() {
         Minecraft mc = Minecraft.getInstance();
         if (this.rejoin != null) {
             this.waitToRejoin(mc);
@@ -64,7 +65,7 @@ public class AutoRelogModule extends Module {
                     this.aboveTicks = 0;
                 }
 
-                if (!LevelUtil.isOverworld(level)) {
+                if (!level.dimension().getPath().equals("overworld")) {
                     this.aboveTicks = 0;
                 } else {
                     double y = player.getY();
@@ -93,7 +94,7 @@ public class AutoRelogModule extends Module {
             LOGGER.info("[Anubis] Auto Relog: reached Y {}, relogging", (int)Math.floor(y));
             this.rejoin = server;
             this.disconnected = false;
-            this.rejoinTicks = Math.round(this.delay.get() * 20.0F);
+            this.rejoinTicks = (int) Math.round(this.delay.get() * 20.0F);
             mc.schedule(() -> {
                 if (this.rejoin == server && mc.level != null) {
                     mc.disconnectFromWorld(ClientLevel.DEFAULT_QUIT_MESSAGE);

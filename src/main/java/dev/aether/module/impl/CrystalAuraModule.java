@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 
 public class CrystalAuraModule extends Module {
     private final BooleanSetting requireHold = this.addSetting(new BooleanSetting("Require Hold", "Require Hold", false));
-    private final KeybindSetting holdKey = this.addSetting(new KeybindSetting("Hold Key", 1003));
+    private final KeybindSetting holdKey = this.addSetting(new KeybindSetting("Hold Key", "Hold Key", 1003));
     private final SliderSetting placeDelay = this.addSetting(new SliderSetting("Place Delay", "Place Delay", 0.0, 0.0, 10.0, 1.0F));
     private final SliderSetting breakDelay = this.addSetting(new SliderSetting("Break Delay", "Break Delay", 0.0, 0.0, 10.0, 1.0F));
     private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", "Min Damage", 4.0, 0.0, 20.0, 0.5F));

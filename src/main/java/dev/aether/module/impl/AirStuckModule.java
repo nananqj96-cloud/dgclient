@@ -13,8 +13,6 @@ public class AirStuckModule extends Module {
     }
 
     @Override
-
-    @Override
     protected void onEnable() {
         active = this;
     }
