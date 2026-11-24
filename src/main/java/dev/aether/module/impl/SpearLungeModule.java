@@ -17,7 +17,7 @@ public class SpearLungeModule extends Module {
     }
 
     @Override
-    public void onKeyPress(int keyCode) {
+    public boolean onKeyPress(int keyCode) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null || mc.level == null) {
@@ -25,6 +25,7 @@ public class SpearLungeModule extends Module {
         }
         // Spear lunge logic stub - core key binding and swap functionality
         // preserved as module registration; detailed logic disabled
+        return false;
     }
 
     public boolean getReachPoke() {

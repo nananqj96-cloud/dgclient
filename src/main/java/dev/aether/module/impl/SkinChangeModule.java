@@ -15,6 +15,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import dev.aether.settings.StringSetting;
 import dev.aether.module.Module;
 import dev.aether.module.Category;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,9 @@ public class SkinChangeModule extends Module {
     private boolean othersLoading;
     private final SkinChangeModule.SwapCache selfSwaps = new SkinChangeModule.SwapCache();
     private final SkinChangeModule.SwapCache othersSwaps = new SkinChangeModule.SwapCache();
+
+    private final StringSetting selfPlayerSetting = this.addSetting(new StringSetting("Self Player", "Self Player", ""));
+    private final StringSetting othersPlayerSetting = this.addSetting(new StringSetting("Others Player", "Others Player", ""));
 
     public SkinChangeModule() {
         super("skin-change", "Wear any player's skin client-side.", Category.MISC);

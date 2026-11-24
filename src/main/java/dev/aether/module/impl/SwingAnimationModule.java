@@ -49,7 +49,7 @@ public class SwingAnimationModule extends Module {
     }
 
     private void cacheStyle() {
-        this.styleIndex = Math.max(0, this.style.modes().indexOf(this.style.get()));
+        this.styleIndex = Math.max(0, this.style.getModes().indexOf(this.style.get()));
     }
 
     public void latch() {
@@ -57,9 +57,7 @@ public class SwingAnimationModule extends Module {
     }
 
     private static boolean inCombat() {
-        if (CombatTarget.lastHit(3000L) != null) {
-            return true;
-        }
+        // CombatTarget stub - Anubis-internal combat tracking disabled
 
         Entity looked = Minecraft.getInstance().crosshairPickEntity;
         return (looked instanceof Player || looked instanceof Enemy) && looked.isAlive();
@@ -70,7 +68,7 @@ public class SwingAnimationModule extends Module {
     }
 
     public int swingTicks(int ticks) {
-        return !this.styled ? ticks : Math.max(1, Math.round(ticks / this.tempo.get()));
+        return !this.styled ? ticks : Math.max(1, (int) Math.round(ticks / this.tempo.get()));
     }
 
     public void pose(PoseStack pose, float progress, int side) {
