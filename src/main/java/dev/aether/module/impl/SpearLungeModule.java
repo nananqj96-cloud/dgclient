@@ -21,7 +21,7 @@ public class SpearLungeModule extends Module {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null || mc.level == null) {
-            return;
+            return false;
         }
         // Spear lunge logic stub - core key binding and swap functionality
         // preserved as module registration; detailed logic disabled

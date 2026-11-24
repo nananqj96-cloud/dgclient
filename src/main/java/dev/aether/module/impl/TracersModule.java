@@ -40,7 +40,7 @@ public class TracersModule extends Module {
         }
         Vec3 camera = mc.gameRenderer.getMainCamera().position();
         double maxSq = this.maxDistance.get() * this.maxDistance.get();
-        for (Entity entity : mc.level.getAllEntities()) {
+        for (Entity entity : mc.level.entitiesForRendering()) {
             if (entity == null || entity.isRemoved() || entity == player) {
                 continue;
             }

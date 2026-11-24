@@ -36,7 +36,7 @@ public class TrajectoriesModule extends Module {
             return;
         }
         // Track nearby projectiles
-        for (Projectile shot : mc.level.getAllEntities()) {
+        for (Projectile shot : mc.level.entitiesForRendering()) {
             if (shot == null || shot.isRemoved()) {
                 continue;
             }

@@ -11,7 +11,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.item.ItemStack;
 
 public class WeaponInspectModule extends Module {
-    private final KeybindSetting key = this.addSetting(new KeybindSetting("Inspect Key", 70));
+    private final KeybindSetting key = this.addSetting(new KeybindSetting("Inspect Key", "Inspect Key", 70));
     private final ModeSetting skin = this.addSetting(new ModeSetting("Knife Skin", "Knife Skin", "Butterfly", "None", "Butterfly", "Karambit", "Katana"));
     private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Classic", "Classic", "Twirl"));
     private final ModeSetting items = this.addSetting(new ModeSetting("Items", "Items", "Swords", "Swords", "Weapons", "Any Item"));
