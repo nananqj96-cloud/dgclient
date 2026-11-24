@@ -3,7 +3,6 @@ package dev.aether.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import dev.aether.AetherClient;
 import dev.aether.module.ModuleManager;
-import dev.aether.module.impl.FreecamModule;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,9 +20,7 @@ public class GuiCrosshairMixin {
    )
    private void aetherclient$hideVanillaCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
       ModuleManager modules = AetherClient.modules();
-      if (modules != null && modules.customCrosshair != null && modules.customCrosshair.shouldHideVanilla()) {
-         ci.cancel();
-      }
+      // customCrosshair.shouldHideVanilla stub removed - Anubis-internal API
    }
 
    @ModifyExpressionValue(
@@ -34,7 +31,6 @@ public class GuiCrosshairMixin {
       )}
    )
    private boolean aetherclient$freecamCrosshairInThirdPerson(boolean isFirstPerson) {
-      FreecamModule freecam = FreecamModule.get();
-      return freecam != null && freecam.isActive() && freecam.isShowPlayerModel() && !isFirstPerson ? true : isFirstPerson;
+      return isFirstPerson;
    }
 }

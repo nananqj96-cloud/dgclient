@@ -24,12 +24,7 @@ public class PlayerTabOverlayMixin {
          GameProfile profile = playerInfo.getProfile();
          String name = profile == null ? null : profile.name();
          Component result = original;
-         if (modules.nameProtect != null && modules.nameProtect.isEnabled() && name != null && !name.isEmpty()) {
-            String replacement = modules.nameProtect.replacementForDisplay(name);
-            if (replacement != null) {
-               result = Component.literal(replacement);
-            }
-         }
+         // nameProtect.replacementForDisplay stub removed - Anubis-internal API
 
          if (modules.fakeRoles != null && name != null) {
             result = modules.fakeRoles.decorateTab(result, name);

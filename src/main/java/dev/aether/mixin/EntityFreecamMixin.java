@@ -1,6 +1,5 @@
 package dev.aether.mixin;
 
-import dev.aether.module.impl.FreecamModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -20,10 +19,7 @@ public class EntityFreecamMixin {
       Entity self = (Entity)(Object)this;
       Minecraft mc = Minecraft.getInstance();
       if (mc.player != null && self == mc.player && viewer == mc.player) {
-         FreecamModule freecam = FreecamModule.get();
-         if (freecam != null && freecam.isActive() && freecam.isShowPlayerModel()) {
-            cir.setReturnValue(false);
-         }
+         // Freecam isShowPlayerModel stub removed - Anubis-internal API
       }
    }
 }
