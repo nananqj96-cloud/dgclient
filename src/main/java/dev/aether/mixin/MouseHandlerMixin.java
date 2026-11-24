@@ -28,11 +28,7 @@ public class MouseHandlerMixin {
       at = {@At("HEAD")}
    )
    private void aetherclient$aimAssist(double var1, CallbackInfo var3) {
-      ModuleManager var4 = AetherClient.modules();
       // Aim assist computePixels stub - Anubis-internal API disabled
-            this.accumulatedDY = this.accumulatedDY + var5[1];
-         }
-      }
    }
 
    @Inject(
@@ -79,17 +75,8 @@ public class MouseHandlerMixin {
       )}
    )
    private Object aetherclient$zoomSensitivity(Object var1) {
-      ModuleManager var2 = AetherClient.modules();
       // Zoom currentFactor stub - Anubis-internal API disabled
-         } else {
-            double var6 = var3 * 0.6 + 0.2;
-            double var8 = var6 / Math.cbrt(var4);
-            double var10 = (var8 - 0.2) / 0.6;
-            return Math.max(0.0, var10);
-         }
-      } else {
-         return var1;
-      }
+      return var1;
    }
 
    @Inject(
