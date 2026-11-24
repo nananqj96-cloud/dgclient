@@ -65,7 +65,7 @@ public class AutoRelogModule extends Module {
                     this.aboveTicks = 0;
                 }
 
-                if (!level.dimension().getPath().equals("overworld")) {
+                if (player.getY() < this.yLevel.get()) {
                     this.aboveTicks = 0;
                 } else {
                     double y = player.getY();

@@ -21,7 +21,7 @@ public class CrystalAuraModule extends Module {
     private final SliderSetting minDamage = this.addSetting(new SliderSetting("Min Damage", "Min Damage", 4.0, 0.0, 20.0, 0.5F));
     private final SliderSetting maxSelfDamage = this.addSetting(new SliderSetting("Max Self Damage", "Max Self Damage", 8.0, 0.0, 20.0, 0.5F));
     private final BooleanSetting facePlace = this.addSetting(new BooleanSetting("Face Place", "Face Place", true));
-    private final KeybindSetting forceFacePlace = this.addSetting(new KeybindSetting("Force Face Place", -1));
+    private final KeybindSetting forceFacePlace = this.addSetting(new KeybindSetting("Force Face Place", "Force Face Place", -1));
     private final BooleanSetting autoObsidian = this.addSetting(new BooleanSetting("Auto Obsidian", "Auto Obsidian", true));
     private final BooleanSetting switchBack = this.addSetting(new BooleanSetting("Switch Back", "Switch Back", true));
 
