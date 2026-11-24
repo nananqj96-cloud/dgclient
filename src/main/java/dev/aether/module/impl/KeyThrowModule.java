@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class KeyThrowModule extends Module {
-    private final KeybindSetting pearlKey = this.addSetting(new KeybindSetting("Pearl Key", -1));
-    private final KeybindSetting windChargeKey = this.addSetting(new KeybindSetting("Wind Charge Key", -1));
+    private final KeybindSetting pearlKey = this.addSetting(new KeybindSetting("Pearl Key", "Pearl Key", -1));
+    private final KeybindSetting windChargeKey = this.addSetting(new KeybindSetting("Wind Charge Key", "Wind Charge Key", -1));
     private int originalSlot = -1;
 
     public KeyThrowModule() {
@@ -56,7 +56,7 @@ public class KeyThrowModule extends Module {
 
     private void swapAndThrow(LocalPlayer player, int slot, InteractionHand hand) {
         int selected = player.getInventory().getSelected();
-        player.getInventory().swapItem(slot, selected);
+        player.getInventory().setSelectedSlot(slot);
         player.swing(hand);
         this.originalSlot = selected;
     }
@@ -67,7 +67,7 @@ public class KeyThrowModule extends Module {
             Minecraft mc = Minecraft.getInstance();
             LocalPlayer player = mc.player;
             if (player != null && player.getInventory() != null) {
-                player.getInventory().setSelected(this.originalSlot);
+                player.getInventory().setSelectedSlot(this.originalSlot);
                 this.originalSlot = -1;
             }
         }

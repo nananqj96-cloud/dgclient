@@ -187,12 +187,12 @@ public class LegitAutoToolModule extends Module {
             return false;
         }
 
-        if (AntiVanishText.normalize(stack.getHoverName().getString()).contains("shard pickaxe")) {
+        if (stack.getHoverName().getString().toLowerCase().contains("shard pickaxe")) {
             return true;
         }
 
         for (Component line : stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY).lines()) {
-            if (AntiVanishText.normalize(line.getString()).contains("breaks 9 blocks at once")) {
+            if (line.getString().toLowerCase().contains("breaks 9 blocks at once")) {
                 return true;
             }
         }
