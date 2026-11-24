@@ -11,6 +11,7 @@ import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.FluidTypes;
 
 public class JesusModule extends Module {
     public static volatile JesusModule active;
@@ -51,7 +52,7 @@ public class JesusModule extends Module {
         boolean inBoat = vehicle instanceof AbstractBoat;
         FluidState fluid = player.level().getFluidState(player.blockPosition());
 
-        boolean inLiquid = fluid.is(Blocks.WATER) || fluid.is(Blocks.LAVA);
+        boolean inLiquid = fluid.is(FluidTypes.WATER) || fluid.is(FluidTypes.LAVA);
         if (!inLiquid && !inBoat) {
             return;
         }

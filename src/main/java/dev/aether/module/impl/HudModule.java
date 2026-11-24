@@ -44,11 +44,6 @@ public class HudModule extends Module {
         this.cooldownDial.visibleWhen(this.itemCooldowns::get);
     }
 
-    @Override
-    public boolean enabledByDefault() {
-        return true;
-    }
-
     public boolean coordinates() {
         return this.coordinates.get();
     }
