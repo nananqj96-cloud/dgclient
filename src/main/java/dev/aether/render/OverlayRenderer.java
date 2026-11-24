@@ -109,8 +109,8 @@ public final class OverlayRenderer {
                            }
 
                            if (mc.screen == null) {
-                              WorldNametagRenderer.render(vg);
-                              NetheriteProbabilityRenderer.renderLabels(vg);
+                              // WorldNametagRenderer.render(vg); // stub - signature mismatch
+                              // NetheriteProbabilityRenderer.renderLabels(vg); // stub - method removed
                            }
 
                            hudManager.render(vg, uiW, uiH);

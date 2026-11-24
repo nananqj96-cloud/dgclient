@@ -19,7 +19,7 @@ public final class WaypointsRenderer {
    }
 
    public static void render(BufferSource bufferSource, PoseStack poseStack, Vec3 cam, WaypointsModule module) {
-      if (module.waypoints().isEmpty()) {
+      if (module.getWaypoints().isEmpty()) {
          return;
       }
       Minecraft mc = Minecraft.getInstance();
@@ -39,7 +39,7 @@ public final class WaypointsRenderer {
       VertexConsumer fill = bufferSource.getBuffer(FlatOverlay.FILL);
       VertexConsumer lines = bufferSource.getBuffer(FlatOverlay.LINES);
 
-      for (WaypointsModule.Waypoint wp : module.waypoints()) {
+      for (WaypointsModule.Waypoint wp : module.getWaypoints()) {
          float ax = (float) (wp.x() - cam.x());
          float ay = (float) (wp.y() - cam.y());
          float az = (float) (wp.z() - cam.z());
