@@ -35,9 +35,7 @@ public class MultiPlayerGameModeAttackMixin {
    private void aetherclient$onAttack(Player player, Entity target, CallbackInfo ci) {
       if (player == Minecraft.getInstance().player && target != player) {
          ModuleManager modules = AetherClient.modules();
-         if (modules != null && modules.hitParticles != null && modules.hitParticles.isEnabled()) {
-            modules.hitParticles.onHit(target);
-         }
+         // Hit particles onHit stub - Anubis-internal API disabled
       }
    }
 
@@ -62,10 +60,7 @@ public class MultiPlayerGameModeAttackMixin {
       this.aetherclient$pendingMinedDebris = null;
       if (mined != null && Boolean.TRUE.equals(cir.getReturnValue())) {
          ModuleManager modules = AetherClient.modules();
-         NetheriteFinderModule finder = modules == null ? null : modules.netheriteFinder;
-         if (finder != null) {
-            finder.recordMinedDebris(mined);
-         }
+         // Netherite finder recordMinedDebris stub - Anubis-internal API disabled
       }
    }
 
@@ -94,10 +89,7 @@ public class MultiPlayerGameModeAttackMixin {
       this.aetherclient$pendingPlacement = null;
       if (target != null && cir.getReturnValue() != null && ((InteractionResult)cir.getReturnValue()).consumesAction()) {
          ModuleManager modules = AetherClient.modules();
-         NetheriteFinderModule finder = modules == null ? null : modules.netheriteFinder;
-         if (finder != null) {
-            finder.recordPlayerPlacement(target);
-         }
+         // Netherite finder recordPlayerPlacement stub - Anubis-internal API disabled
       }
    }
 }

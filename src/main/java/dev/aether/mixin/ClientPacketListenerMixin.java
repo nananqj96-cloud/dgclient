@@ -66,13 +66,8 @@ public class ClientPacketListenerMixin {
       at = {@At("TAIL")}
    )
    private void aetherclient$blockEntityChunk(ClientboundLevelChunkWithLightPacket var1, CallbackInfo var2) {
-      BlockEspRenderer.markChunkDirty(var1.getX(), var1.getZ());
       ClusterEspRenderer.markChunkDirty(var1.getX(), var1.getZ());
       StorageEspRenderer.markChunkDirty(var1.getX(), var1.getZ());
-      ModuleManager var3 = AetherClient.modules();
-      if (var3 != null && var3.spawnerNametags != null && var3.spawnerNametags.isEnabled()) {
-         var3.spawnerNametags.markChunkDirty(var1.getX(), var1.getZ());
-      }
 
       markSusChunkDirty(var1.getX(), var1.getZ());
    }
@@ -105,10 +100,6 @@ public class ClientPacketListenerMixin {
    }
 
    private static void markSpawnerNotifierDirty() {
-      ModuleManager var0 = AetherClient.modules();
-      if (var0 != null && var0.spawnerNametags != null && var0.spawnerNametags.isEnabled()) {
-         var0.spawnerNametags.markDirty();
-      }
    }
 
    @Inject(

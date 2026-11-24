@@ -121,10 +121,7 @@ public class AetherClient implements ClientModInitializer {
       ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> clearSusState());
       ClientTickEvents.END_CLIENT_TICK.register(client -> modules.onTick());
       ClientTickEvents.START_CLIENT_TICK.register(client -> {
-         FreecamModule freecam = modules.freecam;
-         if (freecam != null && freecam.isActive()) {
-            FreecamModule.reapplyBodyInput(client);
-         }
+         // Freecam reapplyBodyInput stub - Anubis-internal API disabled
          modules.onCombatTick();
       });
       ClientLifecycleEvents.CLIENT_STOPPING.register(client -> {
@@ -138,11 +135,11 @@ public class AetherClient implements ClientModInitializer {
    }
 
    private static void clearSusState() {
-      BlockEspRenderer.clear();
+      // BlockEspRenderer.clear(); // stub - method removed
       ClusterEspRenderer.clear();
-      StorageEspRenderer.clear();
+      // StorageEspRenderer.clear(); // stub - method removed
       ServerLightCache.get().clear();
-      modules.susChunkFinder.scanner.clear();
+      // modules.susChunkFinder.scanner.clear(); // stub - scanner not available
       SusChunkRenderer.reset();
       if (modules.chunkFinder != null) {
          modules.chunkFinder.clear();
@@ -154,18 +151,12 @@ public class AetherClient implements ClientModInitializer {
 
       ChunkBypassLedger.INSTANCE.clear();
       ChunkBypassRenderer.reset();
-      if (modules.spawnerNametags != null) {
-         modules.spawnerNametags.clear();
-      }
-      if (modules.jumpCircles != null) {
-         modules.jumpCircles.clear();
-      }
-      if (modules.hitParticles != null) {
-         modules.hitParticles.clear();
-      }
+      // spawnerNametags.clear stub - method removed
+      // jumpCircles.clear stub - method removed
+      // hitParticles.clear stub - method removed
       if (modules.customAccessories != null) {
          modules.customAccessories.clear();
       }
-      MotionBlurRenderer.reset();
+      // MotionBlurRenderer.reset(); // stub - method removed
    }
 }

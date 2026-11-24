@@ -17,10 +17,7 @@ public class KeyboardInputFreecamMixin {
    private void aetherclient$freecamReapplyCachedBodyInput(CallbackInfo ci) {
       Minecraft mc = Minecraft.getInstance();
       if (mc.player != null && mc.player.input == (Object)this) {
-         FreecamModule f = FreecamModule.get();
-         if (f != null && f.isActive()) {
-            FreecamModule.reapplyBodyInput(mc);
-         }
+         // Freecam body input reapply stub - Anubis-internal API disabled
       }
    }
 }
