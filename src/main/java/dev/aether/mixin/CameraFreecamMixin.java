@@ -24,10 +24,6 @@ public abstract class CameraFreecamMixin {
       at = {@At("TAIL")}
    )
    private void aetherclient$freecam(Level level, Entity entity, boolean detached, boolean thirdPersonReverse, float partialTick, CallbackInfo ci) {
-      FreecamModule freecam = FreecamModule.get();
-      if (freecam != null && freecam.isActive()) {
-         this.setRotation(freecam.getInterpolatedYaw(partialTick), freecam.getInterpolatedPitch(partialTick));
-         this.setPosition(freecam.getInterpolatedPos(partialTick));
-      }
+      // Freecam camera override stub - Anubis-internal API disabled
    }
 }

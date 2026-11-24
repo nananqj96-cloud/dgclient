@@ -125,12 +125,7 @@ public class ClientPacketListenerMixin {
       // NetheriteFinderModule.onServerBlockUpdate stub removed
 
       SpawnerProtectModule var4 = spawnerProtect();
-      if (var4 != null && var4.isEnabled() && var4.getDetectBlockUpdates() && Minecraft.getInstance().isSameThread()) {
-         try {
-            var4.onServerBlockUpdate(var1.getPos(), var1.getBlockState(), false);
-         } catch (Exception var7) {
-         }
-      }
+      // SpawnerProtect onServerBlockUpdate stub removed - Anubis-internal API
    }
 
    @Inject(
@@ -146,9 +141,7 @@ public class ClientPacketListenerMixin {
             ClusterEspRenderer.markChunkDirty(var2x.getX() >> 4, var2x.getZ() >> 4);
             // BlockEspRenderer/StorageEspRenderer/markSusChunkDirty/onServerBlockUpdate stubs removed
 
-            if (var4) {
-               var3.onServerBlockUpdate(var2x, var3xx, true);
-            }
+            // SpawnerProtect onServerBlockUpdate stub removed - Anubis-internal API
          });
       } catch (Exception var6) {
       }

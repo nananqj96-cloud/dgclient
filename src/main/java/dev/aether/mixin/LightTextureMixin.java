@@ -25,6 +25,6 @@ public class LightTextureMixin {
    )
    private Object aetherclient$fullbrightGamma(Object original) {
       ModuleManager modules = AetherClient.modules();
-      return modules != null && modules.fullbright != null && modules.fullbright.isEnabled() ? (double)modules.fullbright.gamma.getFloat() : original;
+      return modules != null && modules.fullbright != null && modules.fullbright.isEnabled() ? (double)modules.fullbright.gamma() : original;
    }
 }

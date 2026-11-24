@@ -1,10 +1,6 @@
 package dev.aether.mixin;
 
-import dev.aether.AetherClient;
-import dev.aether.module.impl.TenacitySnapTapModule;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.KeyboardInput;
-import net.minecraft.world.entity.player.Input;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,16 +13,6 @@ public class KeyboardInputSnapTapMixin {
       at = {@At("TAIL")}
    )
    private void aetherclient$applySnapTap(CallbackInfo ci) {
-      Minecraft mc = Minecraft.getInstance();
-      if (mc.player != null && mc.player.input == (Object)this) {
-         var modules = AetherClient.modules();
-         if (modules != null && modules.tenacitySnapTap != null && modules.tenacitySnapTap.isEnabled()) {
-            Input original = ((ClientInputAccessor) mc.player.input).aetherclient$getKeyPresses();
-            Input modified = TenacitySnapTapModule.apply(original);
-            if (modified != original) {
-               ((ClientInputAccessor) mc.player.input).aetherclient$setKeyPresses(modified);
-            }
-         }
-      }
+      // Snap Tap input override stub - Anubis-internal API disabled
    }
 }
