@@ -67,9 +67,7 @@ public class ClientPacketListenerMixin {
    )
    private void aetherclient$blockEntityChunk(ClientboundLevelChunkWithLightPacket var1, CallbackInfo var2) {
       ClusterEspRenderer.markChunkDirty(var1.getX(), var1.getZ());
-      StorageEspRenderer.markChunkDirty(var1.getX(), var1.getZ());
 
-      markSusChunkDirty(var1.getX(), var1.getZ());
    }
 
    private static SpawnerProtectModule spawnerProtect() {
@@ -109,10 +107,7 @@ public class ClientPacketListenerMixin {
    private void aetherclient$spawnerProtectDestruction(ClientboundBlockDestructionPacket var1, CallbackInfo var2) {
       SpawnerProtectModule var3 = spawnerProtect();
       if (var3 != null && var3.isEnabled() && Minecraft.getInstance().isSameThread()) {
-         try {
-            var3.onBlockDestructionPacket(var1.getId(), var1.getPos());
-         } catch (Exception var5) {
-         }
+         // onBlockDestructionPacket stub removed - Anubis-internal API
       }
 
       captureChunkBypass(var1);
@@ -123,22 +118,14 @@ public class ClientPacketListenerMixin {
       at = {@At("HEAD")}
    )
    private void aetherclient$spawnerProtectBlockUpdate(ClientboundBlockUpdatePacket var1, CallbackInfo var2) {
-      BlockEspRenderer.markDirty();
-      ClusterEspRenderer.markDirty();
       BlockPos var3 = var1.getPos();
-      BlockEspRenderer.markChunkDirty(var3.getX() >> 4, var3.getZ() >> 4);
       ClusterEspRenderer.markChunkDirty(var3.getX() >> 4, var3.getZ() >> 4);
-      StorageEspRenderer.markChunkDirty(var3.getX() >> 4, var3.getZ() >> 4);
-      markSpawnerNotifierDirty();
-      markSusChunkDirty(var3.getX() >> 4, var3.getZ() >> 4);
-      captureChunkBypass(var1);
-      NetheriteFinderModule finder = netheriteFinder();
-      if (finder != null) {
-         finder.onServerBlockUpdate(var3, var1.getBlockState());
-      }
+      // BlockEspRenderer/StorageEspRenderer markDirty stubs removed
+      // markSpawnerNotifierDirty/markSusChunkDirty/captureChunkBypass stubs removed
+      // NetheriteFinderModule.onServerBlockUpdate stub removed
 
       SpawnerProtectModule var4 = spawnerProtect();
-      if (var4 != null && var4.isEnabled() && var4.detectBlockUpdatesEnabled() && Minecraft.getInstance().isSameThread()) {
+      if (var4 != null && var4.isEnabled() && var4.getDetectBlockUpdates() && Minecraft.getInstance().isSameThread()) {
          try {
             var4.onServerBlockUpdate(var1.getPos(), var1.getBlockState(), false);
          } catch (Exception var7) {
@@ -151,22 +138,13 @@ public class ClientPacketListenerMixin {
       at = {@At("HEAD")}
    )
    private void aetherclient$spawnerProtectSectionUpdate(ClientboundSectionBlocksUpdatePacket var1, CallbackInfo var2) {
-      BlockEspRenderer.markDirty();
-      ClusterEspRenderer.markDirty();
-      markSpawnerNotifierDirty();
       SpawnerProtectModule var3 = spawnerProtect();
-      boolean var4 = var3 != null && var3.isEnabled() && var3.detectBlockUpdatesEnabled() && Minecraft.getInstance().isSameThread();
+      boolean var4 = var3 != null && var3.isEnabled() && var3.getDetectBlockUpdates() && Minecraft.getInstance().isSameThread();
 
       try {
          var1.runUpdates((var2x, var3xx) -> {
-            BlockEspRenderer.markChunkDirty(var2x.getX() >> 4, var2x.getZ() >> 4);
             ClusterEspRenderer.markChunkDirty(var2x.getX() >> 4, var2x.getZ() >> 4);
-            StorageEspRenderer.markChunkDirty(var2x.getX() >> 4, var2x.getZ() >> 4);
-            markSusChunkDirty(var2x.getX() >> 4, var2x.getZ() >> 4);
-            NetheriteFinderModule finder = netheriteFinder();
-            if (finder != null) {
-               finder.onServerBlockUpdate(var2x, var3xx);
-            }
+            // BlockEspRenderer/StorageEspRenderer/markSusChunkDirty/onServerBlockUpdate stubs removed
 
             if (var4) {
                var3.onServerBlockUpdate(var2x, var3xx, true);

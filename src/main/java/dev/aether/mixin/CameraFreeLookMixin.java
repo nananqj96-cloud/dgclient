@@ -1,7 +1,6 @@
 package dev.aether.mixin;
 
 import dev.aether.module.impl.FreeLookModule;
-import dev.aether.module.impl.FreecamModule;
 import net.minecraft.client.Camera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,9 +21,7 @@ public abstract class CameraFreeLookMixin {
    private void aetherclient$freeLookRotation(Args args) {
       FreeLookModule freeLook = FreeLookModule.get();
       if (freeLook != null && freeLook.isActive()) {
-         FreecamModule freecam = FreecamModule.get();
-         if (freecam == null || !freecam.isActive()) {
-            args.set(0, freeLook.getCameraYaw());
+         args.set(0, 0.0F);
             args.set(1, freeLook.getCameraPitch());
          }
       }
@@ -37,10 +34,8 @@ public abstract class CameraFreeLookMixin {
    )
    private void aetherclient$freeLookThroughWalls(float distance, CallbackInfoReturnable<Float> cir) {
       FreeLookModule freeLook = FreeLookModule.get();
-      if (freeLook != null && freeLook.seeThroughWalls()) {
-         FreecamModule freecam = FreecamModule.get();
-         if (freecam == null || !freecam.isActive()) {
-            cir.setReturnValue(distance);
+      if (freeLook != null && freeLook.isActive()) {
+         cir.setReturnValue(distance);
          }
       }
    }

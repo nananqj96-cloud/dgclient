@@ -26,9 +26,7 @@ public class ChatComponentMixin {
             result = modules.fakeRoles.decorateChat(component);
          }
 
-         if (modules.nameProtect != null && modules.nameProtect.isEnabled()) {
-            result = modules.nameProtect.censorChat(result);
-         }
+         // nameProtect.censorChat stub removed - Anubis-internal API
 
          if (modules.fakeCoordinates != null && modules.fakeCoordinates.isEnabled()) {
             result = modules.fakeCoordinates.spoof(result);

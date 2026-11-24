@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.aether.AetherClient;
 import dev.aether.module.ModuleManager;
-import dev.aether.module.impl.FreecamModule;
 import dev.aether.render.BlurHook;
 import dev.aether.render.OverlayRenderer;
 import dev.aether.render.WorldProjection;
@@ -63,8 +62,7 @@ public class GameRendererMixin {
    private float aetherclient$zoomFov(float original) {
       ModuleManager modules = AetherClient.modules();
       if (modules != null && modules.zoom != null) {
-         double factor = modules.zoom.currentFactor();
-         return factor > 1.0001 ? (float)((double)original / factor) : original;
+         return original;
       } else {
          return original;
       }
@@ -80,7 +78,7 @@ public class GameRendererMixin {
    )
    private float aetherclient$customFov(float sprintMultiplier) {
       ModuleManager modules = AetherClient.modules();
-      return modules != null && modules.customFov != null ? modules.customFov.fovMultiplier(sprintMultiplier) : sprintMultiplier;
+      return sprintMultiplier;
    }
 
    @ModifyExpressionValue(
@@ -91,7 +89,6 @@ public class GameRendererMixin {
       )}
    )
    private boolean aetherclient$freecamRenderFirstPersonHands(boolean isFirstPerson) {
-      FreecamModule freecam = FreecamModule.get();
-      return freecam != null && freecam.isActive() && freecam.renderHands() ? true : isFirstPerson;
+      return isFirstPerson;
    }
 }
