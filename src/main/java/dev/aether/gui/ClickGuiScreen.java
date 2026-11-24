@@ -1642,7 +1642,7 @@ public class ClickGuiScreen extends Screen implements NvgDrawable {
    public void openBlockPicker(BlockListSetting setting) {
       BlockGridModel model = new BlockGridModel(setting, () -> {
          BlockEspModule mod = AetherClient.modules().blockEsp;
-         return mod != null ? mod.sBlockColor.get() : 0xFFFF66C4;
+         return mod != null ? mod.getBlockColor() : 0xFFFF66C4;
       }, "Aether Client");
       this.minecraft.setScreen(new IconPickerScreen(this, model, AetherClient.themes()));
    }

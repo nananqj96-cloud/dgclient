@@ -7,6 +7,7 @@ import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
 import java.util.ArrayList;
 import java.util.List;
