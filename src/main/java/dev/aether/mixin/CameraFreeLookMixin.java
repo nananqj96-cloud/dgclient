@@ -22,8 +22,7 @@ public abstract class CameraFreeLookMixin {
       FreeLookModule freeLook = FreeLookModule.get();
       if (freeLook != null && freeLook.isActive()) {
          args.set(0, 0.0F);
-            args.set(1, freeLook.getCameraPitch());
-         }
+         args.set(1, 0.0F);
       }
    }
 
@@ -36,7 +35,6 @@ public abstract class CameraFreeLookMixin {
       FreeLookModule freeLook = FreeLookModule.get();
       if (freeLook != null && freeLook.isActive()) {
          cir.setReturnValue(distance);
-         }
       }
    }
 }
