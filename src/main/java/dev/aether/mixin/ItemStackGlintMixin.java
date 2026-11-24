@@ -21,7 +21,7 @@ public class ItemStackGlintMixin {
    )
    private boolean aetherclient$forceGlint(boolean original) {
       CustomGlintModule module = AetherClient.modules() == null ? null : AetherClient.modules().customGlint;
-      if (module != null && module.isActive()) {
+      if (module != null && module.isEnabled()) {
          return true;
       }
       return original;

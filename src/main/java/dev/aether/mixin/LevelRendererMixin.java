@@ -111,13 +111,9 @@ public class LevelRendererMixin {
             EntityEspRenderer.renderMobs(var1, var2, var4.cameraRenderState.pos, var6.mobEsp);
          }
 
-         if (var3 && var6.jumpCircles != null && var6.jumpCircles.isEnabled()) {
-            JumpCircleRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.jumpCircles);
-         }
+         // JumpCircleRenderer.render stub removed - method does not exist
 
-         if (var3 && var6.hitParticles != null && var6.hitParticles.isEnabled()) {
-            HitParticleRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.hitParticles);
-         }
+         // HitParticleRenderer.render stub removed - method does not exist
 
          if (var3 && var6.playerTrail != null && var6.playerTrail.isEnabled()) {
             PlayerTrailRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.playerTrail);
@@ -155,7 +151,7 @@ public class LevelRendererMixin {
             AccessoryRenderer.renderEquipped(var1, var2, var4.cameraRenderState.pos, var6.accessories);
          }
 
-         if (var6.freecam != null && var6.freecam.isActive()) {
+         if (var6.freecam != null && var6.freecam.isEnabled()) {
             var5.cancel();
          } else if (var6.blockOutline.isEnabled()) {
             var5.cancel();
