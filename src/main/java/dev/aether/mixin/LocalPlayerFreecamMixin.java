@@ -1,6 +1,5 @@
 package dev.aether.mixin;
 
-import dev.aether.module.impl.FreecamModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,10 +29,7 @@ public abstract class LocalPlayerFreecamMixin {
       LocalPlayer self = (LocalPlayer)(Object)this;
       Minecraft mc = Minecraft.getInstance();
       if (mc.player == self) {
-         FreecamModule f = FreecamModule.get();
-         if (f != null && f.isActive()) {
-            FreecamModule.reapplyBodyInput(mc);
-         }
+         // Freecam reapplyBodyInput stub removed - Anubis-internal API
       }
    }
 }

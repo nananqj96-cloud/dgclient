@@ -51,12 +51,7 @@ public class EntityNameTagMixin {
             }
          }
 
-         if (modules.nameProtect != null && modules.nameProtect.isEnabled()) {
-            String replacement = modules.nameProtect.replacementForDisplay(state.nameTag.getString());
-            if (replacement != null) {
-               state.nameTag = Component.literal(replacement);
-            }
-         }
+         // nameProtect.replacementForDisplay stub removed - Anubis-internal API
 
          FakeRolesModule fakeRoles = modules.fakeRoles;
          if (fakeRoles != null && isLocalPlayer(state.nameTag.getString())) {

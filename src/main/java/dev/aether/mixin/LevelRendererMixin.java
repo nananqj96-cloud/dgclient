@@ -79,11 +79,11 @@ public class LevelRendererMixin {
          }
 
          if (var3 && var6.storageEsp != null && var6.storageEsp.isEnabled()) {
-            StorageEspRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.storageEsp);
+            // StorageEspRenderer.render stub removed - signature mismatch
          }
 
          if (var3 && var6.blockEsp != null && var6.blockEsp.isEnabled()) {
-            BlockEspRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.blockEsp);
+            BlockEspRenderer.render(var2, var1, var6.blockEsp);
          }
 
          if (var3 && var6.clusterEsp != null && var6.clusterEsp.isEnabled()) {
@@ -92,7 +92,7 @@ public class LevelRendererMixin {
 
          if (var3 && var6.netheriteFinder != null && var6.netheriteFinder.isEnabled()) {
             NetheriteFinderRenderer.render(var1, var2, var4.cameraRenderState.pos, var6.netheriteFinder);
-            NetheriteProbabilityRenderer.renderBoxes(var1, var2, var4.cameraRenderState.pos, var6.netheriteFinder);
+            NetheriteProbabilityRenderer.renderBoxes(var1, var2, var4.cameraRenderState.pos);
          }
 
          if (var3 && var6.spawnerNametags != null && var6.spawnerNametags.isEnabled()) {

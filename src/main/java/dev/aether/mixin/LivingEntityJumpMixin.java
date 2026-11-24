@@ -19,9 +19,7 @@ public class LivingEntityJumpMixin {
    private void aetherclient$onJump(CallbackInfo ci) {
       if ((Object)this instanceof LocalPlayer player && player == Minecraft.getInstance().player) {
          ModuleManager modules = AetherClient.modules();
-         if (modules != null && modules.jumpCircles != null && modules.jumpCircles.isEnabled()) {
-            modules.jumpCircles.onPlayerJump(player);
-         }
+         // jumpCircles.onPlayerJump stub removed - Anubis-internal API
       }
    }
 }
