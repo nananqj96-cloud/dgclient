@@ -57,7 +57,7 @@ public final class OverlayRenderer {
 
    public static void render() {
       try {
-         GlintTextureTinter.tick();
+         GlintTextureTinter.tick(Minecraft.getInstance(), null);
       } catch (Throwable ignored) {
       }
 
@@ -106,11 +106,6 @@ public final class OverlayRenderer {
                         if (drawHud) {
                            if (isChat && HudDragController.isDragging()) {
                               HudDragController.updateDrag(vg);
-                           }
-
-                           CustomCrosshairModule xhair = AetherClient.modules().customCrosshair;
-                           if (xhair.isEnabled() && mc.screen == null) {
-                              xhair.render(vg, uiW / 2.0F, uiH / 2.0F);
                            }
 
                            if (mc.screen == null) {
