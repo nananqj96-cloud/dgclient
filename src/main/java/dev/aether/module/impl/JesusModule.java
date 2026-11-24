@@ -7,7 +7,6 @@ import dev.aether.settings.ModeSetting;
 import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -48,7 +47,7 @@ public class JesusModule extends Module {
         }
 
         Entity vehicle = player.getVehicle();
-        boolean inBoat = vehicle instanceof AbstractBoat;
+        boolean inBoat = vehicle != null;
         FluidState fluid = player.level().getFluidState(player.blockPosition());
 
         boolean inLiquid = !fluid.isEmpty();

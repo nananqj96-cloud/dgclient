@@ -55,7 +55,7 @@ public class KeyThrowModule extends Module {
     }
 
     private void swapAndThrow(LocalPlayer player, int slot, InteractionHand hand) {
-        int selected = player.getInventory().getSelected();
+        int selected = player.getInventory().getSelectedSlot();
         player.getInventory().setSelectedSlot(slot);
         player.swing(hand);
         this.originalSlot = selected;

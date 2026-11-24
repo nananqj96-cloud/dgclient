@@ -9,10 +9,6 @@ import dev.aether.settings.SliderSetting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShaderEspModule extends Module {
     private final BooleanSetting players = this.addSetting(new BooleanSetting("Players", "Players", true));
@@ -36,27 +32,7 @@ public class ShaderEspModule extends Module {
         if (player == null || mc.level == null) {
             return;
         }
-        double rangeSq = this.range.get() * this.range.get();
-        for (Entity entity : mc.level.getAllEntities()) {
-            if (entity == null || entity.isRemoved()) {
-                continue;
-            }
-            double dist = entity.distanceToSqr(player);
-            if (dist > rangeSq) {
-                continue;
-            }
-            if (entity instanceof Player && this.players.get()) {
-                continue;
-            }
-            if (entity instanceof ItemFrame && this.items.get()) {
-                continue;
-            }
-            if ((entity instanceof AbstractArrow || entity instanceof Fireball || entity instanceof ShulkerBullet
-                    || entity instanceof SmallFireball || entity instanceof Snowball || entity instanceof ThrownTrident
-                    || entity instanceof WitherSkull) && this.crystals.get()) {
-                continue;
-            }
-        }
+        // Shader ESP entity filtering stub - detailed entity type checks disabled
     }
 
     public int getPlayerColor() {

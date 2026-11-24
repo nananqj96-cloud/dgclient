@@ -121,7 +121,7 @@ public class HudModule extends Module {
     }
 
     public int accentArgb() {
-//         return ThemeTint.accent(this.accentColor.argb());
+        return this.accentColor.get();
     }
 
     public HudModule.ArmorWear armorWear() {
