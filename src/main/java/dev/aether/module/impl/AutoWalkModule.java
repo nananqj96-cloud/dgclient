@@ -14,6 +14,10 @@ public class AutoWalkModule extends Module {
     private final BooleanSetting waitForChunks = this.addSetting(new BooleanSetting("No Unloaded Chunks", "No Unloaded Chunks", true));
     private boolean wasWalking;
 
+    public String getDirection() {
+        return this.direction.get();
+    }
+
     public AutoWalkModule() {
         super("auto-walk", "Automatically walks forward.", Category.MOVEMENT);
     }

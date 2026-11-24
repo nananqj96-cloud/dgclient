@@ -53,6 +53,10 @@ public class RegionMapModule extends Module {
         return this.showCoordinates.get();
     }
 
+    public boolean hasData() {
+        return false;
+    }
+
     public ColorSetting playerIndicatorColor() {
         return this.playerIndicatorColor;
     }

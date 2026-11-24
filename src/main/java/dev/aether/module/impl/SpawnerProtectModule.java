@@ -39,6 +39,10 @@ public class SpawnerProtectModule extends Module {
         return this.scanRange.getFloat();
     }
 
+    public float getBreakRange() {
+        return this.breakRange.getFloat();
+    }
+
     public boolean getDetectBlockUpdates() {
         return this.detectBlockUpdates.get();
     }

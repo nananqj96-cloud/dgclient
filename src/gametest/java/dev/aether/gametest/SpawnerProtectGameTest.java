@@ -22,10 +22,10 @@ public class SpawnerProtectGameTest implements FabricClientGameTest {
          context.runOnClient(mc -> {
             SpawnerProtectModule sp = AetherClient.modules().spawnerProtect;
             require(sp != null, "SpawnerProtect registered");
-            require(sp.targetStackCount.getInt() == 3, "default Stacks To Deposit = 3");
-            require(sp.scanRange.get() == 64.0, "default Trigger Range = 64");
-            require(sp.breakRange.get() == 5.5, "default Break Range = 5.5");
-            require(sp.detectBlockUpdates.get(), "Detect Block Updates on by default");
+            require(sp.getTargetStackCount() == 3.0F, "default Stacks To Deposit = 3");
+            require(sp.getScanRange() == 64.0F, "default Trigger Range = 64");
+            require(sp.getBreakRange() == 5.5F, "default Break Range = 5.5");
+            require(sp.getDetectBlockUpdates(), "Detect Block Updates on by default");
             require(!sp.isEnabled(), "starts disabled");
          });
          server.runCommand("fill 100 0 -25 200 0 25 minecraft:stone");

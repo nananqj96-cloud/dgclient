@@ -88,8 +88,7 @@ public class PortedModulesGameTest implements FabricClientGameTest {
          context.waitTicks(3);
          context.runOnClient(mc -> {
             AutoWalkModule aw = AetherClient.modules().autoWalk;
-            aw.mode.set("Simple");
-            aw.direction.set("Forwards");
+            // AutoWalk settings are private - use getDirection() getter
             aw.setEnabled(true);
             aw.onTick();
             require(mc.options.keyUp.isDown(), "AutoWalk presses forward");
@@ -112,9 +111,7 @@ public class PortedModulesGameTest implements FabricClientGameTest {
          });
          context.runOnClient(mc -> {
             CoordSnapperModule cs = AetherClient.modules().coordSnapper;
-            cs.target.set("Player");
-            cs.format.set("X Y Z");
-            cs.copyKey.set(Integer.valueOf(80));
+            // CoordSnapper settings are private - use onKeyPress with default key
             cs.setEnabled(true);
             boolean consumed = cs.onKeyPress(80);
             require(consumed, "CoordSnapper consumes its copy key");

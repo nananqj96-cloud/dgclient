@@ -24,6 +24,7 @@ public class CoordSnapperModule extends Module {
     private final BooleanSetting includeDimension = this.addSetting(new BooleanSetting("Include Dimension", "Include Dimension", true));
     private final BooleanSetting confirm = this.addSetting(new BooleanSetting("Chat Confirmation", "Chat Confirmation", true));
     private final BooleanSetting webhook = this.addSetting(new BooleanSetting("Webhook", "Webhook", false));
+    private String lastCopied = "";
 
     public CoordSnapperModule() {
         super("coord-snapper", "Copies the coordinates you look at or stand on with one key.", Category.MISC);
@@ -48,12 +49,17 @@ public class CoordSnapperModule extends Module {
                 pos = hit.getBlockPos();
             }
             String coords = formatCoords(pos, player);
+            this.lastCopied = coords;
             if (this.confirm.get()) {
                 AetherClient.notifications().pushInfo(coords);
             }
             return true;
         }
         return false;
+    }
+
+    public String lastCopied() {
+        return this.lastCopied;
     }
 
     private String formatCoords(BlockPos pos, LocalPlayer player) {
