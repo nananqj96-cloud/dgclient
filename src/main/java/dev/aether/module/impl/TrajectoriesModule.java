@@ -36,8 +36,8 @@ public class TrajectoriesModule extends Module {
             return;
         }
         // Track nearby projectiles
-        for (Projectile shot : mc.level.entitiesForRendering()) {
-            if (shot == null || shot.isRemoved()) {
+        for (Entity entity : mc.level.entitiesForRendering()) {
+            if (entity == null || entity.isRemoved() || !(entity instanceof Projectile shot)) {
                 continue;
             }
             if (!this.inFlight.get()) {
