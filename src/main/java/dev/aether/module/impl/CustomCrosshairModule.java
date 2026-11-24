@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
 public class CustomCrosshairModule extends Module {
-    private final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Cross", "Cross", "T", "X", "Dot", "Circle"));
+    public final ModeSetting style = this.addSetting(new ModeSetting("Style", "Style", "Cross", "Cross", "T", "X", "Dot", "Circle"));
     private final SliderSetting size = this.addSetting(new SliderSetting("Size", "Size", 6.0, 1.0, 20.0, 1.0F));
     private final SliderSetting gap = this.addSetting(new SliderSetting("Gap", "Gap", 2.0, 0.0, 16.0, 1.0F));
     private final SliderSetting thickness = this.addSetting(new SliderSetting("Thickness", "Thickness", 2.0, 1.0, 5.0, 1.0F));

@@ -40,7 +40,8 @@ public class HitParticlesModule extends Module {
     private static final String COLOR_ACCENT = "Accent";
     private static final double LIFT = 0.25;
     private static final int PEEP_DUST = 16743112;
-    private final ModeSetting type = this.addSetting(new ModeSetting("Type", "Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust"));
+    public final ModeSetting type = this.addSetting(new ModeSetting("Type", "Type", "Crit", "Crit", "Magic Crit", "Spark", "Flame", "Soul Flame", "End Rod", "Totem", "Heart", "Dust"));
+    public final BooleanSetting rainbow = this.addSetting(new BooleanSetting("Rainbow", "Rainbow", false));
     private final SliderSetting amount = this.addSetting(new SliderSetting("Amount", "Amount", 10.0, 1.0, 40.0, 1.0F));
     private final SliderSetting spread = this.addSetting(new SliderSetting("Spread", "Spread", 1.0, 0.25, 3.0, 0.25F));
     private final ModeSetting origin = this.addSetting(new ModeSetting("Origin", "Origin", "Impact", "Impact", "Body"));
